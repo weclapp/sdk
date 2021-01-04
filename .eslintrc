@@ -1,0 +1,20 @@
+{
+	"env": {
+		"browser": true,
+		"node": true
+	},
+	"parserOptions": {
+		"ecmaVersion": 2018,
+		"sourceType": "module",
+		"parser": "@typescript-eslint/parser",
+		"project": "./api/tsconfig.json"
+	},
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:@typescript-eslint/recommended-requiring-type-checking"
+	],
+	"plugins": [
+		"@typescript-eslint"
+	]
+}
