@@ -26,11 +26,28 @@ export interface EndpointParameter {
     schema: DefinitionProperty
 }
 
+export interface UnofficialResponse {
+    '200 OK': {
+        schema: {
+            $ref: string;
+            properties?: {
+                result: {
+                    items: {
+                        $ref: string;
+                    }
+                    type: string;
+                }
+            }
+        }
+    }
+}
+
 export interface Endpoint {
     description: string;
     parameters: EndpointParameter[];
     produces?: string[];
     tags?: string[]
+    responses?: UnofficialResponse;
 }
 
 export interface Methods {

@@ -3,17 +3,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 require('dotenv').config();
+import {definitions} from '@swagger/definitions';
+import {endpoints} from '@swagger/endpoint';
+import {SwaggerFile} from '@swagger/types';
 import {env} from '@utils/env';
 import {blankLn, info, successLn} from '@utils/log';
 import {mkdir, readFile, writeFile} from 'fs/promises';
 import path from 'path';
-import {definitions} from './swagger/definitions';
-import {SwaggerFile} from './swagger/types';
 
 const dist = path.resolve(__dirname, '../', env('SDK_DIST'));
 const files = {
-    types: path.join(dist, 'types.ts'),
-    index: path.join(dist, 'index.ts')
+    sdk: path.join(dist, 'index.ts')
 };
 
 void (async () => {
@@ -25,12 +25,15 @@ void (async () => {
     blankLn(' Done.');
 
     info('Generate entity models...');
-    const models = definitions(swagger.definitions);
+    const defCode = definitions(swagger.definitions);
     blankLn(' Done.');
 
-    // Create dist directory and write file
-    info('Write to disk...');
-    await writeFile(files.types, models);
+    info('Generate endpoints...');
+    const endpointCode = endpoints(swagger.paths);
+    blankLn(' Done.');
+
+    info('Generate sdk...');
+    await writeFile(files.sdk, defCode + endpointCode);
     blankLn(' Done.');
 
     successLn('All done, bye.');
