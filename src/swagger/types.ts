@@ -13,4 +13,7 @@ export interface DefinitionReference {
     }
 }
 
-export type Definition = Record<string, DefinitionProperty | DefinitionReference>;
+export interface Definition {
+    properties: Record<string, DefinitionProperty | DefinitionReference>;
+    required?: string[]
+}

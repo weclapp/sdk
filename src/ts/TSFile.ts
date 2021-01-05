@@ -18,7 +18,7 @@ export class TSFile implements Generable {
 
     public toTS(): string {
         return this.statements
-            .map(statement => statement.toTS())
+            .map(v => v.toTS())
             .join('\n\n');
     }
 

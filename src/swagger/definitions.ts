@@ -1,6 +1,9 @@
+import {TSBlock} from '@ts/TSBlock';
+import {TSBlockComment} from '@ts/TSBlockComment';
 import {TSFile} from '@ts/TSFile';
 import {TSInterface} from '@ts/TSInterface';
 import {TSValueType} from '@ts/TSValueType';
+import {Statement} from '@ts/types';
 import {pascalCase} from 'change-case';
 import {Definition, DefinitionProperty, DefinitionReference} from './types';
 
@@ -34,19 +37,39 @@ function getType(obj: DefinitionProperty | DefinitionReference): TSValueType {
 }
 
 /**
- * Creates a single model for a swagger definition
+ * Creates base and create models
  * @param name
- * @param properties
+ * @param definition
  */
-function createModel(name: string, properties: DefinitionProperty | DefinitionReference): TSInterface {
-    const model = new TSInterface(pascalCase(name), true);
+function createModels(name: string, definition: Definition): Statement[] {
+    const interfaceName = pascalCase(name);
 
-    // Loop through property declarations
-    for (const [name, definition] of Object.entries(properties)) {
-        model.addProperty(name, getType(definition));
+    // Create base interface
+    const base = new TSInterface(interfaceName, true);
+    const baseComment = new TSBlockComment(`${name} entity.`);
+
+    for (const [name, type] of Object.entries(definition.properties)) {
+        base.set(name, getType(type));
     }
 
-    return model;
+    // Create interface for new instances
+    const create = new TSInterface(`Create${interfaceName}`, true);
+    for (const name of definition.required ?? []) {
+        const type = base.get(name);
+        if (type) {
+            create.set(name, type);
+        }
+    }
+
+    const note = `\nThere are no required properties to create a new instance of ${interfaceName}.`;
+    const createComment = new TSBlockComment(
+        `Required properties to create a new ${interfaceName}. ${create.size ? '' : note}`
+    );
+
+    return [
+        new TSBlock(baseComment, base),
+        new TSBlock(createComment, create)
+    ];
 }
 
 
@@ -58,8 +81,8 @@ export const definitions = (definitions: Record<string, Definition>): TSFile => 
     const file = new TSFile();
 
     // Loop through declarations
-    for (const [declaration, {properties}] of Object.entries(definitions)) {
-        file.addStatement(createModel(declaration, properties));
+    for (const [name, definition] of Object.entries(definitions)) {
+        file.addStatement(...createModels(name, definition));
     }
 
     return file;

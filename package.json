@@ -6,7 +6,7 @@
     "author": "weclapp",
     "scripts": {
         "gen:start": "ts-node -r tsconfig-paths/register src/index.ts --project tsconfig.json",
-        "gen:dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/index.ts",
+        "gen:dev": "ts-node-dev --respawn -r tsconfig-paths/register src/index.ts",
         "lint:ts": "eslint src/**/*.ts",
         "lint:fix": "npm run lint:ts -- --fix"
     },
