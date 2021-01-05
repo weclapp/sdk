@@ -16,5 +16,8 @@
 	],
 	"plugins": [
 		"@typescript-eslint"
-	]
+	],
+	"rules": {
+		"no-console": "warn"
+	}
 }

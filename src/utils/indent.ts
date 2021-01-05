@@ -14,10 +14,11 @@ if (!indentation) {
 
 /**
  * Indents each line of the given string
- * @param s
+ * @param s String to indent
+ * @param level Indentation level
  */
-export const indent = (s: string): string => {
+export const indent = (s: string, level = 1): string => {
     return typeof indentation === 'number' ?
-        indentString(s, indentation) :
-        indentString(s, 1, {indent: indentation});
+        indentString(s, indentation * level) :
+        indentString(s, level, {indent: indentation});
 };
