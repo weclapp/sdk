@@ -2,3 +2,5 @@
 node_modules
 sdk
 sdk_dist
+.env
+.test
