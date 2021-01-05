@@ -2,7 +2,7 @@
 <br/>
 
 <div align="center">
-    <img src="/uploads/867988b201df8432a23292c71fc9f449/logo.svg" alt="Logo" width="350"/>
+    <img src="/uploads/1dedf37d0e1e105f9e94ea97e04ca096/logo.svg" alt="Logo" width="350"/>
 </div>
 
 <br/>

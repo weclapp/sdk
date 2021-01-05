@@ -4,6 +4,7 @@ import {TSFile} from '@ts/TSFile';
 import {TSInterface} from '@ts/TSInterface';
 import {TSValueType} from '@ts/TSValueType';
 import {Statement} from '@ts/types';
+import {errorLn, warnLn} from '@utils/log';
 import {pascalCase} from 'change-case';
 import {Definition, DefinitionProperty, DefinitionReference} from './types';
 
@@ -44,9 +45,15 @@ function getType(obj: DefinitionProperty | DefinitionReference): TSValueType {
 function createModels(name: string, definition: Definition): Statement[] {
     const interfaceName = pascalCase(name);
 
+    // Validate definition set
+    if (definition.type !== 'object') {
+        errorLn(`Invalid definitions for ${name}`);
+        return [];
+    }
+
     // Create base interface
     const base = new TSInterface(interfaceName, true);
-    const baseComment = new TSBlockComment(`${name} entity.`);
+    const baseComment = new TSBlockComment(`${interfaceName} entity.`);
 
     for (const [name, type] of Object.entries(definition.properties)) {
         base.set(name, getType(type));
@@ -58,6 +65,8 @@ function createModels(name: string, definition: Definition): Statement[] {
         const type = base.get(name);
         if (type) {
             create.set(name, type);
+        } else {
+            warnLn(`Cannot resolve "${name}" property in "${interfaceName}"`);
         }
     }
 
@@ -80,7 +89,7 @@ function createModels(name: string, definition: Definition): Statement[] {
 export const definitions = (definitions: Record<string, Definition>): TSFile => {
     const file = new TSFile();
 
-    // Loop through declarations
+    // Loop through declarations and convert to ts interfaces
     for (const [name, definition] of Object.entries(definitions)) {
         file.addStatement(...createModels(name, definition));
     }
