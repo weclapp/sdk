@@ -1,5 +1,5 @@
-import {extractDefinitionName} from '@swagger/endpoint/resolveResponseType';
 import {Endpoint} from '@swagger/types';
+import {extractDefinitionName} from '@swagger/utils/resolveResponseType';
 
 /**
  * Tries to resolve the body-data type.

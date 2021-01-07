@@ -5,7 +5,7 @@ import {DefinitionProperty, DefinitionReference} from '../types';
  * Resolves the type of a swagger definition, assumes that all references are defined somewhere!
  * @param obj
  */
-export function getDeclarationType(obj: DefinitionProperty | DefinitionReference): string {
+export function resolveDeclarationType(obj: DefinitionProperty | DefinitionReference): string {
     const {type} = obj;
 
     switch (type) {
@@ -20,7 +20,7 @@ export function getDeclarationType(obj: DefinitionProperty | DefinitionReference
             if (typeof $ref === 'string') {
                 return pascalCase($ref.replace(/.*\//, ''));
             } else if (typeof type === 'string') {
-                return getDeclarationType(type);
+                return resolveDeclarationType(type);
             } else {
                 return 'unknown';
             }

@@ -3,7 +3,7 @@ import {tsInterface, tsInterfaceProperties} from '@ts/interfaces';
 import {errorLn, warnLn} from '@utils/log';
 import {pascalCase} from 'change-case';
 import {Definition} from '../types';
-import {getDeclarationType} from './getDeclarationType';
+import {resolveDeclarationType} from '../utils/resolveDeclarationType';
 
 export interface GeneratedModels {
     source: string;
@@ -27,7 +27,7 @@ export const createModels = (name: string, definition: Definition): GeneratedMod
     // Create base interface
     const baseEntries = Object.entries(definition.properties)
         .map(([name, type]) => {
-            return [name, getDeclarationType(type)] as [string, string];
+            return [name, resolveDeclarationType(type)] as [string, string];
         });
 
     const createEntries: [string, string][] = [];

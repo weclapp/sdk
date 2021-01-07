@@ -1,5 +1,5 @@
-import {resolveBodyParameter} from '@swagger/endpoint/resolveBodyParameter';
-import {resolveResponseType} from '@swagger/endpoint/resolveResponseType';
+import {resolveBodyParameter} from '@swagger/utils/resolveBodyParameter';
+import {resolveResponseType} from '@swagger/utils/resolveResponseType';
 import {tsBlockComment} from '@ts/comments';
 import {errorLn} from '@utils/log';
 import {SwaggerPath, SwaggerPathType} from '@utils/parseSwaggerPath';
