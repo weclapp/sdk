@@ -6,6 +6,7 @@ require('dotenv').config();
 import {definitions} from '@swagger/definitions';
 import {endpoints} from '@swagger/endpoint';
 import {SwaggerFile} from '@swagger/types';
+import {tsDeconstructedImport} from '@ts/modules';
 import {env} from '@utils/env';
 import {blankLn, info, successLn} from '@utils/log';
 import {mkdir, readFile, writeFile} from 'fs/promises';
@@ -13,7 +14,8 @@ import path from 'path';
 
 const dist = path.resolve(__dirname, '../', env('SDK_DIST'));
 const files = {
-    sdk: path.join(dist, 'index.ts')
+    sdk: path.join(dist, 'index.ts'),
+    types: path.join(dist, 'types.ts')
 };
 
 void (async () => {
@@ -25,7 +27,8 @@ void (async () => {
     blankLn(' Done.');
 
     info('Generate entity models...');
-    const defCode = definitions(swagger.definitions);
+    const {source: defCode, exports: defExports} = definitions(swagger.definitions);
+    const defImportStatement = tsDeconstructedImport('./types', defExports);
     blankLn(' Done.');
 
     info('Generate endpoints...');
@@ -33,7 +36,8 @@ void (async () => {
     blankLn(' Done.');
 
     info('Generate sdk...');
-    await writeFile(files.sdk, defCode + endpointCode);
+    await writeFile(files.types, defCode);
+    await writeFile(files.sdk,  `${defImportStatement}\n\n${endpointCode}`);
     blankLn(' Done.');
 
     successLn('All done, bye.');

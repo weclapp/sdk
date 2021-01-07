@@ -5,18 +5,23 @@ import {pascalCase} from 'change-case';
 import {Definition} from '../types';
 import {getDeclarationType} from './getDeclarationType';
 
+export interface GeneratedModels {
+    source: string;
+    exports: string[];
+}
+
 /**
  * Creates base and create models
  * @param name
  * @param definition
  */
-export const createModels = (name: string, definition: Definition): string => {
+export const createModels = (name: string, definition: Definition): GeneratedModels | null => {
     const interfaceName = pascalCase(name);
 
     // Validate definition set
     if (definition.type !== 'object') {
         errorLn(`Invalid definitions for ${name}`);
-        return '';
+        return null;
     }
 
     // Create base interface
@@ -36,11 +41,17 @@ export const createModels = (name: string, definition: Definition): string => {
         }
     }
 
-    return `
+    const createInterfaceName = `Create${interfaceName}`;
+    const source = `
 ${tsBlockComment(`${interfaceName} entity.`)}
 ${tsInterface(interfaceName, tsInterfaceProperties(baseEntries))}
 
 ${tsBlockComment(`Required properties to create a new ${interfaceName}.`)}
-${tsInterface(`Create${interfaceName}`, tsInterfaceProperties(createEntries))}
+${tsInterface(createInterfaceName, tsInterfaceProperties(createEntries))}
 `.trim();
+
+    return {
+        source,
+        exports: [interfaceName, createInterfaceName]
+    };
 };
