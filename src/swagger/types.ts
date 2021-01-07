@@ -19,26 +19,28 @@ export interface Definition {
     type?: string;
 }
 
+export interface EndpointParameterScheme {
+    $ref: string;
+    properties?: {
+        result: {
+            items: {
+                $ref: string;
+            }
+            type: string;
+        }
+    }
+}
+
 export interface EndpointParameter {
     in: string;
     name: string;
     required: boolean;
-    schema: DefinitionProperty
+    schema?: EndpointParameterScheme;
 }
 
 export interface UnofficialResponse {
     '200 OK': {
-        schema: {
-            $ref: string;
-            properties?: {
-                result: {
-                    items: {
-                        $ref: string;
-                    }
-                    type: string;
-                }
-            }
-        }
+        schema: EndpointParameterScheme
     }
 }
 
