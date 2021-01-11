@@ -3,8 +3,8 @@
  * See https://stackoverflow.com/questions/45194598/using-process-env-in-typescript
  */
 interface CustomEnv {
-    SWAGGER_FILE: string;
-    SDK_DIST: string;
+    SRC_OPENAPI: string;
+    DIST_SDK_DIR: string;
     CODE_INDENTATION: string;
 }
 

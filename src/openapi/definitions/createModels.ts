@@ -2,7 +2,7 @@ import {tsBlockComment} from '@ts/comments';
 import {tsInterface, tsInterfaceProperties} from '@ts/interfaces';
 import {errorLn, warnLn} from '@utils/log';
 import {pascalCase} from 'change-case';
-import {Definition} from '../types';
+import {OpenAPIV3} from 'openapi-types';
 import {resolveDeclarationType} from '../utils/resolveDeclarationType';
 
 export interface GeneratedModels {
@@ -15,7 +15,7 @@ export interface GeneratedModels {
  * @param name
  * @param definition
  */
-export const createModels = (name: string, definition: Definition): GeneratedModels | null => {
+export const createModels = (name: string, definition: OpenAPIV3.SchemaObject): GeneratedModels | null => {
     const interfaceName = pascalCase(name);
 
     // Validate definition set
@@ -25,7 +25,7 @@ export const createModels = (name: string, definition: Definition): GeneratedMod
     }
 
     // Create base interface
-    const baseEntries = Object.entries(definition.properties)
+    const baseEntries = Object.entries(definition.properties ?? {})
         .map(([name, type]) => {
             return [name, resolveDeclarationType(type)] as [string, string];
         });

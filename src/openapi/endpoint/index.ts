@@ -1,13 +1,13 @@
 import {indent} from '@utils/indent';
 import {warnLn} from '@utils/log';
 import {SwaggerPath} from '@utils/parseSwaggerPath';
-import {Methods} from '../types';
+import {OpenAPIV3} from 'openapi-types';
 import {generateEndpointFunctions} from './generateEndpointFunctions';
 import {groupEndpoints} from './groupEndpoints';
 
 export interface EndpointPath {
     path: SwaggerPath;
-    methods: Methods;
+    methods: OpenAPIV3.PathItemObject;
 }
 
 export type EndpointMap = Map<string, EndpointPath[]>;
@@ -16,7 +16,7 @@ export type EndpointMap = Map<string, EndpointPath[]>;
  * Generates functions for the given endpoints record.
  * @param paths
  */
-export const endpoints = (paths: Record<string, Methods>): string => {
+export const endpoints = (paths: OpenAPIV3.PathsObject): string => {
     let file = '';
 
     for (const [entity, endpoints] of groupEndpoints(paths).entries()) {

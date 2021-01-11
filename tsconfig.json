@@ -14,7 +14,7 @@
         "outDir": "./dist",
         "baseUrl": ".",
         "paths": {
-            "@swagger/*": ["src/swagger/*"],
+            "@openapi/*": ["src/openapi/*"],
             "@utils/*": ["src/utils/*"],
             "@ts/*": ["src/ts/*"]
         }

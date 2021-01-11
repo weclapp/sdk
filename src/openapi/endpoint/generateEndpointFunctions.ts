@@ -1,11 +1,11 @@
-import {resolveBodyParameter} from '@swagger/utils/resolveBodyParameter';
-import {resolveResponseType} from '@swagger/utils/resolveResponseType';
+import {EndpointPath} from '@openapi/endpoint/index';
 import {tsBlockComment} from '@ts/comments';
 import {errorLn} from '@utils/log';
 import {SwaggerPath, SwaggerPathType} from '@utils/parseSwaggerPath';
 import {paramCase} from 'change-case';
-import {Methods} from '../types';
-import {EndpointPath} from './index';
+import {OpenAPIV3} from 'openapi-types';
+import {resolveBodyParameter} from '../utils/resolveBodyParameter';
+import {resolveResponseType} from '../utils/resolveResponseType';
 
 const createCountFunction = (path: SwaggerPath): string[] => {
     const entityName = paramCase(path.entity);
@@ -17,11 +17,11 @@ async count(): Promise<number> {
 }`];
 };
 
-const createEntityFunction = (path: SwaggerPath, methods: Methods): string[] | null => {
+const createEntityFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObject): string[] | null => {
     return null;
 };
 
-const createRootFunction = (path: SwaggerPath, methods: Methods): string[] | null => {
+const createRootFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObject): string[] | null => {
     const functions: string[] = [];
 
     if (methods.get) {
@@ -34,7 +34,7 @@ async some(filter: Partial<${entityName}>): Promise<Customer[]> {
     return Promise.resolve([]);
 }`);
         } else {
-            errorLn(`Couldn't resolve response type for ${path.path}`);
+            errorLn(`Couldn't resolve response type for GET ${path.path}`);
         }
     }
 
@@ -49,7 +49,8 @@ async create(data: Create${bodyType}): Promise<${returnType}> {
     return Promise.reject('Not implemented');
 }`);
         } else {
-            errorLn(`Couldn't resolve response type for ${path.path}`);
+            // TODO: Is response required?
+            errorLn(`Couldn't resolve response type for POST ${path.path}`);
         }
     }
 

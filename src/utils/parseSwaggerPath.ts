@@ -14,7 +14,7 @@ export interface SwaggerPath {
 }
 
 /**
- * Parses the swagger endpoint path
+ * Parses the openapi endpoint path
  * @param path
  */
 export const parseSwaggerPath = (path: string): SwaggerPath | null => {

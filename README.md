@@ -12,9 +12,9 @@
 </div>
 
 
-This code-generator will take a [`swagger.json`](https://swagger.io/) file and turn it into an sdk to be used in the browser,
-in NodeJS, with angular or commonjs environments.
-
 #### Setup
 Copy the [.env.example](.env.example) to [.env](.env) and configure it accordingly.
+Use the [swagger editor](https://editor.swagger.io/) to convert your swagger.json to the [OpenAPI v3](https://swagger.io/specification/) format.
+
 After that you should be able to run `npm run gen:start` to generate the sdk.
+
