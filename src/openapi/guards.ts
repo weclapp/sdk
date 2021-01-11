@@ -7,16 +7,24 @@ import {OpenAPIV3} from 'openapi-types';
  * This module contains a set of lightweight type-guards for openapi-v3 types.
  */
 
+export const isObject = (v: any): v is Record<any, any> => {
+    return v !== null && typeof v === 'object' && !Array.isArray(v);
+};
+
 export const isParameterObject = (v: any): v is OpenAPIV3.ParameterObject => {
-    return typeof v.name === 'string' && typeof v.in === 'string';
+    return isObject(v) && typeof v.name === 'string' && typeof v.in === 'string';
 };
 
 export const isReferenceObject = (v: any): v is OpenAPIV3.ReferenceObject => {
-    return typeof v.$ref === 'string';
+    return isObject(v) && typeof v.$ref === 'string';
 };
 
 export const isArraySchemaObject = (v: any): v is OpenAPIV3.ArraySchemaObject => {
-    return v.type === 'array' && typeof v.items === 'object';
+    return isObject(v) && v.type === 'array' && typeof v.items === 'object';
+};
+
+export const isResponseObject = (v: any): v is OpenAPIV3.ResponseObject => {
+    return isObject(v) && typeof v.description === 'string';
 };
 
 export const isNonArraySchemaObject = (v: any): v is OpenAPIV3.NonArraySchemaObjectType => {

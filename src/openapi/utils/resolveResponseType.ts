@@ -1,3 +1,5 @@
+import {isReferenceObject, isResponseObject} from '@openapi/guards';
+import {resolveDeclarationType} from '@openapi/utils/resolveDeclarationType';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
@@ -14,13 +16,17 @@ export const extractDefinitionName = (s: string): string => {
  * @param endpoint
  */
 export const resolveResponseType = ({responses}: OpenAPIV3.OperationObject): string | null => {
-
     // TODO: Update after responses has been fixed in openapi.json
-    const schema = responses?.['200 OK'] as (OpenAPIV3.ReferenceObject & OpenAPIV3.ResponseObject);
+    const response = responses?.['200 OK'];
 
-    // Single object
-    if (schema?.$ref) {
-        return extractDefinitionName(schema.$ref);
+    if (isReferenceObject(response)) {
+        return extractDefinitionName(response.$ref);
+    } else if (isResponseObject(response)) {
+        const schema = response?.content?.['application/json']?.schema;
+
+        if (schema) {
+            return resolveDeclarationType(schema);
+        }
     }
 
     return null;
