@@ -24,13 +24,11 @@ export const isArraySchemaObject = (v: any): v is OpenAPIV3.ArraySchemaObject =>
 };
 
 export const isResponseObject = (v: any): v is OpenAPIV3.ResponseObject => {
-    return isObject(v) && typeof v.description === 'string';
+    // TODO: Check for description after responses is fixed:
+    // ... && typeof v.description === 'string';
+    return isObject(v);
 };
 
 export const isNonArraySchemaObject = (v: any): v is OpenAPIV3.NonArraySchemaObjectType => {
     return ['string', 'undefined'].includes(typeof v.type);
-};
-
-export const isSchemaObject = (v: any): v is OpenAPIV3.SchemaObject => {
-    return isArraySchemaObject(v) || isNonArraySchemaObject(v);
 };

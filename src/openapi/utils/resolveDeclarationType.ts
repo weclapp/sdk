@@ -1,4 +1,5 @@
-import {isArraySchemaObject, isNonArraySchemaObject, isReferenceObject, isSchemaObject} from '@openapi/guards';
+import {isArraySchemaObject, isNonArraySchemaObject, isReferenceObject} from '@openapi/guards';
+import {tsInterfaceProperties} from '@ts/interfaces';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
@@ -10,6 +11,17 @@ const extractRefInterfaceName = (ref: string): string => {
     return pascalCase(ref.replace(/.*\//, ''));
 };
 
+const resolveObjectSchema = (obj: OpenAPIV3.BaseSchemaObject): string => {
+    const props = tsInterfaceProperties(
+        Object.entries(obj.properties ?? {})
+            .map(([name, value]) => {
+                return [name, resolveDeclarationType(value)];
+            })
+    );
+
+    return `{${props}}`;
+};
+
 /**
  * Resolves the type of a openapi definition, assumes that all references are defined somewhere!
  * @param obj
@@ -17,7 +29,9 @@ const extractRefInterfaceName = (ref: string): string => {
 export function resolveDeclarationType(obj: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject): string {
     if (isReferenceObject(obj)) {
         return extractRefInterfaceName(obj.$ref);
-    } else if (isSchemaObject(obj)) {
+    } else if (isArraySchemaObject(obj)) {
+        return `${resolveDeclarationType(obj.items)}[]`;
+    } else if (isNonArraySchemaObject(obj)) {
         const {type} = obj;
 
         switch (type) {
@@ -25,14 +39,10 @@ export function resolveDeclarationType(obj: OpenAPIV3.SchemaObject | OpenAPIV3.R
             case 'boolean':
                 return type as string;
             case 'integer':
+            case 'number':
                 return 'number';
-            case 'array': {
-                if (isArraySchemaObject(obj)) {
-                    return `${resolveDeclarationType(obj.items)}[]`;
-                } else if (isNonArraySchemaObject(obj)) {
-                    return obj.type ?? 'unknown';
-                }
-            }
+            case 'object':
+                return resolveObjectSchema(obj);
         }
     }
 
