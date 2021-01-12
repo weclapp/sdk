@@ -1,11 +1,10 @@
 {
     "name": "sdk-generator",
     "version": "1.0.0",
-    "description": "SDK generated based on a weclapp api swagger file",
-    "main": "./lib/sdk.min.js",
-    "module": "./lib/sdk.min.mjs",
-    "types": "./lib/sdk.min.d.ts",
+    "description": "SDK generator based on a weclapp api swagger file",
+    "main": "./src/index.ts",
     "author": "weclapp",
+    "private": true,
     "scripts": {
         "gen:start": "ts-node -r tsconfig-paths/register src/index.ts --project tsconfig.json",
         "gen:dev": "ts-node-dev --respawn -r tsconfig-paths/register src/index.ts",
@@ -36,6 +35,7 @@
         "node-fetch": "^2.6.1",
         "openapi-types": "^7.2.2",
         "rollup": "^2.36.1",
+        "rollup-plugin-copy": "^3.3.0",
         "rollup-plugin-terser": "^7.0.2",
         "ts-jest": "^26.4.4",
         "ts-node": "^9.1.1",

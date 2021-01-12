@@ -13,7 +13,7 @@ import {mkdir, readFile} from 'fs/promises';
 import {OpenAPIV3} from 'openapi-types';
 import path from 'path';
 
-const dist = path.resolve(__dirname, '../', env('DIST_SDK_DIR'));
+const dist = path.resolve(__dirname, '../', env('SDK_RAW_DIR'));
 const files = {
     sdk: path.join(dist, 'index.ts'),
     types: path.join(dist, 'types.ts')

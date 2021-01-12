@@ -4,5 +4,4 @@
 coverage
 node_modules
 sdk
-sdk_dist
 lib

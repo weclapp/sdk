@@ -4,7 +4,7 @@
  */
 interface CustomEnv {
     SRC_OPENAPI: string;
-    DIST_SDK_DIR: string;
+    SDK_RAW_DIR: string;
     CODE_INDENTATION: string;
 }
 
