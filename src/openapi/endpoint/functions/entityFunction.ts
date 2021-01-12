@@ -32,9 +32,9 @@ export const entityFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObj
             functions.push(tsFunction({
                 description: `Returns the ${entityName} by it's unique identifier.`,
                 body: `
-                    async unique(id: number): Promise<${returnType}> {
-                        return Promise.reject();
-                    }
+async unique(id: number): Promise<${returnType}> {
+    return Promise.reject();
+}
                 `
             }));
         } else if (path.name) {
@@ -43,9 +43,9 @@ export const entityFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObj
             functions.push(tsFunction({
                 description: 'Unknown special endpoint.',
                 body: `
-                    async ${buildSpecialFunction(path)}(data: ${bodyType}): Promise<${returnType}> {
-                        return Promise.reject();
-                    }
+async ${buildSpecialFunction(path)}(data: ${bodyType}): Promise<${returnType}> {
+    return Promise.reject();
+}
                 `
             }));
         }
@@ -59,9 +59,9 @@ export const entityFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObj
             functions.push(tsFunction({
                 description: 'Unknown special endpoint.',
                 body: `
-                    async create(data: Create${entityName}): Promise<${returnType}> {
-                        return Promise.reject();
-                    }
+async create(data: Create${entityName}): Promise<${returnType}> {
+    return Promise.reject();
+}
                 `
             }));
         } else if (path.name) {
@@ -70,9 +70,9 @@ export const entityFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObj
             functions.push(tsFunction({
                 description: 'Unknown special endpoint.',
                 body: `
-                    async ${buildSpecialFunction(path)}(data: ${bodyType}): Promise<${returnType}> {
-                        return Promise.reject();
-                    }
+async ${buildSpecialFunction(path)}(data: ${bodyType}): Promise<${returnType}> {
+    return Promise.reject();
+}
                 `
             }));
         }
@@ -88,9 +88,9 @@ export const entityFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObj
             functions.push(tsFunction({
                 description: `Creates a new ${entityName}`,
                 body: `
-                    async update(data: Partial<${bodyType}>): Promise<${returnType}> {
-                        return Promise.reject();
-                    }
+async update(data: Partial<${bodyType}>): Promise<${returnType}> {
+    return Promise.reject();
+}
                 `
             }));
         }
@@ -103,9 +103,9 @@ export const entityFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObj
             functions.push(tsFunction({
                 description: `Deletes a ${entityName} by the given unique identifier.`,
                 body: `
-                    async delete(id: number): Promise<void> {
-                        return Promise.reject();
-                    }
+async delete(id: number): Promise<void> {
+    return Promise.reject();
+}
                 `
             }));
         }

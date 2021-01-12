@@ -1,5 +1,6 @@
 import {isArraySchemaObject, isNonArraySchemaObject, isReferenceObject} from '@openapi/guards';
 import {tsInterfaceProperties} from '@ts/interfaces';
+import {indent} from '@utils/indent';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
@@ -19,7 +20,7 @@ const resolveObjectSchema = (obj: OpenAPIV3.BaseSchemaObject): string => {
             })
     );
 
-    return `{${props}}`;
+    return `{\n${indent(props)}\n}`;
 };
 
 /**

@@ -22,9 +22,9 @@ export const rootFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObjec
             functions.push(tsFunction({
                 description: `Finds all ${entityName} entities which match the given filter.`,
                 body: `
-                    async some(filter: Partial<${guessResponseEntity(response)}>): Promise<${response}> {
-                        return Promise.reject();
-                    }
+async some(filter: Partial<${guessResponseEntity(response)}>): Promise<${response}> {
+    return Promise.reject();
+}
                 `
             }));
         } else {
@@ -41,9 +41,9 @@ export const rootFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObjec
             functions.push(tsFunction({
                 description: `Creates a new ${entityName} with the given data.\nReturns the newly created ${entityName}.`,
                 body: `
-                    async create(data: Create${bodyType}): Promise<${returnType}> {
-                        return Promise.reject();
-                    }
+async create(data: Create${bodyType}): Promise<${returnType}> {
+    return Promise.reject();
+}
                 `
             }));
         } else {

@@ -13,9 +13,9 @@ export const countFunction = (path: SwaggerPath): string[] => {
         tsFunction({
             description: `Counts the amount of ${entityName}s entities which match the given filter.`,
             body: `
-                async count(): Promise<number> {
-                    return Promise.reject();
-                }
+async count(): Promise<number> {
+    return Promise.reject();
+}
             `
         })
     ];

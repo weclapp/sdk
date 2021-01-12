@@ -1,5 +1,4 @@
 import {tsBlockComment} from '@ts/comments';
-import {clearIndent} from '@utils/indent';
 
 interface FunctionConfig {
     description: string;
@@ -11,6 +10,5 @@ interface FunctionConfig {
  * @param conf
  */
 export const tsFunction = (conf: FunctionConfig): string => {
-    return `${tsBlockComment(conf.description.trim())}
-${clearIndent(conf.body)}`;
+    return `${tsBlockComment(conf.description.trim())}\n${conf.body.trim()}`;
 };
