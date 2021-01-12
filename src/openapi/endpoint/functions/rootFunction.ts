@@ -2,7 +2,7 @@ import {logger} from '@logger';
 import {SwaggerPath} from '@openapi/utils/parseSwaggerPath';
 import {resolveRequestType} from '@openapi/utils/resolveRequestType';
 import {resolveResponseType} from '@openapi/utils/resolveResponseType';
-import {tsBlockComment} from '@ts/comments';
+import {tsFunction} from '@ts/functions';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
@@ -19,11 +19,14 @@ export const rootFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObjec
         const response = resolveResponseType(methods.get);
 
         if (response) {
-            const comment = tsBlockComment(`Finds all ${entityName} entities which match the given filter.`);
-            functions.push(`${comment}
-async some(filter: Partial<${entityName}>): Promise<${response}> {
-    return Promise.reject();
-}`);
+            functions.push(tsFunction({
+                description: `Finds all ${entityName} entities which match the given filter.`,
+                body: `
+                    async some(filter: Partial<${entityName}>): Promise<${response}> {
+                        return Promise.reject();
+                    }
+                `
+            }));
         } else {
             logger.errorLn(`Couldn't resolve response type for GET ${path.path}`);
         }
@@ -34,12 +37,15 @@ async some(filter: Partial<${entityName}>): Promise<${response}> {
 
         if (bodyType) {
             const returnType = resolveResponseType(methods.post);
-            const comment = tsBlockComment(`Creates a new ${entityName} with the given data.\nReturns the newly created ${entityName}.`);
 
-            functions.push(`${comment}
-async create(data: Create${bodyType}): Promise<${returnType}> {
-    return Promise.reject();
-}`);
+            functions.push(tsFunction({
+                description: `Creates a new ${entityName} with the given data.\nReturns the newly created ${entityName}.`,
+                body: `
+                    async create(data: Create${bodyType}): Promise<${returnType}> {
+                        return Promise.reject();
+                    }
+                `
+            }));
         } else {
             logger.errorLn(`Couldn't resolve body type for POST ${path.path}`);
         }

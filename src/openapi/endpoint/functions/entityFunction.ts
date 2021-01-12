@@ -1,7 +1,7 @@
 import {SwaggerPath} from '@openapi/utils/parseSwaggerPath';
 import {resolveRequestType} from '@openapi/utils/resolveRequestType';
 import {resolveResponseType} from '@openapi/utils/resolveResponseType';
-import {tsBlockComment} from '@ts/comments';
+import {tsFunction} from '@ts/functions';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
@@ -21,19 +21,25 @@ export const entityFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObj
 
         // Check if it's a top-level, by-id endpoint
         if (TOP_ID_REGEXP.test(path.path)) {
-            const comment = tsBlockComment(`Returns the ${entityName} by it's unique identifier.`);
-            functions.push(`${comment}
-async unique(id: number): Promise<${returnType}> {
-    return Promise.reject();
-}`);
+            functions.push(tsFunction({
+                description: `Returns the ${entityName} by it's unique identifier.`,
+                body: `
+                    async unique(id: number): Promise<${returnType}> {
+                        return Promise.reject();
+                    }
+                `
+            }));
         } else if (path.name) {
             const bodyType = resolveRequestType(methods.get) || 'unknown';
 
-            const comment = tsBlockComment('Unknown special endpoint.');
-            functions.push(`${comment}
-async ${path.name}(data: ${bodyType}): Promise<${returnType}> {
-    return Promise.reject();
-}`);
+            functions.push(tsFunction({
+                description: 'Unknown special endpoint.',
+                body: `
+                    async ${path.name}(data: ${bodyType}): Promise<${returnType}> {
+                        return Promise.reject();
+                    }
+                `
+            }));
         }
     }
 
@@ -42,19 +48,25 @@ async ${path.name}(data: ${bodyType}): Promise<${returnType}> {
 
         // Check if it's a top-level, by-id endpoint
         if (TOP_ID_REGEXP.test(path.path)) {
-            const comment = tsBlockComment('Unknown special endpoint.');
-            functions.push(`${comment}
-async create(data: Create${entityName}): Promise<${returnType}> {
-    return Promise.reject();
-}`);
+            functions.push(tsFunction({
+                description: 'Unknown special endpoint.',
+                body: `
+                    async create(data: Create${entityName}): Promise<${returnType}> {
+                        return Promise.reject();
+                    }
+                `
+            }));
         } else if (path.name) {
             const bodyType = resolveRequestType(methods.post) || 'unknown';
 
-            const comment = tsBlockComment('Unknown special endpoint.');
-            functions.push(`${comment}
-async ${path.name}(data: ${bodyType}): Promise<${returnType}> {
-    return Promise.reject();
-}`);
+            functions.push(tsFunction({
+                description: 'Unknown special endpoint.',
+                body: `
+                    async ${path.name}(data: ${bodyType}): Promise<${returnType}> {
+                        return Promise.reject();
+                    }
+                `
+            }));
         }
     }
 
@@ -62,12 +74,14 @@ async ${path.name}(data: ${bodyType}): Promise<${returnType}> {
 
         // Check if it's a top-level, by-id endpoint
         if (TOP_ID_REGEXP.test(path.path)) {
-            const comment = tsBlockComment(`Creates a new ${entityName}`);
-            functions.push(`${comment}
-async update(data: Partial<${entityName}>): Promise<${entityName}> {
-    return Promise.reject();
-}`);
-
+            functions.push(tsFunction({
+                description: `Creates a new ${entityName}`,
+                body: `
+                    async update(data: Partial<${entityName}>): Promise<${entityName}> {
+                        return Promise.reject();
+                    }
+                `
+            }));
         }
     }
 
@@ -75,11 +89,14 @@ async update(data: Partial<${entityName}>): Promise<${entityName}> {
 
         // Check if it's a top-level, by-id endpoint
         if (TOP_ID_REGEXP.test(path.path)) {
-            const comment = tsBlockComment(`Deletes a ${entityName} by the given unique identifier.`);
-            functions.push(`${comment}
-async delete(id: number): Promise<void> {
-    return Promise.reject();
-}`);
+            functions.push(tsFunction({
+                description: `Deletes a ${entityName} by the given unique identifier.`,
+                body: `
+                    async delete(id: number): Promise<void> {
+                        return Promise.reject();
+                    }
+                `
+            }));
         }
     }
 
