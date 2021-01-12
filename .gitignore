@@ -1,7 +1,8 @@
 .idea
+.env
+.test
+coverage
 node_modules
 sdk
 sdk_dist
-.env
-.test
 lib
