@@ -1,7 +1,7 @@
 import pkg from '@/package.json';
 import {Target} from '@enums/Target';
+import {resolveServer} from '@generator/utils/resolveServer';
 import {logger} from '@logger';
-import {resolveServer} from '@openapi/utils/resolveServer';
 import {indent} from '@utils/indent';
 import {OpenAPIV3} from 'openapi-types';
 

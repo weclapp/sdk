@@ -1,16 +1,16 @@
+import {EndpointPath} from '@generator/library';
+import {countFunction} from '@generator/library/functions/countFunction';
+import {entityFunction} from '@generator/library/functions/entityFunction';
+import {rootFunction} from '@generator/library/functions/rootFunction';
+import {SwaggerPathType} from '@generator/utils/parseSwaggerPath';
 import {logger} from '@logger';
-import {countFunction} from '@openapi/endpoint/functions/countFunction';
-import {entityFunction} from '@openapi/endpoint/functions/entityFunction';
-import {rootFunction} from '@openapi/endpoint/functions/rootFunction';
-import {EndpointPath} from '@openapi/endpoint/index';
-import {SwaggerPathType} from '@openapi/utils/parseSwaggerPath';
 
 /**
  * Generates a single function for a single endpoint.
  * @param path
  * @param methods
  */
-export const generateEndpointFunctions = ({path, methods}: EndpointPath): string[] => {
+export const generateFunctions = ({path, methods}: EndpointPath): string[] => {
     switch (path.type) {
         case SwaggerPathType.Count:
             return countFunction(path);

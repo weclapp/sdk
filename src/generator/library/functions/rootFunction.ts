@@ -1,7 +1,7 @@
+import {SwaggerPath} from '@generator/utils/parseSwaggerPath';
+import {resolveRequestType} from '@generator/utils/resolveRequestType';
+import {guessResponseEntity, resolveResponseType} from '@generator/utils/resolveResponseType';
 import {logger} from '@logger';
-import {SwaggerPath} from '@openapi/utils/parseSwaggerPath';
-import {resolveRequestType} from '@openapi/utils/resolveRequestType';
-import {guessResponseEntity, resolveResponseType} from '@openapi/utils/resolveResponseType';
 import {tsFunction} from '@ts/functions';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
@@ -47,9 +47,12 @@ async create(data: Create${bodyType}): Promise<${returnType}> {
                 `
             }));
         } else {
-            logger.errorLn(`Couldn't resolve body type for POST ${path.path}`);
+            logger.warnLn(`Couldn't resolve body type for POST ${path.path}`);
         }
     }
+
+    methods.delete && logger.warnLn(`Didn't generate code for POST ${path.path}`);
+    methods.put && logger.warnLn(`Didn't generate code for POST ${path.path}`);
 
     return functions;
 };

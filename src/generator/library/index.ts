@@ -1,11 +1,11 @@
 import {Target} from '@enums/Target';
+import {generateLibraryRoot} from '@generator/library/generateLibraryRoot';
+import {SwaggerPath} from '@generator/utils/parseSwaggerPath';
 import {logger} from '@logger';
-import {generateLibraryRoot} from '@openapi/endpoint/generateLibraryRoot';
-import {SwaggerPath} from '@openapi/utils/parseSwaggerPath';
 import {indent} from '@utils/indent';
 import {OpenAPIV3} from 'openapi-types';
-import {generateEndpointFunctions} from './generateEndpointFunctions';
-import {groupEndpoints} from './groupEndpoints';
+import {groupPaths} from '../utils/groupPaths';
+import {generateFunctions} from './functions/generateFunctions';
 
 export interface EndpointPath {
     path: SwaggerPath;
@@ -19,15 +19,15 @@ export type EndpointMap = Map<string, EndpointPath[]>;
  * @param doc
  * @param target
  */
-export const endpoints = (doc: OpenAPIV3.Document, target: Target): string => {
+export const generateSdk = (doc: OpenAPIV3.Document, target: Target): string => {
     const groups: string[] = [];
 
-    for (const [entity, endpoints] of groupEndpoints(doc.paths).entries()) {
+    for (const [entity, endpoints] of groupPaths(doc.paths).entries()) {
         const head = `${entity}: {\n`;
         const functions: string[] = [];
 
         for (const endpoint of endpoints) {
-            const funcs = generateEndpointFunctions(endpoint);
+            const funcs = generateFunctions(endpoint);
 
             if (funcs.length) {
                 functions.push(...funcs);

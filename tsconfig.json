@@ -16,7 +16,7 @@
         "baseUrl": ".",
         "paths": {
             "@logger": ["src/logger.ts"],
-            "@openapi/*": ["src/openapi/*"],
+            "@generator/*": ["src/generator/*"],
             "@enums/*": ["src/enums/*"],
             "@utils/*": ["src/utils/*"],
             "@ts/*": ["src/ts/*"],

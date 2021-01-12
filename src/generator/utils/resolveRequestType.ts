@@ -1,5 +1,5 @@
-import {isReferenceObject, isRequestBodyObject} from '@openapi/guards';
-import {resolveDeclarationType} from '@openapi/utils/resolveDeclarationType';
+import {isReferenceObject, isRequestBodyObject} from '@generator/guards';
+import {resolveDeclarationType} from '@generator/utils/resolveDeclarationType';
 import {OpenAPIV3} from 'openapi-types';
 
 /**

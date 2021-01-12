@@ -1,13 +1,13 @@
+import {parseSwaggerPath} from '@generator/utils/parseSwaggerPath';
 import {logger} from '@logger';
-import {parseSwaggerPath} from '@openapi/utils/parseSwaggerPath';
 import {OpenAPIV3} from 'openapi-types';
-import {EndpointMap, EndpointPath} from './index';
+import {EndpointMap, EndpointPath} from '../library';
 
 /**
  * Groups endpoints by their entity.
  * @param paths
  */
-export const groupEndpoints = (paths: OpenAPIV3.PathsObject): EndpointMap => {
+export const groupPaths = (paths: OpenAPIV3.PathsObject): EndpointMap => {
     const endpoints: EndpointMap = new Map<string, EndpointPath[]>();
 
     for (const [rawPath, methods] of Object.entries(paths)) {

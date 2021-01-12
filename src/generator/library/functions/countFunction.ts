@@ -1,4 +1,4 @@
-import {SwaggerPath} from '@openapi/utils/parseSwaggerPath';
+import {SwaggerPath} from '@generator/utils/parseSwaggerPath';
 import {tsFunction} from '@ts/functions';
 import {paramCase} from 'change-case';
 

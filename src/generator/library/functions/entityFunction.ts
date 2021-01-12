@@ -1,6 +1,7 @@
-import {SwaggerPath} from '@openapi/utils/parseSwaggerPath';
-import {resolveRequestType} from '@openapi/utils/resolveRequestType';
-import {resolveResponseType} from '@openapi/utils/resolveResponseType';
+import {SwaggerPath} from '@generator/utils/parseSwaggerPath';
+import {resolveRequestType} from '@generator/utils/resolveRequestType';
+import {resolveResponseType} from '@generator/utils/resolveResponseType';
+import {logger} from '@logger';
 import {tsFunction} from '@ts/functions';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
@@ -48,6 +49,8 @@ async ${buildSpecialFunction(path)}(data: ${bodyType}): Promise<${returnType}> {
 }
                 `
             }));
+        } else {
+            logger.warnLn(`Didn't generate code for GET ${path.path}`);
         }
     }
 
@@ -75,6 +78,8 @@ async ${buildSpecialFunction(path)}(data: ${bodyType}): Promise<${returnType}> {
 }
                 `
             }));
+        } else {
+            logger.warnLn(`Didn't generate code for POST ${path.path}`);
         }
     }
 
@@ -93,6 +98,8 @@ async update(data: Partial<${bodyType}>): Promise<${returnType}> {
 }
                 `
             }));
+        } else {
+            logger.warnLn(`Didn't generate code for PUT ${path.path}`);
         }
     }
 
@@ -108,6 +115,8 @@ async delete(id: number): Promise<void> {
 }
                 `
             }));
+        } else {
+            logger.warnLn(`Didn't generate code for DELETE ${path.path}`);
         }
     }
 

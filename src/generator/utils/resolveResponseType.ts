@@ -1,5 +1,5 @@
-import {isReferenceObject, isResponseObject} from '@openapi/guards';
-import {resolveDeclarationType} from '@openapi/utils/resolveDeclarationType';
+import {isReferenceObject, isResponseObject} from '@generator/guards';
+import {resolveDeclarationType} from '@generator/utils/resolveDeclarationType';
 import {match} from '@utils/regex';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';

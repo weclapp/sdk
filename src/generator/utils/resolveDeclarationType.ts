@@ -1,4 +1,4 @@
-import {isArraySchemaObject, isNonArraySchemaObject, isReferenceObject} from '@openapi/guards';
+import {isArraySchemaObject, isNonArraySchemaObject, isReferenceObject} from '@generator/guards';
 import {tsInterfaceProperties} from '@ts/interfaces';
 import {indent} from '@utils/indent';
 import {pascalCase} from 'change-case';
