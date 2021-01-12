@@ -14,6 +14,7 @@
         "outDir": "./dist",
         "baseUrl": ".",
         "paths": {
+            "@logger": ["src/logger.ts"],
             "@openapi/*": ["src/openapi/*"],
             "@utils/*": ["src/utils/*"],
             "@ts/*": ["src/ts/*"]

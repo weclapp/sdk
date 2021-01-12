@@ -1,5 +1,5 @@
 import {indent} from '@utils/indent';
-import {warnLn} from '@utils/log';
+import {logger} from '@logger';
 import {SwaggerPath} from '@utils/parseSwaggerPath';
 import {OpenAPIV3} from 'openapi-types';
 import {generateEndpointFunctions} from './generateEndpointFunctions';
@@ -29,7 +29,7 @@ export const endpoints = (paths: OpenAPIV3.PathsObject): string => {
             if (funcs) {
                 functions.push(...funcs);
             } else {
-                warnLn(`Couldn't generate a function for ${endpoint.path.path}`);
+                logger.warnLn(`Couldn't generate a function for ${endpoint.path.path}`);
             }
         }
 

@@ -1,4 +1,4 @@
-import {errorLn} from '@utils/log';
+import {logger} from '@logger';
 import {parseSwaggerPath} from '@utils/parseSwaggerPath';
 import {OpenAPIV3} from 'openapi-types';
 import {EndpointMap, EndpointPath} from './index';
@@ -15,7 +15,7 @@ export const groupEndpoints = (paths: OpenAPIV3.PathsObject): EndpointMap => {
             const path = parseSwaggerPath(rawPath);
 
             if (!path) {
-                errorLn(`Couldn't parse path: "${rawPath}"`);
+                logger.errorLn(`Couldn't parse path: "${rawPath}"`);
                 continue;
             }
 

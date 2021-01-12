@@ -1,7 +1,7 @@
 import {resolveBodyParameter} from '@openapi/utils/resolveBodyParameter';
 import {resolveResponseType} from '@openapi/utils/resolveResponseType';
 import {tsBlockComment} from '@ts/comments';
-import {errorLn} from '@utils/log';
+import {logger} from '@logger';
 import {SwaggerPath} from '@utils/parseSwaggerPath';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
@@ -25,7 +25,7 @@ async some(filter: Partial<${entityName}>): Promise<${response}> {
     return Promise.reject();
 }`);
         } else {
-            errorLn(`Couldn't resolve response type for GET ${path.path}`);
+            logger.errorLn(`Couldn't resolve response type for GET ${path.path}`);
         }
     }
 
@@ -40,8 +40,7 @@ async create(data: Create${bodyType}): Promise<${returnType}> {
     return Promise.reject();
 }`);
         } else {
-            // TODO: Is response required?
-            errorLn(`Couldn't resolve response type for POST ${path.path}`);
+            logger.errorLn(`Couldn't resolve response type for POST ${path.path}`);
         }
     }
 

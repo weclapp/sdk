@@ -1,6 +1,6 @@
 import {tsBlockComment} from '@ts/comments';
 import {tsInterface, tsInterfaceProperties} from '@ts/interfaces';
-import {errorLn, warnLn} from '@utils/log';
+import {logger} from '@logger';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 import {resolveDeclarationType} from '../utils/resolveDeclarationType';
@@ -20,7 +20,7 @@ export const createModels = (name: string, definition: OpenAPIV3.SchemaObject): 
 
     // Validate definition set
     if (definition.type !== 'object') {
-        errorLn(`Invalid definitions for ${name}`);
+        logger.errorLn(`Invalid definitions for ${name}`);
         return null;
     }
 
@@ -37,7 +37,7 @@ export const createModels = (name: string, definition: OpenAPIV3.SchemaObject): 
         if (entry) {
             createEntries.push([key, entry[1]]);
         } else {
-            warnLn(`Cannot resolve "${name}" property in "${interfaceName}"`);
+            logger.warnLn(`Cannot resolve "${name}" property in "${interfaceName}"`);
         }
     }
 
