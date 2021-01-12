@@ -14,7 +14,7 @@ export const countFunction = (path: SwaggerPath): string[] => {
             description: `Counts the amount of ${entityName}s entities which match the given filter.`,
             body: `
 async count(): Promise<number> {
-    return Promise.reject();
+    return makeRequest('${path.path}').then(unwrap);
 }
             `
         })

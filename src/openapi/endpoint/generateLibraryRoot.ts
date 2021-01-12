@@ -71,6 +71,12 @@ export const weclapp = ({
     };
 
     /**
+     * Unwraps the result property from a weclapp response.
+     * @param res
+     */
+    const unwrap = (res: {result: unknown}): any => res.result;
+
+    /**
      * Makes a raw request to the given endpoint.
      * @param endpoint Endpoint url.
      * @param method Request method (GET is default)
