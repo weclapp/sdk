@@ -9,12 +9,29 @@ require('dotenv').config();
 const production = process.env.NODE_ENV === 'production';
 const banner = `/*! Weclapp SDK ${pkg.version} MIT | https://github.com/weclapp/sdk */`;
 const dist = (...paths) => path.resolve(__dirname, process.env.SDK_REPOSITORY, ...paths);
+const plugins = [ ts(),  ...(production ? [terser()] : [])]
+const output = name => [
+    {
+        banner,
+        globals: {'node-fetch': 'fetch'},
+        file: dist('lib', `${name}.js`),
+        name: 'Weclapp',
+        format: 'umd',
+        sourcemap: true
+    },
+    {
+        banner,
+        globals: {'node-fetch': 'fetch'},
+        file: dist('lib', `${name}.mjs`),
+        format: 'es',
+        sourcemap: true
+    }
+];
 
 export default [
     {
-        input: 'lib/index.ts',
+        input: 'lib/sdk.ts',
         plugins: [
-            ts(),
             copy({
                 targets: [
                     {src: './static/README.md', dest: dist()},
@@ -29,22 +46,14 @@ export default [
                     }
                 ]
             }),
-            ...(production ? [terser()] : [])
+            ...plugins
         ],
-        output: [
-            {
-                banner,
-                file: dist('lib', 'sdk.min.js'),
-                name: 'Weclapp',
-                format: 'umd',
-                sourcemap: true
-            },
-            {
-                banner,
-                file: dist('lib', 'sdk.min.mjs'),
-                format: 'es',
-                sourcemap: true
-            }
-        ]
+        output: output('sdk')
+    },
+    {
+        input: 'lib/sdk.node.ts',
+        output: output('node'),
+        external: ['node-fetch'],
+        plugins
     }
 ];

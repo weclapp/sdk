@@ -1,3 +1,4 @@
+import {Target} from '@enums/Target';
 import {logger} from '@logger';
 import {generateLibraryRoot} from '@openapi/endpoint/generateLibraryRoot';
 import {SwaggerPath} from '@openapi/utils/parseSwaggerPath';
@@ -16,8 +17,9 @@ export type EndpointMap = Map<string, EndpointPath[]>;
 /**
  * Generates functions for the given endpoints record.
  * @param doc
+ * @param target
  */
-export const endpoints = (doc: OpenAPIV3.Document): string => {
+export const endpoints = (doc: OpenAPIV3.Document, target: Target): string => {
     const groups: string[] = [];
 
     for (const [entity, endpoints] of groupEndpoints(doc.paths).entries()) {
@@ -38,5 +40,5 @@ export const endpoints = (doc: OpenAPIV3.Document): string => {
         groups.push(`${head}\n${content}\n}`);
     }
 
-    return generateLibraryRoot(groups.join(',\n\n'), doc);
+    return generateLibraryRoot(groups.join(',\n\n'), doc, target);
 };

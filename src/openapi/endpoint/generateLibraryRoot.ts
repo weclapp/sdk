@@ -1,10 +1,31 @@
+import pkg from '@/package.json';
+import {Target} from '@enums/Target';
 import {logger} from '@logger';
 import {resolveServer} from '@openapi/utils/resolveServer';
 import {indent} from '@utils/indent';
 import {OpenAPIV3} from 'openapi-types';
-import pkg from '@/package.json';
 
-export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document): string => {
+
+/**
+ * Generates all required imports for the given target.
+ * @param target
+ */
+const resolveImports = (target: Target): string => {
+    switch (target) {
+        case Target.NODE_PROMISES:
+            return 'import fetch, {Response} from \'node-fetch\';';
+        default:
+            return '';
+    }
+};
+
+/**
+ * Generates the whole sdk.
+ * @param endpoints Endpoint implementations
+ * @param doc OpenAPI document
+ * @param target Library target
+ */
+export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, target: Target): string => {
     const server = resolveServer(doc);
 
     if (!server) {
@@ -12,7 +33,7 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document):
         process.exit(1);
     }
 
-    return `
+    return `${resolveImports(target)}
 interface Options {
     domain: string;
     apiKey: string;

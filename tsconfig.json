@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "declaration": true,
-        "declarationDir": "lib",
+        "declarationDir": "./sdk/lib",
         "strict": true,
         "noImplicitAny": true,
         "esModuleInterop": true,
@@ -13,11 +13,12 @@
         "target": "ES2020",
         "sourceMap": false,
         "allowSyntheticDefaultImports": true,
-        "outDir": "./dist",
+        "outDir": "./sdk/lib",
         "baseUrl": ".",
         "paths": {
             "@logger": ["src/logger.ts"],
             "@openapi/*": ["src/openapi/*"],
+            "@enums/*": ["src/enums/*"],
             "@utils/*": ["src/utils/*"],
             "@ts/*": ["src/ts/*"],
             "@/*": ["./*"]

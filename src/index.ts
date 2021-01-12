@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 require('dotenv').config();
+import {Target} from '@enums/Target';
 import {logger} from '@logger';
 import {definitions} from '@openapi/definitions';
 import {endpoints} from '@openapi/endpoint';
@@ -15,7 +16,8 @@ import path from 'path';
 
 const dist = path.resolve(__dirname, '../', env('SDK_RAW_DIR'));
 const files = {
-    sdk: path.join(dist, 'index.ts'),
+    sdk: path.join(dist, 'sdk.ts'),
+    node: path.join(dist, 'sdk.node.ts'),
     types: path.join(dist, 'types.ts')
 };
 
@@ -33,15 +35,14 @@ void (async () => {
         return logger.errorLn('components.schemas missing.');
     }
 
+    // Generate import statement for type-declarations
     const {source: defCode, exports: defExports} = definitions(openapi.components.schemas);
     const defImportStatement = tsDeconstructedImport('./types', defExports);
 
-    logger.infoLn('Generate endpoints...');
-    const endpointCode = endpoints(openapi);
-
-    logger.infoLn('Generate sdk...');
+    logger.infoLn('Generate sdks...');
     await writeSourceFile(files.types, defCode);
-    await writeSourceFile(files.sdk, `${defImportStatement}\n\n${endpointCode}`);
+    await writeSourceFile(files.sdk, `${defImportStatement}\n\n${endpoints(openapi, Target.BROWSER_PROMISES)}`);
+    await writeSourceFile(files.node, `${defImportStatement}\n\n${endpoints(openapi, Target.NODE_PROMISES)}`);
 
     // Print job summary
     const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
