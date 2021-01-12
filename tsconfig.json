@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "declaration": true,
-        "declarationDir": "./sdk/lib",
+        "declarationDir": "./sdk/main",
         "strict": true,
         "noImplicitAny": true,
         "esModuleInterop": true,
@@ -13,7 +13,6 @@
         "target": "ES2020",
         "sourceMap": false,
         "allowSyntheticDefaultImports": true,
-        "outDir": "./sdk/lib",
         "baseUrl": ".",
         "paths": {
             "@logger": ["src/logger.ts"],
