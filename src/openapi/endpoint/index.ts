@@ -1,4 +1,5 @@
 import {logger} from '@logger';
+import {generateLibraryRoot} from '@openapi/endpoint/generateLibraryRoot';
 import {SwaggerPath} from '@openapi/utils/parseSwaggerPath';
 import {indent} from '@utils/indent';
 import {OpenAPIV3} from 'openapi-types';
@@ -14,13 +15,13 @@ export type EndpointMap = Map<string, EndpointPath[]>;
 
 /**
  * Generates functions for the given endpoints record.
- * @param paths
+ * @param doc
  */
-export const endpoints = (paths: OpenAPIV3.PathsObject): string => {
-    let file = '';
+export const endpoints = (doc: OpenAPIV3.Document): string => {
+    const groups: string[] = [];
 
-    for (const [entity, endpoints] of groupEndpoints(paths).entries()) {
-        const head = `export const ${entity} = {`;
+    for (const [entity, endpoints] of groupEndpoints(doc.paths).entries()) {
+        const head = `${entity}: {\n`;
         const functions: string[] = [];
 
         for (const endpoint of endpoints) {
@@ -34,9 +35,8 @@ export const endpoints = (paths: OpenAPIV3.PathsObject): string => {
         }
 
         const content = indent(functions.join(',\n\n'));
-        const ctx = `\n${head}\n${content}\n}\n`;
-        file += ctx;
+        groups.push(`${head}\n${content}\n}`);
     }
 
-    return file.trim() + '\n';
+    return generateLibraryRoot(groups.join(',\n\n'), doc);
 };

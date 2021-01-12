@@ -17,7 +17,8 @@
             "@logger": ["src/logger.ts"],
             "@openapi/*": ["src/openapi/*"],
             "@utils/*": ["src/utils/*"],
-            "@ts/*": ["src/ts/*"]
+            "@ts/*": ["src/ts/*"],
+            "@/*": ["./*"]
         }
     },
     "include": [

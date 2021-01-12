@@ -37,7 +37,7 @@ void (async () => {
     const defImportStatement = tsDeconstructedImport('./types', defExports);
 
     logger.infoLn('Generate endpoints...');
-    const endpointCode = endpoints(openapi.paths);
+    const endpointCode = endpoints(openapi);
 
     logger.infoLn('Generate sdk...');
     await writeSourceFile(files.types, defCode);

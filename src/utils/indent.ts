@@ -1,5 +1,6 @@
 import {env} from '@utils/env';
 import indentString from 'indent-string';
+import stripIndent from 'strip-indent';
 
 // Pre-process env variable
 const rawIndentation = env('CODE_INDENTATION');
@@ -21,4 +22,12 @@ export const indent = (s: string, level = 1): string => {
     return typeof indentation === 'number' ?
         indentString(s, indentation * level) :
         indentString(s, level, {indent: indentation});
+};
+
+/**
+ * Trims the string and removes redundant indentation.
+ * @param s
+ */
+export const clearIndent = (s: string): string => {
+    return stripIndent(s.replace(/^\s*\n|\n\s*$/gm, ''));
 };
