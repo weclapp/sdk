@@ -4,3 +4,4 @@ sdk
 sdk_dist
 .env
 .test
+lib

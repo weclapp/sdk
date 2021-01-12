@@ -1,5 +1,7 @@
 {
     "compilerOptions": {
+        "declaration": true,
+        "declarationDir": "lib",
         "strict": true,
         "noImplicitAny": true,
         "esModuleInterop": true,
@@ -22,6 +24,7 @@
         }
     },
     "include": [
-        "src/**/*.ts"
+        "src/**/*.ts",
+        "sdk/**/*.ts"
     ]
 }
