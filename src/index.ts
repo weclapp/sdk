@@ -3,11 +3,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 require('dotenv').config();
+import {logger} from '@logger';
 import {definitions} from '@openapi/definitions';
 import {endpoints} from '@openapi/endpoint';
 import {tsDeconstructedImport} from '@ts/modules';
 import {env} from '@utils/env';
-import {logger} from '@logger';
 import {writeSourceFile} from '@utils/writeSourceFile';
 import {mkdir, readFile} from 'fs/promises';
 import {OpenAPIV3} from 'openapi-types';

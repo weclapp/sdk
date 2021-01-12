@@ -29,6 +29,12 @@ export const isResponseObject = (v: any): v is OpenAPIV3.ResponseObject => {
     return isObject(v);
 };
 
+export const isRequestBodyObject = (v: any): v is OpenAPIV3.RequestBodyObject => {
+    return isObject(v) && typeof v.content === 'object' &&
+        ['string', 'undefined'].includes(typeof v.description) &&
+        ['boolean', 'undefined'].includes(typeof v.required);
+};
+
 export const isNonArraySchemaObject = (v: any): v is OpenAPIV3.NonArraySchemaObjectType => {
     return ['string', 'undefined'].includes(typeof v.type);
 };

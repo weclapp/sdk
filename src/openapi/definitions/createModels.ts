@@ -1,6 +1,6 @@
+import {logger} from '@logger';
 import {tsBlockComment} from '@ts/comments';
 import {tsInterface, tsInterfaceProperties} from '@ts/interfaces';
-import {logger} from '@logger';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 import {resolveDeclarationType} from '../utils/resolveDeclarationType';

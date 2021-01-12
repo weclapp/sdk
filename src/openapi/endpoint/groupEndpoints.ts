@@ -1,5 +1,5 @@
 import {logger} from '@logger';
-import {parseSwaggerPath} from '@utils/parseSwaggerPath';
+import {parseSwaggerPath} from '@openapi/utils/parseSwaggerPath';
 import {OpenAPIV3} from 'openapi-types';
 import {EndpointMap, EndpointPath} from './index';
 

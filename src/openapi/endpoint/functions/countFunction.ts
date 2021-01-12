@@ -1,5 +1,5 @@
+import {SwaggerPath} from '@openapi/utils/parseSwaggerPath';
 import {tsBlockComment} from '@ts/comments';
-import {SwaggerPath} from '@utils/parseSwaggerPath';
 import {paramCase} from 'change-case';
 
 /**

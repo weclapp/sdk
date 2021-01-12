@@ -15,7 +15,7 @@ export const extractDefinitionName = (s: string): string => {
  * Resolves the entity / declaration name from an endpoint.
  * @param endpoint
  */
-export const resolveResponseType = ({responses}: OpenAPIV3.OperationObject): string | null => {
+export const resolveResponseType = ({responses}: OpenAPIV3.OperationObject): string => {
     // TODO: Update after responses has been fixed in openapi.json
     const response = responses?.['200 OK'];
 
@@ -29,5 +29,5 @@ export const resolveResponseType = ({responses}: OpenAPIV3.OperationObject): str
         }
     }
 
-    return null;
+    return 'unknown';
 };

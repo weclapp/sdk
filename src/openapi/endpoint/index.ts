@@ -1,6 +1,6 @@
-import {indent} from '@utils/indent';
 import {logger} from '@logger';
-import {SwaggerPath} from '@utils/parseSwaggerPath';
+import {SwaggerPath} from '@openapi/utils/parseSwaggerPath';
+import {indent} from '@utils/indent';
 import {OpenAPIV3} from 'openapi-types';
 import {generateEndpointFunctions} from './generateEndpointFunctions';
 import {groupEndpoints} from './groupEndpoints';
@@ -26,10 +26,10 @@ export const endpoints = (paths: OpenAPIV3.PathsObject): string => {
         for (const endpoint of endpoints) {
             const funcs = generateEndpointFunctions(endpoint);
 
-            if (funcs) {
+            if (funcs.length) {
                 functions.push(...funcs);
             } else {
-                logger.warnLn(`Couldn't generate a function for ${endpoint.path.path}`);
+                logger.errorLn(`Couldn't generate a function for ${endpoint.path.path}`);
             }
         }
 

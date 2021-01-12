@@ -10,6 +10,7 @@ export interface SwaggerPath {
     path: string;
     entity: string;
     params: string[];
+    name: string | null;
     type: SwaggerPathType | null;
 }
 
@@ -19,6 +20,7 @@ export interface SwaggerPath {
  */
 export const parseSwaggerPath = (path: string): SwaggerPath | null => {
     const entity = match(path, /^\/(\w+)/, 1);
+    const name = match(path, /.*\/(\w+)$/, 1);
     const params = matchAll(path, /{(.*?)}/g, 1);
     let type: SwaggerPathType | null = null;
 
@@ -32,6 +34,6 @@ export const parseSwaggerPath = (path: string): SwaggerPath | null => {
     }
 
     return entity && params ? {
-        path, entity, params, type
+        path, entity, params, type, name
     } : null;
 };
