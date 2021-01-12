@@ -8,6 +8,14 @@ import {OpenAPIV3} from 'openapi-types';
 const TOP_ID_REGEXP = /{\w+}$/;
 
 /**
+ * Takes a parsed swagger path and returns a well-readable function name for this special endpoint.
+ * @param path
+ */
+const buildSpecialFunction = (path: SwaggerPath): string => {
+    return path.name ? path.params.length ? `${path.name}ById` : path.name : `__unknown${path.entity}`;
+};
+
+/**
  * Generates endpoints for the entity endpoint e.g. /customer/id/:id
  * @param path
  * @param methods
@@ -35,7 +43,7 @@ export const entityFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObj
             functions.push(tsFunction({
                 description: 'Unknown special endpoint.',
                 body: `
-                    async ${path.name}(data: ${bodyType}): Promise<${returnType}> {
+                    async ${buildSpecialFunction(path)}(data: ${bodyType}): Promise<${returnType}> {
                         return Promise.reject();
                     }
                 `
@@ -62,7 +70,7 @@ export const entityFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObj
             functions.push(tsFunction({
                 description: 'Unknown special endpoint.',
                 body: `
-                    async ${path.name}(data: ${bodyType}): Promise<${returnType}> {
+                    async ${buildSpecialFunction(path)}(data: ${bodyType}): Promise<${returnType}> {
                         return Promise.reject();
                     }
                 `
@@ -74,10 +82,13 @@ export const entityFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObj
 
         // Check if it's a top-level, by-id endpoint
         if (TOP_ID_REGEXP.test(path.path)) {
+            const returnType = resolveResponseType(methods.put);
+            const bodyType = resolveRequestType(methods.put);
+
             functions.push(tsFunction({
                 description: `Creates a new ${entityName}`,
                 body: `
-                    async update(data: Partial<${entityName}>): Promise<${entityName}> {
+                    async update(data: Partial<${bodyType}>): Promise<${returnType}> {
                         return Promise.reject();
                     }
                 `

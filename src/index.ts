@@ -20,6 +20,7 @@ const files = {
 };
 
 void (async () => {
+    const start = process.hrtime.bigint();
     await mkdir(dist, {recursive: true});
 
     // Read openapi file and create model definitions
@@ -43,8 +44,9 @@ void (async () => {
     await writeSourceFile(files.sdk, `${defImportStatement}\n\n${endpointCode}`);
 
     // Print job summary
+    const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
     logger.blankLn();
     logger.printSummary();
-    logger.blankLn('All done, bye.');
+    logger.blankLn(`SDK generated in ${duration}ms. Bye.`);
     // TODO: Exit with non-zero code on errors?
 })();

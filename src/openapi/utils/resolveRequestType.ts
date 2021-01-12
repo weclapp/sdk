@@ -6,7 +6,7 @@ import {OpenAPIV3} from 'openapi-types';
  * Tries to resolve the body-data type.
  * @param endpoint
  */
-export const resolveRequestType = ({requestBody}: OpenAPIV3.OperationObject): string | null => {
+export const resolveRequestType = ({requestBody}: OpenAPIV3.OperationObject): string => {
 
     if (isReferenceObject(requestBody)) {
         return resolveDeclarationType(requestBody);
@@ -18,5 +18,5 @@ export const resolveRequestType = ({requestBody}: OpenAPIV3.OperationObject): st
         }
     }
 
-    return null;
+    return 'unknown';
 };

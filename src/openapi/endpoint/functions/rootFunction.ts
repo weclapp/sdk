@@ -1,7 +1,7 @@
 import {logger} from '@logger';
 import {SwaggerPath} from '@openapi/utils/parseSwaggerPath';
 import {resolveRequestType} from '@openapi/utils/resolveRequestType';
-import {resolveResponseType} from '@openapi/utils/resolveResponseType';
+import {guessResponseEntity, resolveResponseType} from '@openapi/utils/resolveResponseType';
 import {tsFunction} from '@ts/functions';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
@@ -22,7 +22,7 @@ export const rootFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObjec
             functions.push(tsFunction({
                 description: `Finds all ${entityName} entities which match the given filter.`,
                 body: `
-                    async some(filter: Partial<${entityName}>): Promise<${response}> {
+                    async some(filter: Partial<${guessResponseEntity(response)}>): Promise<${response}> {
                         return Promise.reject();
                     }
                 `
