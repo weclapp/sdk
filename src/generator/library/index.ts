@@ -27,7 +27,7 @@ export const generateSdk = (doc: OpenAPIV3.Document, target: Target): string => 
         const functions: string[] = [];
 
         for (const endpoint of endpoints) {
-            const funcs = generateFunctions(endpoint);
+            const funcs = generateFunctions(endpoint, endpoints);
 
             if (funcs.length) {
                 functions.push(...funcs);

@@ -1,17 +1,16 @@
-import {SwaggerPath} from '@generator/utils/parseSwaggerPath';
+import {EndpointPath} from '@generator/library';
 import {resolveRequestType} from '@generator/utils/resolveRequestType';
 import {guessResponseEntity, resolveResponseType} from '@generator/utils/resolveResponseType';
 import {logger} from '@logger';
 import {tsFunction} from '@ts/functions';
 import {pascalCase} from 'change-case';
-import {OpenAPIV3} from 'openapi-types';
 
 /**
  * Generates functions for the root level of an endpoint e.g. /customer
  * @param path
  * @param methods
  */
-export const rootFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObject): string[] => {
+export const rootFunction = ({path, methods}: EndpointPath): string[] => {
     const functions: string[] = [];
     const entityName = pascalCase(path.entity);
 

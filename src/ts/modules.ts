@@ -4,16 +4,18 @@ import {indent} from '@utils/indent';
  * Generates an import statement, imports will be wrapped if too long
  * @param source Source file
  * @param imports Things to import
+ * @param def Optional name for default impot
  */
-export const tsDeconstructedImport = (source: string, imports: string[]): string => {
+export const tsImport = (source: string, imports: string[], def?: string): string => {
 
     // Total string length of import
     const totalStringLength = imports.reduce((pv, cv) => pv + cv.length + 1, 0);
+    const defaultImport = def ? `${def}, ` : '';
 
     // Use multi-lines if too long
     if (totalStringLength > 80) {
-        return `import {\n${indent(imports.join(',\n'))}\n} from '${source}';`;
+        return `import ${defaultImport}{\n${indent(imports.join(',\n'))}\n} from '${source}';`;
     } else {
-        return `import {${imports.join(', ')}} from '${source}';`;
+        return `import ${defaultImport}{${imports.join(', ')}} from '${source}';`;
     }
 };

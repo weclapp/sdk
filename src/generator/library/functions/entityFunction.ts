@@ -1,10 +1,10 @@
+import {EndpointPath} from '@generator/library';
 import {SwaggerPath} from '@generator/utils/parseSwaggerPath';
 import {resolveRequestType} from '@generator/utils/resolveRequestType';
 import {resolveResponseType} from '@generator/utils/resolveResponseType';
 import {logger} from '@logger';
 import {tsFunction} from '@ts/functions';
 import {pascalCase} from 'change-case';
-import {OpenAPIV3} from 'openapi-types';
 
 const TOP_ID_REGEXP = /{\w+}$/;
 
@@ -21,7 +21,7 @@ const buildSpecialFunction = (path: SwaggerPath): string => {
  * @param path
  * @param methods
  */
-export const entityFunction = (path: SwaggerPath, methods: OpenAPIV3.PathItemObject): string[] => {
+export const entityFunction = ({path, methods}: EndpointPath): string[] => {
     const functions: string[] = [];
     const entityName = pascalCase(path.entity);
 

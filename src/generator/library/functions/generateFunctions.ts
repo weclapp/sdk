@@ -7,19 +7,17 @@ import {logger} from '@logger';
 
 /**
  * Generates a single function for a single endpoint.
- * @param path
- * @param methods
  */
-export const generateFunctions = ({path, methods}: EndpointPath): string[] => {
-    switch (path.type) {
+export const generateFunctions = (endpoint: EndpointPath, endpoints: EndpointPath[]): string[] => {
+    switch (endpoint.path.type) {
         case SwaggerPathType.Count:
-            return countFunction(path);
+            return countFunction(endpoint, endpoints);
         case SwaggerPathType.Entity:
-            return entityFunction(path, methods);
+            return entityFunction(endpoint);
         case SwaggerPathType.Root:
-            return rootFunction(path, methods);
+            return rootFunction(endpoint);
         default:
-            logger.errorLn(`Couldn't parse path type for ${path.path}`);
+            logger.errorLn(`Couldn't parse path type for ${endpoint.path.path}`);
     }
 
     return [];
