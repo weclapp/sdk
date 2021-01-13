@@ -37,3 +37,14 @@ export const parseSwaggerPath = (path: string): SwaggerPath | null => {
         path, entity, params, type, name
     } : null;
 };
+
+/**
+ * Injects the given params into the path
+ * @param path
+ * @param params
+ */
+export const injectParams = (path: string, params: Record<string, string>): string=>{
+    return path.replace(/{(.*?)}/g, (_, args: string) => {
+        return params[args];
+    })
+}

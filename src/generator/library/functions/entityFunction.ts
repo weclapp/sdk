@@ -1,6 +1,6 @@
 import {EndpointPath, StatsEntityFunction} from '@generator/library';
 import {Functions} from '@generator/library/functions/generateFunctions';
-import {SwaggerPath} from '@generator/utils/parseSwaggerPath';
+import {injectParams, SwaggerPath} from '@generator/utils/parseSwaggerPath';
 import {resolveRequestType} from '@generator/utils/resolveRequestType';
 import {resolveResponseType} from '@generator/utils/resolveResponseType';
 import {logger} from '@logger';
@@ -127,14 +127,16 @@ async ${signature}: Promise<${returnType}> {
         // Check if it's a top-level, by-id endpoint
         if (TOP_ID_REGEXP.test(path.path)) {
             const description = `Deletes a ${entityName} by the given unique identifier.`;
-            const signature = 'delete(id: number)';
+            const signature = 'delete(id: string)';
 
             stats.push({description, signature});
             sources.push(tsFunction({
                 description,
                 body: `
 async ${signature}: Promise<void> {
-    return Promise.reject();
+    return makeRequest(\`${injectParams(path.path, {id: '${id}'})}\`, {
+        method: Method.DELETE
+    }).then(unwrap);
 }
                 `
             }));

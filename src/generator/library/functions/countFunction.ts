@@ -31,7 +31,9 @@ export const countFunction = ({path}: EndpointPath, endpoints: EndpointPath[]): 
                 description,
                 body: `
 async ${signature}: Promise<number> {
-    return makeRequest('${path.path}', {params: filter}).then(unwrap);
+    return makeRequest('${path.path}', {
+        params: filter
+    }).then(unwrap);
 }
             `
             })
