@@ -1,8 +1,8 @@
+import {Result} from '@generator/types';
 import {OpenAPIV3} from 'openapi-types';
 import {createModels} from './createModels';
 
-export interface GeneratedDefinitions {
-    source: string;
+export interface DefinitionStats {
     exports: string[];
 }
 
@@ -10,7 +10,7 @@ export interface GeneratedDefinitions {
  * Generates a ts-file which will contain interfaces for the given definitions
  * @param definitions
  */
-export const definitions = (definitions: OpenAPIV3.SchemaObject): GeneratedDefinitions => {
+export const definitions = (definitions: OpenAPIV3.SchemaObject): Result<DefinitionStats> => {
     const exports: string[] = [];
     let source = '';
 
@@ -24,5 +24,5 @@ export const definitions = (definitions: OpenAPIV3.SchemaObject): GeneratedDefin
         }
     }
 
-    return {source, exports};
+    return {source, stats: {exports}};
 };

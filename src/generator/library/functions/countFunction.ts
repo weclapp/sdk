@@ -1,4 +1,5 @@
 import {EndpointPath} from '@generator/library';
+import {Functions} from '@generator/library/functions/generateFunctions';
 import {SwaggerPathType} from '@generator/utils/parseSwaggerPath';
 import {guessResponseEntity, resolveResponseType} from '@generator/utils/resolveResponseType';
 import {tsFunction} from '@ts/functions';
@@ -18,17 +19,22 @@ const guessEntityType = (endpoints: EndpointPath[]): string => {
 /**
  * Special count-entities endpoint.
  */
-export const countFunction = ({path}: EndpointPath, endpoints: EndpointPath[]): string[] => {
+export const countFunction = ({path}: EndpointPath, endpoints: EndpointPath[]): Functions => {
     const entityName = pascalCase(path.entity);
+    const description = `Counts the amount of ${entityName}s entities which match the given filter.`;
+    const signature = `count(filter?: QueryFilter<${guessEntityType(endpoints)}>)`;
 
-    return [
-        tsFunction({
-            description: `Counts the amount of ${entityName}s entities which match the given filter.`,
-            body: `
-async count(filter?: QueryFilter<${guessEntityType(endpoints)}>): Promise<number> {
+    return {
+        stats: [{description, signature}],
+        sources: [
+            tsFunction({
+                description: `Counts the amount of ${entityName}s entities which match the given filter.`,
+                body: `
+async ${signature}: Promise<number> {
     return makeRequest('${path.path}', {params: filter}).then(unwrap);
 }
             `
-        })
-    ];
+            })
+        ]
+    };
 };

@@ -1,4 +1,5 @@
-import {EndpointPath} from '@generator/library';
+import {EndpointPath, StatsEntityFunction} from '@generator/library';
+import {Functions} from '@generator/library/functions/generateFunctions';
 import {resolveRequestType} from '@generator/utils/resolveRequestType';
 import {guessResponseEntity, resolveResponseType} from '@generator/utils/resolveResponseType';
 import {logger} from '@logger';
@@ -10,18 +11,23 @@ import {pascalCase} from 'change-case';
  * @param path
  * @param methods
  */
-export const rootFunction = ({path, methods}: EndpointPath): string[] => {
-    const functions: string[] = [];
+export const rootFunction = ({path, methods}: EndpointPath): Functions => {
     const entityName = pascalCase(path.entity);
+    const stats: StatsEntityFunction[] = [];
+    const sources: string[] = [];
 
     if (methods.get) {
         const response = resolveResponseType(methods.get);
 
         if (response) {
-            functions.push(tsFunction({
-                description: `Finds all ${entityName} entities which match the given filter.`,
+            const description = `Finds all ${entityName} entities which match the given filter.`;
+            const signature = `some(filter: Partial<${guessResponseEntity(response)}>)`;
+
+            stats.push({description, signature});
+            sources.push(tsFunction({
+                description,
                 body: `
-async some(filter: Partial<${guessResponseEntity(response)}>): Promise<${response}> {
+async ${signature}: Promise<${response}> {
     return Promise.reject();
 }
                 `
@@ -36,11 +42,14 @@ async some(filter: Partial<${guessResponseEntity(response)}>): Promise<${respons
 
         if (bodyType) {
             const returnType = resolveResponseType(methods.post);
+            const description = `Creates a new ${entityName} with the given data.\nReturns the newly created ${entityName}.`;
+            const signature = `create(data: Create${bodyType})`;
 
-            functions.push(tsFunction({
-                description: `Creates a new ${entityName} with the given data.\nReturns the newly created ${entityName}.`,
+            stats.push({description, signature});
+            sources.push(tsFunction({
+                description,
                 body: `
-async create(data: Create${bodyType}): Promise<${returnType}> {
+async ${signature}: Promise<${returnType}> {
     return Promise.reject();
 }
                 `
@@ -53,5 +62,5 @@ async create(data: Create${bodyType}): Promise<${returnType}> {
     methods.delete && logger.warnLn(`Didn't generate code for POST ${path.path}`);
     methods.put && logger.warnLn(`Didn't generate code for POST ${path.path}`);
 
-    return functions;
+    return {stats, sources};
 };

@@ -5,32 +5,40 @@
 require('dotenv').config();
 import {Target} from '@enums/Target';
 import {definitions} from '@generator/definitions';
+import {generateAPIDocumentation} from '@generator/docs/api';
 import {generateSdk} from '@generator/library';
 import {logger} from '@logger';
 import {tsImport} from '@ts/modules';
 import {env} from '@utils/env';
 import {writeSourceFile} from '@utils/writeSourceFile';
-import fse from 'fs-extra';
+import fse, {writeFile} from 'fs-extra';
 import {mkdir, readFile} from 'fs/promises';
 import {OpenAPIV3} from 'openapi-types';
 import path from 'path';
 
 const types = path.resolve(__dirname, '../', env('SDK_TYPES'));
-const dist = path.resolve(__dirname, '../', env('SDK_RAW_DIR'));
+const dist = (...paths: string[]) => path.resolve(__dirname, '../', env('SDK_REPOSITORY'), ...paths);
+const docs = (...paths: string[]) => path.resolve(dist(), 'docs', ...paths);
+const statc = (...paths: string[]) => path.resolve(__dirname, '../static', ...paths);
+const src = (...paths: string[]) => path.resolve(dist(), 'src', ...paths);
 
 const files = {
     sdks: {
-        main: path.join(dist, 'sdk.ts'),
-        node: path.join(dist, 'sdk.node.ts')
+        main: src('sdk.ts'),
+        node: src('sdk.node.ts'),
+    },
+    docs: {
+        api: dist('API.md')
     },
     types: {
-        models: path.join(dist, 'types.models.ts')
+        models: src('types.models.ts')
     }
 };
 
 void (async () => {
     const start = process.hrtime.bigint();
-    await mkdir(dist, {recursive: true});
+    await mkdir(docs(), {recursive: true});
+    await mkdir(src(), {recursive: true});
 
     // Read openapi file and create model definitions
     logger.infoLn('Read openapi file...');
@@ -43,7 +51,7 @@ void (async () => {
 
     // Generate import statement for type-declarations
     const models = definitions(openapi.components.schemas);
-    const modelsImport = tsImport('./types.models', models.exports);
+    const modelsImport = tsImport('./types.models', models.stats.exports);
 
     // Type files
     logger.infoLn('Generate type files...');
@@ -51,12 +59,19 @@ void (async () => {
 
     // Static type files
     logger.infoLn('Copy static types...');
-    await fse.copy(path.join(types), dist);
+    await fse.copy(path.join(types), src());
 
-    // Libraries
-    logger.infoLn('Generate SDK\'s...');
-    await writeSourceFile(files.sdks.main, `${modelsImport}\n\n${generateSdk(openapi, Target.BROWSER_PROMISES)}`);
-    await writeSourceFile(files.sdks.node, `${modelsImport}\n\n${generateSdk(openapi, Target.NODE_PROMISES)}`);
+    // Main library and documentation
+    logger.infoLn('Generate main SDK\'s...');
+    const sdk = generateSdk(openapi, Target.BROWSER_PROMISES);
+    await writeSourceFile(files.sdks.main, `${modelsImport}\n\n${sdk.source}`);
+
+    logger.infoLn('Generate API documentation...');
+    await writeSourceFile(docs('api.md'), await generateAPIDocumentation(sdk.stats, statc('docs', 'api.md')));
+
+    // Additional libraries
+    logger.infoLn('Generate additional SDK\'s...');
+    await writeFile(files.sdks.node, `${modelsImport}\n\n${generateSdk(openapi, Target.NODE_PROMISES).source}`);
 
     // Print job summary
     const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));

@@ -7,8 +7,8 @@ import * as path from 'path';
 require('dotenv').config();
 
 const production = process.env.NODE_ENV === 'production';
-const src = (...paths) => path.resolve(__dirname, process.env.SDK_RAW_DIR, ...paths);
 const dist = (...paths) => path.resolve(__dirname, process.env.SDK_REPOSITORY, ...paths);
+const src = (...paths) => path.resolve(dist(), 'src', ...paths);
 const plugins = [ts(), ...(production ? [terser()] : [])];
 
 const baseOutput = {

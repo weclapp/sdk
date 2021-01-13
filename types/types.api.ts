@@ -18,8 +18,8 @@ export enum Method {
 
 interface RequestOptions {
     method?: Method;
-    body?: any;
-    params?: Record<string, unknown>;
+    params?: Record<string, unknown>
+    body?: any;;
 }
 
 export interface RawRequest {

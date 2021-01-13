@@ -4,7 +4,7 @@
  */
 interface CustomEnv {
     SRC_OPENAPI: string;
-    SDK_RAW_DIR: string;
+    SDK_REPOSITORY: string;
     SDK_TYPES: string;
 }
 

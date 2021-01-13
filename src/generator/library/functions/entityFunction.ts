@@ -1,4 +1,5 @@
-import {EndpointPath} from '@generator/library';
+import {EndpointPath, StatsEntityFunction} from '@generator/library';
+import {Functions} from '@generator/library/functions/generateFunctions';
 import {SwaggerPath} from '@generator/utils/parseSwaggerPath';
 import {resolveRequestType} from '@generator/utils/resolveRequestType';
 import {resolveResponseType} from '@generator/utils/resolveResponseType';
@@ -21,30 +22,38 @@ const buildSpecialFunction = (path: SwaggerPath): string => {
  * @param path
  * @param methods
  */
-export const entityFunction = ({path, methods}: EndpointPath): string[] => {
-    const functions: string[] = [];
+export const entityFunction = ({path, methods}: EndpointPath): Functions => {
     const entityName = pascalCase(path.entity);
+    const stats: StatsEntityFunction[] = [];
+    const sources: string[] = [];
 
     if (methods.get) {
         const returnType = resolveResponseType(methods.get);
 
         // Check if it's a top-level, by-id endpoint
         if (TOP_ID_REGEXP.test(path.path)) {
-            functions.push(tsFunction({
-                description: `Returns the ${entityName} by it's unique identifier.`,
+            const description = `Returns the ${entityName} by it's unique identifier.`;
+            const signature = 'unique(id: number)';
+
+            stats.push({description, signature});
+            sources.push(tsFunction({
+                description,
                 body: `
-async unique(id: number): Promise<${returnType}> {
+async ${signature}: Promise<${returnType}> {
     return Promise.reject();
 }
                 `
             }));
         } else if (path.name) {
             const bodyType = resolveRequestType(methods.get) || 'unknown';
+            const description = 'Unknown special endpoint.';
+            const signature = `${buildSpecialFunction(path)}(data: ${bodyType})`;
 
-            functions.push(tsFunction({
-                description: 'Unknown special endpoint.',
+            stats.push({description, signature});
+            sources.push(tsFunction({
+                description,
                 body: `
-async ${buildSpecialFunction(path)}(data: ${bodyType}): Promise<${returnType}> {
+async ${signature}: Promise<${returnType}> {
     return Promise.reject();
 }
                 `
@@ -59,21 +68,28 @@ async ${buildSpecialFunction(path)}(data: ${bodyType}): Promise<${returnType}> {
 
         // Check if it's a top-level, by-id endpoint
         if (TOP_ID_REGEXP.test(path.path)) {
-            functions.push(tsFunction({
-                description: 'Unknown special endpoint.',
+            const description = 'Unknown special endpoint.';
+            const signature = `create(data: Create${entityName})`;
+
+            stats.push({description, signature});
+            sources.push(tsFunction({
+                description,
                 body: `
-async create(data: Create${entityName}): Promise<${returnType}> {
+async ${signature}: Promise<${returnType}> {
     return Promise.reject();
 }
                 `
             }));
         } else if (path.name) {
             const bodyType = resolveRequestType(methods.post) || 'unknown';
+            const description = 'Unknown special endpoint.';
+            const signature = `${buildSpecialFunction(path)}(data: ${bodyType})`;
 
-            functions.push(tsFunction({
+            stats.push({description, signature});
+            sources.push(tsFunction({
                 description: 'Unknown special endpoint.',
                 body: `
-async ${buildSpecialFunction(path)}(data: ${bodyType}): Promise<${returnType}> {
+async ${signature}: Promise<${returnType}> {
     return Promise.reject();
 }
                 `
@@ -89,11 +105,14 @@ async ${buildSpecialFunction(path)}(data: ${bodyType}): Promise<${returnType}> {
         if (TOP_ID_REGEXP.test(path.path)) {
             const returnType = resolveResponseType(methods.put);
             const bodyType = resolveRequestType(methods.put);
+            const description = `Updates a ${entityName}`;
+            const signature = `update(data: Partial<${bodyType}>)`;
 
-            functions.push(tsFunction({
-                description: `Creates a new ${entityName}`,
+            stats.push({description, signature});
+            sources.push(tsFunction({
+                description,
                 body: `
-async update(data: Partial<${bodyType}>): Promise<${returnType}> {
+async ${signature}: Promise<${returnType}> {
     return Promise.reject();
 }
                 `
@@ -107,10 +126,14 @@ async update(data: Partial<${bodyType}>): Promise<${returnType}> {
 
         // Check if it's a top-level, by-id endpoint
         if (TOP_ID_REGEXP.test(path.path)) {
-            functions.push(tsFunction({
-                description: `Deletes a ${entityName} by the given unique identifier.`,
+            const description = `Deletes a ${entityName} by the given unique identifier.`;
+            const signature = 'delete(id: number)';
+
+            stats.push({description, signature});
+            sources.push(tsFunction({
+                description,
                 body: `
-async delete(id: number): Promise<void> {
+async ${signature}: Promise<void> {
     return Promise.reject();
 }
                 `
@@ -120,5 +143,5 @@ async delete(id: number): Promise<void> {
         }
     }
 
-    return functions;
+    return {stats, sources};
 };
