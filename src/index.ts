@@ -16,7 +16,7 @@ import {mkdir, readFile} from 'fs/promises';
 import {OpenAPIV3} from 'openapi-types';
 import path from 'path';
 
-const types = path.resolve(__dirname, '../', env('SDK_TYPES'));
+// Path resolver
 const dist = (...paths: string[]) => path.resolve(__dirname, '../', env('SDK_REPOSITORY'), ...paths);
 const docs = (...paths: string[]) => path.resolve(dist(), 'docs', ...paths);
 const statc = (...paths: string[]) => path.resolve(__dirname, '../static', ...paths);
@@ -59,7 +59,7 @@ void (async () => {
 
     // Static type files
     logger.infoLn('Copy static types...');
-    await fse.copy(path.join(types), src());
+    await fse.copy(statc('types'), src());
 
     // Main library and documentation
     logger.infoLn('Generate main SDK\'s...');
