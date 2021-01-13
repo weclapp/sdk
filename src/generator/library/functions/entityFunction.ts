@@ -33,14 +33,14 @@ export const entityFunction = ({path, methods}: EndpointPath): Functions => {
         // Check if it's a top-level, by-id endpoint
         if (TOP_ID_REGEXP.test(path.path)) {
             const description = `Returns the ${entityName} by it's unique identifier.`;
-            const signature = 'unique(id: number)';
+            const signature = 'unique(id: string)';
 
             stats.push({description, signature});
             sources.push(tsFunction({
                 description,
                 body: `
 async ${signature}: Promise<${returnType}> {
-    return Promise.reject();
+    return makeRequest(\`${injectParams(path.path, {id: '${id}'})}\`);
 }
                 `
             }));

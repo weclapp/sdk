@@ -23,5 +23,5 @@ interface RequestOptions {
 }
 
 export interface RawRequest {
-    (endpoint: string, requestOptions: RequestOptions): Promise<any>
+    (endpoint: string, requestOptions?: RequestOptions): Promise<any>
 }

@@ -101,13 +101,14 @@ export const weclapp = ({
      * Makes a raw request to the given endpoint.
      * @param endpoint Endpoint url.
      * @param method Request method (GET is default)
+     * @param params Optional query parameters.
      * @param body Optional body data.
      */
     const makeRequest: RawRequest = async (endpoint, {
         method = Method.GET,
         params,
         body
-    }): Promise<any> => {
+    } = {}): Promise<any> => {
         const url = \`\${base}/\${endpoint}\`;
         
         return fetch(params ? buildParams(url, params) : url, {

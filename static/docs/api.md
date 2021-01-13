@@ -20,7 +20,7 @@ The `raw` function looks like the following:
 ```
 raw(
     endpoint: string;
-    options: {
+    options?: {
         method?: Method;
         params?: Record<string, unknown>;
         body?: any;
