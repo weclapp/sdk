@@ -7,25 +7,30 @@ import * as path from 'path';
 require('dotenv').config();
 
 const production = process.env.NODE_ENV === 'production';
-const banner = `/*! Weclapp SDK ${pkg.version} MIT | https://github.com/weclapp/sdk */`;
+const src = (...paths) => path.resolve(__dirname, process.env.SDK_RAW_DIR, ...paths);
 const dist = (...paths) => path.resolve(__dirname, process.env.SDK_REPOSITORY, ...paths);
 const plugins = [ts(), ...(production ? [terser()] : [])];
 
+const baseOutput = {
+    sourcemap: true,
+    banner: `/*! Weclapp SDK ${pkg.version} MIT | https://github.com/weclapp/sdk */`,
+    globals: {
+        'node-fetch': 'fetch',
+        'url': 'URLSearchParams'
+    }
+};
+
 const output = dir => [
     {
-        banner,
-        globals: {'node-fetch': 'fetch'},
+        ...baseOutput,
         file: dist(dir, 'index.js'),
         name: 'Weclapp',
-        format: 'umd',
-        sourcemap: true
+        format: 'umd'
     },
     {
-        banner,
-        globals: {'node-fetch': 'fetch'},
+        ...baseOutput,
         file: dist(dir, 'index.mjs'),
-        format: 'es',
-        sourcemap: true
+        format: 'es'
     }
 ];
 
@@ -33,7 +38,7 @@ export default [
 
     // Main bundle
     {
-        input: 'lib/sdk.ts',
+        input: src('sdk.ts'),
         output: output('main'),
         plugins: [
             copy({
@@ -61,9 +66,9 @@ export default [
 
     // NodeJS bundle
     {
-        input: 'lib/sdk.node.ts',
+        input: src('sdk.node.ts'),
         output: output('node'),
-        external: ['node-fetch'],
+        external: ['node-fetch', 'url'],
         plugins: [
             copy({
                 targets: [
