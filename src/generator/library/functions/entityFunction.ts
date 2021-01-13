@@ -33,14 +33,26 @@ export const entityFunction = ({path, methods}: EndpointPath): Functions => {
         // Check if it's a top-level, by-id endpoint
         if (TOP_ID_REGEXP.test(path.path)) {
             const description = `Returns the ${entityName} by it's unique identifier.`;
-            const signature = 'unique(id: string)';
+            const signature = `unique(id: string, options?: EntityQuery<${returnType}>)`;
 
             stats.push({description, signature});
             sources.push(tsFunction({
                 description,
                 body: `
 async ${signature}: Promise<${returnType}> {
-    return makeRequest(\`${injectParams(path.path, {id: '${id}'})}\`);
+
+    // The /id/:id endpoint for an entity does not have features like
+    // including referenced entities or extracting specific properties.
+    // Therefore we just go with the normal endpoint and grab the first, unique result.
+    return makeRequest('/${path.entity}', {
+        params: {
+            'id-eq': id,
+            'page': '1',
+            'pageSize': '1',
+            'serializeNulls': options?.serialize,
+            'properties': options?.select?.join(',')
+        }
+    }).then(unwrap).then(entities => entities[0]);
 }
                 `
             }));

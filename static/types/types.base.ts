@@ -12,3 +12,8 @@ export type QueryFilter<Model> =
     { [K in keyof Model as `${K & string}-${CompareOperators}`]?: Model[K]; } &
     { [K in keyof Model as `${K & string}-${BooleanOperators}`]?: boolean; } &
     { [K in keyof Model as `${K & string}-${ArrayOperators}`]?: Model[K][]; };
+
+export interface EntityQuery<Model> {
+    serialize?: boolean;
+    select?: (keyof Model)[]
+}

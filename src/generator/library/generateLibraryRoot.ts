@@ -39,7 +39,7 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
     // TODO: Add .count, .create etc. short to minimize code-size.
     return `${resolveImports(target)}
 import {Options, Method, RawRequest} from './types.api';
-import {QueryFilter} from './types.base';
+import {QueryFilter, EntityQuery} from './types.base';
 
 // Current version.
 export const version = '${pkg.version}';
@@ -110,7 +110,7 @@ export const weclapp = ({
         body
     } = {}): Promise<any> => {
         const url = \`\${base}/\${endpoint}\`;
-        
+
         return fetch(params ? buildParams(url, params) : url, {
             ...(body && {body: JSON.stringify(body)}),
             method,
