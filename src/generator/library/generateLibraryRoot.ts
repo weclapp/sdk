@@ -36,6 +36,7 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
         process.exit(1);
     }
 
+    // TODO: Add .count, .create etc. short to minimize code-size.
     return `${resolveImports(target)}
 import {Options, Method, RawRequest} from './types.api';
 import {QueryFilter} from './types.base';

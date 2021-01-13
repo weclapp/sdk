@@ -87,7 +87,7 @@ async ${signature}: Promise<${returnType}> {
 
             stats.push({description, signature});
             sources.push(tsFunction({
-                description: 'Unknown special endpoint.',
+                description,
                 body: `
 async ${signature}: Promise<${returnType}> {
     return Promise.reject();

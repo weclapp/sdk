@@ -28,7 +28,7 @@ export const countFunction = ({path}: EndpointPath, endpoints: EndpointPath[]): 
         stats: [{description, signature}],
         sources: [
             tsFunction({
-                description: `Counts the amount of ${entityName}s entities which match the given filter.`,
+                description,
                 body: `
 async ${signature}: Promise<number> {
     return makeRequest('${path.path}', {params: filter}).then(unwrap);

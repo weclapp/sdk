@@ -43,14 +43,17 @@ async ${signature}: Promise<${response}> {
         if (bodyType) {
             const returnType = resolveResponseType(methods.post);
             const description = `Creates a new ${entityName} with the given data.\nReturns the newly created ${entityName}.`;
-            const signature = `create(data: Create${bodyType})`;
+            const signature = `create(data: Create${bodyType} & Partial<${bodyType}>)`;
 
             stats.push({description, signature});
             sources.push(tsFunction({
                 description,
                 body: `
 async ${signature}: Promise<${returnType}> {
-    return Promise.reject();
+    return makeRequest('${path.path}', {
+        method: Method.POST,
+        body: data
+    });
 }
                 `
             }));
