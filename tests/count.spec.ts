@@ -1,5 +1,5 @@
 import 'jest-extended';
-import {weclapp} from '../lib/sdk.min.js';
+import {weclapp} from '../sdk/node';
 
 describe('.count', () => {
     const api = weclapp({
@@ -16,4 +16,18 @@ describe('.count', () => {
             });
         }
     }
+
+    it('Should work with filters', async () => {
+        expect(await api.customer.count({
+            'salesPartner-eq': true
+        })).toBeNumber();
+
+        expect(await api.article.count({
+            'active-eq': true
+        })).toBeNumber();
+
+        expect(await api.opportunity.count({
+            'id-ge': String(Math.floor(Math.random() * 10000))
+        })).toBeNumber();
+    });
 });
