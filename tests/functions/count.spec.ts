@@ -1,5 +1,5 @@
 import 'jest-extended';
-import {sdk} from './utils';
+import {sdk} from '../utils';
 
 describe('.count', () => {
     for (const [entity, obj] of Object.entries(sdk)) {
