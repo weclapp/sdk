@@ -37,8 +37,8 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
     }
 
     return `${resolveImports(target)}
+import {QueryFilter, EntityQuery, UniqueReturn} from './types.base';
 import {Options, Method, RawRequest} from './types.api';
-import {QueryFilter, EntityQuery} from './types.base';
 
 // Current version.
 export const version = '${pkg.version}';
@@ -136,7 +136,11 @@ export const weclapp = ({
     };
     
     // Internal .unique implementation
-    const _unique = <Entity>(endpoint: string, id: string, options?: EntityQuery<Entity>): Promise<Entity> => {
+    const _unique = <Entity, Query extends EntityQuery<Entity>>(
+        endpoint: string,
+        id: string,
+        options?: Query
+    ): Promise<UniqueReturn<Entity, Query>> => {
     
         // The /id/:id endpoint for an entity does not have features like
         // including referenced entities or extracting specific properties.
@@ -147,9 +151,15 @@ export const weclapp = ({
                 'page': '1',
                 'pageSize': '1',
                 'serializeNulls': options?.serialize,
-                'properties': options?.select?.join(',')
+                'properties': options?.select?.join(','),
+                'includeReferencedEntities': options?.include?.join(',')
             }
-        }).then(unwrap).then(entities => entities[0]);
+        }).then(res => {
+            return options?.include ? {
+                data: res.result?.[0] ?? null,
+                references: res?.referencedEntities ?? null
+            } : (res.result?.[0] ?? null);
+        });
     };
     
     // Internal .delete implementation

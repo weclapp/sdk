@@ -33,14 +33,14 @@ export const entityFunction = ({path, methods}: EndpointPath): Functions => {
         // Check if it's a top-level, by-id endpoint
         if (TOP_ID_REGEXP.test(path.path)) {
             const description = `Returns the ${entityName} by it's unique identifier.`;
-            const signature = `unique(id: string, options?: EntityQuery<${returnType}>)`;
+            const signature = `unique<Query extends EntityQuery<${returnType}>>(id: string, options?: Query)`;
 
             stats.push({description, signature});
             sources.push(tsFunction({
                 description,
                 body: `
-async ${signature}: Promise<${returnType}> {
-    return _unique<${returnType}>('/${path.entity}', id, options);
+async ${signature}: Promise<UniqueReturn<${returnType}, Query>> {
+    return _unique<${returnType}, Query>('/${path.entity}', id, options);
 }
                 `
             }));
