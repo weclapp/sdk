@@ -8,33 +8,44 @@ export type ArrayOperators = 'in' | 'notin';
 export type BooleanOperators = 'null' | 'notnull';
 
 // Takes an model and returns all possible filters.
-export type QueryFilter<Model> =
-    { [K in keyof Model as `${K & string}-${CompareOperators}`]?: Model[K]; } &
-    { [K in keyof Model as `${K & string}-${BooleanOperators}`]?: boolean; } &
-    { [K in keyof Model as `${K & string}-${ArrayOperators}`]?: Model[K][]; };
-
+export type QueryFilter<Entity> =
+    { [K in keyof Entity as `${K & string}-${CompareOperators}`]?: Entity[K]; } &
+    { [K in keyof Entity as `${K & string}-${BooleanOperators}`]?: boolean; } &
+    { [K in keyof Entity as `${K & string}-${ArrayOperators}`]?: Entity[K][]; };
 
 // Entity model used to query a single or multiple entities
-export interface EntityQuery<Model> {
+export interface EntityQuery<Entity> {
 
     // If result should be serialized (e.g. non-defined fields nulled)
     serialize?: boolean;
 
     // Query only these properties
-    select?: (keyof Model)[];
+    select?: (keyof Entity)[];
 
     // Resolve additional references
     // TODO: Provide type-list for resolvable entitites
     include?: string[];
 }
 
-// Return value for a single .unique query
+export interface WrappedResponse<Data> {
+
+    // The entity itself
+    data: Data;
+
+    // TODO: Resolve types based on EntityQuery
+    references?: unknown[];
+}
+
+export interface ListQuery<Entity> extends EntityQuery<Entity> {
+    page?: number;
+    pageSize?: number;
+}
+
+// Return value for the .unique query
 export type UniqueReturn<Entity, Query extends EntityQuery<Entity>> =
-    Query['include'] extends string[] ? {
+    Query['include'] extends string[] ? WrappedResponse<Entity> : Entity;
 
-        // The entity itself
-        data: Entity;
+// Return value for the .some function
+export type SomeReturn<Entity, Query extends ListQuery<Entity>> =
+    Query['include'] extends string[] ? WrappedResponse<Entity[]> : Entity[];
 
-        // TODO: Resolve types based on EntityQuery
-        references?: unknown[];
-    } : Entity;

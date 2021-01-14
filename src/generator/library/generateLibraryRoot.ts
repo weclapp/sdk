@@ -37,7 +37,7 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
     }
 
     return `${resolveImports(target)}
-import {QueryFilter, EntityQuery, UniqueReturn} from './types.base';
+import {QueryFilter, EntityQuery, ListQuery, SomeReturn, UniqueReturn} from './types.base';
 import {Options, Method, RawRequest} from './types.api';
 
 // Current version.
@@ -148,8 +148,8 @@ export const weclapp = ({
         return makeRequest(endpoint, {
             params: {
                 'id-eq': id,
-                'page': '1',
-                'pageSize': '1',
+                'page': 1,
+                'pageSize': 1,
                 'serializeNulls': options?.serialize,
                 'properties': options?.select?.join(','),
                 'includeReferencedEntities': options?.include?.join(',')
@@ -161,6 +161,27 @@ export const weclapp = ({
             } : (res.result?.[0] ?? null);
         });
     };
+
+    // Internal .some implementation
+    const _some = <Entity, Query extends ListQuery<Entity>>(
+        endpoint: string,
+        options?: Query,
+        filter?: Partial<Entity>
+    ): Promise<SomeReturn<Entity, Query>> => makeRequest(endpoint, {
+        params: {
+            ...filter, // We don't want the user to be able to re-write given properties below
+            'page': options?.page ?? 1,
+            'pageSize': options?.pageSize ?? 10,
+            'serializeNulls': options?.serialize,
+            'properties': options?.select?.join(','),
+            'includeReferencedEntities': options?.include?.join(','),
+        }
+    }).then(res => {
+        return options?.include ? {
+            data: res.result,
+            references: res?.referencedEntities ?? null
+        } : (res.result ?? null);
+    });
 
     // Internal .delete implementation
     const _delete = <Entity>(endpoint: string): Promise<void> => {

@@ -20,15 +20,16 @@ export const rootFunction = ({path, methods}: EndpointPath): Functions => {
         const response = resolveResponseType(methods.get);
 
         if (response) {
+            const returnType = guessResponseEntity(response);
             const description = `Finds all ${entityName} entities which match the given filter.`;
-            const signature = `some(filter: Partial<${guessResponseEntity(response)}>)`;
+            const signature = `some<Query extends ListQuery<${returnType}>>(options?: Query, filter?: Partial<${returnType}>)`;
 
             stats.push({description, signature});
             sources.push(tsFunction({
                 description,
                 body: `
-async ${signature}: Promise<${response}> {
-    return Promise.reject();
+async ${signature}: Promise<SomeReturn<${returnType}, Query>> {
+    return _some<${returnType}, Query>('${path.path}', options, filter);
 }
                 `
             }));
