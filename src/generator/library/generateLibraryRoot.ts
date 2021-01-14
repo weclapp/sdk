@@ -86,9 +86,9 @@ export const weclapp = ({
             }
         }
 
-        const query = search.toString()
-        return query ? \`\${url}?\${query}\`: url;
-    }
+        const query = search.toString();
+        return query ? \`\${url}?\${query}\` : url;
+    };
 
     /**
      * Makes a raw request to the given endpoint.
@@ -129,19 +129,19 @@ export const weclapp = ({
      * @param res
      */
     const unwrap = (res: {result: unknown}): any => res.result;
-    
+
     // Internal .count implementation
     const _count = <Entity>(endpoint: string, filter?: QueryFilter<Entity>): Promise<number> => {
         return makeRequest('/user/count', {params: filter}).then(unwrap);
     };
-    
+
     // Internal .unique implementation
     const _unique = <Entity, Query extends EntityQuery<Entity>>(
         endpoint: string,
         id: string,
         options?: Query
     ): Promise<UniqueReturn<Entity, Query>> => {
-    
+
         // The /id/:id endpoint for an entity does not have features like
         // including referenced entities or extracting specific properties.
         // Therefore we just go with the normal endpoint and grab the first, unique result.
@@ -161,12 +161,12 @@ export const weclapp = ({
             } : (res.result?.[0] ?? null);
         });
     };
-    
+
     // Internal .delete implementation
     const _delete = <Entity>(endpoint: string): Promise<void> => {
         return makeRequest(endpoint, {method: Method.DELETE}).then(unwrap);
     };
-    
+
     // Internal .create implementation
     const _create = <Entity>(endpoint: string, data: unknown): Promise<Entity> => {
         return makeRequest(endpoint, {
