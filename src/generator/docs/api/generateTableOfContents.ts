@@ -11,7 +11,7 @@ export const generateTableOfContents = (stats: LibraryStats): string => {
 
     for (const entity of Object.keys(stats.entities)) {
         const name = pascalCase(entity);
-        list.push(`* [${name}](#${name})`);
+        list.push(`   * [${name}](#${name})`);
     }
 
     return list.join('\n');

@@ -1,14 +1,26 @@
-<h3 align="center">
-   Weclapp SDK
-</h3>
+<br/>
+<br/>
+
+<div align="center">
+    <img src="./www/logo.svg" alt="Logo" width="350"/>
+</div>
+
+<br/>
+
+<div align="center">
+    <h3>Weclapp Developer SDK</h3>
+</div>
+
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@weclapp/sdk"><img
-     alt="Downloads"
-     src="https://img.shields.io/npm/dw/@weclapp/sdk.svg?style=flat-square">
-  </a>
-  <img alt="Current version"
-     src="https://img.shields.io/github/tag/weclapp/sdk.svg?color=3498DB&label=version&style=flat-square">
+    <a href="https://www.npmjs.com/package/@weclapp/sdk"><img
+        alt="Downloads"
+        src="https://img.shields.io/npm/dw/@weclapp/sdk.svg?style=flat-square">
+    </a>
+    <a href="https://github.com/weclapp/sdk/releases"><img 
+        alt="Current version"
+        src="https://img.shields.io/github/tag/weclapp/sdk.svg?color=3498DB&label=version&style=flat-square">
+    </a>
 </p>
 
 ## Installation
@@ -39,3 +51,7 @@ import {weclapp} from '@weclapp/sdk';
     console.log(`Customers: ${await api.customer.count()}`);
 })();
 ```
+
+### Documentation and more
+
+Ready to get started? Head to the API [documentation](docs/api.md) to see how it's done :)

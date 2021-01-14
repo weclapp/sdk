@@ -45,6 +45,8 @@ export default [
                 targets: [
 
                     // Copy static files
+                    // TODO: Host logo somewhere and drop /www folder?
+                    {src: './static/logo.svg', dest: dist('www')},
                     {src: './static/README.md', dest: dist()},
                     {src: './static/.gitignore', dest: dist()},
 
