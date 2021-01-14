@@ -40,19 +40,7 @@ export const entityFunction = ({path, methods}: EndpointPath): Functions => {
                 description,
                 body: `
 async ${signature}: Promise<${returnType}> {
-
-    // The /id/:id endpoint for an entity does not have features like
-    // including referenced entities or extracting specific properties.
-    // Therefore we just go with the normal endpoint and grab the first, unique result.
-    return makeRequest('/${path.entity}', {
-        params: {
-            'id-eq': id,
-            'page': '1',
-            'pageSize': '1',
-            'serializeNulls': options?.serialize,
-            'properties': options?.select?.join(',')
-        }
-    }).then(unwrap).then(entities => entities[0]);
+    return _unique<${returnType}>('/${path.entity}', id, options);
 }
                 `
             }));
@@ -146,9 +134,7 @@ async ${signature}: Promise<${returnType}> {
                 description,
                 body: `
 async ${signature}: Promise<void> {
-    return makeRequest(\`${injectParams(path.path, {id: '${id}'})}\`, {
-        method: Method.DELETE
-    }).then(unwrap);
+    return _delete(\`${injectParams(path.path, {id: '${id}'})}\`);
 }
                 `
             }));

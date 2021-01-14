@@ -50,10 +50,7 @@ async ${signature}: Promise<${response}> {
                 description,
                 body: `
 async ${signature}: Promise<${returnType}> {
-    return makeRequest('${path.path}', {
-        method: Method.POST,
-        body: data
-    });
+    return _create('${path.path}', data);
 }
                 `
             }));

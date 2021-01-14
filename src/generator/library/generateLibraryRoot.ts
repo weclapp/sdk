@@ -36,7 +36,6 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
         process.exit(1);
     }
 
-    // TODO: Add .count, .create etc. short to minimize code-size.
     return `${resolveImports(target)}
 import {Options, Method, RawRequest} from './types.api';
 import {QueryFilter, EntityQuery} from './types.base';
@@ -71,12 +70,6 @@ export const weclapp = ({
 
         return Promise.resolve(res);
     };
-
-    /**
-     * Unwraps the result property from a weclapp response.
-     * @param res
-     */
-    const unwrap = (res: {result: unknown}): any => res.result;
 
     /**
      * Builds a search query base on the given object
@@ -128,6 +121,47 @@ export const weclapp = ({
             }
 
             return data;
+        });
+    };
+
+    /**
+     * Unwraps the result property from a weclapp response.
+     * @param res
+     */
+    const unwrap = (res: {result: unknown}): any => res.result;
+    
+    // Internal .count implementation
+    const _count = <Entity>(endpoint: string, filter?: QueryFilter<Entity>): Promise<number> => {
+        return makeRequest('/user/count', {params: filter}).then(unwrap);
+    };
+    
+    // Internal .unique implementation
+    const _unique = <Entity>(endpoint: string, id: string, options?: EntityQuery<Entity>): Promise<Entity> => {
+    
+        // The /id/:id endpoint for an entity does not have features like
+        // including referenced entities or extracting specific properties.
+        // Therefore we just go with the normal endpoint and grab the first, unique result.
+        return makeRequest(endpoint, {
+            params: {
+                'id-eq': id,
+                'page': '1',
+                'pageSize': '1',
+                'serializeNulls': options?.serialize,
+                'properties': options?.select?.join(',')
+            }
+        }).then(unwrap).then(entities => entities[0]);
+    };
+    
+    // Internal .delete implementation
+    const _delete = <Entity>(endpoint: string): Promise<void> => {
+        return makeRequest(endpoint, {method: Method.DELETE}).then(unwrap);
+    };
+    
+    // Internal .create implementation
+    const _create = <Entity>(endpoint: string, data: unknown): Promise<Entity> => {
+        return makeRequest(endpoint, {
+            method: Method.POST,
+            body: data
         });
     };
 

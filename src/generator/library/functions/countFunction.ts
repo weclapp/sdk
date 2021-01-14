@@ -21,8 +21,9 @@ const guessEntityType = (endpoints: EndpointPath[]): string => {
  */
 export const countFunction = ({path}: EndpointPath, endpoints: EndpointPath[]): Functions => {
     const entityName = pascalCase(path.entity);
+    const entityType = guessEntityType(endpoints);
     const description = `Counts the amount of ${entityName}s entities which match the given filter.`;
-    const signature = `count(filter?: QueryFilter<${guessEntityType(endpoints)}>)`;
+    const signature = `count(filter?: QueryFilter<${entityType}>)`;
 
     return {
         stats: [{description, signature}],
@@ -31,9 +32,7 @@ export const countFunction = ({path}: EndpointPath, endpoints: EndpointPath[]): 
                 description,
                 body: `
 async ${signature}: Promise<number> {
-    return makeRequest('${path.path}', {
-        params: filter
-    }).then(unwrap);
+    return _count<${entityType}>('${path.path}', filter);
 }
             `
             })
