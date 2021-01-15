@@ -189,10 +189,24 @@ export const weclapp = ({
     };
 
     // Internal .create implementation
-    const _create = <Entity>(endpoint: string, data: unknown): Promise<Entity> => {
+    const _create = <Entity>(endpoint: string, data: Entity): Promise<Entity> => {
         return makeRequest(endpoint, {
             method: Method.POST,
             body: data
+        });
+    };
+
+    // Internal .update implementation
+    const _update = <Entity>(endpoint: string, data: Partial<Entity>): Promise<Entity> => {
+        return makeRequest(endpoint, {
+            params: {'serializeNulls': true}
+        }).then(res => {
+            return {...res, ...data};
+        }).then(updated => {
+            return makeRequest(endpoint, {
+                method: Method.PUT,
+                body: updated
+            });
         });
     };
 

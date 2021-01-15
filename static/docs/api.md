@@ -45,8 +45,10 @@ functions (in the following examples we refer to `[Entity]` as being the target-
 | Partial implementation. | `unique(id: string, options?: EntityQuery<[Entity]>)` | Returns an entity by it's unique identifier. |
 | Partial implementation.  | `some(options?: ListQuery<[Entity]>, filter?: Partial<[Entity]>)` | Returns all matching entities by the given filter. |
 | Fully implemented. | `create(data: Create[Entity] & Partial<[Entity]>)` | Creates a new entity based on the data. |
-| Not implemented. | `update(data: Partial<[Entity]>)` | Updates the given entity. |
+| Partial implementation. | `update(data: Partial<[Entity]>)` | Updates the given entity. |
 | Fully implemented. | `delete(id: number)` | Deletes an entity by the given id. |
+
+> "Partial implementation" referes to types missing or not properly resolve return type.
 
 The `EntityQuery` comes with the following options:
 
@@ -144,9 +146,18 @@ const article = await sdk.article.create({
 });
 ```
 
-#### `.update(data: Partial<[Entity]>)`
+#### `.update(id: string, data: Partial<[Entity]>)`
 
-TBA.
+The `function` can be used to update a specific instance of an entity using the given id.
+
+##### Example:
+
+```ts
+// Return value is the freshly updated customer
+const customer = await sdk.customer.update('176662', {
+   company: 'Hello world LLC'
+});
+```
 
 #### `.delete`
 

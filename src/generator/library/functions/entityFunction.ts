@@ -106,14 +106,14 @@ async ${signature}: Promise<${returnType}> {
             const returnType = resolveResponseType(methods.put);
             const bodyType = resolveRequestType(methods.put);
             const description = `Updates a ${entityName}`;
-            const signature = `update(data: Partial<${bodyType}>)`;
+            const signature = `update(id: string, data: Partial<${bodyType}>)`;
 
             stats.push({description, signature});
             sources.push(tsFunction({
                 description,
                 body: `
 async ${signature}: Promise<${returnType}> {
-    return Promise.reject();
+    return _update(\`${injectParams(path.path, {id: '${id}'})}\`, data);
 }
                 `
             }));
