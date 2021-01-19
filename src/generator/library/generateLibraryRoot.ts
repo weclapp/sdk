@@ -151,7 +151,7 @@ export const weclapp = ({
                 'page': 1,
                 'pageSize': 1,
                 'serializeNulls': options?.serialize,
-                'properties': options?.select?.join(','),
+                'properties': options?.select ? Object.keys(options.select).join(',') : undefined,
                 'includeReferencedEntities': options?.include?.join(',')
             }
         }).then(res => {
@@ -173,7 +173,7 @@ export const weclapp = ({
             'page': options?.page ?? 1,
             'pageSize': options?.pageSize ?? 10,
             'serializeNulls': options?.serialize,
-            'properties': options?.select?.join(','),
+            'properties': options?.select ? Object.keys(options.select).join(',') : undefined,
             'includeReferencedEntities': options?.include?.join(','),
         }
     }).then(res => {

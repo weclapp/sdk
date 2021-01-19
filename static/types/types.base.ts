@@ -13,6 +13,18 @@ export type QueryFilter<Entity> =
     { [K in keyof Entity as `${K & string}-${BooleanOperators}`]?: boolean; } &
     { [K in keyof Entity as `${K & string}-${ArrayOperators}`]?: Entity[K][]; };
 
+// Helper type to "select" properties from an object
+type SelectQuery<Entity> = {
+    [K in keyof Entity]?: boolean;
+}
+
+// Returns those values which were selected by Query
+export type Select<Entity, Query extends EntityQuery<Entity>> =
+    Query['select'] extends SelectQuery<Entity> ? {
+        // Filter properties
+        [K in keyof Entity as Query['select'][K] extends true ? K : never]: Entity[K]
+    } : Entity;
+
 // Entity model used to query a single or multiple entities
 export interface EntityQuery<Entity> {
 
@@ -20,7 +32,7 @@ export interface EntityQuery<Entity> {
     serialize?: boolean;
 
     // Query only these properties
-    select?: (keyof Entity)[];
+    select?: SelectQuery<Entity>;
 
     // Resolve additional references
     // TODO: Provide type-list for resolvable entitites
@@ -42,9 +54,9 @@ export interface ListQuery<Entity> extends EntityQuery<Entity> {
 }
 
 // Return value for the .unique query
-export type UniqueReturn<Entity, Query extends EntityQuery<Entity> = {}> =
-    Query['include'] extends string[] ? WrappedResponse<Entity> : Entity | null;
+export type UniqueReturn<Entity, Query extends EntityQuery<Entity> = {}> = Query['include'] extends string[] ?
+    WrappedResponse<Select<Entity, Query>> : (Select<Entity, Query> | null);
 
 // Return value for the .some function
-export type SomeReturn<Entity, Query extends ListQuery<Entity> = {}> =
-    Query['include'] extends string[] ? WrappedResponse<Entity[]> : Entity[];
+export type SomeReturn<Entity, Query extends ListQuery<Entity> = {}> = Query['include'] extends string[] ?
+    WrappedResponse<Select<Entity, Query>[]> : Select<Entity, Query>[];
