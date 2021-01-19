@@ -7,14 +7,17 @@ describe('.update', () => {
     it('Should update a customer', async () => {
         // TODO: Grab first customer, currently not possible because internal references are invalid
         const customer = await sdk.customer.unique('1949325');
-        const updated = await sdk.customer.update(customer.id, {
+        expect(customer).toBeObject();
+
+        const updated = await sdk.customer.update(customer!.id, {
             company: 'Hello world'
         });
 
+        expect(updated).toBeObject();
         expect((updated as Customer).company).toEqual('Hello world');
 
-        await sdk.customer.update(customer.id, {
-            company: customer.company
+        await sdk.customer.update(customer!.id, {
+            company: customer!.company
         });
     });
 });

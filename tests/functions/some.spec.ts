@@ -46,7 +46,7 @@ describe('.some', () => {
         testSchema(
             await sdk.customer.some({
                 serialize: true,
-                select: ['id', 'birthDate'],
+                select: {id: true, birthDate: true},
                 pageSize: 5
             }),
             Joi.array().items(Joi.object({
@@ -61,7 +61,7 @@ describe('.some', () => {
         // Test without serialization
         testSchema(
             await sdk.customer.some({
-                select: ['id', 'birthDate'],
+                select: {id: true, birthDate: true},
                 pageSize: 5
             }),
             Joi.array().items(Joi.object({
@@ -74,7 +74,7 @@ describe('.some', () => {
     it('Should return an object with include responsibleUserId', async () => {
         testSchema(
             await sdk.customer.some({
-                select: ['id'],
+                select: {id: true},
                 include: ['responsibleUserId']
             }),
             Joi.object({

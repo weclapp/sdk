@@ -90,7 +90,7 @@ The `unique` function takes an entity-id and options for how and what should be 
 // Fetch id, partyType and birthDate from customer with the id 151662
 // Also, serialize the result. In case amountInsured isn't defined, it'll be null in our case.
 const customer = await sdk.customer.unique('151662', {
-    select: ['id', 'partyType', 'amountInsured'],
+    select: {id: true, partyType: true, amountInsured: true},
     serialize: true
 });
 
@@ -99,7 +99,7 @@ const customer = await sdk.customer.unique('151662', {
 // The return value is now different and is an objec with data, as the entity, and references with
 // all the entities resolved by include.
 const {data, references} = await sdk.customer.unique('151662', {
-    select: ['id', 'partyType', 'amountInsured'],
+   select: {id: true, partyType: true, amountInsured: true},
     serialize: true,
     include: ['responsibleUserId']
 });
@@ -117,7 +117,7 @@ Fetches a list of the given entity.
 // Queries the id, the partyType and the birthDate
 // Serializes the result, e.g. sets `null` for optional, possibly not defined fields.
 const articles = await sdk.article.some({
-    select: ['id', 'partyType', 'birthDate'],
+    select: {id: true, partyType: true, birthDate: true},
     serialize: true,
     pageSize: 5,
     page: 2
@@ -127,8 +127,8 @@ const articles = await sdk.article.some({
 // data will be a list of articles and references an object with possible
 // references.
 const {data, references} = await sdk.article.some({
-    select: ['id', 'partyType', 'birthDate'],
-    include: ['responsibleUserId']
+   select: {id: true, partyType: true, birthDate: true},
+   include: ['responsibleUserId']
 });
 ```
 
