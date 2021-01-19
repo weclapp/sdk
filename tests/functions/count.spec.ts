@@ -2,19 +2,16 @@ import 'jest-extended';
 import {sdk} from '../utils';
 
 describe('.count', () => {
-    for (const [entity, obj] of Object.entries(sdk)) {
-        const count = (obj as any)?.count;
 
-        if (count) {
-            it(`Should return the total amount of ${entity}s`, async () => {
-                expect(await (sdk as any)[entity].count()).toBeNumber();
-            });
-        }
-    }
+    it('Sould fetch the total amount of customers, articles and sales-orders', async()=>{
+        expect(await sdk.article.count()).toBeNumber();
+        expect(await sdk.customer.count()).toBeNumber();
+        expect(await sdk.salesOrder.count()).toBeNumber();
+    })
 
     it('Should work with filters', async () => {
         expect(await sdk.customer.count({
-            'salesPartner-eq': true
+            'customerNumber-in': ['1039', '1036']
         })).toBeNumber();
 
         expect(await sdk.article.count({

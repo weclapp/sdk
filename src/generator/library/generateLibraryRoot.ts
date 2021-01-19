@@ -82,7 +82,7 @@ export const weclapp = ({
 
         for (const [key, value] of Object.entries(params)) {
             if (value !== undefined) {
-                search.append(key, String(value));
+                search.append(key, Array.isArray(value) ? \`[\${value.join(',')}]\` : String(value));
             }
         }
 
@@ -102,7 +102,7 @@ export const weclapp = ({
         params,
         body
     } = {}): Promise<any> => {
-        const url = \`\${base}/\${endpoint}\`;
+        const url = \`\${base + endpoint}\`;
 
         return fetch(params ? buildParams(url, params) : url, {
             ...(body && {body: JSON.stringify(body)}),
@@ -132,7 +132,7 @@ export const weclapp = ({
 
     // Internal .count implementation
     const _count = <Entity>(endpoint: string, filter?: QueryFilter<Entity>): Promise<number> => {
-        return makeRequest('/user/count', {params: filter}).then(unwrap);
+        return makeRequest(endpoint, {params: filter}).then(unwrap);
     };
 
     // Internal .unique implementation
