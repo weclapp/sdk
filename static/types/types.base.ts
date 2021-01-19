@@ -43,7 +43,7 @@ export interface ListQuery<Entity> extends EntityQuery<Entity> {
 
 // Return value for the .unique query
 export type UniqueReturn<Entity, Query extends EntityQuery<Entity> = {}> =
-    Query['include'] extends string[] ? WrappedResponse<Entity> : Entity;
+    Query['include'] extends string[] ? WrappedResponse<Entity> : Entity | null;
 
 // Return value for the .some function
 export type SomeReturn<Entity, Query extends ListQuery<Entity> = {}> =
