@@ -5,7 +5,6 @@ import 'jest-extended';
 describe('.update', () => {
 
     it('Should update a customer', async () => {
-        // TODO: Grab first customer, currently not possible because internal references are invalid
         const customer = await sdk.customer.unique('1949325');
         expect(customer).toBeObject();
 
