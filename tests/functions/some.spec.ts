@@ -93,7 +93,7 @@ describe('.some', () => {
                 select: {id: true},
                 include: ['responsibleUserId'],
                 filter: {
-                    'id-gt': 25
+                    'id-gt': '25'
                 }
             }),
             Joi.object({

@@ -194,6 +194,14 @@ export const weclapp = ({
             body: data
         });
     };
+    
+    // Internal .replace implementation
+    const _replace = <Entity>(endpoint: string, data: Entity): Promise<Entity> => {
+        return makeRequest(endpoint, {
+            method: Method.PUT,
+            body: data
+        });
+    };
 
     // Internal .update implementation
     const _update = <Entity>(endpoint: string, data: Partial<Entity>): Promise<Entity> => {
@@ -201,12 +209,10 @@ export const weclapp = ({
             params: {'serializeNulls': true}
         }).then(res => {
             return {...res, ...data};
-        }).then(updated => {
-            return makeRequest(endpoint, {
-                method: Method.PUT,
-                body: updated
-            });
-        });
+        }).then(updated => makeRequest(endpoint, {
+            method: Method.PUT,
+            body: updated
+        }));
     };
 
     return {

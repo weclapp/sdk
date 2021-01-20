@@ -105,18 +105,38 @@ async ${signature}: Promise<${returnType}> {
         if (TOP_ID_REGEXP.test(path.path)) {
             const returnType = resolveResponseType(methods.put);
             const bodyType = resolveRequestType(methods.put);
-            const description = `Updates a ${entityName}`;
-            const signature = `update(id: string, data: Partial<${bodyType}>)`;
 
-            stats.push({description, signature});
-            sources.push(tsFunction({
-                description,
-                body: `
+            // Update an entity
+            {
+                const description = `Updates a ${entityName}`;
+                const signature = `update(id: string, data: Partial<${bodyType}>)`;
+
+                stats.push({description, signature});
+                sources.push(tsFunction({
+                    description,
+                    body: `
 async ${signature}: Promise<${returnType}> {
     return _update(\`${injectParams(path.path, {id: '${id}'})}\`, data);
 }
                 `
-            }));
+                }));
+            }
+
+            // Replace an entity
+            {
+                const description = `Replaces a ${entityName}`;
+                const signature = `replace(id: string, data: ${bodyType})`;
+
+                stats.push({description, signature});
+                sources.push(tsFunction({
+                    description,
+                    body: `
+async ${signature}: Promise<${returnType}> {
+    return _replace<${bodyType}>(\`${injectParams(path.path, {id: '${id}'})}\`, data);
+}
+                `
+                }));
+            }
         } else {
             logger.warnLn(`Didn't generate code for PUT ${path.path}`);
         }
