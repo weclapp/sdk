@@ -51,6 +51,7 @@ export interface WrappedResponse<Data> {
 export interface ListQuery<Entity> extends EntityQuery<Entity> {
     page?: number;
     pageSize?: number;
+    filter?: QueryFilter<Entity>;
 }
 
 // Return value for the .unique query

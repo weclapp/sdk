@@ -165,11 +165,10 @@ export const weclapp = ({
     // Internal .some implementation
     const _some = <Entity, Query extends ListQuery<Entity>>(
         endpoint: string,
-        options?: Query,
-        filter?: Partial<Entity>
+        options?: Query
     ): Promise<SomeReturn<Entity, Query>> => makeRequest(endpoint, {
         params: {
-            ...filter, // We don't want the user to be able to re-write given properties below
+            ...options?.filter, // We don't want the user to be able to re-write given properties below
             'page': options?.page ?? 1,
             'pageSize': options?.pageSize ?? 10,
             'serializeNulls': options?.serialize,

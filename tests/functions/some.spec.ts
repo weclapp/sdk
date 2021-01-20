@@ -86,4 +86,23 @@ describe('.some', () => {
             })
         );
     });
+
+    it('Should work with filters', async () => {
+        testSchema(
+            await sdk.customer.some({
+                select: {id: true},
+                include: ['responsibleUserId'],
+                filter: {
+                    'id-gt': 25
+                }
+            }),
+            Joi.object({
+                data: Joi.array(),
+                references: Joi.alternatives(
+                    Joi.object(),
+                    Joi.valid(null)
+                )
+            })
+        );
+    });
 });

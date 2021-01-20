@@ -22,14 +22,14 @@ export const rootFunction = ({path, methods}: EndpointPath): Functions => {
         if (response) {
             const returnType = guessResponseEntity(response);
             const description = `Finds all ${entityName} entities which match the given filter.`;
-            const signature = `some<Query extends ListQuery<${returnType}>>(options?: Query, filter?: Partial<${returnType}>)`;
+            const signature = `some<Query extends ListQuery<${returnType}>>(options?: Query)`;
 
             stats.push({description, signature});
             sources.push(tsFunction({
                 description,
                 body: `
 async ${signature}: Promise<SomeReturn<${returnType}, Query>> {
-    return _some<${returnType}, Query>('${path.path}', options, filter);
+    return _some<${returnType}, Query>('${path.path}', options);
 }
                 `
             }));
