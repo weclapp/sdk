@@ -39,13 +39,15 @@ raw(
 Entities are grouped by their name. A function signature always looks like the following: `sdk[entity][function]`. Each entity implements the following
 functions (in the following examples we refer to `[Entity]` as being the target-entity, the function signatures are simplified):
 
-| Status | Function | Use cases |
-| ------ | -------- | --------- |
+| Status | Function | Description |
+| ------ | -------- | ----------- |
 | Fully implemented. | `count(filter?: QueryFilter<[Entity]>)` | Counts the amount of entities matching the given filter (optional). Per default it'll return the total amount. |
 | Partial implementation. | `unique(id: string, options?: EntityQuery<[Entity]>)` | Returns an entity by it's unique identifier. |
-| Partial implementation.  | `some(options?: ListQuery<[Entity]>, filter?: Partial<[Entity]>)` | Returns all matching entities by the given filter. |
+| Partial implementation. | `some(options?: ListQuery<[Entity]>)` | Returns all matching entities by the given filter. |
+| Partial implementation. | `first(options?: FirstQuery<[Entity]>)` | Returns the first matching entity. |
 | Fully implemented. | `create(data: Create[Entity] & Partial<[Entity]>)` | Creates a new entity based on the data. |
-| Partial implementation. | `update(data: Partial<[Entity]>)` | Updates the given entity. |
+| Partial implementation. | `update(data: Partial<[Entity]>)` | Updates the given entity with a sub-set of itself. |
+| Fully implemented. | `replace(id: string, data: [Entity]>)` | Replaces the given entity with the new one.  |
 | Fully implemented. | `delete(id: number)` | Deletes an entity by the given id. |
 
 > "Partial implementation" referes to types missing or not properly resolve return type.
@@ -60,7 +62,6 @@ The extended version, `ListQuery` also concludes:
 
 * `page` _- The amount of entities to return per page._
 * `pageSize` _- The page size._
-
 
 #### `.count(filter?: QueryFilter<[Entity]>)`
 
@@ -105,7 +106,7 @@ const {data, references} = await sdk.customer.unique('151662', {
 });
 ```
 
-#### `.some(options?: ListQuery, filter?: Partial<[Entity]>)`
+#### `.some(options?: ListQuery<[Entity]>)`
 
 Fetches a list of the given entity.
 
@@ -132,6 +133,19 @@ const {data, references} = await sdk.article.some({
 });
 ```
 
+#### `.first(options?: FirstQuery<[Entity]>)`
+
+Fetches the first entity from the first page, ignoring all the other results.
+All options from `some` can be used except for the pagination options.
+
+##### Example:
+
+```ts
+
+// Fetches the first customer it can find
+const customer = await sdk.customer.first();
+```
+
 #### `.create(data: Create[Entity])`
 
 The `create` function is used to create a new instance of the given entity. It takes the required data which is mandatory for a new instantiation, including all
@@ -148,7 +162,7 @@ const article = await sdk.article.create({
 
 #### `.update(id: string, data: Partial<[Entity]>)`
 
-The `function` can be used to update a specific instance of an entity using the given id.
+The `update` functoin can be used to update a specific instance of an entity using the given id.
 
 ##### Example:
 
@@ -159,7 +173,26 @@ const customer = await sdk.customer.update('176662', {
 });
 ```
 
-#### `.delete`
+#### `.replace(id: string, data: [Entity])`
+
+The `replace` replaces the entity identified by the given id with the new one.
+This is useful if the customer has already been fetched, and the integrity needs to be preserved if multiple users are editing the same entity.
+
+##### Example:
+
+```ts
+
+// Fetch first customer it can find
+const customer = await sdk.customer.first();
+
+// Update customer 
+const updated = await sdk.customer.replace(customer.id, {
+    ...customer,
+   company: 'Hello world LLC'
+});
+```
+
+#### `.delete(id: string)`
 
 The `delete` function simply deletes an entity by it's unique identifier.
 
