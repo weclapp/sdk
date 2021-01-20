@@ -54,7 +54,11 @@ export interface ListQuery<Entity> extends EntityQuery<Entity> {
     filter?: QueryFilter<Entity>;
 }
 
-// Return value for the .unique query
+export interface FirstQuery<Entity> extends EntityQuery<Entity> {
+    filter?: QueryFilter<Entity>;
+}
+
+// Return value for the .unique and .first query
 export type UniqueReturn<Entity, Query extends EntityQuery<Entity> = {}> = Query['include'] extends string[] ?
     WrappedResponse<Select<Entity, Query>> : (Select<Entity, Query> | null);
 

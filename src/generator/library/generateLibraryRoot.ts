@@ -37,7 +37,7 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
     }
 
     return `${resolveImports(target)}
-import {QueryFilter, EntityQuery, ListQuery, SomeReturn, UniqueReturn} from './types.base';
+import {QueryFilter, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn} from './types.base';
 import {Options, Method, RawRequest} from './types.api';
 
 // Current version.
@@ -194,7 +194,7 @@ export const weclapp = ({
             body: data
         });
     };
-    
+
     // Internal .replace implementation
     const _replace = <Entity>(endpoint: string, data: Entity): Promise<Entity> => {
         return makeRequest(endpoint, {
@@ -214,6 +214,26 @@ export const weclapp = ({
             body: updated
         }));
     };
+
+    // Internal .first implementation
+    const _first = <Entity, Query extends FirstQuery<Entity>>(
+        endpoint: string,
+        options?: Query
+    ): Promise<UniqueReturn<Entity, Query>> => makeRequest(endpoint, {
+        params: {
+            ...options?.filter, // We don't want the user to be able to re-write given properties below
+            'page': 1,
+            'pageSize': 10,
+            'serializeNulls': options?.serialize,
+            'properties': options?.select ? Object.keys(options.select).join(',') : undefined,
+            'includeReferencedEntities': options?.include?.join(','),
+        }
+    }).then(res => {
+        return options?.include ? {
+            data: res.result[0],
+            references: res?.referencedEntities ?? null
+        } : (res.result[0] ?? null);
+    });
 
     return {
         raw: makeRequest,

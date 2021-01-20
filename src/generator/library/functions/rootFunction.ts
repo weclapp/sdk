@@ -21,18 +21,38 @@ export const rootFunction = ({path, methods}: EndpointPath): Functions => {
 
         if (response) {
             const returnType = guessResponseEntity(response);
-            const description = `Finds all ${entityName} entities which match the given filter.`;
-            const signature = `some<Query extends ListQuery<${returnType}>>(options?: Query)`;
 
-            stats.push({description, signature});
-            sources.push(tsFunction({
-                description,
-                body: `
+            // Fetch list
+            {
+                const description = `Finds all ${entityName} entities which match the given filter.`;
+                const signature = `some<Query extends ListQuery<${returnType}>>(options?: Query)`;
+
+                stats.push({description, signature});
+                sources.push(tsFunction({
+                    description,
+                    body: `
 async ${signature}: Promise<SomeReturn<${returnType}, Query>> {
     return _some<${returnType}, Query>('${path.path}', options);
 }
                 `
-            }));
+                }));
+            }
+
+            // Fetch just the first one in the list
+            {
+                const description = `Fetches the first ${entityName} it can find. Ignores all the other results`;
+                const signature = `first<Query extends FirstQuery<${returnType}>>(options?: Query)`;
+
+                stats.push({description, signature});
+                sources.push(tsFunction({
+                    description,
+                    body: `
+async ${signature}: Promise<UniqueReturn<${returnType}, Query>> {
+    return _first<${returnType}, Query>('${path.path}', options);
+}
+                `
+                }));
+            }
         } else {
             logger.errorLn(`Couldn't resolve response type for GET ${path.path}`);
         }
