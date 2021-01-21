@@ -1,3 +1,4 @@
+import {generateFunction, Target} from '@enums/Target';
 import {EndpointPath} from '@generator/library';
 import {Functions} from '@generator/library/functions/generateFunctions';
 import {SwaggerPathType} from '@generator/utils/parseSwaggerPath';
@@ -19,7 +20,7 @@ const guessEntityType = (endpoints: EndpointPath[]): string => {
 /**
  * Special count-entities endpoint.
  */
-export const countFunction = ({path}: EndpointPath, endpoints: EndpointPath[]): Functions => {
+export const countFunction = ({path}: EndpointPath, endpoints: EndpointPath[], target: Target): Functions => {
     const entityName = pascalCase(path.entity);
     const entityType = guessEntityType(endpoints);
     const description = `Counts the amount of ${entityName}s entities which match the given filter.`;
@@ -30,11 +31,11 @@ export const countFunction = ({path}: EndpointPath, endpoints: EndpointPath[]): 
         sources: [
             tsFunction({
                 description,
-                body: `
-async ${signature}: Promise<number> {
-    return _count<${entityType}>('${path.path}', filter);
-}
-            `
+                body: generateFunction(target, {
+                    signature,
+                    returnValue: `_count<${entityType}>('${path.path}', filter)`,
+                    returnType: 'number'
+                })
             })
         ]
     };

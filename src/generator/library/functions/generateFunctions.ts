@@ -1,3 +1,4 @@
+import {Target} from '@enums/Target';
 import {EndpointPath, StatsEntityFunction} from '@generator/library';
 import {countFunction} from '@generator/library/functions/countFunction';
 import {entityFunction} from '@generator/library/functions/entityFunction';
@@ -13,14 +14,14 @@ export interface Functions {
 /**
  * Generates a single function for a single endpoint.
  */
-export const generateFunctions = (endpoint: EndpointPath, endpoints: EndpointPath[]): Functions | null => {
+export const generateFunctions = (endpoint: EndpointPath, endpoints: EndpointPath[], target: Target): Functions | null => {
     switch (endpoint.path.type) {
         case SwaggerPathType.Count:
-            return countFunction(endpoint, endpoints);
+            return countFunction(endpoint, endpoints, target);
         case SwaggerPathType.Entity:
-            return entityFunction(endpoint);
+            return entityFunction(endpoint, target);
         case SwaggerPathType.Root:
-            return rootFunction(endpoint);
+            return rootFunction(endpoint, target);
         default:
             logger.errorLn(`Couldn't parse path type for ${endpoint.path.path}`);
     }

@@ -1,3 +1,4 @@
+import {generateFunction, Target} from '@enums/Target';
 import {EndpointPath, StatsEntityFunction} from '@generator/library';
 import {Functions} from '@generator/library/functions/generateFunctions';
 import {injectParams, SwaggerPath} from '@generator/utils/parseSwaggerPath';
@@ -19,10 +20,8 @@ const buildSpecialFunction = (path: SwaggerPath): string => {
 
 /**
  * Generates endpoints for the entity endpoint e.g. /customer/id/:id
- * @param path
- * @param methods
  */
-export const entityFunction = ({path, methods}: EndpointPath): Functions => {
+export const entityFunction = ({path, methods}: EndpointPath, target: Target): Functions => {
     const entityName = pascalCase(path.entity);
     const stats: StatsEntityFunction[] = [];
     const sources: string[] = [];
@@ -38,11 +37,11 @@ export const entityFunction = ({path, methods}: EndpointPath): Functions => {
             stats.push({description, signature});
             sources.push(tsFunction({
                 description,
-                body: `
-async ${signature}: Promise<UniqueReturn<${returnType}, Query>> {
-    return _unique<${returnType}, Query>('/${path.entity}', id, options);
-}
-                `
+                body: generateFunction(target, {
+                    signature,
+                    returnType: `UniqueReturn<${returnType}, Query>`,
+                    returnValue: `_unique<${returnType}, Query>('/${path.entity}', id, options)`
+                })
             }));
         } else if (path.name) {
             const bodyType = resolveRequestType(methods.get) || 'unknown';
@@ -52,11 +51,10 @@ async ${signature}: Promise<UniqueReturn<${returnType}, Query>> {
             stats.push({description, signature});
             sources.push(tsFunction({
                 description,
-                body: `
-async ${signature}: Promise<${returnType}> {
-    return Promise.reject();
-}
-                `
+                body: generateFunction(target, {
+                    signature, returnType,
+                    returnValue: 'Promise.resolve(null)'
+                })
             }));
         } else {
             logger.warnLn(`Didn't generate code for GET ${path.path}`);
@@ -74,11 +72,10 @@ async ${signature}: Promise<${returnType}> {
             stats.push({description, signature});
             sources.push(tsFunction({
                 description,
-                body: `
-async ${signature}: Promise<${returnType}> {
-    return Promise.reject();
-}
-                `
+                body: generateFunction(target, {
+                    signature, returnType,
+                    returnValue: 'Promise.resolve(null)'
+                })
             }));
         } else if (path.name) {
             const bodyType = resolveRequestType(methods.post) || 'unknown';
@@ -88,11 +85,10 @@ async ${signature}: Promise<${returnType}> {
             stats.push({description, signature});
             sources.push(tsFunction({
                 description,
-                body: `
-async ${signature}: Promise<${returnType}> {
-    return Promise.reject();
-}
-                `
+                body: generateFunction(target, {
+                    signature, returnType,
+                    returnValue: 'Promise.resolve(null)'
+                })
             }));
         } else {
             logger.warnLn(`Didn't generate code for POST ${path.path}`);
@@ -114,11 +110,10 @@ async ${signature}: Promise<${returnType}> {
                 stats.push({description, signature});
                 sources.push(tsFunction({
                     description,
-                    body: `
-async ${signature}: Promise<${returnType}> {
-    return _update(\`${injectParams(path.path, {id: '${id}'})}\`, data);
-}
-                `
+                    body: generateFunction(target, {
+                        signature, returnType,
+                        returnValue: `_update(\`${injectParams(path.path, {id: '${id}'})}\`, data)`
+                    })
                 }));
             }
 
@@ -130,11 +125,10 @@ async ${signature}: Promise<${returnType}> {
                 stats.push({description, signature});
                 sources.push(tsFunction({
                     description,
-                    body: `
-async ${signature}: Promise<${returnType}> {
-    return _replace<${bodyType}>(\`${injectParams(path.path, {id: '${id}'})}\`, data);
-}
-                `
+                    body: generateFunction(target, {
+                        signature, returnType,
+                        returnValue: `_replace<${bodyType}>(\`${injectParams(path.path, {id: '${id}'})}\`, data)`
+                    })
                 }));
             }
         } else {
@@ -152,11 +146,11 @@ async ${signature}: Promise<${returnType}> {
             stats.push({description, signature});
             sources.push(tsFunction({
                 description,
-                body: `
-async ${signature}: Promise<void> {
-    return _delete(\`${injectParams(path.path, {id: '${id}'})}\`);
-}
-                `
+                body: generateFunction(target, {
+                    signature,
+                    returnType: 'void',
+                    returnValue: `_delete(\`${injectParams(path.path, {id: '${id}'})}\`)`
+                })
             }));
         } else {
             logger.warnLn(`Didn't generate code for DELETE ${path.path}`);

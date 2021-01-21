@@ -1,5 +1,5 @@
 import pkg from '@/package.json';
-import {Target} from '@enums/Target';
+import {isNodeTarget, isRXTarget, Target} from '@enums/Target';
 import {resolveServer} from '@generator/utils/resolveServer';
 import {logger} from '@logger';
 import {tsImport} from '@ts/modules';
@@ -14,9 +14,13 @@ const resolveImports = (target: Target): string => {
     const imports: string[] = [];
 
     // Additional types, target-dependent
-    if (target === Target.NODE_PROMISES) {
+    if (isNodeTarget(target)) {
         imports.push(tsImport('node-fetch', ['Response'], 'fetch'));
         imports.push(tsImport('url', ['URLSearchParams']));
+    }
+
+    if (isRXTarget(target)) {
+        imports.push(tsImport('rxjs', ['defer', 'Observable']));
     }
 
     return imports.join('\n');

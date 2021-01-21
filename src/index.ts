@@ -24,8 +24,14 @@ const src = (...paths: string[]) => path.resolve(dist(), 'src', ...paths);
 
 const files = {
     sdks: {
-        main: src('sdk.ts'),
-        node: src('sdk.node.ts'),
+        promises: {
+            browser: src('sdk.ts'),
+            node: src('sdk.node.ts')
+        },
+        rxjs: {
+            browser: src('sdk.rx.ts'),
+            node: src('sdk.rx.node.ts')
+        }
     },
     docs: {
         api: dist('API.md')
@@ -64,14 +70,16 @@ void (async () => {
     // Main library and documentation
     logger.infoLn('Generate main SDK\'s...');
     const sdk = generateSdk(openapi, Target.BROWSER_PROMISES);
-    await writeSourceFile(files.sdks.main, `${modelsImport}\n\n${sdk.source}`);
+    await writeSourceFile(files.sdks.promises.browser, `${modelsImport}\n\n${sdk.source}`);
 
     logger.infoLn('Generate API documentation...');
     await writeSourceFile(docs('api.md'), await generateAPIDocumentation(sdk.stats, statc('docs', 'api.md')));
 
     // Additional libraries
     logger.infoLn('Generate additional SDK\'s...');
-    await writeFile(files.sdks.node, `${modelsImport}\n\n${generateSdk(openapi, Target.NODE_PROMISES).source}`);
+    await writeFile(files.sdks.promises.node, `${modelsImport}\n\n${generateSdk(openapi, Target.NODE_PROMISES).source}`);
+    await writeFile(files.sdks.rxjs.browser, `${modelsImport}\n\n${generateSdk(openapi, Target.BROWSER_RX).source}`);
+    await writeFile(files.sdks.rxjs.node, `${modelsImport}\n\n${generateSdk(openapi, Target.NODE_RX).source}`);
 
     // Print job summary
     const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));

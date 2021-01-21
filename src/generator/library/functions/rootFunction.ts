@@ -1,3 +1,4 @@
+import {generateFunction, Target} from '@enums/Target';
 import {EndpointPath, StatsEntityFunction} from '@generator/library';
 import {Functions} from '@generator/library/functions/generateFunctions';
 import {resolveRequestType} from '@generator/utils/resolveRequestType';
@@ -8,10 +9,8 @@ import {pascalCase} from 'change-case';
 
 /**
  * Generates functions for the root level of an endpoint e.g. /customer
- * @param path
- * @param methods
  */
-export const rootFunction = ({path, methods}: EndpointPath): Functions => {
+export const rootFunction = ({path, methods}: EndpointPath, target: Target): Functions => {
     const entityName = pascalCase(path.entity);
     const stats: StatsEntityFunction[] = [];
     const sources: string[] = [];
@@ -30,11 +29,11 @@ export const rootFunction = ({path, methods}: EndpointPath): Functions => {
                 stats.push({description, signature});
                 sources.push(tsFunction({
                     description,
-                    body: `
-async ${signature}: Promise<SomeReturn<${returnType}, Query>> {
-    return _some<${returnType}, Query>('${path.path}', options);
-}
-                `
+                    body: generateFunction(target, {
+                        signature,
+                        returnType: `SomeReturn<${returnType}, Query>`,
+                        returnValue: `_some<${returnType}, Query>('${path.path}', options)`
+                    })
                 }));
             }
 
@@ -46,11 +45,11 @@ async ${signature}: Promise<SomeReturn<${returnType}, Query>> {
                 stats.push({description, signature});
                 sources.push(tsFunction({
                     description,
-                    body: `
-async ${signature}: Promise<UniqueReturn<${returnType}, Query>> {
-    return _first<${returnType}, Query>('${path.path}', options);
-}
-                `
+                    body: generateFunction(target, {
+                        signature,
+                        returnType: `UniqueReturn<${returnType}, Query>`,
+                        returnValue: `_first<${returnType}, Query>('${path.path}', options)`
+                    })
                 }));
             }
         } else {
@@ -69,11 +68,10 @@ async ${signature}: Promise<UniqueReturn<${returnType}, Query>> {
             stats.push({description, signature});
             sources.push(tsFunction({
                 description,
-                body: `
-async ${signature}: Promise<${returnType}> {
-    return _create('${path.path}', data);
-}
-                `
+                body: generateFunction(target, {
+                    signature, returnType,
+                    returnValue: `_create('${path.path}', data)`
+                })
             }));
         } else {
             logger.warnLn(`Couldn't resolve body type for POST ${path.path}`);
