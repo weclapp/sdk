@@ -20,26 +20,24 @@ const baseOutput = {
     }
 };
 
-const output = dir => [
-    {
-        ...baseOutput,
-        file: dist(dir, 'index.js'),
-        name: 'Weclapp',
-        format: 'umd'
-    },
-    {
-        ...baseOutput,
-        file: dist(dir, 'index.mjs'),
-        format: 'es'
-    }
-];
-
 export default [
 
-    // Main bundle
+    // Browser bundle
     {
         input: src('sdk.ts'),
-        output: output('main'),
+        output: [
+            {
+                ...baseOutput,
+                file: dist('main', 'index.js'),
+                name: 'Weclapp',
+                format: 'umd'
+            },
+            {
+                ...baseOutput,
+                file: dist('main', 'index.mjs'),
+                format: 'es'
+            }
+        ],
         plugins: [
             copy({
                 targets: [
@@ -69,8 +67,19 @@ export default [
     // NodeJS bundle
     {
         input: src('sdk.node.ts'),
-        output: output('node'),
         external: ['node-fetch', 'url'],
+        output: [
+            {
+                ...baseOutput,
+                file: dist('node', 'index.js'),
+                format: 'cjs'
+            },
+            {
+                ...baseOutput,
+                file: dist('node', 'index.mjs'),
+                format: 'es'
+            }
+        ],
         plugins: [
             copy({
                 targets: [
