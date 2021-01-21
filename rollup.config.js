@@ -18,7 +18,7 @@ const src = (...paths) => path.resolve(dist(), 'src', ...paths);
 
 // Copies the sdk types to the given folder
 const copyTypes = (...dest) => copy({
-    targets: [{src: './sdk/main/index.d.ts', dest: dist(...dest)}]
+    targets: [{src: './sdk/types/index.d.ts', dest: dist(...dest)}]
 });
 
 // Maps globals to everything
@@ -62,8 +62,9 @@ export default [
             })
         ],
         plugins: [
-            ts(),
             ...(production ? [terser()] : []),
+            ts(),
+            copyTypes('main'),
             copy({
                 targets: [
 
@@ -94,7 +95,7 @@ export default [
         external: ['rxjs'],
         plugins: [
             ts(),
-            copyTypes('main', 'rx'),
+            copyTypes('main/rx'),
             ...(production ? [terser()] : [])
         ],
         output: [
@@ -117,7 +118,10 @@ export default [
         input: src('sdk.node.ts'),
         output: nodeOutput('node'),
         external: ['node-fetch', 'url'],
-        plugins: [ts(), copyTypes('node')]
+        plugins: [
+            ts(),
+            copyTypes('node')
+        ]
     },
 
     // NodeJS bundle (rxjs)
@@ -125,6 +129,9 @@ export default [
         input: src('sdk.rx.node.ts'),
         output: nodeOutput('node/rx'),
         external: ['node-fetch', 'url', 'rxjs'],
-        plugins: [ts(), copyTypes('node', 'rx')]
+        plugins: [
+            ts(),
+            copyTypes('node/rx')
+        ]
     }
 ];

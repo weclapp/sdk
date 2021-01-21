@@ -1,9 +1,9 @@
 import 'jest-extended';
-import {Customer} from '../../sdk/src/types.models';
 import {sdk} from '../utils';
 
 describe('.replace', () => {
 
+    /* eslint-disable */
     it('Should replace a customer with a modified version', async () => {
         let [customer] = await sdk.customer.some({
             filter: {
@@ -17,7 +17,7 @@ describe('.replace', () => {
         customer = await sdk.customer.replace(customer.id, {
             ...customer,
             company
-        }) as Customer;
+        }) as any;
 
         expect(customer.company).toEqual(company);
 
@@ -25,7 +25,7 @@ describe('.replace', () => {
         customer = await sdk.customer.replace(customer.id, {
             ...customer,
             company: originalCompany
-        }) as Customer;
+        }) as any;
 
         expect(customer.company).toEqual(originalCompany);
     });

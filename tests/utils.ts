@@ -1,12 +1,22 @@
 import {AnySchema} from 'joi';
+import {weclapp as weclappRx} from '../sdk/node/rx';
 import {weclapp} from '../sdk/node';
 
-export const sdk = weclapp({
+const options = {
     apiKey: process.env.TEST_API_KEY as string,
     domain: process.env.TEST_DOMAIN as string
-});
+};
 
-export const testSchema = (data: any, schema: AnySchema): void => {
+// Create weclapp instances of both libraries
+export const sdkRx = weclappRx(options);
+export const sdk = weclapp(options);
+
+/**
+ * Tests the data against the given schema
+ * @param data
+ * @param schema
+ */
+export const testSchema = (data: unknown, schema: AnySchema): void => {
     const {errors, warning} = schema.validate(data);
 
     if (errors) {

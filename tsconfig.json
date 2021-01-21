@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
         "declaration": true,
-        "declarationDir": "./sdk/main",
         "strict": true,
         "noImplicitAny": true,
         "esModuleInterop": true,
@@ -24,7 +23,8 @@
         }
     },
     "include": [
+        "tests/**/*.ts",
         "src/**/*.ts",
-        "sdk/**/*.ts"
+        "sdk/src/*.ts"
     ]
 }

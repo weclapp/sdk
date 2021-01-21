@@ -1,3 +1,4 @@
+import {config} from 'dotenv';
 
 // Load .env variables
-require('dotenv').config();
+config();
