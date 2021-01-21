@@ -9,15 +9,15 @@ require('dotenv').config();
 const production = process.env.NODE_ENV === 'production';
 const dist = (...paths) => path.resolve(__dirname, process.env.SDK_REPOSITORY, ...paths);
 const src = (...paths) => path.resolve(dist(), 'src', ...paths);
-const plugins = [ts(), ...(production ? [terser()] : [])];
 
 const baseOutput = {
     sourcemap: true,
-    banner: `/*! Weclapp SDK ${pkg.version} MIT | https://github.com/weclapp/sdk */`,
-    globals: {
-        'node-fetch': 'fetch',
-        'url': 'URLSearchParams'
-    }
+    banner: `/*! Weclapp SDK ${pkg.version} MIT | https://github.com/weclapp/sdk */`
+};
+
+const globals = {
+    'node-fetch': 'fetch',
+    'url': 'URLSearchParams'
 };
 
 export default [
@@ -39,6 +39,8 @@ export default [
             }
         ],
         plugins: [
+            ts(),
+            ...(production ? [terser()] : []),
             copy({
                 targets: [
 
@@ -59,8 +61,7 @@ export default [
                         }
                     }
                 ]
-            }),
-            ...plugins
+            })
         ]
     },
 
@@ -72,23 +73,25 @@ export default [
             {
                 ...baseOutput,
                 file: dist('node', 'index.js'),
-                format: 'cjs'
+                format: 'cjs',
+                globals
             },
             {
                 ...baseOutput,
                 file: dist('node', 'index.mjs'),
-                format: 'es'
+                format: 'es',
+                globals
             }
         ],
         plugins: [
+            ts(),
             copy({
                 targets: [
 
                     // The node edition shares the same types, copy it from the main bundle
                     {src: './sdk/main/index.d.ts', dest: dist('node')}
                 ]
-            }),
-            ...plugins
+            })
         ]
     }
 ];
