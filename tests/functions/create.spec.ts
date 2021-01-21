@@ -1,5 +1,5 @@
 import 'jest-extended';
-import {Article} from '../../sdk/src/types.models';
+import {Article} from '@sdk/src/types.models';
 import {sdk} from '../utils';
 
 describe('.create,.delete', () => {

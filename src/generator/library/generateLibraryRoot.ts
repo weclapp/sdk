@@ -43,6 +43,7 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
     return `${resolveImports(target)}
 import {QueryFilter, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn} from './types.base';
 import {Options, Method, RawRequest} from './types.api';
+export * from './types.models';
 
 // Current version.
 export const version = '${pkg.version}';

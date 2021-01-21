@@ -1,6 +1,6 @@
 import {AnySchema} from 'joi';
-import {weclapp as weclappRx} from '../sdk/node/rx';
-import {weclapp} from '../sdk/node';
+import {weclapp} from '@sdk/node';
+import {weclapp as weclappRx} from '@sdk/node/rx';
 
 const options = {
     apiKey: process.env.TEST_API_KEY as string,

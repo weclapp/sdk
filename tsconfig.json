@@ -19,7 +19,8 @@
             "@enums/*": ["src/enums/*"],
             "@utils/*": ["src/utils/*"],
             "@ts/*": ["src/ts/*"],
-            "@/*": ["./*"]
+            "@/*": ["./*"],
+            "@sdk/*": ["sdk/*"]
         }
     },
     "include": [

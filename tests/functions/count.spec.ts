@@ -3,11 +3,11 @@ import {sdk} from '../utils';
 
 describe('.count', () => {
 
-    it('Sould fetch the total amount of customers, articles and sales-orders', async()=>{
+    it('Sould fetch the total amount of customers, articles and sales-orders', async () => {
         expect(await sdk.article.count()).toBeNumber();
         expect(await sdk.customer.count()).toBeNumber();
         expect(await sdk.salesOrder.count()).toBeNumber();
-    })
+    });
 
     it('Should work with filters', async () => {
         expect(await sdk.customer.count({

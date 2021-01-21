@@ -1,7 +1,8 @@
-import {Customer} from '../../sdk/src/types.models';
-import {sdk} from '../utils';
+import {Customer} from '@sdk/src/types.models';
 import 'jest-extended';
+import {sdk} from '../utils';
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('.update', () => {
 
     it('Should update a customer', async () => {
