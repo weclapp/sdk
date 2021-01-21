@@ -95,18 +95,18 @@ export default [
         external: ['rxjs'],
         plugins: [
             ts(),
-            copyTypes('main/rx'),
+            copyTypes('rx'),
             ...(production ? [terser()] : [])
         ],
         output: [
             output({
-                file: dist('main', 'rx', 'index.js'),
+                file: dist('rx', 'index.js'),
                 name: 'Weclapp',
                 format: 'umd',
                 globals: globals('rxjs')
             }),
             output({
-                file: dist('main', 'rx', 'index.mjs'),
+                file: dist('rx', 'index.mjs'),
                 format: 'es',
                 globals: globals('rxjs')
             })

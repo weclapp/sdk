@@ -30,6 +30,9 @@ Based on the project structure, building is done in two steps:
 1. Generating the raw SDK code into [sdk/src](sdk/src) and partial documentation into [sdk/docs](sdk/docs).
 2. Bundling the code in [sdk/src](sdk/src) into the given targets (for example [sdk/node](sdk/node)).
 
+After building it, check out the generated repository under [sdk](sdk) for further documentation!
+
+
 ## Setup
 
 Copy the [.env.example](.env.example) to [.env](.env) and configure it accordingly. Use the [swagger editor](https://editor.swagger.io/) to convert your
