@@ -1,22 +1,37 @@
 import {terser} from 'rollup-plugin-terser';
 import ts from '@wessberg/rollup-plugin-ts';
 import copy from 'rollup-plugin-copy';
-import pkg from './package.json';
 import * as path from 'path';
+import * as fs from 'fs';
+import {config} from 'dotenv';
 
-require('dotenv').config();
+// Load env variables
+config();
 
+// Read package.json and check for production mode
+const pkg = JSON.parse(fs.readFileSync('./package.json'));
 const production = process.env.NODE_ENV === 'production';
-const dist = (...paths) => path.resolve(__dirname, process.env.SDK_REPOSITORY, ...paths);
+
+// Short functions to resolve dist / src files
+const dist = (...paths) => path.resolve(process.cwd(), process.env.SDK_REPOSITORY, ...paths);
 const src = (...paths) => path.resolve(dist(), 'src', ...paths);
 
+// Copies the sdk types to the given folder
+const copyTypes = (...dest) => copy({
+    targets: [{src: './sdk/main/index.d.ts', dest: dist(...dest)}]
+});
+
+// Maps globals to everything
 const globals = (...globals) => globals.reduce((pv, cv) => ({[cv]: '*', ...pv}), {});
+
+// Builds an output config with given defaults
 const output = config => ({
     sourcemap: true,
     banner: `/*! Weclapp SDK ${pkg.version} MIT | https://github.com/weclapp/sdk */`,
     ...config
 });
 
+// Generalized output files for noed bundles
 const nodeOutput = dir => [
     output({
         file: dist(dir, 'index.js'),
@@ -77,7 +92,11 @@ export default [
     {
         input: src('sdk.rx.ts'),
         external: ['rxjs'],
-        plugins: [ts(), ...(production ? [terser()] : [])],
+        plugins: [
+            ts(),
+            copyTypes('main', 'rx'),
+            ...(production ? [terser()] : [])
+        ],
         output: [
             output({
                 file: dist('main', 'rx', 'index.js'),
@@ -98,16 +117,7 @@ export default [
         input: src('sdk.node.ts'),
         output: nodeOutput('node'),
         external: ['node-fetch', 'url'],
-        plugins: [
-            ts(),
-            copy({
-                targets: [
-
-                    // The node edition shares the same types, copy it from the main bundle
-                    {src: './sdk/main/index.d.ts', dest: dist('node')}
-                ]
-            })
-        ]
+        plugins: [ts(), copyTypes('node')]
     },
 
     // NodeJS bundle (rxjs)
@@ -115,6 +125,6 @@ export default [
         input: src('sdk.rx.node.ts'),
         output: nodeOutput('node/rx'),
         external: ['node-fetch', 'url', 'rxjs'],
-        plugins: [ts()]
+        plugins: [ts(), copyTypes('node', 'rx')]
     }
 ];
