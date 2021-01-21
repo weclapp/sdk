@@ -133,5 +133,12 @@ export default [
             ts(),
             copyTypes('node/rx')
         ]
+    },
+
+    // Utilities
+    {
+        input: src('utils.ts'),
+        output: nodeOutput('utils'),
+        plugins: [ts()]
     }
 ];

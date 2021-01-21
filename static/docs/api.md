@@ -9,12 +9,13 @@ The following endpoints / entities are implemented or accessible through the SDK
 
 ## Special functions
 
-The expose `.raw` function can be used to make a "raw" request to the weclapp api. For example, instead of using the `.count` function to fetch the total amount
-of customers you could do:
+The expose `.raw` function can be used to make a "raw" request to the weclapp api. Utility functions come in handy here.
+For example, instead of using the `.count` function to fetch the total amount of customers you could do:
 
 ```ts
-const customers = await api.raw('customer/count')
-    .then(response => response.result);
+import {unwrap} from '@weclapp/utils';
+const customers = await sdk.raw<{result: number}>('/customer/count')
+    .then(unwrap);
 
 console.log(customers);
 ```
@@ -26,7 +27,7 @@ raw(
     endpoint: string;
     options?: {
         method?: Method;
-        params?: Record<string, unknown>;
+        query?: Record<string, unknown>;
         body?: any;
     }
 )

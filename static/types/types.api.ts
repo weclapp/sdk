@@ -18,10 +18,10 @@ export enum Method {
 
 interface RequestOptions {
     method?: Method;
-    params?: Record<string, unknown>;
+    query?: Record<string, unknown>;
     body?: any;
 }
 
 export interface RawRequest {
-    (endpoint: string, requestOptions?: RequestOptions): Promise<any>
+    <T = any>(endpoint: string, requestOptions?: RequestOptions): Promise<T>
 }

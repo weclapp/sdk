@@ -40,9 +40,11 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
         process.exit(1);
     }
 
-    return `${resolveImports(target)}
+    return `
+${resolveImports(target)}
 import {QueryFilter, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn} from './types.base';
 import {Options, Method, RawRequest} from './types.api';
+import {unwrap, params} from './utils';
 export * from './types.models';
 
 // Current version.
@@ -68,7 +70,7 @@ export const weclapp = ({
      * Takes a response and converts it to a js object if possible.
      * @param res
      */
-    const handleContentType = (res: Response): Promise<Response> => {
+    const json = (res: Response): Promise<Response> => {
         if (res.headers?.get('content-type')?.includes('application/json')) {
             return res.json();
         }
@@ -77,39 +79,20 @@ export const weclapp = ({
     };
 
     /**
-     * Builds a search query base on the given object
-     * @param url Base url
-     * @param params Search params
-     * @returns {string}
-     */
-    const buildParams = (url: string, params: Record<string, unknown> = {}): string => {
-        const search = new URLSearchParams();
-
-        for (const [key, value] of Object.entries(params)) {
-            if (value !== undefined) {
-                search.append(key, Array.isArray(value) ? \`[\${value.join(',')}]\` : String(value));
-            }
-        }
-
-        const query = search.toString();
-        return query ? \`\${url}?\${query}\` : url;
-    };
-
-    /**
      * Makes a raw request to the given endpoint.
      * @param endpoint Endpoint url.
      * @param method Request method (GET is default)
-     * @param params Optional query parameters.
+     * @param query Optional query parameters.
      * @param body Optional body data.
      */
     const makeRequest: RawRequest = async (endpoint, {
         method = Method.GET,
-        params,
+        query,
         body
     } = {}): Promise<any> => {
         const url = \`\${base + endpoint}\`;
 
-        return fetch(params ? buildParams(url, params) : url, {
+        return fetch(query ? params(url, query) : url, {
             ...(body && {body: JSON.stringify(body)}),
             method,
             headers: {
@@ -118,7 +101,7 @@ export const weclapp = ({
                 'AuthenticationToken': apiKey
             }
         }).then(async res => {
-            const data = await handleContentType(res);
+            const data = await json(res);
 
             // Check if response was successful
             if (!res.ok) {
@@ -129,15 +112,9 @@ export const weclapp = ({
         });
     };
 
-    /**
-     * Unwraps the result property from a weclapp response.
-     * @param res
-     */
-    const unwrap = (res: {result: unknown}): any => res.result;
-
     // Internal .count implementation
     const _count = <Entity>(endpoint: string, filter?: QueryFilter<Entity>): Promise<number> => {
-        return makeRequest(endpoint, {params: filter}).then(unwrap);
+        return makeRequest(endpoint, {query: filter}).then(unwrap);
     };
 
     // Internal .unique implementation
@@ -151,7 +128,7 @@ export const weclapp = ({
         // including referenced entities or extracting specific properties.
         // Therefore we just go with the normal endpoint and grab the first, unique result.
         return makeRequest(endpoint, {
-            params: {
+            query: {
                 'id-eq': id,
                 'page': 1,
                 'pageSize': 1,
@@ -172,7 +149,7 @@ export const weclapp = ({
         endpoint: string,
         options?: Query
     ): Promise<SomeReturn<Entity, Query>> => makeRequest(endpoint, {
-        params: {
+        query: {
             ...options?.filter, // We don't want the user to be able to re-write given properties below
             'page': options?.page ?? 1,
             'pageSize': options?.pageSize ?? 10,
@@ -211,7 +188,7 @@ export const weclapp = ({
     // Internal .update implementation
     const _update = <Entity>(endpoint: string, data: Partial<Entity>): Promise<Entity> => {
         return makeRequest(endpoint, {
-            params: {'serializeNulls': true}
+            query: {'serializeNulls': true}
         }).then(res => {
             return {...res, ...data};
         }).then(updated => makeRequest(endpoint, {
@@ -225,7 +202,7 @@ export const weclapp = ({
         endpoint: string,
         options?: Query
     ): Promise<UniqueReturn<Entity, Query>> => makeRequest(endpoint, {
-        params: {
+        query: {
             ...options?.filter, // We don't want the user to be able to re-write given properties below
             'page': 1,
             'pageSize': 10,
@@ -246,5 +223,5 @@ export const weclapp = ({
 ${indent(endpoints, 2)}
     };
 };
-    `;
+    `.trim();
 };

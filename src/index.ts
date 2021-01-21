@@ -63,9 +63,10 @@ void (async () => {
     logger.infoLn('Generate type files...');
     await writeSourceFile(files.types.models, models.source);
 
-    // Static type files
-    logger.infoLn('Copy static types...');
+    // Static files
+    logger.infoLn('Copy static files...');
     await fse.copy(statc('types'), src());
+    await fse.copy(statc('code'), src());
 
     // Main library and documentation
     logger.infoLn('Generate main SDK\'s...');

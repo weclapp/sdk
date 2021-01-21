@@ -38,7 +38,9 @@ yarn add @weclapp/sdk
 
 ### Packages
 
-The weclapp SDK comes with several packages:
+The weclapp SDK comes with several packages / folders.
+
+##### SDK Implementations
 
 | Path | Description | Use case |
 | ---- | ----------- | -------- |
@@ -47,6 +49,26 @@ The weclapp SDK comes with several packages:
 | `@weclapp/sdk/node` | NodeJS version, requires [node-fetch](https://www.npmjs.com/package/node-fetch). | In NodeJS. |
 | `@weclapp/sdk/node/rx` | NodeJS version with [RxJS](https://rxjs.dev/). | In NodeJS in combination with [RxJS](https://rxjs.dev/). | 
 
+##### Utils
+Under `@weclapp/utils` several utility function can be found:
+
+```ts
+import {
+    
+    // Takes a party-like object and resolves the primary address / contact
+    // Both require the target-type to passed as generic, example:
+    // resolvePrimaryAddress<Address>(customer); // Address is from one of the packages above or a custom one.
+    resolvePrimaryAddress,
+    resolvePrimaryContact,
+    
+    // Takes an url and an object which should represent the query parameters.
+    // Undefined values are ignored by this.
+    params,
+    
+    // Takes a weclapp response value and extracts the "result" property.
+    unwrap
+} from '@weclapp/sdk/utils';
+```
 
 ### Quickstart
 
