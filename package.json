@@ -4,6 +4,7 @@
     "description": "SDK generator based on a weclapp api swagger file",
     "main": "./src/index.ts",
     "author": "weclapp",
+    "type": "module",
     "private": true,
     "scripts": {
         "gen:start": "ts-node -r tsconfig-paths/register src/index.ts --project tsconfig.json",

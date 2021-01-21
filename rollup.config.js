@@ -10,33 +10,41 @@ const production = process.env.NODE_ENV === 'production';
 const dist = (...paths) => path.resolve(__dirname, process.env.SDK_REPOSITORY, ...paths);
 const src = (...paths) => path.resolve(dist(), 'src', ...paths);
 
-const baseOutput = {
+const globals = (...globals) => globals.reduce((pv, cv) => ({[cv]: '*', ...pv}), {});
+const output = config => ({
     sourcemap: true,
-    banner: `/*! Weclapp SDK ${pkg.version} MIT | https://github.com/weclapp/sdk */`
-};
+    banner: `/*! Weclapp SDK ${pkg.version} MIT | https://github.com/weclapp/sdk */`,
+    ...config
+});
 
-const globals = {
-    'node-fetch': 'fetch',
-    'url': 'URLSearchParams'
-};
+const nodeOutput = dir => [
+    output({
+        file: dist(dir, 'index.js'),
+        format: 'cjs',
+        globals: globals('node-fetch', 'url')
+    }),
+    output({
+        file: dist(dir, 'index.mjs'),
+        format: 'es',
+        globals: globals('node-fetch', 'url')
+    })
+];
 
 export default [
 
-    // Browser bundle
+    // Browser bundle (promises)
     {
         input: src('sdk.ts'),
         output: [
-            {
-                ...baseOutput,
+            output({
                 file: dist('main', 'index.js'),
                 name: 'Weclapp',
                 format: 'umd'
-            },
-            {
-                ...baseOutput,
+            }),
+            output({
                 file: dist('main', 'index.mjs'),
                 format: 'es'
-            }
+            })
         ],
         plugins: [
             ts(),
@@ -65,24 +73,31 @@ export default [
         ]
     },
 
-    // NodeJS bundle
+    // Browser bundle (rxjs)
+    {
+        input: src('sdk.rx.ts'),
+        external: ['rxjs'],
+        plugins: [ts(), ...(production ? [terser()] : [])],
+        output: [
+            output({
+                file: dist('main', 'rx', 'index.js'),
+                name: 'Weclapp',
+                format: 'umd',
+                globals: globals('rxjs')
+            }),
+            output({
+                file: dist('main', 'rx', 'index.mjs'),
+                format: 'es',
+                globals: globals('rxjs')
+            })
+        ]
+    },
+
+    // NodeJS bundle (promises)
     {
         input: src('sdk.node.ts'),
+        output: nodeOutput('node'),
         external: ['node-fetch', 'url'],
-        output: [
-            {
-                ...baseOutput,
-                file: dist('node', 'index.js'),
-                format: 'cjs',
-                globals
-            },
-            {
-                ...baseOutput,
-                file: dist('node', 'index.mjs'),
-                format: 'es',
-                globals
-            }
-        ],
         plugins: [
             ts(),
             copy({
@@ -93,5 +108,13 @@ export default [
                 ]
             })
         ]
+    },
+
+    // NodeJS bundle (rxjs)
+    {
+        input: src('sdk.rx.node.ts'),
+        output: nodeOutput('node/rx'),
+        external: ['node-fetch', 'url', 'rxjs'],
+        plugins: [ts()]
     }
 ];
