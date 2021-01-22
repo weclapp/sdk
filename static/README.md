@@ -92,7 +92,7 @@ Ready to get started? Head to the API [documentation](docs/api.md) to see how it
 
 ### FAQ
 
-#### Types seemed to be incompatible despite their name?
+#### Types seem to be incompatible despite their name?
 
 Make sure to always use the types provided for the package you're using.
 For example, if you're using the node version (`@weclapp/sdk/node`) you can't use types from `@weclapp/sdk` and vice versa.

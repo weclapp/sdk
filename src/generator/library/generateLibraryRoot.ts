@@ -223,5 +223,7 @@ export const weclapp = ({
 ${indent(endpoints, 2)}
     };
 };
+
+export type WeclappSDK = ReturnType<typeof weclapp>;
     `.trim();
 };

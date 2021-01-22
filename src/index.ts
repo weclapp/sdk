@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-require('dotenv').config();
 import {Target} from '@enums/Target';
 import {definitions} from '@generator/definitions';
 import {generateAPIDocumentation} from '@generator/docs/api';
@@ -11,10 +6,13 @@ import {logger} from '@logger';
 import {tsImport} from '@ts/modules';
 import {env} from '@utils/env';
 import {writeSourceFile} from '@utils/writeSourceFile';
-import fse, {writeFile} from 'fs-extra';
-import {mkdir, readFile} from 'fs/promises';
+import {config} from 'dotenv';
+import {copy, mkdir, readFile, writeFile} from 'fs-extra';
 import {OpenAPIV3} from 'openapi-types';
 import path from 'path';
+
+// Load .env variables
+config();
 
 // Path resolver
 const dist = (...paths: string[]) => path.resolve(__dirname, '../', env('SDK_REPOSITORY'), ...paths);
@@ -47,45 +45,43 @@ void (async () => {
     await mkdir(src(), {recursive: true});
 
     // Read openapi file and create model definitions
-    logger.infoLn('Read openapi file...');
-    const openapi: OpenAPIV3.Document = JSON.parse(await readFile(env('SRC_OPENAPI'), 'utf-8'));
+    logger.infoLn('Read OpenAPI file...');
 
-    logger.infoLn('Generate entity models...');
-    if (!openapi.components?.schemas) {
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    const doc: OpenAPIV3.Document = JSON.parse(await readFile(env('SRC_OPENAPI'), 'utf-8'));
+    if (!doc.components?.schemas) {
         return logger.errorLn('components.schemas missing.');
     }
 
     // Generate import statement for type-declarations
-    const models = definitions(openapi.components.schemas);
-    const modelsImport = tsImport('./types.models', models.stats.exports);
-
-    // Type files
-    logger.infoLn('Generate type files...');
+    logger.infoLn('Generate entity models...');
+    const models = definitions(doc.components.schemas);
     await writeSourceFile(files.types.models, models.source);
 
-    // Static files
+    // Copy static files
     logger.infoLn('Copy static files...');
-    await fse.copy(statc('types'), src());
-    await fse.copy(statc('code'), src());
+    await copy(statc('types'), src());
+    await copy(statc('code'), src());
 
     // Main library and documentation
     logger.infoLn('Generate main SDK\'s...');
-    const sdk = generateSdk(openapi, Target.BROWSER_PROMISES);
-    await writeSourceFile(files.sdks.promises.browser, `${modelsImport}\n\n${sdk.source}`);
+    const sdk = generateSdk(doc, Target.BROWSER_PROMISES);
+    const modelsImport = tsImport('./types.models', models.stats.exports);
+    await writeSourceFile(files.sdks.promises.browser, `${modelsImport}\n${sdk.source}`);
 
     logger.infoLn('Generate API documentation...');
     await writeSourceFile(docs('api.md'), await generateAPIDocumentation(sdk.stats, statc('docs', 'api.md')));
 
     // Additional libraries
     logger.infoLn('Generate additional SDK\'s...');
-    await writeFile(files.sdks.promises.node, `${modelsImport}\n\n${generateSdk(openapi, Target.NODE_PROMISES).source}`);
-    await writeFile(files.sdks.rxjs.browser, `${modelsImport}\n\n${generateSdk(openapi, Target.BROWSER_RX).source}`);
-    await writeFile(files.sdks.rxjs.node, `${modelsImport}\n\n${generateSdk(openapi, Target.NODE_RX).source}`);
+    await writeFile(files.sdks.promises.node, `${modelsImport}\n${generateSdk(doc, Target.NODE_PROMISES).source}`);
+    await writeFile(files.sdks.rxjs.browser, `${modelsImport}\n${generateSdk(doc, Target.BROWSER_RX).source}`);
+    await writeFile(files.sdks.rxjs.node, `${modelsImport}\n${generateSdk(doc, Target.NODE_RX).source}`);
 
     // Print job summary
     const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
     logger.blankLn();
     logger.printSummary();
-    logger.blankLn(`SDK generated in ${duration}ms. Bye.`);
-    // TODO: Exit with non-zero code on errors?
+    logger.infoLn(`SDK generated in ${duration}ms. Bye.`);
+    logger.errors && process.exit(1);
 })();

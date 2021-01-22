@@ -1,4 +1,4 @@
-import {writeFile} from 'fs/promises';
+import {writeFile} from 'fs-extra';
 
 /**
  * Writes a source-file to disk.

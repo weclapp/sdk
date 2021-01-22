@@ -67,7 +67,8 @@ export const logger = new class {
 
         const warnings = format(this.warnings, 'warning', chalk.yellowBright, chalk.greenBright);
         const errors = format(this.errors, 'error', chalk.redBright, chalk.greenBright);
-        this.blankLn(`Finished with ${warnings} and ${errors}.`);
+        const info = `Finished with ${warnings} and ${errors}.`;
+        this[this.errors ? 'errorLn' : this.warnings ? 'warnLn' : 'successLn'](info);
     }
 };
 
