@@ -63,7 +63,7 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
         if (bodyType) {
             const returnType = resolveResponseType(methods.post);
             const description = `Creates a new ${entityName} with the given data.\nReturns the newly created ${entityName}.`;
-            const signature = `create(data: Partial<${bodyType}> & Create${bodyType})`;
+            const signature = `create(data: Create${bodyType})`;
 
             stats.push({description, signature});
             sources.push(tsFunction({

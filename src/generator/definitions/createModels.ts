@@ -1,6 +1,6 @@
 import {logger} from '@logger';
 import {tsBlockComment} from '@ts/comments';
-import {tsInterface, tsInterfaceProperties} from '@ts/interfaces';
+import {tsInterfaceProperties} from '@ts/interfaces';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 import {resolveDeclarationType} from '../utils/resolveDeclarationType';
@@ -16,7 +16,7 @@ export interface GeneratedModels {
  * @param definition
  */
 export const createModels = (name: string, definition: OpenAPIV3.SchemaObject): GeneratedModels | null => {
-    const interfaceName = pascalCase(name);
+    const intSig = pascalCase(name);
 
     // Validate definition set
     if (definition.type !== 'object') {
@@ -37,21 +37,25 @@ export const createModels = (name: string, definition: OpenAPIV3.SchemaObject): 
         if (entry) {
             createEntries.push([key, entry[1]]);
         } else {
-            logger.warnLn(`Cannot resolve "${name}" property in "${interfaceName}"`);
+            logger.warnLn(`Cannot resolve "${name}" property in "${intSig}"`);
         }
     }
 
-    const createInterfaceName = `Create${interfaceName}`;
     const source = `
-${tsBlockComment(`${interfaceName} entity.`)}
-${tsInterface(interfaceName, tsInterfaceProperties(baseEntries))}
+${tsBlockComment(`${intSig} entity.`)}
+export interface ${intSig} {
+${tsInterfaceProperties(baseEntries, 1)}
+}
 
-${tsBlockComment(`Required properties to create a new ${interfaceName}.`)}
-${tsInterface(createInterfaceName, tsInterfaceProperties(createEntries))}
+${tsBlockComment(`Required properties to create a new ${intSig}.`)}
+export interface Create${intSig} extends Partial<${intSig}> {
+${tsInterfaceProperties(createEntries, 1)}
+}
+
 `.trim();
 
     return {
         source,
-        exports: [interfaceName, createInterfaceName]
+        exports: [intSig, `Create${intSig}`]
     };
 };
