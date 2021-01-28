@@ -1,4 +1,5 @@
 // Code taken from https://github.com/Simonwep/li18nt/blob/master/src/cli/utils/log.ts
+import {pluralize} from '@utils/pluralize';
 /* eslint-disable no-console */
 import chalk, {Chalk} from 'chalk';
 
@@ -61,8 +62,8 @@ export const logger = new class {
     public printSummary(): void {
         const format = (v: number, name: string, fail: Chalk, ok: Chalk): string => {
             const color = v ? fail : ok;
-            return v === 0 ? `${color('zero')} ${name}s` :
-                v === 1 ? `${color('one')} ${name}` : `${color(v)} ${name}s`;
+            return v === 0 ? `${color('zero')} ${pluralize(name)}s` :
+                v === 1 ? `${color('one')} ${name}` : `${color(v)} ${pluralize(name)}`;
         };
 
         const warnings = format(this.warnings, 'warning', chalk.yellowBright, chalk.greenBright);

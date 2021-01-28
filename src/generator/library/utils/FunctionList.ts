@@ -11,6 +11,7 @@ interface Documentation {
 interface Code {
     description: string;
     parameters?: [string, string][];
+    example?: string;
     signature: string;
     returnType: string;
     returnValue: string;
@@ -29,6 +30,26 @@ export class FunctionList {
     readonly #sources: string[] = [];
 
     /**
+     * Generates a function description.
+     * @param description General description.
+     * @param parameters Optional paramters for this function including a description.
+     * @param example An usage example
+     */
+    public static generateFunctionDescription({description, parameters, example}: Code): string {
+        let comment = description;
+
+        if (parameters) {
+            comment += `\n\n${parameters.map(value => `@param ${value[0]} ${value[1]}`).join('\n')}`;
+        }
+
+        if (example) {
+            comment += `\n@example ${example}`;
+        }
+
+        return comment;
+    }
+
+    /**
      * Adds a new function to this container
      * @param target Target
      * @param code Function related settings
@@ -40,12 +61,8 @@ export class FunctionList {
             signature: docs?.signature ?? code.signature
         });
 
-        const params = code.parameters
-                ?.map(value => `@param ${value[0]} ${value[1]}`)
-                ?.join('\n') ?? '';
-
         this.#sources.push(tsFunction({
-            description: code.description + (params ? `\n\n${params}` : ''),
+            description: FunctionList.generateFunctionDescription(code),
             body: generateFunction(target, {
                 signature: code.signature,
                 returnType: code.returnType,

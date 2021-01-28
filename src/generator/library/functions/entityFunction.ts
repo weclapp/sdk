@@ -6,7 +6,7 @@ import {injectParams, SwaggerPath} from '@generator/utils/parseSwaggerPath';
 import {resolveRequestType} from '@generator/utils/resolveRequestType';
 import {resolveResponseType} from '@generator/utils/resolveResponseType';
 import {logger} from '@logger';
-import {pascalCase} from 'change-case';
+import {pascalCase, camelCase} from 'change-case';
 
 const TOP_ID_REGEXP = /{\w+}$/;
 
@@ -40,6 +40,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                         ['id', `Unique ID for the ${entityName} to fetch.`],
                         ['options', `Optional query options to fetch a ${entityName}.`]
                     ],
+                    example: `const ${camelCase(entityName)} = await sdk.${entityName}.unique('7362');`,
                     signature: `unique<Query extends EntityQuery<${returnType}>>(id: string, options?: Query)`,
                     returnType: `UniqueReturn<${returnType}, Query>`,
                     returnValue: `_unique<${returnType}, Query>('/${path.entity}', id, options)`
@@ -105,6 +106,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                         ['id', `Unique ID for the ${entityName} to update.`],
                         ['data', `Partial data which should be used to update the ${entityName}.`]
                     ],
+                    example: `await sdk.${entityName}.update('9662', {...});`,
                     signature: `update(id: string, data: Partial<${bodyType}>)`,
                     returnValue: `_update(\`${injectParams(path.path, {id: '${id}'})}\`, data)`,
                     returnType
@@ -119,6 +121,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                         ['id', `Unique ID for the ${entityName} to replace.`],
                         ['data', `A ${entityName} object which should replace the one given by the id.`]
                     ],
+                    example: `await sdk.${entityName}.replace('3678', {...});`,
                     signature: `replace(id: string, data: ${bodyType})`,
                     returnValue: `_replace<${bodyType}>(\`${injectParams(path.path, {id: '${id}'})}\`, data)`,
                     returnType
@@ -137,6 +140,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                 code: {
                     description: `Deletes a ${entityName} by the given unique identifier.`,
                     parameters: [['id', `Unique ID for the ${entityName} to delete.`]],
+                    example: `await sdk.${entityName}.delete('1356');`,
                     signature: 'delete(id: string)',
                     returnValue: `_delete(\`${injectParams(path.path, {id: '${id}'})}\`)`,
                     returnType: 'void'

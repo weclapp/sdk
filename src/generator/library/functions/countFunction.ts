@@ -4,6 +4,7 @@ import {Functions} from '@generator/library/functions/generateFunctions';
 import {FunctionList} from '@generator/library/utils/FunctionList';
 import {SwaggerPathType} from '@generator/utils/parseSwaggerPath';
 import {guessResponseEntity, resolveResponseType} from '@generator/utils/resolveResponseType';
+import {pluralize} from '@utils/pluralize';
 import {pascalCase} from 'change-case';
 
 /**
@@ -23,12 +24,14 @@ const guessEntityType = (endpoints: EndpointPath[]): string => {
 export const countFunction = ({path}: EndpointPath, endpoints: EndpointPath[], target: Target): Functions => {
     const entityName = pascalCase(path.entity);
     const entityType = guessEntityType(endpoints);
+    const pluralEntityName = pluralize(entityName);
 
     return new FunctionList()
         .add(target, {
             code: {
-                description: `Counts the amount of ${entityName}s entities which match the given filter.`,
-                parameters: [['filter', `The filter for the ${entityName}s we want to count.`]],
+                description: `Counts the amount of ${pluralEntityName} entities which match the given filter.`,
+                parameters: [['filter', `The filter for the ${pluralEntityName} we want to count.`]],
+                example: `const total${pluralEntityName} = await sdk.${entityName}.count();`,
                 signature: `count(filter?: QueryFilter<${entityType}>)`,
                 returnValue: `_count<${entityType}>('${path.path}', filter)`,
                 returnType: 'number'
