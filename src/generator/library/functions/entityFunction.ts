@@ -31,6 +31,9 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
         // Check if it's a top-level, by-id endpoint
         if (TOP_ID_REGEXP.test(path.path)) {
             functions.add(target, {
+                docs: {
+                    signature: `unique(id: string, options?: EntityQuery<${returnType}>)`
+                },
                 code: {
                     description: `Returns the ${entityName} by it's unique identifier.`,
                     signature: `unique<Query extends EntityQuery<${returnType}>>(id: string, options?: Query)`,
@@ -75,7 +78,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                     description: 'Unknown special endpoint.',
                     signature: `${buildSpecialFunction(path)}(data: ${bodyType})`,
                     returnValue: 'Promise.resolve(null)',
-                    returnType,
+                    returnType
                 }
             });
         } else {
@@ -93,7 +96,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
             // Update an entity
             functions.add(target, {
                 code: {
-                    description: `Updates a ${entityName}`,
+                    description: `Updates a ${entityName}.`,
                     signature: `update(id: string, data: Partial<${bodyType}>)`,
                     returnValue: `_update(\`${injectParams(path.path, {id: '${id}'})}\`, data)`,
                     returnType
@@ -103,7 +106,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
             // Replace an entity
             functions.add(target, {
                 code: {
-                    description: `Replaces a ${entityName}`,
+                    description: `Replaces a ${entityName}.`,
                     signature: `replace(id: string, data: ${bodyType})`,
                     returnValue: `_replace<${bodyType}>(\`${injectParams(path.path, {id: '${id}'})}\`, data)`,
                     returnType

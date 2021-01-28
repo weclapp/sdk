@@ -18,6 +18,7 @@
 		"@typescript-eslint"
 	],
 	"rules": {
-		"no-console": "warn"
+		"no-console": "error",
+		"comma-dangle": "error"
 	}
 }

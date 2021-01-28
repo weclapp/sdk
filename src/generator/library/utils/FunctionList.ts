@@ -4,8 +4,8 @@ import {Functions} from '@generator/library/functions/generateFunctions';
 import {tsFunction} from '@ts/functions';
 
 interface Documentation {
-    description: string;
-    signature: string;
+    description?: string;
+    signature?: string;
 }
 
 interface Code {
@@ -35,8 +35,8 @@ export class FunctionList {
      */
     public add(target: Target, {code, docs}: AddFunction): this {
         this.#stats.push({
-            description: (docs ?? code).description,
-            signature: (docs ?? code).signature
+            description: docs?.description ?? code.description,
+            signature: docs?.signature ?? code.signature
         });
 
         this.#sources.push(tsFunction({

@@ -22,6 +22,9 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
 
             // Fetch list
             functions.add(target, {
+                docs: {
+                    description: `some(options?: ListQuery<${returnType}>)`
+                },
                 code: {
                     description: `Finds all ${entityName} entities which match the given filter.`,
                     signature: `some<Query extends ListQuery<${returnType}>>(options?: Query)`,
@@ -32,6 +35,9 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
 
             // Fetch just the first one in the list
             functions.add(target, {
+                docs: {
+                    signature: `first(options?: FirstQuery<${returnType}>)`
+                },
                 code: {
                     description: `Fetches the first ${entityName} it can find. Ignores all the other results`,
                     signature: `first<Query extends FirstQuery<${returnType}>>(options?: Query)`,
@@ -51,11 +57,14 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
             const returnType = resolveResponseType(methods.post);
 
             functions.add(target, {
+                docs: {
+                    signature: `create(data: Create<${bodyType}>)`
+                },
                 code: {
                     description: `Creates a new ${entityName} with the given data.\nReturns the newly created ${entityName}.`,
                     signature: `create(data: Create${bodyType})`,
                     returnValue: `_create('${path.path}', data)`,
-                    returnType,
+                    returnType
                 }
             });
         } else {

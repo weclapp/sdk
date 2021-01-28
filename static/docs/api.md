@@ -206,4 +206,6 @@ await sdk.article.delete('151662');
 
 ### Implementations
 
+> The `signature` is simplified and is just there to get the gist of what it expects!
+
 %IMPLEMENTATIONS%
