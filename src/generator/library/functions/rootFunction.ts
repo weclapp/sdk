@@ -27,6 +27,7 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
                 },
                 code: {
                     description: `Finds all ${entityName} entities which match the given filter.`,
+                    parameters: [['options', `Options for how the ${entityName} should be queried.`]],
                     signature: `some<Query extends ListQuery<${returnType}>>(options?: Query)`,
                     returnType: `SomeReturn<${returnType}, Query>`,
                     returnValue: `_some<${returnType}, Query>('${path.path}', options)`
@@ -40,6 +41,7 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
                 },
                 code: {
                     description: `Fetches the first ${entityName} it can find. Ignores all the other results`,
+                    parameters: [['options', 'Optional filters.']],
                     signature: `first<Query extends FirstQuery<${returnType}>>(options?: Query)`,
                     returnType: `UniqueReturn<${returnType}, Query>`,
                     returnValue: `_first<${returnType}, Query>('${path.path}', options)`
@@ -58,10 +60,11 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
 
             functions.add(target, {
                 docs: {
-                    signature: `create(data: Create<${bodyType}>)`
+                    signature: `create(data: Required<${bodyType}>)`
                 },
                 code: {
                     description: `Creates a new ${entityName} with the given data.\nReturns the newly created ${entityName}.`,
+                    parameters: [['data', `Data to create a ${bodyType}`]],
                     signature: `create(data: Create${bodyType})`,
                     returnValue: `_create('${path.path}', data)`,
                     returnType

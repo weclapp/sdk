@@ -10,6 +10,7 @@ interface Documentation {
 
 interface Code {
     description: string;
+    parameters?: [string, string][];
     signature: string;
     returnType: string;
     returnValue: string;
@@ -39,8 +40,12 @@ export class FunctionList {
             signature: docs?.signature ?? code.signature
         });
 
+        const params = code.parameters
+                ?.map(value => `@param ${value[0]} ${value[1]}`)
+                ?.join('\n') ?? '';
+
         this.#sources.push(tsFunction({
-            description: code.description,
+            description: code.description + (params ? `\n\n${params}` : ''),
             body: generateFunction(target, {
                 signature: code.signature,
                 returnType: code.returnType,

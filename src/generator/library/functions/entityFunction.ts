@@ -36,6 +36,10 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                 },
                 code: {
                     description: `Returns the ${entityName} by it's unique identifier.`,
+                    parameters: [
+                        ['id', `Unique ID for the ${entityName} to fetch.`],
+                        ['options', `Optional query options to fetch a ${entityName}.`]
+                    ],
                     signature: `unique<Query extends EntityQuery<${returnType}>>(id: string, options?: Query)`,
                     returnType: `UniqueReturn<${returnType}, Query>`,
                     returnValue: `_unique<${returnType}, Query>('/${path.entity}', id, options)`
@@ -97,6 +101,10 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
             functions.add(target, {
                 code: {
                     description: `Updates a ${entityName}.`,
+                    parameters: [
+                        ['id', `Unique ID for the ${entityName} to update.`],
+                        ['data', `Partial data which should be used to update the ${entityName}.`]
+                    ],
                     signature: `update(id: string, data: Partial<${bodyType}>)`,
                     returnValue: `_update(\`${injectParams(path.path, {id: '${id}'})}\`, data)`,
                     returnType
@@ -107,6 +115,10 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
             functions.add(target, {
                 code: {
                     description: `Replaces a ${entityName}.`,
+                    parameters: [
+                        ['id', `Unique ID for the ${entityName} to replace.`],
+                        ['data', `A ${entityName} object which should replace the one given by the id.`]
+                    ],
                     signature: `replace(id: string, data: ${bodyType})`,
                     returnValue: `_replace<${bodyType}>(\`${injectParams(path.path, {id: '${id}'})}\`, data)`,
                     returnType
@@ -124,6 +136,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
             functions.add(target, {
                 code: {
                     description: `Deletes a ${entityName} by the given unique identifier.`,
+                    parameters: [['id', `Unique ID for the ${entityName} to delete.`]],
                     signature: 'delete(id: string)',
                     returnValue: `_delete(\`${injectParams(path.path, {id: '${id}'})}\`)`,
                     returnType: 'void'
