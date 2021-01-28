@@ -1,10 +1,10 @@
-import {generateFunction, Target} from '@enums/Target';
-import {EndpointPath, StatsEntityFunction} from '@generator/library';
+import {Target} from '@enums/Target';
+import {EndpointPath} from '@generator/library';
 import {Functions} from '@generator/library/functions/generateFunctions';
+import {FunctionList} from '@generator/library/utils/FunctionList';
 import {resolveRequestType} from '@generator/utils/resolveRequestType';
 import {guessResponseEntity, resolveResponseType} from '@generator/utils/resolveResponseType';
 import {logger} from '@logger';
-import {tsFunction} from '@ts/functions';
 import {pascalCase} from 'change-case';
 
 /**
@@ -12,8 +12,7 @@ import {pascalCase} from 'change-case';
  */
 export const rootFunction = ({path, methods}: EndpointPath, target: Target): Functions => {
     const entityName = pascalCase(path.entity);
-    const stats: StatsEntityFunction[] = [];
-    const sources: string[] = [];
+    const functions = new FunctionList();
 
     if (methods.get) {
         const response = resolveResponseType(methods.get);
@@ -22,36 +21,24 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
             const returnType = guessResponseEntity(response);
 
             // Fetch list
-            {
-                const description = `Finds all ${entityName} entities which match the given filter.`;
-                const signature = `some<Query extends ListQuery<${returnType}>>(options?: Query)`;
-
-                stats.push({description, signature});
-                sources.push(tsFunction({
-                    description,
-                    body: generateFunction(target, {
-                        signature,
-                        returnType: `SomeReturn<${returnType}, Query>`,
-                        returnValue: `_some<${returnType}, Query>('${path.path}', options)`
-                    })
-                }));
-            }
+            functions.add(target, {
+                code: {
+                    description: `Finds all ${entityName} entities which match the given filter.`,
+                    signature: `some<Query extends ListQuery<${returnType}>>(options?: Query)`,
+                    returnType: `SomeReturn<${returnType}, Query>`,
+                    returnValue: `_some<${returnType}, Query>('${path.path}', options)`
+                }
+            });
 
             // Fetch just the first one in the list
-            {
-                const description = `Fetches the first ${entityName} it can find. Ignores all the other results`;
-                const signature = `first<Query extends FirstQuery<${returnType}>>(options?: Query)`;
-
-                stats.push({description, signature});
-                sources.push(tsFunction({
-                    description,
-                    body: generateFunction(target, {
-                        signature,
-                        returnType: `UniqueReturn<${returnType}, Query>`,
-                        returnValue: `_first<${returnType}, Query>('${path.path}', options)`
-                    })
-                }));
-            }
+            functions.add(target, {
+                code: {
+                    description: `Fetches the first ${entityName} it can find. Ignores all the other results`,
+                    signature: `first<Query extends FirstQuery<${returnType}>>(options?: Query)`,
+                    returnType: `UniqueReturn<${returnType}, Query>`,
+                    returnValue: `_first<${returnType}, Query>('${path.path}', options)`
+                }
+            });
         } else {
             logger.errorLn(`Couldn't resolve response type for GET ${path.path}`);
         }
@@ -62,17 +49,15 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
 
         if (bodyType) {
             const returnType = resolveResponseType(methods.post);
-            const description = `Creates a new ${entityName} with the given data.\nReturns the newly created ${entityName}.`;
-            const signature = `create(data: Create${bodyType})`;
 
-            stats.push({description, signature});
-            sources.push(tsFunction({
-                description,
-                body: generateFunction(target, {
-                    signature, returnType,
-                    returnValue: `_create('${path.path}', data)`
-                })
-            }));
+            functions.add(target, {
+                code: {
+                    description: `Creates a new ${entityName} with the given data.\nReturns the newly created ${entityName}.`,
+                    signature: `create(data: Create${bodyType})`,
+                    returnValue: `_create('${path.path}', data)`,
+                    returnType,
+                }
+            });
         } else {
             logger.warnLn(`Couldn't resolve body type for POST ${path.path}`);
         }
@@ -81,5 +66,5 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
     methods.delete && logger.warnLn(`Didn't generate code for POST ${path.path}`);
     methods.put && logger.warnLn(`Didn't generate code for POST ${path.path}`);
 
-    return {stats, sources};
+    return functions.getAll();
 };

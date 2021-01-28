@@ -1,9 +1,9 @@
-import {generateFunction, Target} from '@enums/Target';
+import {Target} from '@enums/Target';
 import {EndpointPath} from '@generator/library';
 import {Functions} from '@generator/library/functions/generateFunctions';
+import {FunctionList} from '@generator/library/utils/FunctionList';
 import {SwaggerPathType} from '@generator/utils/parseSwaggerPath';
 import {guessResponseEntity, resolveResponseType} from '@generator/utils/resolveResponseType';
-import {tsFunction} from '@ts/functions';
 import {pascalCase} from 'change-case';
 
 /**
@@ -23,20 +23,14 @@ const guessEntityType = (endpoints: EndpointPath[]): string => {
 export const countFunction = ({path}: EndpointPath, endpoints: EndpointPath[], target: Target): Functions => {
     const entityName = pascalCase(path.entity);
     const entityType = guessEntityType(endpoints);
-    const description = `Counts the amount of ${entityName}s entities which match the given filter.`;
-    const signature = `count(filter?: QueryFilter<${entityType}>)`;
 
-    return {
-        stats: [{description, signature}],
-        sources: [
-            tsFunction({
-                description,
-                body: generateFunction(target, {
-                    signature,
-                    returnValue: `_count<${entityType}>('${path.path}', filter)`,
-                    returnType: 'number'
-                })
-            })
-        ]
-    };
+    return new FunctionList()
+        .add(target, {
+            code: {
+                description: `Counts the amount of ${entityName}s entities which match the given filter.`,
+                signature: `count(filter?: QueryFilter<${entityType}>)`,
+                returnValue: `_count<${entityType}>('${path.path}', filter)`,
+                returnType: 'number'
+            }
+        }).getAll();
 };
