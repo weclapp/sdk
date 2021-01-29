@@ -1,24 +1,24 @@
 {
-	"env": {
-		"browser": true,
-		"node": true
-	},
-	"parserOptions": {
-		"ecmaVersion": 2018,
-		"sourceType": "module",
-		"parser": "@typescript-eslint/parser",
-		"project": "./tsconfig.json"
-	},
-	"extends": [
-		"eslint:recommended",
-		"plugin:@typescript-eslint/recommended",
-		"plugin:@typescript-eslint/recommended-requiring-type-checking"
-	],
-	"plugins": [
-		"@typescript-eslint"
-	],
-	"rules": {
-		"no-console": "error",
-		"comma-dangle": "error"
-	}
+    "env": {
+        "browser": true,
+        "node": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module",
+        "parser": "@typescript-eslint/parser",
+        "project": "./tsconfig.json"
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    ],
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "rules": {
+        "no-console": "error",
+        "comma-dangle": "error"
+    }
 }

@@ -1,0 +1,35 @@
+stages:
+  - build
+  - test
+
+.npm:defaults:
+  tags:
+    - small
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-lts-alpine
+  cache:
+    key: node_modules_cache
+    policy: pull
+    paths:
+    - node_modules/
+  before_script:
+    - npm install --unsafe-perm --prefer-offline --no-audit
+    - npm prune
+
+lint:
+  extends: .npm:defaults
+  stage: test
+  script: npm run lint:ts
+
+test:
+  extends: .npm:defaults
+  stage: test
+  needs: ["build"]
+  script: npm run test
+
+build:
+  extends: .npm:defaults
+  stage: build
+  script:
+    - npm run gen:start
+    - npm run sdk:build
+
