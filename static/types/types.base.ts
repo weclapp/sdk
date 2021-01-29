@@ -35,8 +35,8 @@ export interface EntityQuery<Entity> {
     select?: SelectQuery<Entity>;
 
     // Resolve additional references
-    // TODO: Provide type-list for resolvable entitites
-    include?: string[];
+    // TODO: Not all props refer to another entity
+    include?: (keyof Entity)[];
 }
 
 export interface WrappedResponse<Data> {
@@ -44,8 +44,9 @@ export interface WrappedResponse<Data> {
     // The entity itself
     data: Data;
 
-    // TODO: Resolve types based on EntityQuery
-    references?: unknown[];
+    // Entities included by include
+    // TODO: Resolve value by query or inject references?
+    references?: Record<string, unknown[]>;
 }
 
 export interface ListQuery<Entity> extends EntityQuery<Entity> {
