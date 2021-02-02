@@ -11,15 +11,21 @@
 <!-- A clear and concise summary about what you've changed / added. -->
 <!-- Example: Add missing types for .unique function. -->
 
+
+
 ### Feature
 
 <!-- A short demonstration of your feature. -->
+
+
 
 ```ts
 const sdk = new weclapp();
 
 
 ```
+
+
 
 ### Additional context
 
@@ -29,5 +35,7 @@ const sdk = new weclapp();
      describe why you've implemented things the way you did. E.g. if a non-expected behaviour is intentional -->
 
 <!-- Remove this section if you don't have anything else to state. -->
+
+
 
 /label ~Feature

@@ -5,11 +5,7 @@ import {sdk} from '../utils';
 describe('.replace', () => {
 
     it('Should replace a customer with a modified version', async () => {
-        let [customer] = await sdk.customer.some({
-            filter: {
-                'customerNumber-eq': '8811'
-            }
-        });
+        let customer = (await sdk.customer.first()) as Customer;
 
         // Modify company
         const originalCompany = customer.company;

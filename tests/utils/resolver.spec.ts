@@ -1,7 +1,8 @@
 import {Address, Contact} from '@sdk/node';
 import {resolvePrimaryAddress, resolvePrimaryContact} from '@sdk/utils';
 import 'jest-extended';
-import {sdk} from '../utils';
+import Joi from 'joi';
+import {sdk, testSchema} from '../utils';
 
 describe('Resolver', () => {
 
@@ -11,7 +12,10 @@ describe('Resolver', () => {
         });
 
         if (customer) {
-            expect(resolvePrimaryContact<Contact>(customer)).toBeObject();
+            testSchema(
+                resolvePrimaryContact<Contact>(customer),
+                Joi.alternatives(Joi.object(), null)
+            );
         }
     });
 
@@ -21,7 +25,10 @@ describe('Resolver', () => {
         });
 
         if (customer) {
-            expect(resolvePrimaryAddress<Address>(customer)).toBeObject();
+            testSchema(
+                resolvePrimaryAddress<Address>(customer),
+                Joi.alternatives(Joi.object(), null)
+            );
         }
     });
 });

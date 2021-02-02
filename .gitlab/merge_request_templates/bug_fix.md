@@ -10,9 +10,12 @@
 
 <!-- What was the problem, what didn't work? -->
 
+
+
 ### Summary
 
 <!-- How did you fix the problem? What was necessary to do? -->
+
 
 
 ### Additional context
@@ -23,5 +26,7 @@
      describe why you've implemented things the way you did. E.g. if a non-expected behaviour is intentional -->
 
 <!-- Remove this section if you don't have anything else to state. -->
+
+
 
 /label ~Bug

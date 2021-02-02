@@ -5,7 +5,8 @@ import {sdk, testSchema} from '../utils';
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('.unique', () => {
     it('Should fetch a single customer', async () => {
-        const customer = await sdk.customer.unique('508692');
+        const first = await sdk.customer.first();
+        const customer = await sdk.customer.unique(first!.id);
 
         expect(customer).toBeObject();
         expect(customer!.insolvent).toBeBoolean();
@@ -13,18 +14,21 @@ describe('.unique', () => {
     });
 
     it('Should only fetch return selected properties', async () => {
-        const customer = await sdk.customer.unique('508692', {
-            select: {
-                firstName: true,
-                email: true,
-                id: true
-            }
-        });
+        const first = await sdk.customer.first();
 
-        testSchema(customer, Joi.object({
-            firstName: Joi.string().optional(),
-            email: Joi.string().optional(),
-            id: Joi.string().required()
-        }));
+        testSchema(
+            await sdk.customer.unique(first!.id, {
+                select: {
+                    firstName: true,
+                    email: true,
+                    id: true
+                }
+            }),
+            Joi.object({
+                firstName: Joi.string().optional(),
+                email: Joi.string().optional(),
+                id: Joi.string().required()
+            })
+        );
     });
 });

@@ -11,7 +11,7 @@ describe('.count', () => {
 
     it('Should work with filters', async () => {
         expect(await sdk.customer.count({
-            'customerNumber-in': ['1039', '1036']
+            'customerNumber-ge': '5'
         })).toBeNumber();
 
         expect(await sdk.article.count({

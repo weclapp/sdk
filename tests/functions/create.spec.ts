@@ -1,18 +1,18 @@
+import {Party} from '@/sdk/node';
 import 'jest-extended';
-import {Article} from '@sdk/src/types.models';
 import {sdk} from '../utils';
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('.create,.delete', () => {
 
     it('Should create a new article and delete it afterwards', async () => {
-        const article = await sdk.article.create({
-            name: 'Hello world',
-            unitId: '108'
+        const unit = await sdk.unit.first();
+        const contact = await sdk.article.create({
+            name: 'Keyboard',
+            unitId: unit!.id
         });
 
-        // TODO: Do not cast to object after swagger.json is fixed
-        // TODO: Add more tests after required types / return types are fixed
-        expect(article).toBeObject();
-        await sdk.article.delete((article as Article).id);
+        expect(contact).toBeObject();
+        await sdk.article.delete((contact as Party).id);
     });
 });
