@@ -1,5 +1,6 @@
 import 'jest-extended';
-import {sdk} from '../utils';
+import Joi from 'joi';
+import {sdk, testSchema} from '../utils';
 
 describe('.first', () => {
 
@@ -14,5 +15,34 @@ describe('.first', () => {
         });
 
         expect(customers).toBeObject();
+    });
+
+    it('Should select nested properties', async () => {
+        testSchema(
+            await sdk.customer.first({
+                select: {
+                    id: true,
+                    blocked: true,
+                    salesPartner: true,
+                    contacts: {
+                        id: true,
+                        firstName: true,
+                        lastName: true
+                    }
+                }
+            }),
+            Joi.object({
+                id: Joi.string(),
+                blocked: Joi.boolean(),
+                salesPartner: Joi.boolean(),
+                contacts: Joi.array().items(
+                    Joi.object({
+                        id: Joi.string(),
+                        firstName: Joi.string(),
+                        lastName: Joi.string()
+                    })
+                )
+            })
+        );
     });
 });

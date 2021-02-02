@@ -48,3 +48,22 @@ export const resolvePrimaryContact = <T extends IDObject>(
     const {primaryContactId, contacts} = party;
     return contacts.find(v => v.id === primaryContactId) ?? null;
 };
+
+export type SelectableRecord = {
+    [key: string]: undefined | boolean | SelectableRecord;
+}
+
+/**
+ * Flattens a selectable, possibly nested, record
+ * @param obj Object
+ * @param base Recursive base property
+ */
+export const flattenSelectable = (obj: SelectableRecord, base = ''): string[] => {
+    return Object.entries(obj)
+        .filter(v => v[1])
+        .map(([key, value]) => {
+            const path = base + key;
+            return typeof value === 'object' ? flattenSelectable(value, `${path}.`) : path;
+        })
+        .flat();
+};

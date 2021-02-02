@@ -44,7 +44,7 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
 ${resolveImports(target)}
 import {QueryFilter, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn} from './types.base';
 import {Options, Method, RawRequest} from './types.api';
-import {unwrap, params} from './utils';
+import {unwrap, params, flattenSelectable} from './utils';
 export * from './types.models';
 
 // Current version.
@@ -133,7 +133,7 @@ export const weclapp = ({
                 'page': 1,
                 'pageSize': 1,
                 'serializeNulls': options?.serialize,
-                'properties': options?.select ? Object.keys(options.select).join(',') : undefined,
+                'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
                 'includeReferencedEntities': options?.include?.join(',')
             }
         }).then(res => {
@@ -154,7 +154,7 @@ export const weclapp = ({
             'page': options?.page ?? 1,
             'pageSize': options?.pageSize ?? 10,
             'serializeNulls': options?.serialize,
-            'properties': options?.select ? Object.keys(options.select).join(',') : undefined,
+            'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
             'includeReferencedEntities': options?.include?.join(','),
         }
     }).then(res => {
@@ -207,7 +207,7 @@ export const weclapp = ({
             'page': 1,
             'pageSize': 10,
             'serializeNulls': options?.serialize,
-            'properties': options?.select ? Object.keys(options.select).join(',') : undefined,
+            'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
             'includeReferencedEntities': options?.include?.join(','),
         }
     }).then(res => {
