@@ -65,8 +65,11 @@ import {
     // Undefined values are ignored by this.
     params,
     
-    // Takes a weclapp response value and extracts the "result" property.
-    unwrap
+    // Takes a weclapp response value and extracts the `result` property.
+    unwrap,
+
+    // Takes an object usually passed to `select` and flattens it
+    flattenSelectable
 } from '@weclapp/sdk/utils';
 ```
 

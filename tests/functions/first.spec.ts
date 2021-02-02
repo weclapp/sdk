@@ -45,4 +45,17 @@ describe('.first', () => {
             })
         );
     });
+
+    it('Should select whole nested properties', async () => {
+        testSchema(
+            await sdk.customer.first({
+                select: {
+                    contacts: true
+                }
+            }),
+            Joi.object({
+                contacts: Joi.array().items(Joi.object())
+            })
+        );
+    });
 });

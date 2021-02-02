@@ -9,11 +9,12 @@ The following endpoints / entities are implemented or accessible through the SDK
 
 ## Special functions
 
-The expose `.raw` function can be used to make a "raw" request to the weclapp api. Utility functions come in handy here.
-For example, instead of using the `.count` function to fetch the total amount of customers you could do:
+The expose `.raw` function can be used to make a "raw" request to the weclapp api. Utility functions come in handy here. For example, instead of using
+the `.count` function to fetch the total amount of customers you could do:
 
 ```ts
 import {unwrap} from '@weclapp/utils';
+
 const customers = await sdk.raw<{result: number}>('/customer/count')
     .then(unwrap);
 
@@ -24,12 +25,14 @@ The `raw` function looks like the following:
 
 ```ts
 raw(
-    endpoint: string;
-    options?: {
-        method?: Method;
-        query?: Record<string, unknown>;
-        body?: any;
-    }
+    endpoint
+:
+string;
+options ? : {
+    method? : Method;
+    query? : Record<string, unknown>;
+    body? : any;
+}
 )
 ```
 
@@ -56,7 +59,7 @@ functions (in the following examples we refer to `[Entity]` as being the target-
 The `EntityQuery` comes with the following options:
 
 * `serialize` _- If result should be serialized (e.g. non-defined fields nulled)._
-* `select` _- Query only these properties, it is highly recommended to always specify what you want._
+* `select` _- Query only these properties, it is highly recommended to always specify what you want - it'll lower the response time greatly._
 * `include` _- Experimental, type-less way of fetching additional entities._
 
 The extended version, `ListQuery` also concludes:
@@ -101,9 +104,29 @@ const customer = await sdk.customer.unique('151662', {
 // The return value is now different and is an objec with data, as the entity, and references with
 // all the entities resolved by include.
 const {data, references} = await sdk.customer.unique('151662', {
-   select: {id: true, partyType: true, amountInsured: true},
+    select: {id: true, partyType: true, amountInsured: true},
     serialize: true,
     include: ['responsibleUserId']
+});
+```
+
+To query nested properties, you can pass an object to `select`:
+
+```ts
+// Fetches the customer with the id 151662
+// Selects id, blocked and salesPartner from the customer itself and
+// id, firstName and lastName from each contact.
+const customer = await sdk.customer.unique('151662', {
+    select: {
+        id: true,
+        blocked: true,
+        salesPartner: true,
+        contacts: { // You can also just pass `true` to get the entire contacts object
+            id: true,
+            firstName: true,
+            lastName: true
+        }
+    }
 });
 ```
 
@@ -129,15 +152,14 @@ const articles = await sdk.article.some({
 // data will be a list of articles and references an object with possible
 // references.
 const {data, references} = await sdk.article.some({
-   select: {id: true, partyType: true, birthDate: true},
-   include: ['responsibleUserId']
+    select: {id: true, partyType: true, birthDate: true},
+    include: ['responsibleUserId']
 });
 ```
 
 #### `.first(options?: FirstQuery<[Entity]>)`
 
-Fetches the first entity from the first page, ignoring all the other results.
-All options from `some` can be used except for the pagination options.
+Fetches the first entity from the first page, ignoring all the other results. All options from `some` can be used except for the pagination options.
 
 ##### Example:
 
@@ -170,14 +192,14 @@ The `update` functoin can be used to update a specific instance of an entity usi
 ```ts
 // Return value is the freshly updated customer
 const customer = await sdk.customer.update('176662', {
-   company: 'Hello world LLC'
+    company: 'Hello world LLC'
 });
 ```
 
 #### `.replace(id: string, data: [Entity])`
 
-The `replace` replaces the entity identified by the given id with the new one.
-This is useful if the customer has already been fetched, and the integrity needs to be preserved if multiple users are editing the same entity.
+The `replace` replaces the entity identified by the given id with the new one. This is useful if the customer has already been fetched, and the integrity needs
+to be preserved if multiple users are editing the same entity.
 
 ##### Example:
 
@@ -189,7 +211,7 @@ const customer = await sdk.customer.first();
 // Update customer 
 const updated = await sdk.customer.replace(customer.id, {
     ...customer,
-   company: 'Hello world LLC'
+    company: 'Hello world LLC'
 });
 ```
 
