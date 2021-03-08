@@ -1,18 +1,18 @@
-import {Party} from '@sdk/node';
 import 'jest-extended';
 import {sdk} from '../utils';
+import {Article} from "@/sdk";
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('.create,.delete', () => {
 
     it('Should create a new article and delete it afterwards', async () => {
         const unit = await sdk.unit.first();
-        const contact = await sdk.article.create({
+        const article = await sdk.article.create({
             name: 'Keyboard',
-            unitId: unit!.id
+            articleNumber: 'XYZ123',
+            unitId: unit?.id
         });
 
-        expect(contact).toBeObject();
-        await sdk.article.delete((contact as Party).id);
+        expect(article).toBeObject();
+        await sdk.article.delete((article as Article).id);
     });
 });
