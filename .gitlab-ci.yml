@@ -29,7 +29,9 @@ test:
 build:
   extends: .npm:defaults
   stage: build
-  script:
-    - npm run gen:start
-    - npm run sdk:build
+  script: |
+    curl "$WECLAPP_URL/webapp/api/v1/meta/swagger.json" -H "AuthenticationToken: $WECLAPP_TOKEN" -o swagger.json
+    npm run openapi -- swagger.json --warnOnly --patch --outfile openapi.json
+    npm run gen:start
+    npm run sdk:build
 
