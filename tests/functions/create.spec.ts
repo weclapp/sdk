@@ -10,9 +10,9 @@ describe('.create,.delete', () => {
             name: 'Keyboard',
             articleNumber: 'XYZ123',
             unitId: unit?.id
-        });
+        }) as Article;
 
         expect(article).toBeObject();
-        await sdk.article.delete((article as Article).id);
+        await sdk.article.delete(article.id);
     });
 });
