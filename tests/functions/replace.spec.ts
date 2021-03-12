@@ -1,4 +1,4 @@
-import {Customer} from '@/sdk/node';
+import {Customer} from '@sdk/node';
 import 'jest-extended';
 import {sdk} from '../utils';
 

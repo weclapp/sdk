@@ -18,6 +18,7 @@ stages:
 lint:
   extends: .npm:defaults
   stage: test
+  needs: ["build"]
   script: npm run lint:ts
 
 test:
@@ -29,9 +30,12 @@ test:
 build:
   extends: .npm:defaults
   stage: build
+  variables:
+    SRC_OPENAPI: "./openapi.json"
+    SDK_VERSION: "1.0.0"
+    SDK_REPOSITORY: "./sdk"
   script: |
-    curl "$WECLAPP_URL/webapp/api/v1/meta/swagger.json" -H "AuthenticationToken: $WECLAPP_TOKEN" -o swagger.json
-    npm run openapi -- swagger.json --warnOnly --patch --outfile openapi.json
+    npm run import:swagger
     npm run gen:start
     npm run sdk:build
 

@@ -5,7 +5,6 @@
 interface CustomEnv {
     SRC_OPENAPI: string;
     SDK_REPOSITORY: string;
-    SDK_TYPES: string;
 }
 
 /**
