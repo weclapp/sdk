@@ -30,6 +30,9 @@ test:
 build:
   extends: .npm:defaults
   stage: build
+  artifacts:
+    paths:
+      - sdk
   variables:
     SRC_OPENAPI: "./openapi.json"
     SDK_VERSION: "1.0.0"
@@ -38,4 +41,3 @@ build:
     npm run import:swagger
     npm run gen:start
     npm run sdk:build
-
