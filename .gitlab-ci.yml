@@ -3,13 +3,9 @@ stages:
   - test
   - publish
 
-.base:
-  tags:
-    - small
-  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-lts-alpine
-
 .npm:defaults:
-  extends: .base
+  tags: ['small']
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-lts-alpine
   cache:
     key: node_modules_cache
     policy: pull
@@ -48,15 +44,31 @@ lint:
   script: npm run lint:ts
 
 publish:repository:
-  extends: .base
+  tags: [ 'small' ]
+  image: $CI_REGISTRY/weclapp_ops/base_images/docker:stable
   stage: publish
   dependencies: [ 'generate' ]
+  variables:
+    REPOSITORY_REMOTE: https://$SDK_GIT_USER:$SDK_GIT_PASS@gitlab.internal.weclapp.com/weclapp/frontend/sdk.git
   script: |
-    git clone "https://$SDK_GIT_USER:$SDK_GIT_PASS@gitlab.internal.weclapp.com/weclapp/frontend/sdk.git" sdk-remote --depth 1
-    cp -r sdk/* sdk-remote
-    cd sdk-remote
+    git clone "$REPOSITORY_REMOTE" sdk-remote --depth 1
+    mv sdk-remote/.git sdk
+    cd sdk
     git config user.email "noreply@weclapp.com"
     git config user.name "$SDK_GIT_USER"
     git add .
     git commit -m "$CI_COMMIT_SHA"
-    git push "https://$SDK_GIT_USER:$SDK_GIT_PASS@gitlab.internal.weclapp.com/weclapp/frontend/sdk.git" master
+    git push "$REPOSITORY_REMOTE" master
+
+publish:package:
+  extends: .npm:defaults
+  allow_failure: true
+  stage: publish
+  dependencies: ['generate']
+  rules:
+    - when: manual
+  script: |
+    cd sdk
+    echo "@weclapp:registry=${CI_API_V4_URL}/projects/153/packages/npm/">.npmrc
+    echo "${CI_API_V4_URL#https?}/projects/153/packages/npm/:_authToken=\${CI_JOB_TOKEN}">>.npmrc
+    npm publish
