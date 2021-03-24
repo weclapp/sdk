@@ -57,8 +57,13 @@ publish:repository:
     git config user.email "noreply@weclapp.com"
     git config user.name "$SDK_GIT_USER"
     git add .
-    git commit -m "$CI_COMMIT_SHA"
-    git push "$REPOSITORY_REMOTE" master
+    if [[ ! -z "$(git status --porcelain)" ]]; then
+      echo "Committing and pushing changes."
+      git commit -m "$CI_COMMIT_SHA"
+      git push "$REPOSITORY_REMOTE" master
+    else
+      echo "No changes to push."
+    fi
 
 publish:package:
   extends: .npm:defaults
@@ -74,7 +79,7 @@ publish:package:
     npm publish
 
 publish:image:
-  extends: .npm:defaults
+  image: $CI_REGISTRY/weclapp_ops/base_images/docker:stable
   stage: publish
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
