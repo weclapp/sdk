@@ -1,7 +1,7 @@
 import 'jest-extended';
 import {Unit} from '@sdk/node';
 import {sdk} from '../utils';
-import {Article} from "@/sdk";
+import {Article} from "@sdk/node";
 
 describe('.create,.delete', () => {
 

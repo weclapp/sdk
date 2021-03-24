@@ -1,4 +1,4 @@
-import {sdk} from '@/tests/utils';
+import {sdk} from '@tests/utils';
 import {CreateCustomer, Customer} from '@sdk/node';
 
 /**

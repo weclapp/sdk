@@ -1,7 +1,7 @@
 import {params, unwrap} from '@sdk/utils';
 import 'jest-extended';
 import {sdk} from '../utils';
-import {Customer} from "@/sdk";
+import {Customer} from "@sdk/node";
 
 describe('Utilities', () => {
 
