@@ -1,4 +1,4 @@
-import {Party} from '@/sdk/node';
+import {Party} from '@sdk/node';
 import 'jest-extended';
 import {sdk} from '../utils';
 

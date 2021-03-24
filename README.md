@@ -65,3 +65,12 @@ To use your freshly created SDK, you can refer to it locally to test it (replace
 To generate a production-ready SDK, simply run `npm run build`. This will generate the SDK and bundle it into the [SDK](sdk) folder. The process should finish without
 errors.
 
+The [Dockerfile](Dockerfile) will install all dependencies for this project. After building it, it can be used to generate the sdk and test it.
+For this environmental variables must be set and `npm` commands run in the container.
+
+##### Testing
+
+If you also want to run tests you'll _additionally_ need the following:
+* `RUN_TESTS` _- Set to `true` (or any other non-empty value)._
+* `TEST_DOMAIN` _- API to test agains (just the domain, e.g. `support.test2-y4jnp8qvg1.internal.weclapp.com`)._
+* `TEST_API_KEY` _- API-Key._

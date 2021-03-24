@@ -21,7 +21,7 @@ describe('.some', () => {
     it('Should return only the id\'s of customers', async () => {
         const customers = await sdk.customer.some({
             pageSize: 5,
-            include: ['id']
+            select: {id: true}
         });
 
         testSchema(customers, Joi.array().items(Joi.object({
@@ -32,7 +32,7 @@ describe('.some', () => {
     it('Should return only the id\'s of customers', async () => {
         const customers = await sdk.customer.some({
             pageSize: 5,
-            include: ['id']
+            select: {id: true}
         });
 
         testSchema(customers, Joi.array().items(Joi.object({

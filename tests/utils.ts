@@ -17,10 +17,10 @@ export const sdk = weclapp(options);
  * @param schema
  */
 export const testSchema = (data: unknown, schema: AnySchema): void => {
-    const {errors, warning} = schema.validate(data);
+    const {error, warning} = schema.validate(data);
 
-    if (errors) {
-        throw errors;
+    if (error) {
+        throw error;
     } else if (warning) {
         throw warning;
     }

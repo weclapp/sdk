@@ -1,0 +1,110 @@
+stages:
+  - generate
+  - test
+  - publish
+
+.npm:defaults:
+  tags: ['small']
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-lts-alpine
+  cache:
+    key: node_modules_cache
+    policy: pull
+    paths:
+      - node_modules/
+  before_script:
+    - npm install --unsafe-perm --prefer-offline --no-audit
+    - npm prune
+
+.publish:defaults:
+  tags: ['tiny']
+  stage: publish
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - when: never
+
+generate:
+  extends: .npm:defaults
+  stage: generate
+  cache:
+    key: node_modules_cache
+    policy: pull-push
+    paths:
+      - node_modules/
+  artifacts:
+    expire_in: 4 weeks
+    paths:
+      - sdk
+  variables:
+    SRC_OPENAPI: "./openapi.json"
+    SDK_REPOSITORY: "./sdk"
+  script: |
+    export SDK_VERSION="0.0.0-$(date +"%+4Y%m%d%H%M")-$CI_COMMIT_SHORT_SHA"
+    npm run import:swagger
+    npm run gen:start
+    npm run sdk:build
+
+test:
+  extends: .npm:defaults
+  stage: test
+  dependencies: ['generate']
+  script: npm run test
+
+lint:
+  extends: .npm:defaults
+  stage: test
+  dependencies: ['generate']
+  script: npm run lint:ts
+
+publish:repository:
+  extends: .publish:defaults
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-lts-alpine
+  dependencies: ['generate']
+  variables:
+    REPOSITORY_REMOTE: https://$SDK_GIT_USER:$SDK_GIT_PASS@gitlab.internal.weclapp.com/weclapp/frontend/sdk.git
+  script: |
+    git clone "$REPOSITORY_REMOTE" sdk-remote --depth 1
+    cd sdk-remote
+    git rm -r --cached . # Clear cache in case the .gitignore has changed
+    mv .git ../sdk # Move git repo to newly build sdk
+    cd ../sdk
+    git config user.email "noreply@weclapp.com"
+    git config user.name "$SDK_GIT_USER"
+    git add --all . # Add all, remove files which has been removed
+    if [[ ! -z "$(git status --porcelain)" ]]; then
+      echo "Committing and pushing changes."
+      git commit -m "$CI_COMMIT_SHA"
+      git push "$REPOSITORY_REMOTE" master
+    else
+      echo "No changes to push."
+    fi
+
+publish:package:
+  extends: .publish:defaults
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-lts-alpine
+  dependencies: ['generate']
+  script: |
+    cd sdk
+    echo "@weclapp:registry=${CI_API_V4_URL}/projects/153/packages/npm/" > ~/.npmrc
+    echo "${CI_API_V4_URL#https?}/projects/153/packages/npm/:_authToken=\${CI_JOB_TOKEN}" >> ~/.npmrc
+    npm publish
+
+publish:image:
+  extends: .publish:defaults
+  image: $CI_REGISTRY/weclapp_ops/base_images/docker:stable
+  tags: ['small']
+  services:
+    - name: $CI_REGISTRY/weclapp_ops/base_images/docker:stable-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_IMAGE_REF: $CI_REGISTRY_IMAGE:${CI_COMMIT_REF_SLUG}
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script: |
+    docker pull ${DOCKER_IMAGE_REF} || true
+    docker --config ~/.docker_bi/ build --cache-from ${DOCKER_IMAGE_REF} -t ${DOCKER_IMAGE_REF} .
+    docker push ${DOCKER_IMAGE_REF}
