@@ -10,10 +10,21 @@ stages:
     key: node_modules_cache
     policy: pull
     paths:
-    - node_modules/
+      - node_modules/
   before_script:
     - npm install --unsafe-perm --prefer-offline --no-audit
     - npm prune
+
+.publish:defaults:
+  tags: ['tiny']
+  image: $CI_REGISTRY/weclapp_ops/base_images/docker:stable
+  stage: publish
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - when: never
 
 generate:
   extends: .npm:defaults
@@ -26,7 +37,7 @@ generate:
     SRC_OPENAPI: "./openapi.json"
     SDK_REPOSITORY: "./sdk"
   script: |
-    export SDK_VERSION="0.0.0-$CI_COMMIT_SHA"
+    export SDK_VERSION="0.0.0-$(date +"%+4Y%m%d%H%M")-$CI_COMMIT_SHORT_SHA"
     npm run import:swagger
     npm run gen:start
     npm run sdk:build
@@ -34,20 +45,19 @@ generate:
 test:
   extends: .npm:defaults
   stage: test
-  dependencies: [ 'generate' ]
+  dependencies: ['generate']
   script: npm run test
 
 lint:
   extends: .npm:defaults
   stage: test
-  dependencies: [ 'generate' ]
+  dependencies: ['generate']
   script: npm run lint:ts
 
 publish:repository:
-  tags: [ 'small' ]
-  image: $CI_REGISTRY/weclapp_ops/base_images/docker:stable
+  extends: .publish:defaults
   stage: publish
-  dependencies: [ 'generate' ]
+  dependencies: ['generate']
   variables:
     REPOSITORY_REMOTE: https://$SDK_GIT_USER:$SDK_GIT_PASS@gitlab.internal.weclapp.com/weclapp/frontend/sdk.git
   script: |
@@ -66,12 +76,9 @@ publish:repository:
     fi
 
 publish:package:
-  extends: .npm:defaults
-  allow_failure: true
+  extends: .publish:defaults
   stage: publish
   dependencies: ['generate']
-  rules:
-    - when: manual
   script: |
     cd sdk
     echo "@weclapp:registry=${CI_API_V4_URL}/projects/153/packages/npm/">.npmrc
@@ -79,14 +86,8 @@ publish:package:
     npm publish
 
 publish:image:
-  image: $CI_REGISTRY/weclapp_ops/base_images/docker:stable
-  stage: publish
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: manual
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: on_success
-    - when: manual
+  extends: .publish:defaults
+  tags: ['small']
   services:
     - name: $CI_REGISTRY/weclapp_ops/base_images/docker:stable-dind
       alias: docker
