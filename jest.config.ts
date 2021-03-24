@@ -6,6 +6,8 @@ export default {
     setupFiles: ['./tests/setup.ts'],
     setupFilesAfterEnv: ['jest-extended'],
     moduleNameMapper: {
-        '@sdk/(.*)$': '<rootDir>/sdk/$1'
+        '@sdk/(.*)$': '<rootDir>/sdk/$1',
+        '@tests/(.*)$': '<rootDir>/tests/$1',
+        '@/(.*)$': '<rootDir>/$1'
     }
 };

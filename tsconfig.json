@@ -19,7 +19,8 @@
             "@utils/*": ["src/utils/*"],
             "@ts/*": ["src/ts/*"],
             "@/*": ["./*"],
-            "@sdk/*": ["sdk/*"]
+            "@sdk/*": ["sdk/*"],
+            "@tests/*": ["tests/*"]
         }
     },
     "include": [

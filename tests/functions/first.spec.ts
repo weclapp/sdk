@@ -5,16 +5,13 @@ import {sdk, testSchema} from '../utils';
 describe('.first', () => {
 
     it('Should return the first customer it can find', async () => {
-        const customers = await sdk.customer.first();
-        expect(customers).toBeObject();
+        expect(await sdk.customer.first()).toBeObject();
     });
 
     it('Should return the first non-blocked customer', async () => {
-        const customers = await sdk.customer.first({
+        expect(await sdk.customer.first({
             filter: {'blocked-eq': false}
-        });
-
-        expect(customers).toBeObject();
+        })).toBeObject();
     });
 
     it('Should select nested properties', async () => {

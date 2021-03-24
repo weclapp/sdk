@@ -1,23 +1,24 @@
+import {createCustomers} from '@tests/functions/utils/createCustomers';
 import 'jest-extended';
 import * as Joi from 'joi';
 import {sdk, testSchema} from '../utils';
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('.unique', () => {
+    let customerId: string;
+
+    createCustomers(['Foo'], ids => customerId = ids[0]);
+
     it('Should fetch a single customer', async () => {
-        const first = await sdk.customer.first();
-        const customer = await sdk.customer.unique(first!.id);
+        const customer = await sdk.customer.unique(customerId);
 
         expect(customer).toBeObject();
-        expect(customer!.insolvent).toBeBoolean();
-        expect(customer!.id).toBeString();
+        expect(customer?.insolvent).toBeBoolean();
+        expect(customer?.id).toBeString();
     });
 
     it('Should only fetch return selected properties', async () => {
-        const first = await sdk.customer.first();
-
         testSchema(
-            await sdk.customer.unique(first!.id, {
+            await sdk.customer.unique(customerId, {
                 select: {
                     firstName: true,
                     email: true,

@@ -1,8 +1,10 @@
+import {createCustomers} from '@tests/functions/utils/createCustomers';
 import 'jest-extended';
 import * as Joi from 'joi';
 import {sdk, testSchema} from '../utils';
 
 describe('.some', () => {
+    createCustomers(['Fobar', 'Bazzam', 'Bar', 'Foos']);
 
     it('Should return a list of customers', async () => {
         const customers = await sdk.customer.some();
@@ -12,10 +14,10 @@ describe('.some', () => {
     it('Should return a specific amount of customers from the second page', async () => {
         const customers = await sdk.customer.some({
             page: 2,
-            pageSize: 13
+            pageSize: 3
         });
 
-        expect(customers).toBeArrayOfSize(13);
+        expect(customers).toBeArrayOfSize(3);
     });
 
     it('Should return only the id\'s of customers', async () => {
@@ -104,5 +106,15 @@ describe('.some', () => {
                 )
             })
         );
+    });
+
+    it('Should find a company by it\'s name', async () => {
+        expect(
+            await sdk.customer.first({
+                filter: {
+                    'company-eq': 'Bazzam'
+                }
+            })
+        ).toBeObject();
     });
 });
