@@ -72,3 +72,26 @@ publish:package:
     echo "@weclapp:registry=${CI_API_V4_URL}/projects/153/packages/npm/">.npmrc
     echo "${CI_API_V4_URL#https?}/projects/153/packages/npm/:_authToken=\${CI_JOB_TOKEN}">>.npmrc
     npm publish
+
+publish:image:
+  extends: .npm:defaults
+  stage: publish
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: manual
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - when: manual
+  services:
+    - name: $CI_REGISTRY/weclapp_ops/base_images/docker:stable-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_IMAGE_REF: $CI_REGISTRY_IMAGE:${CI_COMMIT_REF_SLUG}
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script: |
+    docker pull ${DOCKER_IMAGE_REF} || true
+    docker --config ~/.docker_bi/ build --cache-from ${DOCKER_IMAGE_REF} -t ${DOCKER_IMAGE_REF} .
+    docker push ${DOCKER_IMAGE_REF}
