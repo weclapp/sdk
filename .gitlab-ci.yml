@@ -56,17 +56,18 @@ lint:
 
 publish:repository:
   extends: .publish:defaults
-  stage: publish
   dependencies: ['generate']
   variables:
     REPOSITORY_REMOTE: https://$SDK_GIT_USER:$SDK_GIT_PASS@gitlab.internal.weclapp.com/weclapp/frontend/sdk.git
   script: |
     git clone "$REPOSITORY_REMOTE" sdk-remote --depth 1
-    mv sdk-remote/.git sdk
-    cd sdk
+    cd sdk-remote
+    git rm -r --cached . # Clear cache in case the .gitignore has changed
+    mv .git ../sdk # Move git repo to newly build sdk
+    cd ../sdk
     git config user.email "noreply@weclapp.com"
     git config user.name "$SDK_GIT_USER"
-    git add .
+    git add --all . # Add all, remove files which has been removed
     if [[ ! -z "$(git status --porcelain)" ]]; then
       echo "Committing and pushing changes."
       git commit -m "$CI_COMMIT_SHA"
@@ -77,7 +78,6 @@ publish:repository:
 
 publish:package:
   extends: .publish:defaults
-  stage: publish
   dependencies: ['generate']
   script: |
     cd sdk

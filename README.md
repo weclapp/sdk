@@ -65,17 +65,8 @@ To use your freshly created SDK, you can refer to it locally to test it (replace
 To generate a production-ready SDK, simply run `npm run build`. This will generate the SDK and bundle it into the [SDK](sdk) folder. The process should finish without
 errors.
 
-#### Using Docker
-
-The generator comes with a [Dockerfile](Dockerfile) which can be used to build a sdk based on an already to [OpenAPIv3](https://swagger.io/specification/) converted swagger.json file.
-
-```shell
-docker build . -t sdk # Build image
-docke --rm run sdk # Build sdk
-```
-
-Required env variables:
-* `SRC_OPENAPI` _- Location of the OpenAPIv3 json-file. You probably want to mount a folder into the docker container._
+The [Dockerfile](Dockerfile) will install all dependencies for this project. After building it, it can be used to generate the sdk and test it.
+For this environmental variables must be set and `npm` commands run in the container.
 
 ##### Testing
 
