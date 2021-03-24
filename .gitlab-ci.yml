@@ -17,7 +17,6 @@ stages:
 
 .publish:defaults:
   tags: ['tiny']
-  image: $CI_REGISTRY/weclapp_ops/base_images/docker:stable
   stage: publish
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
@@ -29,6 +28,11 @@ stages:
 generate:
   extends: .npm:defaults
   stage: generate
+  cache:
+    key: node_modules_cache
+    policy: pull-push
+    paths:
+      - node_modules/
   artifacts:
     expire_in: 4 weeks
     paths:
@@ -56,6 +60,7 @@ lint:
 
 publish:repository:
   extends: .publish:defaults
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-lts-alpine
   dependencies: ['generate']
   variables:
     REPOSITORY_REMOTE: https://$SDK_GIT_USER:$SDK_GIT_PASS@gitlab.internal.weclapp.com/weclapp/frontend/sdk.git
@@ -78,15 +83,17 @@ publish:repository:
 
 publish:package:
   extends: .publish:defaults
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-lts-alpine
   dependencies: ['generate']
   script: |
     cd sdk
-    echo "@weclapp:registry=${CI_API_V4_URL}/projects/153/packages/npm/">.npmrc
-    echo "${CI_API_V4_URL#https?}/projects/153/packages/npm/:_authToken=\${CI_JOB_TOKEN}">>.npmrc
+    echo "@weclapp:registry=${CI_API_V4_URL}/projects/153/packages/npm/" > ~/.npmrc
+    echo "${CI_API_V4_URL#https?}/projects/153/packages/npm/:_authToken=\${CI_JOB_TOKEN}" >> ~/.npmrc
     npm publish
 
 publish:image:
   extends: .publish:defaults
+  image: $CI_REGISTRY/weclapp_ops/base_images/docker:stable
   tags: ['small']
   services:
     - name: $CI_REGISTRY/weclapp_ops/base_images/docker:stable-dind
