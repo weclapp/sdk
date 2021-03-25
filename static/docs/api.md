@@ -72,18 +72,43 @@ Using the `filter` property certain entities can be excluded from the set:
 
 | Comparator | Meaning | Description |
 | ---------- | ------- | ----------- |
-| `eq` | Equal | Checks if something is equal something. |
-| `ne` | Not equal | Checks if something is _not_ equal something. |
-| `lt` | Less than | Checks if the entity's value is less than something. |
-| `gt` | Greater than | Checks if the entity's value is greater than something. |
-| `le` | Less or equal than | Checks if the entity's value is less or equal than / to something. |
-| `ge` | Greater or equal than | Checks if the entity's value is greater or equal than / to something. |
-| `like` | Like expression | Checks if the entity's value is like another string (supports % and _ as placeholders, similar to SQL's `LIKE` operator). |
-| `notlike` | Like expression | Checks if the entity's value is _not_ like another string (supports % and _ as placeholders, similar to SQL's `LIKE` operator). |
-| `ilike` | Ignore-case like | Same as `like` but case-insensitive. |
-| `notilike` | Ignore-case like | Same as `notlike` but case-insensitive. |
-| `in` | Set | Checks if the entity's value is in a list. |
-| `notin` | Set | Checks if the entity's value is _not_ in a list. |
+| `EQ` | Equal | Checks if something is equal something. |
+| `NE` | Not equal | Checks if something is _not_ equal something. |
+| `LT` | Less than | Checks if the entity's value is less than something. |
+| `GT` | Greater than | Checks if the entity's value is greater than something. |
+| `LE` | Less or equal than | Checks if the entity's value is less or equal than / to something. |
+| `GE` | Greater or equal than | Checks if the entity's value is greater or equal than / to something. |
+| `LIKE` | Like expression | Checks if the entity's value is like another string (supports % and _ as placeholders, similar to SQL's `LIKE` operator). |
+| `ILIKE` | Ignore-case like | Same as `like` but case-insensitive. |
+| `IN` | Set | Checks if the entity's value is in a list. |
+
+> Prefixing `LIKE`, `ILIKE` and `IN` with a `NOT_` negates the condition.
+
+Example with multiple filters:
+
+```json5
+{
+    username: {LIKE: '%simon'},
+    age: {GT: 20},
+    email: {NE: null},
+    firstName: {NOT_IN: ['sven', 'julius']}
+}
+```
+
+It is possible to use _one_ OR condition at the very root of your query:
+
+```json5
+
+{
+   OR: [
+      {username: {EQ: 'John'}},
+      {age: {GT: 50}},
+      {email: {EQ: null}}
+   ]
+}
+```
+
+> It is not possible to use operators in reverse, e.g. {LIKE: {username: '...'}}!
 
 #### `.count(filter?: QueryFilter<[Entity]>)`
 
