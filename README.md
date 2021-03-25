@@ -47,7 +47,7 @@ There are a few scripts during development:
 * `npm run lint:fix` _- Lints both the generator, and the generated SDK. Fixes errors where possible._
 * `npm run test:coverage` _- Test the SDK and collect code-coverage._
 
-The former two are started separetly, as errors may occur independently of each other.
+The former two are started separately, as errors may occur independently of each other.
 
 To use your freshly created SDK, you can refer to it locally to test it (replace `SDK_PATH` with the absolute path of the [SDK](sdk)): 
 ```json5

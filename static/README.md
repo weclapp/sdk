@@ -8,7 +8,7 @@
 <br/>
 
 <div align="center">
-    <h3>Weclapp Developer SDK</h3>
+    <h3>weclapp Developer SDK</h3>
 </div>
 
 
