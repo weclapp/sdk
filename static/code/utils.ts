@@ -56,18 +56,26 @@ export type SelectableRecord = {
 }
 
 /**
- * Flattens a selectable, possibly nested, record
- * @param obj Object
- * @param base Recursive base property
+ * Flattens a selectable, possibly nested, record.
+ * @param obj Object.
+ * @param base Recursive base property.
  */
 export const flattenSelectable = (obj: SelectableRecord, base = ''): string[] => {
-    return Object.entries(obj)
-        .filter(v => v[1])
-        .map(([key, value]) => {
+    const res = [];
+
+    for (const [key, value] of Object.entries(obj)) {
+        if (value) {
             const path = base + key;
-            return typeof value === 'object' ? flattenSelectable(value, `${path}.`) : path;
-        })
-        .flat();
+
+            if (typeof value === 'object') {
+                res.push(...flattenSelectable(value, `${path}.`));
+            } else {
+                res.push(path);
+            }
+        }
+    }
+
+    return res;
 };
 
 
