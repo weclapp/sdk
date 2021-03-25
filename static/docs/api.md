@@ -23,16 +23,14 @@ console.log(customers);
 
 The `raw` function looks like the following:
 
-```ts
+```
 raw(
-    endpoint
-:
-string;
-options ? : {
-    method? : Method;
-    query? : Record<string, unknown>;
-    body? : any;
-}
+    endpoint: string;
+    options?: {
+        method?: Method;
+        query?: Record<string, unknown>;
+        body?: any;
+    }
 )
 ```
 
@@ -54,18 +52,38 @@ functions (in the following examples we refer to `[Entity]` as being the target-
 | Fully implemented. | `replace(id: string, data: [Entity]>)` | Replaces the given entity with the new one.  |
 | Fully implemented. | `delete(id: number)` | Deletes an entity by the given id. |
 
-> "Partial implementation" referes to types missing or not properly resolve return type.
+> "Partial implementation" refers to types missing or not properly resolve return type.
 
-The `EntityQuery` comes with the following options:
+The `EntityQuery` and `FirstQuery` comes with the following options:
 
-* `serialize` _- If result should be serialized (e.g. non-defined fields nulled)._
+* `serialize` _- If result should be serialized (e.g. non-defined fields nullable)._
 * `select` _- Query only these properties, it is highly recommended to always specify what you want - it'll lower the response time greatly._
 * `include` _- Experimental, type-less way of fetching additional entities._
+* `filter` _- Query only entities which match the given criteria._
 
 The extended version, `ListQuery` also concludes:
 
 * `page` _- The amount of entities to return per page._
 * `pageSize` _- The page size._
+
+##### Filters:
+
+Using the `filter` property certain entities can be excluded from the set:
+
+| Comparator | Meaning | Description |
+| ---------- | ------- | ----------- |
+| `eq` | Equal | Checks if something is equal something. |
+| `ne` | Not equal | Checks if something is _not_ equal something. |
+| `lt` | Less than | Checks if the entity's value is less than something. |
+| `gt` | Greater than | Checks if the entity's value is greater than something. |
+| `le` | Less or equal than | Checks if the entity's value is less or equal than / to something. |
+| `ge` | Greater or equal than | Checks if the entity's value is greater or equal than / to something. |
+| `like` | Like expression | Checks if the entity's value is like another string (supports % and _ as placeholders, similar to SQL's `LIKE` operator). |
+| `notlike` | Like expression | Checks if the entity's value is _not_ like another string (supports % and _ as placeholders, similar to SQL's `LIKE` operator). |
+| `ilike` | Ignore-case like | Same as `like` but case-insensitive. |
+| `notilike` | Ignore-case like | Same as `notlike` but case-insensitive. |
+| `in` | Set | Checks if the entity's value is in a list. |
+| `notin` | Set | Checks if the entity's value is _not_ in a list. |
 
 #### `.count(filter?: QueryFilter<[Entity]>)`
 
@@ -78,15 +96,17 @@ The `count` function will return the sum of entities which match the given crite
 // Fetch total amount of customers
 const customers = await sdk.customer.count();
 
-// Count amount of customers which are not blocked
+// Count amount of customers which are not blocked and the 
+// customerId is greater than 50
 const activeCustomers = await sdk.customer.count({
-    'blocked-eq': false
+    blocked: {eq: false},
+    customerId: {gt: 50}
 });
 ```
 
 #### `.unique(id: string, options: EntityQuery<[Entity]>)`
 
-The `unique` function takes an entity-id and options for how and what should be feched.
+The `unique` function takes an entity-id and options for how and what should be fetched.
 
 ##### Example:
 
