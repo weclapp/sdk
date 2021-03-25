@@ -1,3 +1,5 @@
+import {FilterObject} from './types.base';
+
 /**
  * Unwraps the result property from a weclapp response.
  * @param res The response
@@ -66,4 +68,34 @@ export const flattenSelectable = (obj: SelectableRecord, base = ''): string[] =>
             return typeof value === 'object' ? flattenSelectable(value, `${path}.`) : path;
         })
         .flat();
+};
+
+
+export type FilterableRecord = {
+    [key: string]: undefined | FilterableRecord | FilterObject;
+}
+
+/**
+ * Flattens a filterable, possibly nested, record.
+ * @param obj Object.
+ * @param base Recursive base property.
+ */
+export const flattenFilterable = (obj: FilterableRecord, base = ''): Map<string, string> => {
+    const props = new Map<string, string>();
+
+    for (const [key, val] of Object.entries(obj)) {
+        if (Array.isArray(val)) {
+            props.set(`${base}-${key}`, `[${val}]`);
+        } else if (val !== null && typeof val === 'object') {
+            const path = base ? `${base}.${key}` : key;
+
+            for (const [key, prop] of flattenFilterable(val as FilterableRecord, path)) {
+                props.set(key, prop);
+            }
+        } else if (val !== undefined) {
+            props.set(`${base}-${key}`, String(val));
+        }
+    }
+
+    return props;
 };

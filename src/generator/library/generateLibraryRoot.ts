@@ -43,8 +43,8 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
     return `
 ${resolveImports(target)}
 import {QueryFilter, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn} from './types.base';
+import {unwrap, params, flattenSelectable, flattenFilterable} from './utils';
 import {Options, Method, RawRequest} from './types.api';
-import {unwrap, params, flattenSelectable} from './utils';
 export * from './types.models';
 
 // TODO: Remove after swagger.json is fixed
@@ -153,7 +153,7 @@ export const weclapp = ({
         options?: Query
     ): Promise<SomeReturn<Entity, Query>> => makeRequest(endpoint, {
         query: {
-            ...options?.filter, // We don't want the user to be able to re-write given properties below
+            ...(options?.filter && flattenFilterable(options.filter)), // We don't want the user to be able to re-write given properties below
             'page': options?.page ?? 1,
             'pageSize': options?.pageSize ?? 10,
             'serializeNulls': options?.serialize,
@@ -206,7 +206,7 @@ export const weclapp = ({
         options?: Query
     ): Promise<UniqueReturn<Entity, Query>> => makeRequest(endpoint, {
         query: {
-            ...options?.filter, // We don't want the user to be able to re-write given properties below
+            ...(options?.filter && flattenFilterable(options.filter)), // We don't want the user to be able to re-write given properties below
             'page': 1,
             'pageSize': 10,
             'serializeNulls': options?.serialize,
