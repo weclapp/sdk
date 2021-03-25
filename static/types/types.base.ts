@@ -8,10 +8,11 @@ export type ArrayOperators = 'in' | 'notin';
 export type BooleanOperators = 'null' | 'notnull';
 
 // Generic filter object.
+export type Comparable = string | number | boolean;
 export type FilterObject =
-    { [K in CompareOperators]?: string | number; } &
+    { [K in CompareOperators]?: Comparable; } &
     { [K in BooleanOperators]?: boolean; } &
-    { [K in ArrayOperators]?: (string | number)[]; };
+    { [K in ArrayOperators]?: Comparable[]; };
 
 // Deeply remaps all properties from a object.
 export type DeepMap<T, V> = {

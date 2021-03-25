@@ -10,7 +10,7 @@ describe('.first', () => {
 
     it('Should return the first non-blocked customer', async () => {
         expect(await sdk.customer.first({
-            filter: {'blocked-eq': false}
+            filter: {blocked: {eq: false}}
         })).toBeObject();
     });
 
