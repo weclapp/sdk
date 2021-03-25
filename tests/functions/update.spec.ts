@@ -1,24 +1,27 @@
-import {Article} from '@sdk/node';
+import {Customer} from '@sdk/node';
+import {createCustomers} from '@tests/functions/utils/createCustomers';
 import 'jest-extended';
 import {sdk} from '../utils';
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('.update', () => {
+    let customerId: string;
 
-    it('Should update an article', async () => {
-        const first = await sdk.article.first();
-        const article = await sdk.article.unique(first!.id);
-        expect(article).toBeObject();
+    createCustomers(['Foo'], ids => customerId = ids[0]);
 
-        const updated = await sdk.article.update(article!.id, {
-            name: 'Hello world'
-        });
+    it('Should update a customer', async () => {
+        const customer = await sdk.customer.unique(customerId);
 
-        expect(updated).toBeObject();
-        expect((updated as Article).name).toEqual('Hello world');
+        if (!customer) {
+            throw new Error('Customer not found');
+        }
 
-        await sdk.article.update(article!.id, {
-            name: article!.name
+        const updated = await sdk.customer.update(customerId, {
+            company: 'Hello world'
+        }) as (Customer | null);
+
+        expect(updated?.company).toEqual('Hello world');
+        await sdk.customer.update(customerId, {
+            company: customer.company
         });
     });
 });

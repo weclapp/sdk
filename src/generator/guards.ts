@@ -24,9 +24,7 @@ export const isArraySchemaObject = (v: any): v is OpenAPIV3.ArraySchemaObject =>
 };
 
 export const isResponseObject = (v: any): v is OpenAPIV3.ResponseObject => {
-    // TODO: Check for description after responses is fixed:
-    // ... && typeof v.description === 'string';
-    return isObject(v);
+    return isObject(v) && typeof v.description === 'string';
 };
 
 export const isRequestBodyObject = (v: any): v is OpenAPIV3.RequestBodyObject => {

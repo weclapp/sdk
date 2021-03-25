@@ -1,16 +1,12 @@
-import {Customer} from '@sdk/node';
 import {params, unwrap} from '@sdk/utils';
 import 'jest-extended';
 import {sdk} from '../utils';
+import {Customer} from "@sdk/node";
 
 describe('Utilities', () => {
 
     it('Should unwrap a raw request', async () => {
-
-        /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-        const customer = await sdk.raw<Customer[]>('/customer')
-            .then(unwrap);
-
+        const customer = (await sdk.raw<{ result: Customer[] }>('/customer').then(unwrap)) as Customer[];
         expect(customer).toBeArray();
     });
 

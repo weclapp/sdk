@@ -17,8 +17,7 @@ export const extractDefinitionName = (s: string): string => {
  * @param endpoint
  */
 export const resolveResponseType = ({responses}: OpenAPIV3.OperationObject): string => {
-    // TODO: Update after responses has been fixed in openapi.json
-    const response = responses?.['200 OK'] || responses?.['200'];
+    const response = responses?.['200'];
 
     if (isReferenceObject(response)) {
         return extractDefinitionName(response.$ref);
@@ -39,5 +38,5 @@ export const resolveResponseType = ({responses}: OpenAPIV3.OperationObject): str
  * @param response
  */
 export const guessResponseEntity = (response: string): string => {
-    return match(response, /[A-Z]\w+/, 0) || 'unknown';
+    return match(response, /[A-Z]\w+/, 0) ?? 'unknown';
 };

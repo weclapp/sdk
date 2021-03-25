@@ -16,11 +16,6 @@ const production = process.env.NODE_ENV === 'production';
 const dist = (...paths) => path.resolve(process.cwd(), process.env.SDK_REPOSITORY, ...paths);
 const src = (...paths) => path.resolve(dist(), 'src', ...paths);
 
-// Copies the sdk types to the given folder
-const copyTypes = (...dest) => copy({
-    targets: [{src: './sdk/types/index.d.ts', dest: dist(...dest)}]
-});
-
 // Maps globals to everything
 const globals = (...globals) => globals.reduce((pv, cv) => ({[cv]: '*', ...pv}), {});
 
@@ -64,7 +59,6 @@ export default [
         plugins: [
             ...(production ? [terser()] : []),
             ts(),
-            copyTypes('main'),
             copy({
                 targets: [
 
@@ -95,7 +89,6 @@ export default [
         external: ['rxjs'],
         plugins: [
             ts(),
-            copyTypes('rx'),
             ...(production ? [terser()] : [])
         ],
         output: [
@@ -119,8 +112,7 @@ export default [
         output: nodeOutput('node'),
         external: ['node-fetch', 'url'],
         plugins: [
-            ts(),
-            copyTypes('node')
+            ts()
         ]
     },
 
@@ -130,8 +122,7 @@ export default [
         output: nodeOutput('node/rx'),
         external: ['node-fetch', 'url', 'rxjs'],
         plugins: [
-            ts(),
-            copyTypes('node/rx')
+            ts()
         ]
     },
 
