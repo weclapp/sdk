@@ -11,15 +11,15 @@ describe('.count', () => {
 
     it('Should work with filters', async () => {
         expect(await sdk.customer.count({
-            customerNumber: {ge: 5}
+            customerNumber: {GE: 5}
         })).toBeNumber();
 
         expect(await sdk.article.count({
-            active: {eq: true}
+            active: {EQ: true}
         })).toBeNumber();
 
         expect(await sdk.opportunity.count({
-            id: {ge: Math.floor(Math.random() * 10000)}
+            id: {GE: Math.floor(Math.random() * 10000)}
         })).toBeNumber();
     });
 });

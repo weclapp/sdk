@@ -1,31 +1,31 @@
-// These operators are for simple comparison.
-export type CompareOperators = 'eq' | 'ne' | 'lt' | 'gt' | 'le' | 'ge' | 'like' | 'notlike' | 'ilike' | 'notilike';
-
-// These operators expect an array / list of values.
-export type ArrayOperators = 'in' | 'notin';
-
-// These operators ignore the value, for consistency a boolean is expected.
-export type BooleanOperators = 'null' | 'notnull';
+// Comparison operators
+export type SimpleOperators = 'EQ' | 'NE' | 'LT' | 'GT' | 'LE' | 'GE' | 'LIKE' | 'ILIKE' | 'NOT_LIKE' | 'NOT_ILIKE';
+export type ArrayOperators = 'IN' | 'NOT_IN';
+export type Operator = SimpleOperators | ArrayOperators;
 
 // Generic filter object.
-export type Comparable = string | number | boolean;
+export type ComparableType = string | number | boolean | null;
 export type FilterObject =
-    { [K in CompareOperators]?: Comparable; } &
-    { [K in BooleanOperators]?: boolean; } &
-    { [K in ArrayOperators]?: Comparable[]; };
+    { [K in SimpleOperators]?: ComparableType; } &
+    { [K in ArrayOperators]?: ComparableType[]; };
 
-// Deeply remaps all properties from a object.
-export type DeepMap<T, V> = {
+// Base filter without the OR part.
+export type RootQueryFilter<T> = {
     [P in keyof T]?:
-        T[P] extends Array<infer U> ? (Selectable<U> | V) :
-            T[P] extends object ? (Selectable<T[P]> | V) : V;
+        T[P] extends Array<infer U> ? RootQueryFilter<U> :
+            T[P] extends object ? RootQueryFilter<T[P]> : FilterObject;
 }
 
 // Takes an model and returns all possible filters.
-export type QueryFilter<T> = DeepMap<T, FilterObject>;
+export type Filterable<T> = RootQueryFilter<T> &
+    {OR?: RootQueryFilter<T>[];}
 
 // Maps all property types from an object to boolean (or the sub-object)
-export type Selectable<T> = DeepMap<T, boolean>;
+export type Selectable<T> = {
+    [P in keyof T]?:
+        T[P] extends Array<infer U> ? (Selectable<U> | boolean) :
+            T[P] extends object ? (Selectable<T[P]> | boolean) : boolean;
+}
 
 // Extracts properties based on the select query
 export type Select<T, Q extends Selectable<T>> = {
@@ -74,11 +74,11 @@ export interface WrappedResponse<Data> {
 export interface ListQuery<Entity> extends EntityQuery<Entity> {
     page?: number;
     pageSize?: number;
-    filter?: QueryFilter<Entity>;
+    filter?: Filterable<Entity>;
 }
 
 export interface FirstQuery<Entity> extends EntityQuery<Entity> {
-    filter?: QueryFilter<Entity>;
+    filter?: Filterable<Entity>;
 }
 
 // Return value for the .unique and .first query

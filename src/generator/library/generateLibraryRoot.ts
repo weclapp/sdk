@@ -42,7 +42,7 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
 
     return `
 ${resolveImports(target)}
-import {QueryFilter, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn} from './types.base';
+import {Filterable, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn} from './types.base';
 import {unwrap, params, flattenSelectable, flattenFilterable} from './utils';
 import {Options, Method, RawRequest} from './types.api';
 export * from './types.models';
@@ -116,7 +116,7 @@ export const weclapp = ({
     };
 
     // Internal .count implementation
-    const _count = <Entity>(endpoint: string, filter?: QueryFilter<Entity>): Promise<number> => {
+    const _count = <Entity>(endpoint: string, filter?: Filterable<Entity>): Promise<number> => {
         return makeRequest(endpoint, {query: filter}).then(unwrap);
     };
 

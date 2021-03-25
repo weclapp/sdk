@@ -94,7 +94,7 @@ describe('.some', () => {
             await sdk.customer.some({
                 select: {id: true},
                 include: ['responsibleUserId'],
-                filter: {id: {gt: 25}}
+                filter: {id: {GT: 25}}
             }),
             Joi.object({
                 data: Joi.array(),
@@ -109,7 +109,7 @@ describe('.some', () => {
     it('Should find a company by it\'s name', async () => {
         expect(
             await sdk.customer.first({
-                filter: {company: {eq: 'Bazzam'}}
+                filter: {company: {EQ: 'Bazzam'}}
             })
         ).toBeObject();
     });
