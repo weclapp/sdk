@@ -97,7 +97,7 @@ export const weclapp = ({
         headers
     } = {}): Promise<any> => {
         const url = \`\${base + endpoint}\`;
-        const isBinaryData = body instanceof ${isNodeTarget(target) ? 'Buffer' : 'ArrayBuffer'};
+        const isBinaryData = body instanceof ${isNodeTarget(target) ? 'Buffer' : 'Blob'};
         const contentType = isBinaryData ? 'octet-stream' : 'json';
         
         return fetch(query ? params(url, query) : url, {
