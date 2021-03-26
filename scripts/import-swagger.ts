@@ -18,12 +18,19 @@ config();
     console.log(`[i] Fetching swagger.json from ${TEST_DOMAIN}`);
 
     // Fetch swagger json file
-    const swagger = await fetch(`https://${TEST_DOMAIN}/webapp/api/v1/meta/swagger.json`, {
+    const response = await fetch(`https://${TEST_DOMAIN}/webapp/api/v1/meta/swagger.json`, {
         headers: {
             'Accept': 'application/json',
             'AuthenticationToken': TEST_API_KEY
         }
-    }).then(res => res.json());
+    });
+
+    const swagger = await response.json();
+    if (!response.ok) {
+        console.log(`[!] Failed to fetch swagger, status: ${response.status}`);
+        console.log(JSON.stringify(swagger, null, 4));
+        process.exit(1);
+    }
 
     console.log(`[i] Convert to OpenAPIv3 format...`);
 
