@@ -19,6 +19,7 @@ export enum Method {
 export interface RequestOptions {
     method?: Method;
     query?: Record<string, unknown>;
+    headers?: Record<string, string>;
     body?: any;
 }
 
