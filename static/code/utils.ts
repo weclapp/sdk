@@ -58,7 +58,7 @@ export const resolvePrimaryContact = <T extends IDObject>(
  * @param base Recursive base property.
  */
 export const flattenSelectable = <T = any>(obj: Selectable<T>, base = ''): string[] => {
-    const res = [];
+    const res: string[] = [];
 
     for (const [key, value] of Object.entries(obj)) {
         if (value) {
