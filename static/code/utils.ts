@@ -1,8 +1,11 @@
+import {Filterable, Selectable} from './types.base';
+import {WeclappResponse} from './types.api';
+
 /**
  * Unwraps the result property from a weclapp response.
  * @param res The response
  */
-export const unwrap = (res: {result: unknown}): any => res.result;
+export const unwrap = <T>(res: WeclappResponse<T>): T => res.result;
 
 /**
  * Builds a search query base on the given object
@@ -49,21 +52,67 @@ export const resolvePrimaryContact = <T extends IDObject>(
     return contacts.find(v => v.id === primaryContactId) ?? null;
 };
 
-export type SelectableRecord = {
-    [key: string]: undefined | boolean | SelectableRecord;
-}
+/**
+ * Flattens a selectable, possibly nested, record.
+ * @param obj Object.
+ * @param base Recursive base property.
+ */
+export const flattenSelectable = <T = any>(obj: Selectable<T>, base = ''): string[] => {
+    const res: string[] = [];
+
+    for (const [key, value] of Object.entries(obj)) {
+        if (value) {
+            const path = base + key;
+
+            if (typeof value === 'object') {
+                res.push(...flattenSelectable(value as Selectable<T>, `${path}.`));
+            } else {
+                res.push(path);
+            }
+        }
+    }
+
+    return res;
+};
 
 /**
- * Flattens a selectable, possibly nested, record
- * @param obj Object
- * @param base Recursive base property
+ * Flattens a filterable, possibly nested, record.
+ * @param obj Object.
+ * @param base Recursive base property.
  */
-export const flattenSelectable = (obj: SelectableRecord, base = ''): string[] => {
-    return Object.entries(obj)
-        .filter(v => v[1])
-        .map(([key, value]) => {
-            const path = base + key;
-            return typeof value === 'object' ? flattenSelectable(value, `${path}.`) : path;
-        })
-        .flat();
+export const flattenFilterable = <T = any>(obj: Filterable<T>, base = ''): Map<string, string> => {
+    const props = new Map<string, string>();
+
+    for (const [key, val] of Object.entries(obj)) {
+
+        // Special OR operator
+        if (key === 'OR' && !base && Array.isArray(val)) {
+            for (const or of val) {
+                for (const [key, prop] of flattenFilterable(or)) {
+                    props.set(`or-${key}`, prop);
+                }
+            }
+            continue;
+        }
+
+        // Normal comparison
+        const operator = key.replace('_', '').toLowerCase();
+        if (Array.isArray(val)) {
+            props.set(`${base}-${operator}`, `[${val}]`);
+        } else if (val !== null && typeof val === 'object') {
+            const currentPath = base ? `${base}.${key}` : key;
+
+            for (const [key, prop] of flattenFilterable(val, currentPath)) {
+                props.set(key, prop);
+            }
+        } else if (val === null && ['EQ', 'NE'].includes(key)) {
+
+            // Map to -null/-notnull operators.
+            props.set(`${base}-${key === 'EQ' ? 'null' : 'notnull'}`, '1');
+        } else if (val !== undefined) {
+            props.set(`${base}-${operator}`, String(val));
+        }
+    }
+
+    return props;
 };

@@ -8,7 +8,7 @@
 <br/>
 
 <div align="center">
-    <h3>Weclapp Developer SDK</h3>
+    <h3>weclapp Developer SDK</h3>
 </div>
 
 
@@ -36,43 +36,6 @@ Install via yarn:
 yarn add @weclapp/sdk
 ```
 
-### Packages
-
-The weclapp SDK comes with several packages / folders.
-
-##### SDK Implementations
-
-| Path | Description | Use case |
-| ---- | ----------- | -------- |
-| `@weclapp/sdk` | SDK base with promises. | In the browser. |
-| `@weclapp/sdk/rx` | Same as the base but with [RxJS](https://rxjs.dev/). | In the browser in combination with [RxJS](https://rxjs.dev/). Mostly for [Angular](https://angular.io/) envieronments. |
-| `@weclapp/sdk/node` | NodeJS version, requires [node-fetch](https://www.npmjs.com/package/node-fetch). | In NodeJS. |
-| `@weclapp/sdk/node/rx` | NodeJS version with [RxJS](https://rxjs.dev/). | In NodeJS in combination with [RxJS](https://rxjs.dev/). | 
-
-##### Utils
-Under `@weclapp/utils` several utility function can be found:
-
-```ts
-import {
-    
-    // Takes a party-like object and resolves the primary address / contact
-    // Both require the target-type to passed as generic, example:
-    // resolvePrimaryAddress<Address>(customer); // Address is from one of the packages above or a custom one.
-    resolvePrimaryAddress,
-    resolvePrimaryContact,
-    
-    // Takes an url and an object which should represent the query parameters.
-    // Undefined values are ignored by this.
-    params,
-    
-    // Takes a weclapp response value and extracts the `result` property.
-    unwrap,
-
-    // Takes an object usually passed to `select` and flattens it
-    flattenSelectable
-} from '@weclapp/sdk/utils';
-```
-
 ### Quickstart
 
 ```ts
@@ -89,9 +52,24 @@ import {weclapp} from '@weclapp/sdk';
 })();
 ```
 
-### Documentation
+Ready to get started?
 
-Ready to get started? Head to the API [documentation](docs/api.md) to see how it's done :)
+* Head to the API [documentation](docs/api.md) for further information.
+* Check out [our utilities](docs/utils.md) for utility functions and helpers.
+
+### Packages
+
+The weclapp SDK comes with several packages / folders.
+
+##### SDK Implementations
+
+| Path | Description | Use case |
+| ---- | ----------- | -------- |
+| `@weclapp/sdk` | SDK base with promises. | In the browser. |
+| `@weclapp/sdk/rx` | Same as the base but with [RxJS](https://rxjs.dev/). | In the browser in combination with [RxJS](https://rxjs.dev/). Mostly for [Angular](https://angular.io/) envieronments. |
+| `@weclapp/sdk/node` | NodeJS version, requires [node-fetch](https://www.npmjs.com/package/node-fetch). | In NodeJS. |
+| `@weclapp/sdk/node/rx` | NodeJS version with [RxJS](https://rxjs.dev/). | In NodeJS in combination with [RxJS](https://rxjs.dev/). |
+
 
 ### FAQ
 

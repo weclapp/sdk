@@ -16,7 +16,7 @@ export enum Method {
     PATCH = 'PATCH'
 }
 
-interface RequestOptions {
+export interface RequestOptions {
     method?: Method;
     query?: Record<string, unknown>;
     body?: any;
@@ -24,4 +24,8 @@ interface RequestOptions {
 
 export interface RawRequest {
     <T = any>(endpoint: string, requestOptions?: RequestOptions): Promise<T>
+}
+
+export interface WeclappResponse<T> {
+    result: T;
 }

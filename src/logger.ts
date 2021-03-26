@@ -62,7 +62,7 @@ export const logger = new class {
     public printSummary(): void {
         const format = (v: number, name: string, fail: Chalk, ok: Chalk): string => {
             const color = v ? fail : ok;
-            return v === 0 ? `${color('zero')} ${pluralize(name)}s` :
+            return v === 0 ? `${color('zero')} ${pluralize(name)}` :
                 v === 1 ? `${color('one')} ${name}` : `${color(v)} ${pluralize(name)}`;
         };
 

@@ -37,26 +37,26 @@ generate:
     expire_in: 4 weeks
     paths:
       - sdk
+      - ./openapi.json
   variables:
     SRC_OPENAPI: "./openapi.json"
     SDK_REPOSITORY: "./sdk"
   script: |
     export SDK_VERSION="0.0.0-$(date +"%+4Y%m%d%H%M")-$CI_COMMIT_SHORT_SHA"
     npm run import:swagger
-    npm run gen:start
-    npm run sdk:build
+    npm start
 
 test:
   extends: .npm:defaults
   stage: test
   dependencies: ['generate']
-  script: npm run test
+  script: npm test
 
 lint:
   extends: .npm:defaults
   stage: test
   dependencies: ['generate']
-  script: npm run lint:ts
+  script: npm run lint
 
 publish:repository:
   extends: .publish:defaults

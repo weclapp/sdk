@@ -4,7 +4,7 @@ import * as Joi from 'joi';
 import {sdk, testSchema} from '../utils';
 
 describe('.some', () => {
-    createCustomers(['Fobar', 'Bazzam', 'Bar', 'Foos']);
+    createCustomers(['Foobar', 'Bazzam', 'Bar', 'Foos']);
 
     it('Should return a list of customers', async () => {
         const customers = await sdk.customer.some();
@@ -94,9 +94,7 @@ describe('.some', () => {
             await sdk.customer.some({
                 select: {id: true},
                 include: ['responsibleUserId'],
-                filter: {
-                    'id-gt': '25'
-                }
+                filter: {id: {GT: 25}}
             }),
             Joi.object({
                 data: Joi.array(),
@@ -111,10 +109,25 @@ describe('.some', () => {
     it('Should find a company by it\'s name', async () => {
         expect(
             await sdk.customer.first({
+                select: {company: true},
+                filter: {company: {EQ: 'Bazzam'}}
+            })
+        ).toEqual({
+            company: 'Bazzam'
+        });
+    });
+
+    it('Should select two companies by an OR', async () => {
+        expect(
+            await sdk.customer.some({
+                select: {company: true},
                 filter: {
-                    'company-eq': 'Bazzam'
+                    OR: [
+                        {company: {EQ: 'Foobar'}},
+                        {company: {IN: ['Bazzam']}}
+                    ]
                 }
             })
-        ).toBeObject();
+        ).toBeArrayOfSize(2);
     });
 });

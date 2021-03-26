@@ -20,7 +20,7 @@
 
 
 ```ts
-const sdk = new weclapp();
+const sdk = weclapp();
 
 
 ```

@@ -16,9 +16,9 @@ config();
 
 // Path resolver
 const dist = (...paths: string[]) => path.resolve(__dirname, '../', env('SDK_REPOSITORY'), ...paths);
-const docs = (...paths: string[]) => path.resolve(dist(), 'docs', ...paths);
-const statc = (...paths: string[]) => path.resolve(__dirname, '../static', ...paths);
-const src = (...paths: string[]) => path.resolve(dist(), 'src', ...paths);
+const distDocs = (...paths: string[]) => dist('docs', ...paths);
+const srcStatic = (...paths: string[]) => path.resolve(__dirname, '../static', ...paths);
+const src = (...paths: string[]) => dist('src', ...paths);
 
 const files = {
     sdks: {
@@ -31,9 +31,6 @@ const files = {
             node: src('sdk.rx.node.ts')
         }
     },
-    docs: {
-        api: dist('API.md')
-    },
     types: {
         models: src('types.models.ts')
     }
@@ -41,7 +38,7 @@ const files = {
 
 void (async () => {
     const start = process.hrtime.bigint();
-    await mkdir(docs(), {recursive: true});
+    await mkdir(distDocs(), {recursive: true});
     await mkdir(src(), {recursive: true});
 
     // Read openapi file and create model definitions
@@ -60,8 +57,8 @@ void (async () => {
 
     // Copy static files
     logger.infoLn('Copy static files...');
-    await copy(statc('types'), src());
-    await copy(statc('code'), src());
+    await copy(srcStatic('types'), src());
+    await copy(srcStatic('code'), src());
 
     // Main library and documentation
     logger.infoLn('Generate main SDK\'s...');
@@ -70,7 +67,8 @@ void (async () => {
     await writeSourceFile(files.sdks.promises.browser, `${modelsImport}\n${sdk.source}`);
 
     logger.infoLn('Generate API documentation...');
-    await writeSourceFile(docs('api.md'), await generateAPIDocumentation(sdk.stats, statc('docs', 'api.md')));
+    await copy(srcStatic('docs', 'utils.md'), distDocs('utils.md'));
+    await writeSourceFile(distDocs('api.md'), await generateAPIDocumentation(sdk.stats, srcStatic('docs', 'api.md')));
 
     // Additional libraries
     logger.infoLn('Generate additional SDK\'s...');

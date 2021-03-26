@@ -42,9 +42,9 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
 
     return `
 ${resolveImports(target)}
-import {QueryFilter, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn} from './types.base';
-import {Options, Method, RawRequest} from './types.api';
-import {unwrap, params, flattenSelectable} from './utils';
+import {Filterable, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn} from './types.base';
+import {unwrap, params, flattenSelectable, flattenFilterable} from './utils';
+import {Options, Method, RawRequest, WeclappResponse} from './types.api';
 export * from './types.models';
 
 // TODO: Remove after swagger.json is fixed
@@ -116,8 +116,8 @@ export const weclapp = ({
     };
 
     // Internal .count implementation
-    const _count = <Entity>(endpoint: string, filter?: QueryFilter<Entity>): Promise<number> => {
-        return makeRequest(endpoint, {query: filter}).then(unwrap);
+    const _count = <Entity>(endpoint: string, filter?: Filterable<Entity>): Promise<number> => {
+        return makeRequest<WeclappResponse<number>>(endpoint, {query: filter}).then(unwrap);
     };
 
     // Internal .unique implementation
@@ -153,7 +153,7 @@ export const weclapp = ({
         options?: Query
     ): Promise<SomeReturn<Entity, Query>> => makeRequest(endpoint, {
         query: {
-            ...options?.filter, // We don't want the user to be able to re-write given properties below
+            ...(options?.filter && Object.fromEntries(flattenFilterable(options.filter))), // We don't want the user to be able to re-write given properties below
             'page': options?.page ?? 1,
             'pageSize': options?.pageSize ?? 10,
             'serializeNulls': options?.serialize,
@@ -169,7 +169,7 @@ export const weclapp = ({
 
     // Internal .delete implementation
     const _delete = <Entity>(endpoint: string): Promise<void> => {
-        return makeRequest(endpoint, {method: Method.DELETE}).then(unwrap);
+        return makeRequest<void>(endpoint, {method: Method.DELETE});
     };
 
     // Internal .create implementation
@@ -206,7 +206,7 @@ export const weclapp = ({
         options?: Query
     ): Promise<UniqueReturn<Entity, Query>> => makeRequest(endpoint, {
         query: {
-            ...options?.filter, // We don't want the user to be able to re-write given properties below
+            ...(options?.filter && Object.fromEntries(flattenFilterable(options.filter))), // We don't want the user to be able to re-write given properties below
             'page': 1,
             'pageSize': 10,
             'serializeNulls': options?.serialize,

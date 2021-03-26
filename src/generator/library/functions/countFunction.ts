@@ -32,7 +32,7 @@ export const countFunction = ({path}: EndpointPath, endpoints: EndpointPath[], t
                 description: `Counts the amount of ${pluralEntityName} entities which match the given filter.`,
                 parameters: [['filter', `The filter for the ${pluralEntityName} we want to count.`]],
                 example: `const total${pluralEntityName} = await sdk.${entityName}.count();`,
-                signature: `count(filter?: QueryFilter<${entityType}>)`,
+                signature: `count(filter?: Filterable<${entityType}>)`,
                 returnValue: `_count<${entityType}>('${path.path}', filter)`,
                 returnType: 'number'
             }
