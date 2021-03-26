@@ -30,10 +30,14 @@ raw(
     options?: {
         method?: Method;
         query?: Record<string, unknown>;
+        headers?: Record<string, string>;
         body?: any;
     }
 )
 ```
+
+> If you need to send binary data, e.g. documents, use [`Buffer`](https://nodejs.org/docs/latest-v14.x/api/buffer.html) in node or 
+> [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob) in the browser.
 
 ## API
 

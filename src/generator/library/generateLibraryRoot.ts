@@ -46,6 +46,7 @@ import {Filterable, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn
 import {unwrap, params, flattenSelectable, flattenFilterable} from './utils';
 import {Options, Method, RawRequest, WeclappResponse} from './types.api';
 export * from './types.models';
+export * from './types.api';
 
 // TODO: Remove after swagger.json is fixed
 type Body2 = any;
@@ -87,21 +88,26 @@ export const weclapp = ({
      * @param method Request method (GET is default)
      * @param query Optional query parameters.
      * @param body Optional body data.
+     * @param headers Optional, additional headers. May override existing ones.
      */
     const makeRequest: RawRequest = async (endpoint, {
         method = Method.GET,
         query,
-        body
+        body,
+        headers
     } = {}): Promise<any> => {
         const url = \`\${base + endpoint}\`;
-
+        const isBinaryData = body instanceof ${isNodeTarget(target) ? 'Buffer' : 'Blob'};
+        const contentType = isBinaryData ? 'octet-stream' : 'json';
+        
         return fetch(query ? params(url, query) : url, {
-            ...(body && {body: JSON.stringify(body)}),
+            ...(body && {body: isBinaryData ? body : JSON.stringify(body)}),
             method,
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': \`application/\${contentType}\`,
                 'Accept': 'application/json',
-                'AuthenticationToken': apiKey
+                'AuthenticationToken': apiKey,
+                ...headers
             }
         }).then(async res => {
             const data = await json(res);
