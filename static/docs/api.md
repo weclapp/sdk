@@ -13,9 +13,10 @@ The expose `.raw` function can be used to make a "raw" request to the weclapp ap
 the `.count` function to fetch the total amount of customers you could do:
 
 ```ts
-import {unwrap} from '@weclapp/utils';
+import {WeclappResponse} from '@weclapp/sdk';
+import {unwrap} from '@weclapp/sdk/utils';
 
-const customers = await sdk.raw<{result: number}>('/customer/count')
+const customers = await sdk.raw<WeclappResponse<number>>('/customer/count')
     .then(unwrap);
 
 console.log(customers);

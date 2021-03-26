@@ -1,10 +1,11 @@
 import {Filterable, Selectable} from './types.base';
+import {WeclappResponse} from './types.api';
 
 /**
  * Unwraps the result property from a weclapp response.
  * @param res The response
  */
-export const unwrap = (res: {result: unknown}): any => res.result;
+export const unwrap = <T>(res: WeclappResponse<T>): T => res.result;
 
 /**
  * Builds a search query base on the given object

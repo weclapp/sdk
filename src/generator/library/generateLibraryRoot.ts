@@ -44,7 +44,7 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
 ${resolveImports(target)}
 import {Filterable, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn} from './types.base';
 import {unwrap, params, flattenSelectable, flattenFilterable} from './utils';
-import {Options, Method, RawRequest} from './types.api';
+import {Options, Method, RawRequest, WeclappResponse} from './types.api';
 export * from './types.models';
 
 // TODO: Remove after swagger.json is fixed
@@ -117,7 +117,7 @@ export const weclapp = ({
 
     // Internal .count implementation
     const _count = <Entity>(endpoint: string, filter?: Filterable<Entity>): Promise<number> => {
-        return makeRequest(endpoint, {query: filter}).then(unwrap);
+        return makeRequest<WeclappResponse<number>>(endpoint, {query: filter}).then(unwrap);
     };
 
     // Internal .unique implementation
@@ -169,7 +169,7 @@ export const weclapp = ({
 
     // Internal .delete implementation
     const _delete = <Entity>(endpoint: string): Promise<void> => {
-        return makeRequest(endpoint, {method: Method.DELETE}).then(unwrap);
+        return makeRequest<void>(endpoint, {method: Method.DELETE});
     };
 
     // Internal .create implementation

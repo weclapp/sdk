@@ -47,7 +47,7 @@ Responses from weclapp are usually wrapped in a `{result: <data>}` object.
 import {unwrap} from '@weclapp/sdk/utils';
 import {Customer} from '@sdk';
 
-const data = unwrap<{result: Customer}>(response);
+const data = unwrap<Customer>(response);
 // `data` is now the customer.
 ```
 
