@@ -5,7 +5,7 @@ stages:
 
 .npm:defaults:
   tags: ['small']
-  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-lts-alpine
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-14-alpine-npm7
   cache:
     key: node_modules_cache
     policy: pull
@@ -60,7 +60,7 @@ lint:
 
 publish:repository:
   extends: .publish:defaults
-  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-lts-alpine
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-14-alpine-npm7
   dependencies: ['generate']
   variables:
     REPOSITORY_REMOTE: https://$SDK_GIT_USER:$SDK_GIT_PASS@gitlab.internal.weclapp.com/weclapp/frontend/sdk.git
@@ -83,7 +83,7 @@ publish:repository:
 
 publish:package:
   extends: .publish:defaults
-  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-lts-alpine
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-14-alpine-npm7
   dependencies: ['generate']
   script: |
     cd sdk
