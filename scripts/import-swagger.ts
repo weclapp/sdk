@@ -18,7 +18,7 @@ config();
     console.log(`[i] Fetching swagger.json from ${TEST_DOMAIN}`);
 
     // Fetch swagger json file
-    const response = await fetch(`https://${TEST_DOMAIN}/webapp/api/v1/meta/swagger.json`, {
+    const response = await fetch(`https://${TEST_DOMAIN}/webapp/api/v1/meta/swagger.json?includeHidden=true`, {
         headers: {
             'Accept': 'application/json',
             'AuthenticationToken': TEST_API_KEY

@@ -50,6 +50,7 @@ export * from './types.api';
 
 // TODO: Remove after swagger.json is fixed
 type Body2 = any;
+type Body3 = any;
 
 // Current version.
 export const version = '${pkg.version}';
