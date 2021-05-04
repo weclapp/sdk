@@ -14,8 +14,8 @@ describe('.count', () => {
             customerNumber: {GE: 5}
         })).toBeNumber();
 
-        expect(await sdk.article.count({
-            active: {EQ: true}
+        expect(await sdk.opportunity.count({
+            hotLead: {EQ: true}
         })).toBeNumber();
 
         expect(await sdk.opportunity.count({
