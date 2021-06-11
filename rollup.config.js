@@ -1,5 +1,5 @@
 import {terser} from 'rollup-plugin-terser';
-import ts from '@wessberg/rollup-plugin-ts';
+import ts from 'rollup-plugin-ts';
 import copy from 'rollup-plugin-copy';
 import * as path from 'path';
 import * as fs from 'fs';
