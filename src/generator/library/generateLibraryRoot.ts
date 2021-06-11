@@ -100,7 +100,7 @@ export const weclapp = ({
         const url = \`\${base + endpoint}\`;
         const isBinaryData = body instanceof ${isNodeTarget(target) ? 'Buffer' : 'Blob'};
         const contentType = isBinaryData ? 'octet-stream' : 'json';
-        
+
         return fetch(query ? params(url, query) : url, {
             ...(body && {body: isBinaryData ? body : JSON.stringify(body)}),
             method,
@@ -198,13 +198,10 @@ export const weclapp = ({
     // Internal .update implementation
     const _update = <Entity>(endpoint: string, data: Partial<Entity>): Promise<Entity> => {
         return makeRequest(endpoint, {
-            query: {'serializeNulls': true}
-        }).then(res => {
-            return {...res, ...data};
-        }).then(updated => makeRequest(endpoint, {
             method: Method.PUT,
-            body: updated
-        }));
+            body: data,
+            query: {ignoreMissingProperties: true}
+        });
     };
 
     // Internal .first implementation
