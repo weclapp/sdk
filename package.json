@@ -7,7 +7,7 @@
     "private": true,
     "scripts": {
         "gen:start": "ts-node -r tsconfig-paths/register src/index.ts --project tsconfig.json",
-        "gen:dev": "ts-node-dev --respawn --watch static/**/* -r tsconfig-paths/register src/index.ts",
+        "gen:dev": "ts-node-dev --respawn --watch 'static/**/*' -r tsconfig-paths/register src/index.ts",
         "sdk:build": "cross-env NODE_ENV=production rollup -c rollup.config.js",
         "sdk:dev": "cross-env NODE_ENV=development rollup -c rollup.config.js --watch",
         "start": "npm run gen:start && npm run sdk:build",
