@@ -19,7 +19,7 @@ Most of them are auto-generated.
 | Folder | Description |
 | ----- | ----- |
 | [/static](static) | Static files, most of them (!) will be copied straight to the SDK repository itself. |
-| [/static/types](static/types) | Static types which can imported and used by the generated SDK. |
+| [/static/types](static/types) | Static types, which can be imported and used by the generated SDK. |
 | [/static/docs](static/docs) | Documentation templates, filled by the generator and copied to [sdk/docs](sdk/docs). |
 | [/src](src) | Source code for the generator itself. |
 | [/sdk](sdk) | The generated repository will end up here. Source-files are bundle via [rollup](https://rollupjs.org/). |
@@ -72,5 +72,5 @@ For this environmental variables must be set and `npm` commands run in the conta
 
 If you also want to run tests you'll _additionally_ need the following:
 * `RUN_TESTS` _- Set to `true` (or any other non-empty value)._
-* `TEST_DOMAIN` _- API to test agains (just the domain, e.g. `support.test2-y4jnp8qvg1.internal.weclapp.com`)._
+* `TEST_DOMAIN` _- API to test against (just the domain, e.g. `support.test2-y4jnp8qvg1.internal.weclapp.com`)._
 * `TEST_API_KEY` _- API-Key._
