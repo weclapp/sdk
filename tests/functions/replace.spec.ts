@@ -18,7 +18,7 @@ describe('.replace', () => {
         // Modify company
         const originalCompany = customer.company;
         const company = `${originalCompany} (modified)`;
-        customer = await sdk.customer.replace(customer.id, {
+        customer = await sdk.customer.replace({
             ...customer,
             company
         }) as Customer;
@@ -26,7 +26,7 @@ describe('.replace', () => {
         expect(customer.company).toEqual(company);
 
         // Change back
-        customer = await sdk.customer.replace(customer.id, {
+        customer = await sdk.customer.replace({
             ...customer,
             company: originalCompany
         }) as Customer;

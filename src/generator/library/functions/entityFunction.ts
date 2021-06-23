@@ -118,12 +118,11 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                 code: {
                     description: `Replaces a ${entityName}.`,
                     parameters: [
-                        ['id', `Unique ID for the ${entityName} to replace.`],
-                        ['data', `A ${entityName} object which should replace the one given by the id.`]
+                        ['data', `${entityName} object which should replace the one given by the id.`]
                     ],
-                    example: `await sdk.${entityName}.replace('3678', {...});`,
-                    signature: `replace(id: string, data: ${bodyType})`,
-                    returnValue: `_replace<${bodyType}>(\`${injectParams(path.path, {id: '${id}'})}\`, data)`,
+                    example: `await sdk.${entityName}.replace({...});`,
+                    signature: `replace(data: ${bodyType})`,
+                    returnValue: `_replace<${bodyType}>(\`${injectParams(path.path, {id: '${data.id}'})}\`, data)`,
                     returnType
                 }
             });
