@@ -19,6 +19,7 @@
     ],
     "rules": {
         "no-console": "error",
-        "comma-dangle": "error"
+        "comma-dangle": "error",
+		"linebreak-style": ["error", "unix"]
     }
 }
