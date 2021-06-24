@@ -20,6 +20,7 @@
     "rules": {
         "no-console": "error",
         "comma-dangle": "error",
-		"linebreak-style": ["error", "unix"]
+		"linebreak-style": ["error", "unix"],
+		"object-curly-spacing": ["error", "never"]
     }
 }

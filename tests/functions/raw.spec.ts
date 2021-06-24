@@ -28,7 +28,7 @@ describe('.raw', () => {
         });
 
         expect(customer).toBeObject();
-        await sdk.customer.delete(customer.id);
+        await sdk.customer.delete(customer.id!);
     });
 
     it('Should be possible to upload binary data or documents', async () => {

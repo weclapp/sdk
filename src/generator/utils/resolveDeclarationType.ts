@@ -15,9 +15,7 @@ const extractRefInterfaceName = (ref: string): string => {
 const resolveObjectSchema = (obj: OpenAPIV3.BaseSchemaObject): string => {
     const props = tsInterfaceProperties(
         Object.entries(obj.properties ?? {})
-            .map(([name, value]) => {
-                return [name, resolveDeclarationType(value)];
-            })
+            .map(([name, value]) => ({name, value: resolveDeclarationType(value), required: !!obj.required?.includes(name)}))
     );
 
     return `{\n${indent(props)}\n}`;

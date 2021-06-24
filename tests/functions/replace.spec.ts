@@ -16,7 +16,7 @@ describe('.replace', () => {
         }
 
         // Modify company
-        const originalCompany = customer.company;
+        const originalCompany = customer?.company ?? '';
         const company = `${originalCompany} (modified)`;
         customer = await sdk.customer.replace({
             ...customer,

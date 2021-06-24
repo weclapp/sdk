@@ -24,8 +24,8 @@ export type Filterable<T> = RootQueryFilter<T> &
 // Maps all property types from an object to boolean (or the sub-object)
 export type Selectable<T> = {
     [P in keyof T]?:
-        T[P] extends Array<infer U> ? (Selectable<U> | boolean) :
-            T[P] extends object ? (Selectable<T[P]> | boolean) : boolean;
+        T[P] extends Array<infer U> | undefined ? (Selectable<U> | boolean) :
+            T[P] extends object | undefined ? (Selectable<T[P]> | boolean) : boolean;
 }
 
 // Extracts properties based on the select query

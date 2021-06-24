@@ -26,20 +26,7 @@ export const createModels = (name: string, definition: OpenAPIV3.SchemaObject): 
 
     // Create base interface
     const baseEntries = Object.entries(definition.properties ?? {})
-        .map(([name, type]) => {
-            return [name, resolveDeclarationType(type)] as [string, string];
-        });
-
-    const createEntries: [string, string][] = [];
-    for (const key of (definition.required ?? [])) {
-        const entry = baseEntries.find(v => v[0] === key);
-
-        if (entry) {
-            createEntries.push([key, entry[1]]);
-        } else {
-            logger.warnLn(`Cannot resolve "${name}" property in "${intSig}"`);
-        }
-    }
+        .map(([name, type]) => ({name, value: resolveDeclarationType(type), required: !!definition.required?.includes(name)}));
 
     const source = `
 ${tsBlockComment(`${intSig} entity.`)}
@@ -47,15 +34,10 @@ export interface ${intSig} {
 ${tsInterfaceProperties(baseEntries, 1)}
 }
 
-${tsBlockComment(`Required properties to create a new ${intSig}.`)}
-export interface Create${intSig} extends Partial<${intSig}> {
-${tsInterfaceProperties(createEntries, 1)}
-}
-
 `.trim();
 
     return {
         source,
-        exports: [intSig, `Create${intSig}`]
+        exports: [intSig]
     };
 };
