@@ -18,7 +18,8 @@ export type RootQueryFilter<T> = {
 
 // Takes an model and returns all possible filters.
 export type Filterable<T> = RootQueryFilter<T> &
-    {OR?: RootQueryFilter<T>[];}
+    {OR?: RootQueryFilter<T>[];} &
+    Record<string, any>;
 
 // Maps all property types from an object to boolean (or the sub-object)
 export type Selectable<T> = {
