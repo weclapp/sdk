@@ -29,4 +29,6 @@
 
 
 
-/label ~Bug
+Closes #
+
+/label ~"type::bug"

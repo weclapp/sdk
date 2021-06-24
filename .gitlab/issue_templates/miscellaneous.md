@@ -6,4 +6,4 @@
 
 
 
-/label ~Misc
+/label ~"type::misc"

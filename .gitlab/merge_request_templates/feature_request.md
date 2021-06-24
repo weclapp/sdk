@@ -38,4 +38,6 @@ const sdk = weclapp();
 
 
 
-/label ~Feature
+Closes #
+
+/label ~"type::feature"

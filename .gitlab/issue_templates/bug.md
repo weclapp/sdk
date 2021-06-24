@@ -44,4 +44,6 @@ Steps to reproduce the behavior:
 - Browser: <!-- See about/version -->
 - SDK Version: <-- See exported version / package.json -->
 
-/label ~Bug
+
+
+/label ~"type::feature"
