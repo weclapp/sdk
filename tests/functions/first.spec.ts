@@ -55,4 +55,12 @@ describe('.first', () => {
             })
         );
     });
+
+    it('Should work with custom attributes', async () => {
+        expect(await sdk.customer.first({
+            filter: {
+                'customAttribute.entityId-eq': 4
+            }
+        })).toBeObject();
+    });
 });
