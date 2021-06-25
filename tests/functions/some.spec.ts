@@ -1,10 +1,11 @@
-import {createCustomers} from '@tests/functions/utils/createCustomers';
+import {createCustomers, createRandomIds} from '@tests/functions/utils/createCustomers';
 import 'jest-extended';
 import * as Joi from 'joi';
 import {sdk, testSchema} from '../utils';
 
 describe('.some', () => {
-    createCustomers(['Foobar', 'Bazzam', 'Bar', 'Foos']);
+    const companies = createRandomIds(4);
+    createCustomers(companies);
 
     it('Should return a list of customers', async () => {
         const customers = await sdk.customer.some();
@@ -123,8 +124,8 @@ describe('.some', () => {
                 select: {company: true},
                 filter: {
                     OR: [
-                        {company: {EQ: 'Foobar'}},
-                        {company: {IN: ['Bazzam']}}
+                        {company: {EQ: companies[0]}},
+                        {company: {IN: [companies[1]]}}
                     ]
                 }
             })

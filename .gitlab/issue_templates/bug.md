@@ -46,4 +46,4 @@ Steps to reproduce the behavior:
 
 
 
-/label ~"type::feature"
+/label ~"type::bug"
