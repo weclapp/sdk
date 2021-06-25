@@ -18,5 +18,6 @@
 <!-- If not, please remove this section. -->
 
 
+Closes #
 
-/label ~Misc
+/label ~"type::misc"

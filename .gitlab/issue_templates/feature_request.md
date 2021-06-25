@@ -29,4 +29,4 @@
 
 
 
-/label ~Feature
+/label ~"type::feature"

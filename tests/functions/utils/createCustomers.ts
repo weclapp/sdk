@@ -1,6 +1,9 @@
 import {sdk} from '@tests/utils';
 import {CreateCustomer, Customer} from '@sdk/node';
 
+export const createRandomIds = (amount: number, prefix = 'R-'): string[] =>
+    new Array(amount).fill(0).map(() => prefix + String(Math.floor(Math.random() * 1e14)));
+
 /**
  * Helper function to temporarily create a set of customers.
  * All customers created are automatically removed after the tests run.
