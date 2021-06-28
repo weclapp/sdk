@@ -8,14 +8,16 @@ import {resolveResponseType} from '@generator/utils/resolveResponseType';
 import {logger} from '@logger';
 import {pascalCase, camelCase} from 'change-case';
 
+const BASE_SPECIAL_REGEXP = /\w+$/;
 const TOP_ID_REGEXP = /{\w+}$/;
+const ID_SPECIAL_REGEXP = /(?<={\w+}\/)\w+$/;
 
 /**
  * Takes a parsed swagger path and returns a well-readable function name for this special endpoint.
  * @param path
  */
 const buildSpecialFunction = (path: SwaggerPath): string => {
-    return path.name ? path.params.length ? `${path.name}ById` : path.name : `__unknown${path.entity}`;
+    return path.name ? path.params.length ? `${path.name}` : path.name : `__unknown${path.entity}`;
 };
 
 /**
@@ -46,17 +48,32 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                     returnValue: `_unique<${returnType}, Query>('/${path.entity}', id, options)`
                 }
             });
-        } else if (path.name) {
-            const bodyType = resolveRequestType(methods.get) || 'unknown';
-
-            functions.add(target, {
-                code: {
-                    description: 'Unknown special endpoint.',
-                    signature: `${buildSpecialFunction(path)}(data: ${bodyType})`,
-                    returnValue: 'Promise.resolve(null)',
-                    returnType
-                }
-            });
+        }
+        else if (ID_SPECIAL_REGEXP.test(path.path)) {
+	        functions.add(target, {
+		        code: {
+			        description: `${entityName} special function`,
+			        parameters: [
+				        ['id', `Unique ID for the ${entityName} to fetch.`],
+				        ['options', `Optional query options regarding the ${entityName} special function.`]
+			        ],
+			        signature: `${buildSpecialFunction(path)}<Query = any>(id: string, options?: Query)`,
+			        returnValue: `_specialEndpointGet<${returnType}>(\`${injectParams(path.path, {id: '${id}'})}\`, options)`,
+			        returnType
+		        }
+	        })
+        } else if (BASE_SPECIAL_REGEXP.test(path.path)) {
+			functions.add(target, {
+				code: {
+					description: `${entityName} special function`,
+					parameters: [
+						['options', `Optional query options regarding the ${entityName} special function.`]
+					],
+					signature: `${buildSpecialFunction(path)}<Query = any>(options?: Query)`,
+					returnValue: `_specialEndpointGet<${returnType}>('${path.path}', options)`,
+					returnType
+				}
+			})
         } else {
             logger.warnLn(`Didn't generate code for GET ${path.path}`);
         }
@@ -64,28 +81,35 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
 
     if (methods.post) {
         const returnType = resolveResponseType(methods.post);
+	    const bodyType = resolveRequestType(methods.post);
 
-        // Check if it's a top-level, by-id endpoint
-        if (TOP_ID_REGEXP.test(path.path)) {
-            functions.add(target, {
-                code: {
-                    description: 'Unknown special endpoint.',
-                    signature: `create(data: Create${entityName})`,
-                    returnValue: 'Promise.resolve(null)',
-                    returnType
-                }
-            });
-        } else if (path.name) {
-            const bodyType = resolveRequestType(methods.post) || 'unknown';
-
-            functions.add(target, {
-                code: {
-                    description: 'Unknown special endpoint.',
-                    signature: `${buildSpecialFunction(path)}(data: ${bodyType})`,
-                    returnValue: 'Promise.resolve(null)',
-                    returnType
-                }
-            });
+        if (ID_SPECIAL_REGEXP.test(path.path)) {
+	        functions.add(target, {
+		        code: {
+			        description: `${entityName} special function`,
+			        parameters: [
+				        ['id', `Unique ID for the ${entityName} to fetch.`],
+				        ['data', `Request body of the ${entityName} special function.`],
+				        ['options', `Optional query options regarding the ${entityName} special function.`]
+			        ],
+			        signature: `${buildSpecialFunction(path)}<Query = any>(id: string, data: ${bodyType}, options?: Query)`,
+			        returnValue: `_specialEndpointPost<${returnType}>(\`${injectParams(path.path, {id: '${id}'})}\`, data, options)`,
+			        returnType
+		        }
+	        })
+        } else if (BASE_SPECIAL_REGEXP.test(path.path)) {
+	        functions.add(target, {
+		        code: {
+			        description: `${entityName} special function`,
+			        parameters: [
+				        ['data', `Request body of the ${entityName} special function.`],
+				        ['options', `Optional query options regarding the ${entityName} special function.`]
+			        ],
+			        signature: `${buildSpecialFunction(path)}<Query = any>(data: ${bodyType}, options?: Query)`,
+			        returnValue: `_specialEndpointPost<${returnType}>('${path.path}', data, options)`,
+			        returnType
+		        }
+	        })
         } else {
             logger.warnLn(`Didn't generate code for POST ${path.path}`);
         }
