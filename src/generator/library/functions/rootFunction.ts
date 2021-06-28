@@ -29,7 +29,7 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
                 code: {
                     description: `Finds all ${entityName} entities which match the given filter.`,
                     parameters: [['options', `Options for how the ${entityName} should be queried.`]],
-                    example: `const ${pluralize(camelCase(entityName))} = await sdk.${entityName}.some();`,
+                    example: `const ${pluralize(camelCase(entityName))} = await sdk.${entityName.toLowerCase()}.some();`,
                     signature: `some<Query extends ListQuery<${returnType}>>(options?: Query)`,
                     returnType: `SomeReturn<${returnType}, Query>`,
                     returnValue: `_some<${returnType}, Query>('${path.path}', options)`
@@ -44,7 +44,7 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
                 code: {
                     description: `Fetches the first ${entityName} it can find. Ignores all the other results`,
                     parameters: [['options', 'Optional filters.']],
-                    example: `const first${entityName} = await sdk.${entityName}.first();`,
+                    example: `const first${entityName} = await sdk.${entityName.toLowerCase()}.first();`,
                     signature: `first<Query extends FirstQuery<${returnType}>>(options?: Query)`,
                     returnType: `UniqueReturn<${returnType}, Query>`,
                     returnValue: `_first<${returnType}, Query>('${path.path}', options)`
@@ -68,7 +68,7 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
                 code: {
                     description: `Creates a new ${entityName} with the given data.\nReturns the newly created ${entityName}.`,
                     parameters: [['data', `Data to create a ${bodyType}`]],
-                    example: `const new${entityName} = await sdk.${entityName}.create({...});`,
+                    example: `const new${entityName} = await sdk.${entityName.toLowerCase()}.create({...});`,
                     signature: `create(data: ${bodyType})`,
                     returnValue: `_create('${path.path}', data)`,
                     returnType
