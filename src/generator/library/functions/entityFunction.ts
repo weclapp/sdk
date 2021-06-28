@@ -122,7 +122,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                     ],
                     example: `await sdk.${entityName}.replace({...});`,
                     signature: `replace(data: ${bodyType})`,
-                    returnValue: `_replace<${bodyType}>(\`${injectParams(path.path, {id: '${data.id}'})}\`, data)`,
+                    returnValue: `_replace<${bodyType}>(\`${injectParams(path.path, {id: '${data.id as string}'})}\`, data)`,
                     returnType
                 }
             });

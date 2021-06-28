@@ -1,5 +1,5 @@
 import {sdk} from '@tests/utils';
-import {CreateCustomer, Customer} from '@sdk/node';
+import {Customer} from '@sdk/node';
 
 export const createRandomIds = (amount: number, prefix = 'R-'): string[] =>
     new Array(amount).fill(0).map(() => prefix + String(Math.floor(Math.random() * 1e14)));
@@ -11,7 +11,7 @@ export const createRandomIds = (amount: number, prefix = 'R-'): string[] =>
  * @param created Optional callback to store the customer-ids.
  */
 export const createCustomers = (
-    companies: (string | CreateCustomer)[],
+    companies: (string | Customer)[],
     created?: (ids: string[]) => void
 ): void => {
     let customerIds: string[];
@@ -22,8 +22,8 @@ export const createCustomers = (
                 // TODO: Only company and partyType are actually needed!
                 company: v,
                 partyType: 'ORGANIZATION'
-            } as CreateCustomer) as Promise<Customer>)
-        ).then(customers => customers.map(v => v.id));
+            } as Customer) as Promise<Customer>)
+        ).then(customers => customers.map(v => v.id).filter(Boolean) as string[]);
 
         created?.(customerIds);
     });

@@ -17,7 +17,7 @@ describe('.create,.delete', () => {
         }) as Article;
 
         expect(article).toBeObject();
-        await sdk.article.delete(article.id);
-        await sdk.unit.delete(unit.id);
+		await sdk.article.delete(article.id!);
+        await sdk.unit.delete(unit.id!);
     });
 });

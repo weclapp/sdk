@@ -69,7 +69,7 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
                     description: `Creates a new ${entityName} with the given data.\nReturns the newly created ${entityName}.`,
                     parameters: [['data', `Data to create a ${bodyType}`]],
                     example: `const new${entityName} = await sdk.${entityName}.create({...});`,
-                    signature: `create(data: Create${bodyType})`,
+                    signature: `create(data: ${bodyType})`,
                     returnValue: `_create('${path.path}', data)`,
                     returnType
                 }
