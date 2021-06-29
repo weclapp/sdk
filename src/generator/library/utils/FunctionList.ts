@@ -9,7 +9,7 @@ interface Documentation {
 }
 
 interface Code {
-    description: string;
+    description?: string;
     parameters?: [string, string][];
     example?: string;
     signature: string;
@@ -36,7 +36,7 @@ export class FunctionList {
      * @param example An usage example
      */
     public static generateFunctionDescription({description, parameters, example}: Code): string {
-        let comment = description;
+        let comment = description ?? '';
 
         if (parameters) {
             comment += `\n\n${parameters.map(value => `@param ${value[0]} ${value[1]}`).join('\n')}`;

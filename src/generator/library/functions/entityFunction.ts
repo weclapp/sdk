@@ -6,9 +6,11 @@ import {injectParams, SwaggerPath} from '@generator/utils/parseSwaggerPath';
 import {resolveRequestType} from '@generator/utils/resolveRequestType';
 import {resolveResponseType} from '@generator/utils/resolveResponseType';
 import {logger} from '@logger';
-import {pascalCase, camelCase} from 'change-case';
+import {camelCase, pascalCase} from 'change-case';
 
+const BASE_SPECIAL_REGEXP = /\w+$/;
 const TOP_ID_REGEXP = /{\w+}$/;
+const ID_SPECIAL_REGEXP = /(?<={\w+}\/)\w+$/;
 
 /**
  * Takes a parsed swagger path and returns a well-readable function name for this special endpoint.
@@ -40,20 +42,36 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                         ['id', `Unique ID for the ${entityName} to fetch.`],
                         ['options', `Optional query options to fetch a ${entityName}.`]
                     ],
-                    example: `const ${camelCase(entityName)} = await sdk.${entityName}.unique('7362');`,
+                    example: `const ${camelCase(entityName)} = await sdk.${camelCase(entityName)}.unique('7362');`,
                     signature: `unique<Query extends EntityQuery<${returnType}>>(id: string, options?: Query)`,
                     returnType: `UniqueReturn<${returnType}, Query>`,
                     returnValue: `_unique<${returnType}, Query>('/${path.entity}', id, options)`
                 }
             });
-        } else if (path.name) {
-            const bodyType = resolveRequestType(methods.get) || 'unknown';
-
+        } else if (ID_SPECIAL_REGEXP.test(path.path)) {
             functions.add(target, {
                 code: {
-                    description: 'Unknown special endpoint.',
-                    signature: `${buildSpecialFunction(path)}(data: ${bodyType})`,
-                    returnValue: 'Promise.resolve(null)',
+                    description: methods.get.description,
+                    parameters: [
+                        ['id', `Unique ID for the ${entityName} to fetch.`],
+                        ['options', `Optional query options regarding the ${entityName} special function.`]
+                    ],
+                    example: `await sdk.${camelCase(entityName)}.${buildSpecialFunction(path)}('9662', {...});`,
+                    signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(id: string, options?: Query)`,
+                    returnValue: `_specialEndpointGet(\`${injectParams(path.path, {id: '${id}'})}\`, options)`,
+                    returnType
+                }
+            });
+        } else if (BASE_SPECIAL_REGEXP.test(path.path)) {
+            functions.add(target, {
+                code: {
+                    description: methods.get.description,
+                    parameters: [
+                        ['options', `Optional query options regarding the ${entityName} special function.`]
+                    ],
+                    example: `await sdk.${camelCase(entityName)}.${buildSpecialFunction(path)}({...});`,
+                    signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(options?: Query)`,
+                    returnValue: `_specialEndpointGet('${path.path}', options)`,
                     returnType
                 }
             });
@@ -64,25 +82,34 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
 
     if (methods.post) {
         const returnType = resolveResponseType(methods.post);
+        const bodyType = resolveRequestType(methods.post);
 
-        // Check if it's a top-level, by-id endpoint
-        if (TOP_ID_REGEXP.test(path.path)) {
+        if (ID_SPECIAL_REGEXP.test(path.path)) {
             functions.add(target, {
                 code: {
-                    description: 'Unknown special endpoint.',
-                    signature: `create(data: Create${entityName})`,
-                    returnValue: 'Promise.resolve(null)',
+                    description: methods.post.description,
+                    parameters: [
+                        ['id', `Unique ID for the ${entityName} to fetch.`],
+                        ['data', `Request body of the ${entityName} special function.`],
+                        ['options', `Optional query options regarding the ${entityName} special function.`]
+                    ],
+                    example: `await sdk.${camelCase(entityName)}.${buildSpecialFunction(path)}('9662', {...});`,
+                    signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(id: string, data: ${bodyType}, options?: Query)`,
+                    returnValue: `_specialEndpointPost(\`${injectParams(path.path, {id: '${id}'})}\`, data, options)`,
                     returnType
                 }
             });
-        } else if (path.name) {
-            const bodyType = resolveRequestType(methods.post) || 'unknown';
-
+        } else if (BASE_SPECIAL_REGEXP.test(path.path)) {
             functions.add(target, {
                 code: {
-                    description: 'Unknown special endpoint.',
-                    signature: `${buildSpecialFunction(path)}(data: ${bodyType})`,
-                    returnValue: 'Promise.resolve(null)',
+                    description: methods.post.description,
+                    parameters: [
+                        ['data', `Request body of the ${entityName} special function.`],
+                        ['options', `Optional query options regarding the ${entityName} special function.`]
+                    ],
+                    example: `await sdk.${camelCase(entityName)}.${buildSpecialFunction(path)}({...});`,
+                    signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(data: ${bodyType}, options?: Query)`,
+                    returnValue: `_specialEndpointPost('${path.path}', data, options)`,
                     returnType
                 }
             });
@@ -106,7 +133,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                         ['id', `Unique ID for the ${entityName} to update.`],
                         ['data', `Partial data which should be used to update the ${entityName}.`]
                     ],
-                    example: `await sdk.${entityName}.update('9662', {...});`,
+                    example: `await sdk.${camelCase(entityName)}.update('9662', {...});`,
                     signature: `update(id: string, data: Partial<${bodyType}>)`,
                     returnValue: `_update(\`${injectParams(path.path, {id: '${id}'})}\`, data)`,
                     returnType
@@ -120,7 +147,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                     parameters: [
                         ['data', `${entityName} object which should replace the one given by the id.`]
                     ],
-                    example: `await sdk.${entityName}.replace({...});`,
+                    example: `await sdk.${camelCase(entityName)}.replace({...});`,
                     signature: `replace(data: ${bodyType})`,
                     returnValue: `_replace<${bodyType}>(\`${injectParams(path.path, {id: '${data.id as string}'})}\`, data)`,
                     returnType
@@ -139,7 +166,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                 code: {
                     description: `Deletes a ${entityName} by the given unique identifier.`,
                     parameters: [['id', `Unique ID for the ${entityName} to delete.`]],
-                    example: `await sdk.${entityName}.delete('1356');`,
+                    example: `await sdk.${camelCase(entityName)}.delete('1356');`,
                     signature: 'delete(id: string)',
                     returnValue: `_delete(\`${injectParams(path.path, {id: '${id}'})}\`)`,
                     returnType: 'void'

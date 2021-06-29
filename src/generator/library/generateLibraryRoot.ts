@@ -165,7 +165,7 @@ export const weclapp = ({
             'pageSize': options?.pageSize ?? 10,
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
-            'includeReferencedEntities': options?.include?.join(','),
+            'includeReferencedEntities': options?.include?.join(',')
         }
     }).then(res => {
         return options?.include ? {
@@ -215,7 +215,7 @@ export const weclapp = ({
             'pageSize': 10,
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
-            'includeReferencedEntities': options?.include?.join(','),
+            'includeReferencedEntities': options?.include?.join(',')
         }
     }).then(res => {
         return options?.include ? {
@@ -223,6 +223,18 @@ export const weclapp = ({
             references: res?.referencedEntities ?? null
         } : (res.result[0] ?? null);
     });
+    
+    const _specialEndpointGet = (endpoint: string, options?: Record<string, unknown>): Promise<unknown> => {
+        return makeRequest(endpoint, { query: options});
+    };
+    
+    const _specialEndpointPost = (endpoint: string, data: any, options?: Record<string, unknown>): Promise<unknown> => {
+        return makeRequest(endpoint, {
+            method: Method.POST,
+            body: data,
+            query: options
+        });
+    };
 
     return {
         raw: makeRequest,

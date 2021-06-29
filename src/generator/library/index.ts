@@ -17,7 +17,7 @@ export type EndpointMap = Map<string, EndpointPath[]>;
 
 export interface StatsEntityFunction {
     signature: string;
-    description: string;
+    description?: string;
 }
 
 export interface StatsEntity {

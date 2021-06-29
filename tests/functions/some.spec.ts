@@ -111,10 +111,10 @@ describe('.some', () => {
         expect(
             await sdk.customer.first({
                 select: {company: true},
-                filter: {company: {EQ: 'Bazzam'}}
+                filter: {company: {EQ: companies[1]}}
             })
         ).toEqual({
-            company: 'Bazzam'
+            company: companies[1]
         });
     });
 

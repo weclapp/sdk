@@ -14,7 +14,7 @@ export const generateEntityTable = (stats: StatsEntity): string => {
     const rows: string[] = [];
 
     for (const func of stats.functions) {
-        rows.push(`| \`${func.signature}\` | ${escapeMarkdown(escapeInline(func.description))} |`);
+        rows.push(`| \`${func.signature}\` | ${escapeMarkdown(escapeInline(func?.description ?? 'Unknown.'))} |`);
     }
 
     return `${TABLE_HEADER}\n${rows.join('\n')}`;

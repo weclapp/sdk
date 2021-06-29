@@ -5,7 +5,7 @@ import {FunctionList} from '@generator/library/utils/FunctionList';
 import {SwaggerPathType} from '@generator/utils/parseSwaggerPath';
 import {guessResponseEntity, resolveResponseType} from '@generator/utils/resolveResponseType';
 import {pluralize} from '@utils/pluralize';
-import {pascalCase} from 'change-case';
+import {camelCase, pascalCase} from 'change-case';
 
 /**
  * The swagger file is missing information about what kind of entity corresponds to the given count function.
@@ -31,7 +31,7 @@ export const countFunction = ({path}: EndpointPath, endpoints: EndpointPath[], t
             code: {
                 description: `Counts the amount of ${pluralEntityName} entities which match the given filter.`,
                 parameters: [['filter', `The filter for the ${pluralEntityName} we want to count.`]],
-                example: `const total${pluralEntityName} = await sdk.${entityName}.count();`,
+                example: `const total${pluralEntityName} = await sdk.${camelCase(entityName)}.count();`,
                 signature: `count(filter?: Filterable<${entityType}>)`,
                 returnValue: `_count<${entityType}>('${path.path}', filter)`,
                 returnType: 'number'
