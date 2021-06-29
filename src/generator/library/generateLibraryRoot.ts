@@ -224,11 +224,11 @@ export const weclapp = ({
         } : (res.result[0] ?? null);
     });
     
-    const _specialEndpointGet = <Entity, Query extends Filterable<Entity>>(endpoint: string, options?: Query): Promise<unknown> => {
+    const _specialEndpointGet = (endpoint: string, options?: Record<string, unknown>): Promise<unknown> => {
         return makeRequest(endpoint, { query: options});
     };
     
-    const _specialEndpointPost = <Entity, Query extends Filterable<Entity>>(endpoint: string, data: Record<string, unknown>, options?: Query): Promise<unknown> => {
+    const _specialEndpointPost = (endpoint: string, data: any, options?: Record<string, unknown>): Promise<unknown> => {
         return makeRequest(endpoint, {
             method: Method.POST,
             body: data,

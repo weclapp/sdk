@@ -17,7 +17,7 @@ const ID_SPECIAL_REGEXP = /(?<={\w+}\/)\w+$/;
  * @param path
  */
 const buildSpecialFunction = (path: SwaggerPath): string => {
-    return path.name ? path.params.length ? `${path.name}` : path.name : `__unknown${path.entity}`;
+    return path.name ? path.params.length ? `${path.name}ById` : path.name : `__unknown${path.entity}`;
 };
 
 /**
@@ -52,27 +52,27 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
         else if (ID_SPECIAL_REGEXP.test(path.path)) {
 	        functions.add(target, {
 		        code: {
-			        description: `${entityName} special function`,
+			        description: methods.get.description,
 			        parameters: [
 				        ['id', `Unique ID for the ${entityName} to fetch.`],
 				        ['options', `Optional query options regarding the ${entityName} special function.`]
 			        ],
 			        example: `await sdk.${entityName.toLowerCase()}.${buildSpecialFunction(path)}('9662', {...});`,
-			        signature: `${buildSpecialFunction(path)}<Query = any>(id: string, options?: Query)`,
-			        returnValue: `_specialEndpointGet<${returnType}>(\`${injectParams(path.path, {id: '${id}'})}\`, options)`,
+			        signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(id: string, options?: Query)`,
+			        returnValue: `_specialEndpointGet(\`${injectParams(path.path, {id: '${id}'})}\`, options)`,
 			        returnType
 		        }
 	        })
         } else if (BASE_SPECIAL_REGEXP.test(path.path)) {
 			functions.add(target, {
 				code: {
-					description: `${entityName} special function`,
+					description: methods.get.description,
 					parameters: [
 						['options', `Optional query options regarding the ${entityName} special function.`]
 					],
 					example: `await sdk.${entityName.toLowerCase()}.${buildSpecialFunction(path)}({...});`,
-					signature: `${buildSpecialFunction(path)}<Query = any>(options?: Query)`,
-					returnValue: `_specialEndpointGet<${returnType}>('${path.path}', options)`,
+					signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(options?: Query)`,
+					returnValue: `_specialEndpointGet('${path.path}', options)`,
 					returnType
 				}
 			})
@@ -88,29 +88,29 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
         if (ID_SPECIAL_REGEXP.test(path.path)) {
 	        functions.add(target, {
 		        code: {
-			        description: `${entityName} special function`,
+			        description: methods.post.description,
 			        parameters: [
 				        ['id', `Unique ID for the ${entityName} to fetch.`],
 				        ['data', `Request body of the ${entityName} special function.`],
 				        ['options', `Optional query options regarding the ${entityName} special function.`]
 			        ],
 			        example: `await sdk.${entityName.toLowerCase()}.${buildSpecialFunction(path)}('9662', {...});`,
-			        signature: `${buildSpecialFunction(path)}<Query = any>(id: string, data: ${bodyType}, options?: Query)`,
-			        returnValue: `_specialEndpointPost<${returnType}>(\`${injectParams(path.path, {id: '${id}'})}\`, data, options)`,
+			        signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(id: string, data: ${bodyType}, options?: Query)`,
+			        returnValue: `_specialEndpointPost(\`${injectParams(path.path, {id: '${id}'})}\`, data, options)`,
 			        returnType
 		        }
 	        })
         } else if (BASE_SPECIAL_REGEXP.test(path.path)) {
 	        functions.add(target, {
 		        code: {
-			        description: `${entityName} special function`,
+			        description: methods.post.description,
 			        parameters: [
 				        ['data', `Request body of the ${entityName} special function.`],
 				        ['options', `Optional query options regarding the ${entityName} special function.`]
 			        ],
 			        example: `await sdk.${entityName.toLowerCase()}.${buildSpecialFunction(path)}({...});`,
-			        signature: `${buildSpecialFunction(path)}<Query = any>(data: ${bodyType}, options?: Query)`,
-			        returnValue: `_specialEndpointPost<${returnType}>('${path.path}', data, options)`,
+			        signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(data: ${bodyType}, options?: Query)`,
+			        returnValue: `_specialEndpointPost('${path.path}', data, options)`,
 			        returnType
 		        }
 	        })
