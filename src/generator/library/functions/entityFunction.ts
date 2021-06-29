@@ -42,7 +42,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                         ['id', `Unique ID for the ${entityName} to fetch.`],
                         ['options', `Optional query options to fetch a ${entityName}.`]
                     ],
-                    example: `const ${camelCase(entityName)} = await sdk.${entityName.toLowerCase()}.unique('7362');`,
+                    example: `const ${camelCase(entityName)} = await sdk.${camelCase(entityName)}.unique('7362');`,
                     signature: `unique<Query extends EntityQuery<${returnType}>>(id: string, options?: Query)`,
                     returnType: `UniqueReturn<${returnType}, Query>`,
                     returnValue: `_unique<${returnType}, Query>('/${path.entity}', id, options)`
@@ -56,7 +56,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                         ['id', `Unique ID for the ${entityName} to fetch.`],
                         ['options', `Optional query options regarding the ${entityName} special function.`]
                     ],
-                    example: `await sdk.${entityName.toLowerCase()}.${buildSpecialFunction(path)}('9662', {...});`,
+                    example: `await sdk.${camelCase(entityName)}.${buildSpecialFunction(path)}('9662', {...});`,
                     signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(id: string, options?: Query)`,
                     returnValue: `_specialEndpointGet(\`${injectParams(path.path, {id: '${id}'})}\`, options)`,
                     returnType
@@ -69,7 +69,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                     parameters: [
                         ['options', `Optional query options regarding the ${entityName} special function.`]
                     ],
-                    example: `await sdk.${entityName.toLowerCase()}.${buildSpecialFunction(path)}({...});`,
+                    example: `await sdk.${camelCase(entityName)}.${buildSpecialFunction(path)}({...});`,
                     signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(options?: Query)`,
                     returnValue: `_specialEndpointGet('${path.path}', options)`,
                     returnType
@@ -93,7 +93,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                         ['data', `Request body of the ${entityName} special function.`],
                         ['options', `Optional query options regarding the ${entityName} special function.`]
                     ],
-                    example: `await sdk.${entityName.toLowerCase()}.${buildSpecialFunction(path)}('9662', {...});`,
+                    example: `await sdk.${camelCase(entityName)}.${buildSpecialFunction(path)}('9662', {...});`,
                     signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(id: string, data: ${bodyType}, options?: Query)`,
                     returnValue: `_specialEndpointPost(\`${injectParams(path.path, {id: '${id}'})}\`, data, options)`,
                     returnType
@@ -107,7 +107,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                         ['data', `Request body of the ${entityName} special function.`],
                         ['options', `Optional query options regarding the ${entityName} special function.`]
                     ],
-                    example: `await sdk.${entityName.toLowerCase()}.${buildSpecialFunction(path)}({...});`,
+                    example: `await sdk.${camelCase(entityName)}.${buildSpecialFunction(path)}({...});`,
                     signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(data: ${bodyType}, options?: Query)`,
                     returnValue: `_specialEndpointPost('${path.path}', data, options)`,
                     returnType
@@ -133,7 +133,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                         ['id', `Unique ID for the ${entityName} to update.`],
                         ['data', `Partial data which should be used to update the ${entityName}.`]
                     ],
-                    example: `await sdk.${entityName.toLowerCase()}.update('9662', {...});`,
+                    example: `await sdk.${camelCase(entityName)}.update('9662', {...});`,
                     signature: `update(id: string, data: Partial<${bodyType}>)`,
                     returnValue: `_update(\`${injectParams(path.path, {id: '${id}'})}\`, data)`,
                     returnType
@@ -147,7 +147,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                     parameters: [
                         ['data', `${entityName} object which should replace the one given by the id.`]
                     ],
-                    example: `await sdk.${entityName.toLowerCase()}.replace({...});`,
+                    example: `await sdk.${camelCase(entityName)}.replace({...});`,
                     signature: `replace(data: ${bodyType})`,
                     returnValue: `_replace<${bodyType}>(\`${injectParams(path.path, {id: '${data.id as string}'})}\`, data)`,
                     returnType
@@ -166,7 +166,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                 code: {
                     description: `Deletes a ${entityName} by the given unique identifier.`,
                     parameters: [['id', `Unique ID for the ${entityName} to delete.`]],
-                    example: `await sdk.${entityName.toLowerCase()}.delete('1356');`,
+                    example: `await sdk.${camelCase(entityName)}.delete('1356');`,
                     signature: 'delete(id: string)',
                     returnValue: `_delete(\`${injectParams(path.path, {id: '${id}'})}\`)`,
                     returnType: 'void'
