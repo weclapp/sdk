@@ -1,27 +1,29 @@
 import {Customer} from '@sdk/node';
-import {createCustomers} from '@tests/functions/utils/createCustomers';
 import 'jest-extended';
 import {sdk} from '../utils';
+import {createCustomer, deleteCustomer} from './utils/customer';
 
 describe('.update', () => {
-    let customerId: string;
+    let customer: Customer;
 
-    createCustomers(['Foo'], ids => customerId = ids[0]);
+    beforeAll( async () => {
+        customer = await createCustomer('Foo');
+    })
+    afterAll(async () => {
+        await deleteCustomer(customer.id!)
+    })
 
     it('Should update a customer', async () => {
-        const customer = await sdk.customer.unique(customerId);
+        const customerFound = await sdk.customer.unique(customer.id!);
 
-        if (!customer) {
+        if (!customerFound) {
             throw new Error('Customer not found');
         }
 
-        const updated = await sdk.customer.update(customerId, {
+        const updated = await sdk.customer.update(customerFound.id!, {
             company: 'Hello world'
         }) as (Customer | null);
 
         expect(updated?.company).toEqual('Hello world');
-        await sdk.customer.update(customerId, {
-            company: customer.company
-        });
     });
 });

@@ -1,36 +1,41 @@
 import {Customer} from '@sdk/node';
 import 'jest-extended';
-import {createCustomers} from '@tests/functions/utils/createCustomers';
 import {sdk} from '../utils';
+import {createCustomer, deleteCustomer} from './utils/customer';
 
 describe('.replace', () => {
-    let customerId: string;
+    let customer: Customer;
 
-    createCustomers(['Foo'], ids => customerId = ids[0]);
+    beforeAll( async () => {
+        customer = await createCustomer('Foo');
+    })
+    afterAll(async () => {
+        await deleteCustomer(customer.id!)
+    })
 
     it('Should replace a customer with a modified version', async () => {
-        let customer = await sdk.customer.unique(customerId);
+        let customerFound = await sdk.customer.unique(customer.id!);
 
-        if (!customer) {
+        if (!customerFound) {
             throw new Error('Customer not found');
         }
 
         // Modify company
-        const originalCompany = customer?.company ?? '';
+        const originalCompany = customerFound?.company ?? '';
         const company = `${originalCompany} (modified)`;
-        customer = await sdk.customer.replace({
-            ...customer,
+        customerFound = await sdk.customer.replace({
+            ...customerFound,
             company
         }) as Customer;
 
-        expect(customer.company).toEqual(company);
+        expect(customerFound.company).toEqual(company);
 
         // Change back
-        customer = await sdk.customer.replace({
-            ...customer,
+        customerFound = await sdk.customer.replace({
+            ...customerFound,
             company: originalCompany
         }) as Customer;
 
-        expect(customer.company).toEqual(originalCompany);
+        expect(customerFound.company).toEqual(originalCompany);
     });
 });
