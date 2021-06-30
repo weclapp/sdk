@@ -128,7 +128,7 @@ export default [
 
     // Utilities
     {
-        input: src('utils.ts'),
+        input: src('utils/index.ts'),
         output: nodeOutput('utils'),
         plugins: [ts()]
     }
