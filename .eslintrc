@@ -22,5 +22,13 @@
         "comma-dangle": "error",
 		"linebreak-style": ["error", "unix"],
 		"object-curly-spacing": ["error", "never"]
-    }
+    },
+	"overrides": [
+		{
+			"files": ["*.spec.ts"],
+			"rules": {
+				"@typescript-eslint/no-non-null-assertion": "off"
+			}
+		}
+	]
 }
