@@ -1,4 +1,5 @@
 import {WeclappResponse} from '../types.api';
+export * from './customAttributes';
 export * from './resolver';
 export * from './flatter';
 
