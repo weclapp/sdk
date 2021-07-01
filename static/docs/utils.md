@@ -55,7 +55,7 @@ const data = unwrap<Customer>(response);
 
 This one's usually used to transform the object passed to `select` into a URL.
 
-```
+```ts
 import {flattenSelectable} from `@weclapp/utils`;
 
 const selectable = flattenSelectable<{
@@ -78,7 +78,7 @@ const selectable = flattenSelectable<{
 
 This one's usually used to transform the object passed to `select` into a URL.
 
-```
+```ts
 import {flattenFilterable} from `@weclapp/utils`;
 
 const selectable = flattenFilterable<{
@@ -99,3 +99,31 @@ const selectable = flattenFilterable<{
 ```
 
 > For a list with all available filters (like EQ and NOT_IN) see [api#filters](api.md#filters).
+
+### Custom attributes
+
+This SDK also comes with utilities to manage custom attributes.
+
+```ts
+import {getCustomAttribute, upsertCustomAttribute} from '@sdk/utils';
+
+// Extracts a custom attribute by it's ID.
+// This utility is rather error-resistant as most properties are optional - null is returned if it wasn't possible to extract the given attribute.
+const attribute = getCustomAttribute({
+    customAttributes: [
+        {attributeDefinitionId: '2165', numberValue: 123}
+    ]
+}, '2165'); // Holds {attributeDefinitionId: '2165', numberValue: 123}
+
+// Creates or updates the custom attribute of an entity.
+const entity = {
+    customAttributes: [
+        {attributeDefinitionId: '2165', numberValue: 123},
+        {attributeDefinitionId: '4644', stringValue: 'Hello world'},
+        {attributeDefinitionId: '3490', booleanValue: true}
+    ]
+};
+
+upsertCustomAttribute(entity, '21265', 'numberValue', 456);
+// Custom-attribute with 2165 now yields 456 as number-value
+```
