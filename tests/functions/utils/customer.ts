@@ -19,16 +19,16 @@ export const createCustomers = async (
 export const deleteCustomers = async (ids: string[]): Promise<void> => {
     await Promise.all(
       ids.map(id => sdk.customer.delete(id))
-    )
-}
+    );
+};
 
 export const createCustomer = async (companyName?: string): Promise<Customer> => {
     return await sdk.customer.create({
         company: companyName ?? generateRandomName(),
         partyType: 'ORGANIZATION'
-    } as Customer) as Promise<Customer>
-}
+    } as Customer) as Promise<Customer>;
+};
 
 export const deleteCustomer = async (customerId: string): Promise<void> => {
     await sdk.customer.delete(customerId);
-}
+};

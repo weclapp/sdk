@@ -12,11 +12,11 @@ export const createArticle = async (): Promise<Article> => {
         articleNumber: generateRandomName(),
         unitId: unit.id
     }) as Article;
-}
+};
 
 export const deleteArticle = async (articleId: string, unitId?: string): Promise<void> => {
     await sdk.article.delete(articleId);
     if (unitId) {
         await sdk.unit.delete(unitId);
     }
-}
+};

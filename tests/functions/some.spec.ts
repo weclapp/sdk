@@ -10,10 +10,10 @@ describe('.some', () => {
 
     beforeAll(async () => {
         createdCompanies = await createCustomers(companies);
-    })
+    });
     afterAll(async () => {
         await deleteCustomers(createdCompanies.map(v => v.id).filter(Boolean) as string[]);
-    })
+    });
 
     it('Should return a list of customers', async () => {
         const customers = await sdk.customer.some();

@@ -9,10 +9,10 @@ describe('.unique', () => {
 
     beforeAll( async () => {
         customer = await createCustomer();
-    })
+    });
     afterAll(async () => {
-        await deleteCustomer(customer.id!)
-    })
+        await deleteCustomer(customer.id!);
+    });
 
     it('Should fetch a single customer', async () => {
         const customerFound = await sdk.customer.unique(customer.id!);

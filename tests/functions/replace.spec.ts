@@ -8,10 +8,10 @@ describe('.replace', () => {
 
     beforeAll( async () => {
         customer = await createCustomer('Foo');
-    })
+    });
     afterAll(async () => {
-        await deleteCustomer(customer.id!)
-    })
+        await deleteCustomer(customer.id!);
+    });
 
     it('Should replace a customer with a modified version', async () => {
         let customerFound = await sdk.customer.unique(customer.id!);

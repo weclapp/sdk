@@ -11,7 +11,7 @@ describe('special functions', () => {
        article = await createArticle();
     });
     afterAll(async () => {
-        await deleteArticle(article.id!, article.unitId)
+        await deleteArticle(article.id!, article.unitId);
     });
 
     it('Should get special function extraInfoForApp for article', async () => {

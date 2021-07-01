@@ -8,10 +8,10 @@ describe('.update', () => {
 
     beforeAll( async () => {
         customer = await createCustomer('Foo');
-    })
+    });
     afterAll(async () => {
-        await deleteCustomer(customer.id!)
-    })
+        await deleteCustomer(customer.id!);
+    });
 
     it('Should update a customer', async () => {
         const customerFound = await sdk.customer.unique(customer.id!);

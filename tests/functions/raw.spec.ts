@@ -10,10 +10,10 @@ describe('.raw', () => {
     let customer: Customer;
     beforeAll(async () => {
         customer = await createCustomer();
-    })
+    });
     afterAll(async () => {
-        await deleteCustomer(customer.id!)
-    })
+        await deleteCustomer(customer.id!);
+    });
 
     it('Should be possible to make a raw request', async () => {
         expect(
