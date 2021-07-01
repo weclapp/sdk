@@ -1,11 +1,19 @@
-import {createCustomers, createRandomIds} from '@tests/functions/utils/createCustomers';
+import {createCustomers, createRandomIds, deleteCustomers} from './utils/customer';
 import 'jest-extended';
 import * as Joi from 'joi';
 import {sdk, testSchema} from '../utils';
+import {Customer} from '@sdk/node';
 
 describe('.some', () => {
+    let createdCompanies: Customer[];
     const companies = createRandomIds(4);
-    createCustomers(companies);
+
+    beforeAll(async () => {
+        createdCompanies = await createCustomers(companies);
+    });
+    afterAll(async () => {
+        await deleteCustomers(createdCompanies.map(v => v.id).filter(Boolean) as string[]);
+    });
 
     it('Should return a list of customers', async () => {
         const customers = await sdk.customer.some();

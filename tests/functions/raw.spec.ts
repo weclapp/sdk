@@ -1,15 +1,19 @@
 import {Customer, Method, WeclappResponse} from '@sdk/node';
 import {unwrap} from '@sdk/utils';
-import {createCustomers} from '@tests/functions/utils/createCustomers';
 import {sdk} from '@tests/utils';
 import {readFile} from 'fs-extra';
 import 'jest-extended';
 import {resolve} from 'path';
+import {createCustomer, deleteCustomer} from './utils/customer';
 
 describe('.raw', () => {
-    let customerId: string;
-
-    createCustomers(['Foo'], ids => customerId = ids[0]);
+    let customer: Customer;
+    beforeAll(async () => {
+        customer = await createCustomer();
+    });
+    afterAll(async () => {
+        await deleteCustomer(customer.id!);
+    });
 
     it('Should be possible to make a raw request', async () => {
         expect(
@@ -38,7 +42,7 @@ describe('.raw', () => {
                 body: await readFile(resolve(__dirname, '../fixtures/logo.png')),
                 query: {
                     entityName: 'customer',
-                    entityId: customerId,
+                    entityId: customer.id,
                     name: 'logo.png'
                 }
             }).then(unwrap)

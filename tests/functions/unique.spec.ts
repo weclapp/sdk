@@ -1,24 +1,29 @@
-import {createCustomers} from '@tests/functions/utils/createCustomers';
 import 'jest-extended';
 import * as Joi from 'joi';
 import {sdk, testSchema} from '../utils';
+import {Customer} from '@sdk/node';
+import {createCustomer, deleteCustomer} from './utils/customer';
 
 describe('.unique', () => {
-    let customerId: string;
+    let customer: Customer;
 
-    createCustomers(['Foo'], ids => customerId = ids[0]);
+    beforeAll( async () => {
+        customer = await createCustomer();
+    });
+    afterAll(async () => {
+        await deleteCustomer(customer.id!);
+    });
 
     it('Should fetch a single customer', async () => {
-        const customer = await sdk.customer.unique(customerId);
-
-        expect(customer).toBeObject();
-        expect(customer?.insolvent).toBeBoolean();
-        expect(customer?.id).toBeString();
+        const customerFound = await sdk.customer.unique(customer.id!);
+        expect(customerFound).toBeObject();
+        expect(customerFound?.insolvent).toBeBoolean();
+        expect(customerFound?.id).toBeString();
     });
 
     it('Should only fetch return selected properties', async () => {
         testSchema(
-            await sdk.customer.unique(customerId, {
+            await sdk.customer.unique(customer.id!, {
                 select: {
                     firstName: true,
                     email: true,

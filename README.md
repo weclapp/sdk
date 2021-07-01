@@ -72,5 +72,7 @@ For this environmental variables must be set and `npm` commands run in the conta
 
 If you also want to run tests you'll _additionally_ need the following:
 * `RUN_TESTS` _- Set to `true` (or any other non-empty value)._
-* `TEST_DOMAIN` _- API to test against (just the domain, e.g. `support.test2-y4jnp8qvg1.internal.weclapp.com`)._
+* `TEST_DOMAIN` _- API domain to test against, **prerel1 has to be used** (e.g. `fueller2.test1-y4jnp8qvg1.internal.weclapp.com`).
+  The background is, that the tests create entities via the sdk in the system. In case deletion fails the production environment would be polluted,
+  but the prerel1 systems lose the data after migration to next weclapp version_
 * `TEST_API_KEY` _- API-Key._

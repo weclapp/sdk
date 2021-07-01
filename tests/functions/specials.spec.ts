@@ -1,27 +1,17 @@
 import {sdk} from '@tests/utils';
-import {Article, Unit} from '@sdk/node';
+import {Article} from '@sdk/node';
 import {readFile} from 'fs-extra';
 import {resolve} from 'path';
-import {generateRandomName} from './utils/generateRandomName';
+import {createArticle, deleteArticle} from './utils/article';
 
 describe('special functions', () => {
     let article: Article;
-    let unit: Unit;
+
     beforeAll(async () => {
-        unit = await sdk.unit.create({
-            name: generateRandomName()
-        }) as Unit;
-
-        article = await sdk.article.create({
-            name: generateRandomName(),
-            articleNumber: generateRandomName(),
-            unitId: unit.id
-        }) as Article;
+       article = await createArticle();
     });
-
     afterAll(async () => {
-        await sdk.article.delete(article.id!);
-        await sdk.unit.delete(unit.id!);
+        await deleteArticle(article.id!, article.unitId);
     });
 
     it('Should get special function extraInfoForApp for article', async () => {
