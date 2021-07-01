@@ -31,4 +31,10 @@ describe('Resolver', () => {
             );
         }
     });
+
+    it('Should work with partial objects',  () => {
+        expect(resolvePrimaryAddress({})).toBeNull();
+        expect(resolvePrimaryAddress({primaryAddressId: '131'})).toBeNull();
+        expect(resolvePrimaryAddress({addresses: []})).toBeNull();
+    });
 });
