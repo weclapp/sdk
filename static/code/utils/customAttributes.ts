@@ -28,11 +28,11 @@ export interface EntityWithCustomAttributes {
  * @param entity Source entity.
  * @param id Custom-attribute id.
  */
-export const getCustomAttribute = <E extends EntityWithCustomAttributes, K extends keyof CustomAttribute | undefined = undefined>(
+export const getCustomAttribute = <E extends EntityWithCustomAttributes, K extends keyof CustomAttribute | null = null>(
     entity: E,
     id: string
-): CustomAttribute | undefined => {
-    return entity.customAttributes?.find(v => v.attributeDefinitionId === id);
+): CustomAttribute | null => {
+    return entity.customAttributes?.find(v => v.attributeDefinitionId === id) ?? null;
 };
 
 /**

@@ -11,8 +11,8 @@ describe('customAttributes', () => {
         };
 
         expect(getCustomAttribute(entity, '1539')).toBeObject();
-        expect(getCustomAttribute(entity, '9832')).toBeUndefined();
-        expect(getCustomAttribute({}, '1539')).toBeUndefined();
+        expect(getCustomAttribute(entity, '9832')).toBeNull();
+        expect(getCustomAttribute({}, '1539')).toBeNull();
     });
 
     it('Should create a custom attribute with upsert',  () => {
