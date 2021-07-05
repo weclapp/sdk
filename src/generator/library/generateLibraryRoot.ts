@@ -69,7 +69,7 @@ export const weclapp = ({
 
     // Strip protocol from domain
     domain = domain.replace(/^https?:\\/\\//, '');
-    const base = \`http\${secure ? 's' : ''}://\${domain}${server}\`;
+    const base = \`http\${secure ? 's' : ''}://\${domain}/webapp/api/v1\`;
 
     /**
      * Takes a response and converts it to a js object if possible.
@@ -226,11 +226,11 @@ export const weclapp = ({
         } : (res.result[0] ?? null);
     });
     
-    const _specialEndpointGet = (endpoint: string, options?: Record<string, unknown>): Promise<unknown> => {
+    const _specialEndpointGet = <Entity>(endpoint: string, options?: Record<string, unknown>): Promise<Entity> => {
         return makeRequest(endpoint, { query: options});
     };
     
-    const _specialEndpointPost = (endpoint: string, data: any, options?: Record<string, unknown>): Promise<unknown> => {
+    const _specialEndpointPost = <Entity>(endpoint: string, data: any, options?: Record<string, unknown>): Promise<Entity> => {
         return makeRequest(endpoint, {
             method: Method.POST,
             body: data,
