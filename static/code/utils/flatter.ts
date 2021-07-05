@@ -1,4 +1,4 @@
-import {Filterable, Selectable} from '../types.base';
+import {Filterable, Selectable, Sortable} from '../types.base';
 
 /**
  * Flattens a selectable, possibly nested, record.
@@ -64,3 +64,9 @@ export const flattenFilterable = <T = any>(obj: Filterable<T>, base = ''): Map<s
 
     return props;
 };
+
+export const flattenSortable = <T = any>(obj: Sortable<T>): string[] => {
+    return Object.entries(obj)
+      .filter(([,value]) => value)
+      .map(([key, value]) => `${value === 'desc' ? '-' : ''}${key}`);
+}

@@ -43,7 +43,7 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
     return `
 ${resolveImports(target)}
 import {Filterable, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn} from './types.base';
-import {unwrap, params, flattenSelectable, flattenFilterable} from './utils';
+import {unwrap, params, flattenSelectable, flattenSortable, flattenFilterable} from './utils';
 import {Options, Method, RawRequest, WeclappResponse} from './types.api';
 export * from './types.models';
 export * from './types.api';
@@ -165,6 +165,7 @@ export const weclapp = ({
             'pageSize': options?.pageSize ?? 10,
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
+            'sort': options?.sort ? flattenSortable(options.sort).join(',') : undefined,
             'includeReferencedEntities': options?.include?.join(',')
         }
     }).then(res => {
@@ -212,9 +213,10 @@ export const weclapp = ({
         query: {
             ...(options?.filter && Object.fromEntries(flattenFilterable(options.filter))), // We don't want the user to be able to re-write given properties below
             'page': 1,
-            'pageSize': 10,
+            'pageSize': 1,
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
+            'sort': options?.sort ? flattenSortable(options.sort).join(',') : undefined,
             'includeReferencedEntities': options?.include?.join(',')
         }
     }).then(res => {
