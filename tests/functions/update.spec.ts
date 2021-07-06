@@ -22,7 +22,7 @@ describe('.update', () => {
 
         const updated = await sdk.customer.update(customerFound.id!, {
             company: 'Hello world'
-        }) as (Customer | null);
+        });
 
         expect(updated?.company).toEqual('Hello world');
     });

@@ -13,7 +13,7 @@ export const createCustomers = async (
           // TODO: Only company and partyType are actually needed!
           company: v,
           partyType: 'ORGANIZATION'
-      } as Customer) as Promise<Customer>));
+      })));
 };
 
 export const deleteCustomers = async (ids: string[]): Promise<void> => {
@@ -26,7 +26,7 @@ export const createCustomer = async (companyName?: string): Promise<Customer> =>
     return await sdk.customer.create({
         company: companyName ?? generateRandomName(),
         partyType: 'ORGANIZATION'
-    } as Customer) as Promise<Customer>;
+    });
 };
 
 export const deleteCustomer = async (customerId: string): Promise<void> => {
