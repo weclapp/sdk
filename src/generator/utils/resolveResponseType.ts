@@ -17,7 +17,7 @@ export const extractDefinitionName = (s: string): string => {
  * @param endpoint
  */
 export const resolveResponseType = ({responses}: OpenAPIV3.OperationObject): string => {
-    const response = responses?.['200'];
+    const response = Object.values(responses ?? {})[0];
 
     if (isReferenceObject(response)) {
         return extractDefinitionName(response.$ref);
