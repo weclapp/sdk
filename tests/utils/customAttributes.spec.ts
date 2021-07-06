@@ -30,15 +30,15 @@ describe('customAttributes', () => {
     it('Should update  a custom attribute with upsert',  () => {
         const entity: EntityWithCustomAttributes = {
             customAttributes: [
-                {attributeDefinitionId: '2165', numberValue: 666}
+                {attributeDefinitionId: '2165', numberValue: '666'}
             ]
         };
 
-        upsertCustomAttribute(entity, '2165', 'numberValue', 9000);
+        upsertCustomAttribute(entity, '2165', 'numberValue', '9000');
 
         expect(entity).toEqual({
             customAttributes: [
-                {attributeDefinitionId: '2165', numberValue: 9000}
+                {attributeDefinitionId: '2165', numberValue: '9000'}
             ]
         });
     });
