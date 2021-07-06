@@ -26,7 +26,7 @@ describe('.replace', () => {
         customerFound = await sdk.customer.replace({
             ...customerFound,
             company
-        }) ;
+        });
 
         expect(customerFound.company).toEqual(company);
 
@@ -34,7 +34,7 @@ describe('.replace', () => {
         customerFound = await sdk.customer.replace({
             ...customerFound,
             company: originalCompany
-        }) ;
+        });
 
         expect(customerFound.company).toEqual(originalCompany);
     });

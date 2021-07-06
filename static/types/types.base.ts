@@ -25,8 +25,8 @@ export type Filterable<T> = RootQueryFilter<T> &
 // Only allow sort for non object or array properties. Map to available SortDirection for the remaining props
 export type Sortable<T> = {
     [P in keyof T as T[P] extends Array<infer U> ?
-      never : T[P] extends object ?
-        never: P]?: SortDirection;
+        never : T[P] extends object ?
+            never: P]?: SortDirection;
 }
 
 // Maps all property types from an object to boolean (or the sub-object)

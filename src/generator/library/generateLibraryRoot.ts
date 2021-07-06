@@ -40,6 +40,8 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
         process.exit(1);
     }
 
+    const serverUrl = new URL(server);
+
     return `
 ${resolveImports(target)}
 import {Filterable, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn} from './types.base';
@@ -69,7 +71,7 @@ export const weclapp = ({
 
     // Strip protocol from domain
     domain = domain.replace(/^https?:\\/\\//, '');
-    const base = \`http\${secure ? 's' : ''}://\${domain}/webapp/api/v1\`;
+    const base = \`http\${secure ? 's' : ''}://\${domain}${serverUrl.pathname}\`;
 
     /**
      * Takes a response and converts it to a js object if possible.

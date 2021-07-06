@@ -8,6 +8,7 @@ They're mostly used internally but can also be used outside the SDK.
 * [Unwrap](#unwrap) _- Unwrap a weclapp's API response._
 * [FlattenSelectable](#flattenselectable) _- Flatten a selectable payload._
 * [FlattenFilterable](#flattenfilterable) _- Flatten a filterable payload._
+* [FlattenSortable](#flattenSortable) _- Flatten a sortable payload._
 
 ### Resolver
 
@@ -53,10 +54,10 @@ const data = unwrap<Customer>(response);
 
 ### FlattenSelectable
 
-This one's usually used to transform the object passed to `select` into a URL.
+This one is usually used to transform the object passed to `select` into a URL.
 
 ```ts
-import {flattenSelectable} from `@weclapp/utils`;
+import {flattenSelectable} from '@weclapp/utils';
 
 const selectable = flattenSelectable<{
     id: number;
@@ -76,10 +77,10 @@ const selectable = flattenSelectable<{
 
 ### FlattenFilterable
 
-This one's usually used to transform the object passed to `select` into a URL.
+This one is usually used to transform the object passed to `select` into a URL.
 
 ```ts
-import {flattenFilterable} from `@weclapp/utils`;
+import {flattenFilterable} from '@weclapp/utils';
 
 const selectable = flattenFilterable<{
     id: number;
@@ -99,6 +100,27 @@ const selectable = flattenFilterable<{
 ```
 
 > For a list with all available filters (like EQ and NOT_IN) see [api#filters](api.md#filters).
+
+
+### FlattenSortable
+
+This one is used to sort the api result for specified properties in ascending or descending order.
+The order of the passed in values is relevant.
+First input has the highest sort priority, all subsequent inputs are defining the subsequent order.
+
+```ts
+import {flattenSortable} from '@weclapp/utils';
+
+const sortable = flattenSortable<{
+    id: string;
+    createdDate: number;
+}>({
+    id: 'asc',
+    createdDate: 'desc'
+});
+
+// `sortable` is ['id', '-createdDate']
+```
 
 ### Custom attributes
 
