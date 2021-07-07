@@ -2,6 +2,7 @@
 export type SimpleOperators = 'EQ' | 'NE' | 'LT' | 'GT' | 'LE' | 'GE' | 'LIKE' | 'ILIKE' | 'NOT_LIKE' | 'NOT_ILIKE';
 export type ArrayOperators = 'IN' | 'NOT_IN';
 export type Operator = SimpleOperators | ArrayOperators;
+export type SortDirection = 'asc' | 'desc'
 
 // Generic filter object.
 export type ComparableType = string | number | boolean | null;
@@ -20,6 +21,13 @@ export type RootQueryFilter<T> = {
 export type Filterable<T> = RootQueryFilter<T> &
     {OR?: RootQueryFilter<T>[];} &
     Record<string, any>;
+
+// Only allow sort for non object or array properties. Map to available SortDirection for the remaining props
+export type Sortable<T> = {
+    [P in keyof T as T[P] extends Array<infer U> ?
+        never : T[P] extends object ?
+            never: P]?: SortDirection;
+}
 
 // Maps all property types from an object to boolean (or the sub-object)
 export type Selectable<T> = {
@@ -76,10 +84,12 @@ export interface ListQuery<Entity> extends EntityQuery<Entity> {
     page?: number;
     pageSize?: number;
     filter?: Filterable<Entity>;
+    sort?: Sortable<Entity>;
 }
 
 export interface FirstQuery<Entity> extends EntityQuery<Entity> {
     filter?: Filterable<Entity>;
+    sort?: Sortable<Entity>;
 }
 
 // Return value for the .unique and .first query

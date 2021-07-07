@@ -40,10 +40,12 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
         process.exit(1);
     }
 
+    const serverUrl = new URL(server);
+
     return `
 ${resolveImports(target)}
 import {Filterable, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn} from './types.base';
-import {unwrap, params, flattenSelectable, flattenFilterable} from './utils';
+import {unwrap, params, flattenSelectable, flattenSortable, flattenFilterable} from './utils';
 import {Options, Method, RawRequest, WeclappResponse} from './types.api';
 export * from './types.models';
 export * from './types.api';
@@ -69,7 +71,7 @@ export const weclapp = ({
 
     // Strip protocol from domain
     domain = domain.replace(/^https?:\\/\\//, '');
-    const base = \`http\${secure ? 's' : ''}://\${domain}${server}\`;
+    const base = \`http\${secure ? 's' : ''}://\${domain}${serverUrl.pathname}\`;
 
     /**
      * Takes a response and converts it to a js object if possible.
@@ -165,6 +167,7 @@ export const weclapp = ({
             'pageSize': options?.pageSize ?? 10,
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
+            'sort': options?.sort ? flattenSortable(options.sort).join(',') : undefined,
             'includeReferencedEntities': options?.include?.join(',')
         }
     }).then(res => {
@@ -212,9 +215,10 @@ export const weclapp = ({
         query: {
             ...(options?.filter && Object.fromEntries(flattenFilterable(options.filter))), // We don't want the user to be able to re-write given properties below
             'page': 1,
-            'pageSize': 10,
+            'pageSize': 1,
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
+            'sort': options?.sort ? flattenSortable(options.sort).join(',') : undefined,
             'includeReferencedEntities': options?.include?.join(',')
         }
     }).then(res => {
@@ -224,11 +228,11 @@ export const weclapp = ({
         } : (res.result[0] ?? null);
     });
     
-    const _specialEndpointGet = (endpoint: string, options?: Record<string, unknown>): Promise<unknown> => {
+    const _specialEndpointGet = <Entity>(endpoint: string, options?: Record<string, unknown>): Promise<Entity> => {
         return makeRequest(endpoint, { query: options});
     };
     
-    const _specialEndpointPost = (endpoint: string, data: any, options?: Record<string, unknown>): Promise<unknown> => {
+    const _specialEndpointPost = <Entity>(endpoint: string, data: any, options?: Record<string, unknown>): Promise<Entity> => {
         return makeRequest(endpoint, {
             method: Method.POST,
             body: data,

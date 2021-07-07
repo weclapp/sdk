@@ -70,6 +70,8 @@ The extended version, `ListQuery` also concludes:
 
 * `page` _- The amount of entities to return per page._
 * `pageSize` _- The page size._
+* `sort` _- The sorting of the results. Also available in the `FirstQuery`_
+
 
 ##### Filters:
 
@@ -191,9 +193,11 @@ Fetches a list of the given entity.
 // Fetches the second page of articles with 5 items.
 // Queries the id, the partyType and the birthDate
 // Serializes the result, e.g. sets `null` for optional, possibly not defined fields.
+// Sorts the result ascending by id and then those results descending by birthDate.
 const articles = await sdk.article.some({
     select: {id: true, partyType: true, birthDate: true},
     serialize: true,
+    sort: {id: 'asc', birthDate: 'desc'},
     pageSize: 5,
     page: 2
 });

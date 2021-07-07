@@ -58,7 +58,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                     ],
                     example: `await sdk.${camelCase(entityName)}.${buildSpecialFunction(path)}('9662', {...});`,
                     signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(id: string, options?: Query)`,
-                    returnValue: `_specialEndpointGet(\`${injectParams(path.path, {id: '${id}'})}\`, options)`,
+                    returnValue: `_specialEndpointGet<${returnType}>(\`${injectParams(path.path, {id: '${id}'})}\`, options)`,
                     returnType
                 }
             });
@@ -71,7 +71,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                     ],
                     example: `await sdk.${camelCase(entityName)}.${buildSpecialFunction(path)}({...});`,
                     signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(options?: Query)`,
-                    returnValue: `_specialEndpointGet('${path.path}', options)`,
+                    returnValue: `_specialEndpointGet<${returnType}>('${path.path}', options)`,
                     returnType
                 }
             });
@@ -95,7 +95,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                     ],
                     example: `await sdk.${camelCase(entityName)}.${buildSpecialFunction(path)}('9662', {...});`,
                     signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(id: string, data: ${bodyType}, options?: Query)`,
-                    returnValue: `_specialEndpointPost(\`${injectParams(path.path, {id: '${id}'})}\`, data, options)`,
+                    returnValue: `_specialEndpointPost<${returnType}>(\`${injectParams(path.path, {id: '${id}'})}\`, data, options)`,
                     returnType
                 }
             });
@@ -109,7 +109,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                     ],
                     example: `await sdk.${camelCase(entityName)}.${buildSpecialFunction(path)}({...});`,
                     signature: `${buildSpecialFunction(path)}<Query extends Record<string, unknown>>(data: ${bodyType}, options?: Query)`,
-                    returnValue: `_specialEndpointPost('${path.path}', data, options)`,
+                    returnValue: `_specialEndpointPost<${returnType}>('${path.path}', data, options)`,
                     returnType
                 }
             });
