@@ -1,25 +1,6 @@
-export interface EntityReference {
-    entityName: string;
-    entityId: string;
-}
+import { CustomAttribute } from '../types.models';
 
-export interface SelectedValue {
-    id: string;
-}
-
-export interface CustomAttribute {
-    attributeDefinitionId: string;
-    booleanValue?: boolean;
-    dateValue?: number;
-    entityId?: string;
-    entityReferences?: EntityReference[];
-    numberValue?: number;
-    selectedValueId?: string;
-    selectedValues?: SelectedValue[];
-    stringValue?: string;
-}
-
-export interface EntityWithCustomAttributes {
+export type EntityWithCustomAttributes = {
     customAttributes?: CustomAttribute[];
 }
 
