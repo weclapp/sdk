@@ -80,17 +80,29 @@ export interface WrappedResponse<Data> {
     references?: Record<string, unknown[]>;
 }
 
-export interface ListQuery<Entity> extends EntityQuery<Entity> {
-    page?: number;
-    pageSize?: number;
-    filter?: Filterable<Entity>;
+interface SortQuery<Entity> {
     sort?: Sortable<Entity>;
 }
 
-export interface FirstQuery<Entity> extends EntityQuery<Entity> {
-    filter?: Filterable<Entity>;
-    sort?: Sortable<Entity>;
+interface PaginationQuery {
+    page?: number;
+    pageSize?: number;
 }
+
+interface RequiredParams<Base = Record<string, unknown>> {
+    requiredParams: Base;
+}
+
+export interface ListQueryRequired<Entity, Base = Record<string, unknown>> extends EntityQuery<Entity>, SortQuery<Entity>, PaginationQuery, RequiredParams<Base> {
+    filter?: Filterable<Entity>;
+}
+
+export interface FirstQueryRequired<Entity, Base = Record<string, unknown>> extends EntityQuery<Entity>, SortQuery<Entity>, RequiredParams<Base> {
+    filter?: Filterable<Entity>;
+}
+
+export type ListQuery<Entity, Base = Record<string, unknown>> = Partial<ListQueryRequired<Entity, Base>> | ListQueryRequired<Entity, Base>;
+export type FirstQuery<Entity, Base = Record<string, unknown>> = Partial<FirstQueryRequired<Entity, Base>> | FirstQueryRequired<Entity, Base>;
 
 // Return value for the .unique and .first query
 export type UniqueReturn<
