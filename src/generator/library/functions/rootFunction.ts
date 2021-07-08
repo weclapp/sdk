@@ -7,7 +7,7 @@ import {guessResponseEntity, resolveResponseType} from '@generator/utils/resolve
 import {logger} from '@logger';
 import {pluralize} from '@utils/pluralize';
 import {camelCase, pascalCase} from 'change-case';
-import {resolveRequiredParameters} from '@generator/utils/resolveParametersType';
+import {resolveParameters, serializeParameters} from '@generator/utils/resolveParameters';
 
 /**
  * Generates functions for the root level of an endpoint e.g. /customer
@@ -18,16 +18,17 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
 
     if (methods.get) {
         const response = resolveResponseType(methods.get);
-        const requiredParams = resolveRequiredParameters(methods.get);
+        const parameters = resolveParameters(methods.get);
+        const serializedParameters = serializeParameters(parameters);
 
         if (response) {
             const returnType = guessResponseEntity(response);
-            const someSignature = requiredParams ?
-              `some<Query extends ListQueryRequired<${returnType}, ${requiredParams}>>(options: Query)` :
-              `some<Query extends Partial<ListQueryRequired<${returnType}>>>(options?: Query)`;
-            const firstSignature = requiredParams ?
-              `first<Query extends FirstQueryRequired<${returnType}, ${requiredParams}>>(options: Query)` :
-              `first<Query extends Partial<FirstQueryRequired<${returnType}>>>(options?: Query)`;
+            const someSignature = parameters?.some(v => v.required) ?
+              `some<Query extends ListQueryRequired<${returnType}, ${serializedParameters ?? 'Record<string, unknown>'}>>(options: Query)` :
+              `some<Query extends Partial<ListQueryRequired<${returnType}${serializedParameters ? ', ' + serializedParameters : ''}>>>(options?: Query)`;
+            const firstSignature = parameters?.some(v => v.required) ?
+              `first<Query extends FirstQueryRequired<${returnType}, ${serializedParameters ?? 'Record<string, unknown>'}>>(options: Query)` :
+              `first<Query extends Partial<FirstQueryRequired<${returnType}${serializedParameters ? ', ' + serializedParameters : ''}>>>(options?: Query)`;
 
 
             // Fetch list

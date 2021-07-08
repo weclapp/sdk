@@ -1,8 +1,26 @@
 import 'jest-extended';
 import Joi from 'joi';
 import {sdk, testSchema} from '../utils';
+import {Article, Comment} from '@sdk/node';
+import {createArticle, deleteArticle} from '@tests/functions/utils/article';
+import {generateRandomName} from '@tests/functions/utils/generateRandomName';
 
 describe('.first', () => {
+    let createdArticle: Article;
+    let createdComment: Comment;
+
+    beforeAll(async () => {
+        createdArticle = await createArticle();
+        createdComment = await sdk.comment.create({
+            comment: generateRandomName(),
+            entityId: createdArticle.id!,
+            entityName: 'article'
+        });
+    });
+    afterAll(async() => {
+        await sdk.comment.delete(createdComment.id!);
+        await deleteArticle(createdArticle.id!);
+    });
 
     it('Should return the first customer it can find', async () => {
         expect(await sdk.customer.first()).toBeObject();
@@ -61,6 +79,12 @@ describe('.first', () => {
             filter: {
                 'customAttribute.entityId-eq': 4
             }
+        })).toBeObject();
+    });
+
+    it('Should need required params to find comments', async() => {
+        expect(await sdk.comment.first({
+            params: {entityName: 'article', entityId: createdArticle.id!}
         })).toBeObject();
     });
 });

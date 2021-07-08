@@ -89,20 +89,20 @@ interface PaginationQuery {
     pageSize?: number;
 }
 
-interface RequiredParams<Base = Record<string, unknown>> {
-    requiredParams: Base;
+interface RequiredParams<Params = Record<string, unknown>> {
+    params: Params;
 }
 
-export interface ListQueryRequired<Entity, Base = Record<string, unknown>> extends EntityQuery<Entity>, SortQuery<Entity>, PaginationQuery, RequiredParams<Base> {
+export interface ListQueryRequired<Entity, Params = Record<string, unknown>> extends EntityQuery<Entity>, SortQuery<Entity>, PaginationQuery, RequiredParams<Params> {
     filter?: Filterable<Entity>;
 }
 
-export interface FirstQueryRequired<Entity, Base = Record<string, unknown>> extends EntityQuery<Entity>, SortQuery<Entity>, RequiredParams<Base> {
+export interface FirstQueryRequired<Entity, Params = Record<string, unknown>> extends EntityQuery<Entity>, SortQuery<Entity>, RequiredParams<Params> {
     filter?: Filterable<Entity>;
 }
 
-export type ListQuery<Entity, Base = Record<string, unknown>> = Partial<ListQueryRequired<Entity, Base>> | ListQueryRequired<Entity, Base>;
-export type FirstQuery<Entity, Base = Record<string, unknown>> = Partial<FirstQueryRequired<Entity, Base>> | FirstQueryRequired<Entity, Base>;
+export type ListQuery<Entity, Params = Record<string, unknown>> = Partial<ListQueryRequired<Entity, Params>> | ListQueryRequired<Entity, Params>;
+export type FirstQuery<Entity, Params = Record<string, unknown>> = Partial<FirstQueryRequired<Entity, Params>> | FirstQueryRequired<Entity, Params>;
 
 // Return value for the .unique and .first query
 export type UniqueReturn<

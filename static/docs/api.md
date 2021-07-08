@@ -65,6 +65,7 @@ The `EntityQuery` and `FirstQuery` comes with the following options:
 * `select` _- Query only these properties, it is highly recommended to always specify what you want - it'll lower the response time greatly._
 * `include` _- Experimental, type-less way of fetching additional entities._
 * `filter` _- Query only entities which match the given criteria._
+* `params` _- Additional params for this entity, used in `.first()` and `.some()`._
 
 The extended version, `ListQuery` also concludes:
 
@@ -209,6 +210,14 @@ const {data, references} = await sdk.article.some({
     select: {id: true, partyType: true, birthDate: true},
     include: ['responsibleUserId']
 });
+
+// For some entities such as comment, there are required params
+// Those are available in the params property
+// Additionally there could be also optional params that are not linked with the entity model
+const comments = await sdk.comment.some({
+    select: {id: true, comment: true},
+    params: {entityId: '123', entityName: 'article'}
+});
 ```
 
 #### `.first(options?: FirstQuery<[Entity]>)`
@@ -221,6 +230,13 @@ Fetches the first entity from the first page, ignoring all the other results. Al
 
 // Fetches the first customer it can find
 const customer = await sdk.customer.first();
+
+// For some entities such as comment, there are required params
+// Those are available in the params property
+// Additionally there could be also optional params that are not linked with the entity model
+const comment = await sdk.comment.first({
+    params: {entityId: '123', entityName: 'article'}
+});
 ```
 
 #### `.create(data: Create[Entity])`

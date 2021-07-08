@@ -163,7 +163,7 @@ export const weclapp = ({
     ): Promise<SomeReturn<Entity, Query>> => makeRequest(endpoint, {
         query: {
             ...(options?.filter && Object.fromEntries(flattenFilterable(options.filter))), // We don't want the user to be able to re-write given properties below
-            ...options?.requiredParams,
+            ...options?.params,
             'page': options?.page ?? 1,
             'pageSize': options?.pageSize ?? 10,
             'serializeNulls': options?.serialize,
@@ -215,7 +215,7 @@ export const weclapp = ({
     ): Promise<UniqueReturn<Entity, Query>> => makeRequest(endpoint, {
         query: {
             ...(options?.filter && Object.fromEntries(flattenFilterable(options.filter))), // We don't want the user to be able to re-write given properties below
-            ...options?.requiredParams,
+            ...options?.params,
             'page': 1,
             'pageSize': 1,
             'serializeNulls': options?.serialize,
