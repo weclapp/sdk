@@ -2,17 +2,29 @@ import {createCustomers, createRandomIds, deleteCustomers} from './utils/custome
 import 'jest-extended';
 import * as Joi from 'joi';
 import {sdk, testSchema} from '../utils';
-import {Customer} from '@sdk/node';
+import {Article, Comment, Customer} from '@sdk/node';
+import {createArticle, deleteArticle} from '@tests/functions/utils/article';
+import {generateRandomName} from '@tests/functions/utils/generateRandomName';
 
 describe('.some', () => {
     let createdCompanies: Customer[];
     const companies = createRandomIds(4);
+    let createdArticle: Article;
+    let createdComment: Comment;
 
     beforeAll(async () => {
         createdCompanies = await createCustomers(companies);
+        createdArticle = await createArticle();
+        createdComment = await sdk.comment.create({
+            comment: generateRandomName(),
+            entityId: createdArticle.id!,
+            entityName: 'article'
+        });
     });
     afterAll(async () => {
         await deleteCustomers(createdCompanies.map(v => v.id).filter(Boolean) as string[]);
+        await sdk.comment.delete(createdComment.id!);
+        await deleteArticle(createdArticle.id!);
     });
 
     it('Should return a list of customers', async () => {
@@ -138,5 +150,14 @@ describe('.some', () => {
                 }
             })
         ).toBeArrayOfSize(2);
+    });
+
+    it('Should require params to fetch some comments', async () => {
+        testSchema(
+          await sdk.comment.some({
+            params: {entityName: 'article', entityId: createdArticle.id!}
+          }),
+          Joi.array().min(1)
+        );
     });
 });

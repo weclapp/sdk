@@ -7,6 +7,7 @@ import {guessResponseEntity, resolveResponseType} from '@generator/utils/resolve
 import {logger} from '@logger';
 import {pluralize} from '@utils/pluralize';
 import {camelCase, pascalCase} from 'change-case';
+import {resolveParameters, serializeParameters} from '@generator/utils/resolveParameters';
 
 /**
  * Generates functions for the root level of an endpoint e.g. /customer
@@ -17,9 +18,18 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
 
     if (methods.get) {
         const response = resolveResponseType(methods.get);
+        const parameters = resolveParameters(methods.get);
+        const serializedParameters = serializeParameters(parameters);
 
         if (response) {
             const returnType = guessResponseEntity(response);
+            const someSignature = parameters?.some(v => v.required) ?
+              `some<Query extends ListQueryRequired<${returnType}, ${serializedParameters ?? 'Record<string, unknown>'}>>(options: Query)` :
+              `some<Query extends Partial<ListQueryRequired<${returnType}${serializedParameters ? ', ' + serializedParameters : ''}>>>(options?: Query)`;
+            const firstSignature = parameters?.some(v => v.required) ?
+              `first<Query extends FirstQueryRequired<${returnType}, ${serializedParameters ?? 'Record<string, unknown>'}>>(options: Query)` :
+              `first<Query extends Partial<FirstQueryRequired<${returnType}${serializedParameters ? ', ' + serializedParameters : ''}>>>(options?: Query)`;
+
 
             // Fetch list
             functions.add(target, {
@@ -30,7 +40,7 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
                     description: `Finds all ${entityName} entities which match the given filter.`,
                     parameters: [['options', `Options for how the ${entityName} should be queried.`]],
                     example: `const ${pluralize(camelCase(entityName))} = await sdk.${camelCase(entityName)}.some();`,
-                    signature: `some<Query extends ListQuery<${returnType}>>(options?: Query)`,
+                    signature: someSignature,
                     returnType: `SomeReturn<${returnType}, Query>`,
                     returnValue: `_some<${returnType}, Query>('${path.path}', options)`
                 }
@@ -45,7 +55,7 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
                     description: `Fetches the first ${entityName} it can find. Ignores all the other results`,
                     parameters: [['options', 'Optional filters.']],
                     example: `const first${entityName} = await sdk.${camelCase(entityName)}.first();`,
-                    signature: `first<Query extends FirstQuery<${returnType}>>(options?: Query)`,
+                    signature: firstSignature,
                     returnType: `UniqueReturn<${returnType}, Query>`,
                     returnValue: `_first<${returnType}, Query>('${path.path}', options)`
                 }

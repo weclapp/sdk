@@ -12,15 +12,6 @@ const extractRefInterfaceName = (ref: string): string => {
     return pascalCase(ref.replace(/.*\//, ''));
 };
 
-const resolveObjectSchema = (obj: OpenAPIV3.BaseSchemaObject): string => {
-    const props = tsInterfaceProperties(
-        Object.entries(obj.properties ?? {})
-            .map(([name, value]) => ({name, value: resolveDeclarationType(value), required: !!obj.required?.includes(name)}))
-    );
-
-    return `{\n${indent(props)}\n}`;
-};
-
 /**
  * Resolves the type of a openapi definition, assumes that all references are defined somewhere!
  * @param obj
@@ -41,6 +32,7 @@ export function resolveDeclarationType(obj: OpenAPIV3.SchemaObject | OpenAPIV3.R
             case 'number':
                 return 'number';
             case 'object':
+                /* eslint-disable no-use-before-define */
                 return resolveObjectSchema(obj);
         }
     }
@@ -48,3 +40,11 @@ export function resolveDeclarationType(obj: OpenAPIV3.SchemaObject | OpenAPIV3.R
     return 'unknown';
 }
 
+const resolveObjectSchema = (obj: OpenAPIV3.BaseSchemaObject): string => {
+    const props = tsInterfaceProperties(
+        Object.entries(obj.properties ?? {})
+            .map(([name, value]) => ({name, value: resolveDeclarationType(value), required: !!obj.required?.includes(name)}))
+    );
+
+    return `{\n${indent(props)}\n}`;
+};

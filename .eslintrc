@@ -23,7 +23,10 @@
 		"linebreak-style": ["error", "unix"],
 		"object-curly-spacing": ["error", "never"],
 		"@typescript-eslint/semi": ["error"],
-		"semi-spacing": ["error", {"before": false, "after": true}]
+		"semi-spacing": ["error", {"before": false, "after": true}],
+		"space-infix-ops": "error",
+		"operator-linebreak": ["error", "after"],
+		"no-use-before-define": "error"
     },
 	"overrides": [
 		{
