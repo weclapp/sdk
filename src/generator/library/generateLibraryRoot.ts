@@ -74,14 +74,8 @@ export const weclapp = ({
         throw new Error('You need to provide an apiKey and a domain!');
     }
     ` : ''}
-    const base = \`http\${secure ? 's' : ''}://\${domain.replace(/^https?:\\/\\//, '')}${serverUrl.pathname}\`;
-    const json = (res: Response): Promise<Response> | Response => {
-        if (res.headers?.get('content-type')?.includes('application/json')) {
-            return res.json();
-        }
 
-        return res;
-    };
+    const base = \`http\${secure ? 's' : ''}://\${domain.replace(/^https?:\\/\\//, '')}${serverUrl.pathname}\`;
 
     const makeRequest: RawRequest = async (endpoint, {
         method = Method.GET,
@@ -104,7 +98,7 @@ export const weclapp = ({
                 ...headers
             }
         }).then(async res => {
-            const data = await json(res);
+            const data = res.headers?.get('content-type')?.includes('application/json') ? res.json() : res;
 
             // Check if response was successful
             if (!res.ok) {
