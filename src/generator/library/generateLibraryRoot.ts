@@ -68,7 +68,7 @@ export const weclapp = ({
     apiKey,
     domain${!nodeEnv ? ' = location.origin' : ''},
     secure = true
-}: Options) => {
+}: Options = {}) => {
     ${nodeEnv ? `
     if (!apiKey || !domain) {
         throw new Error('You need to provide an apiKey and a domain!');
