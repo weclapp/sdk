@@ -1,6 +1,6 @@
 export interface Options {
-    domain: string;
-    apiKey: string;
+    domain?: string;
+    apiKey?: string;
     secure?: boolean;
 }
 
