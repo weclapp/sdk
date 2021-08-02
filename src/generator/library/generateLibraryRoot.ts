@@ -41,6 +41,7 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
     }
 
     const serverUrl = new URL(server);
+    const nodeEnv = isNodeTarget(target);
 
     return `
 ${resolveImports(target)}
@@ -64,35 +65,18 @@ export const version = '${pkg.version}';
  * @param secure If https should be used (default is true).
  */
 export const weclapp = ({
-    domain,
     apiKey,
+    domain${!nodeEnv ? ' = location.origin' : ''},
     secure = true
-}: Options) => {
+}: Options = {}) => {
+    ${nodeEnv ? `
+    if (!apiKey || !domain) {
+        throw new Error('You need to provide an apiKey and a domain!');
+    }
+    ` : ''}
 
-    // Strip protocol from domain
-    domain = domain.replace(/^https?:\\/\\//, '');
-    const base = \`http\${secure ? 's' : ''}://\${domain}${serverUrl.pathname}\`;
+    const base = \`http\${secure ? 's' : ''}://\${domain.replace(/^https?:\\/\\//, '')}${serverUrl.pathname}\`;
 
-    /**
-     * Takes a response and converts it to a js object if possible.
-     * @param res
-     */
-    const json = (res: Response): Promise<Response> => {
-        if (res.headers?.get('content-type')?.includes('application/json')) {
-            return res.json();
-        }
-
-        return Promise.resolve(res);
-    };
-
-    /**
-     * Makes a raw request to the given endpoint.
-     * @param endpoint Endpoint url.
-     * @param method Request method (GET is default)
-     * @param query Optional query parameters.
-     * @param body Optional body data.
-     * @param headers Optional, additional headers. May override existing ones.
-     */
     const makeRequest: RawRequest = async (endpoint, {
         method = Method.GET,
         query,
@@ -105,15 +89,16 @@ export const weclapp = ({
 
         return fetch(query ? params(url, query) : url, {
             ...(body && {body: isBinaryData ? body : JSON.stringify(body)}),
+            ...(!apiKey && {credentials: 'same-origin'}),
             method,
             headers: {
                 'Content-Type': \`application/\${contentType}\`,
                 'Accept': 'application/json',
-                'AuthenticationToken': apiKey,
+                ...(apiKey && {'AuthenticationToken': apiKey}),
                 ...headers
             }
         }).then(async res => {
-            const data = await json(res);
+            const data = res.headers?.get('content-type')?.includes('application/json') ? res.json() : res;
 
             // Check if response was successful
             if (!res.ok) {
