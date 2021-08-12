@@ -6,9 +6,9 @@ import {Article} from '@sdk/node';
 describe('sort entities', () => {
     const createdArticles: Article[] = [];
     beforeAll(async () => {
-        createdArticles.push(await createArticle(5));
-        createdArticles.push(await createArticle(3));
-        createdArticles.push(await createArticle(8));
+        createdArticles.push(await createArticle({procurementLeadDays: 5}));
+        createdArticles.push(await createArticle({procurementLeadDays: 3}));
+        createdArticles.push(await createArticle({procurementLeadDays: 8}));
     });
     afterAll(async () => {
         await deleteArticles(createdArticles.map(v => v.id) as string[], createdArticles.map(v => v.unitId) as string[]);
