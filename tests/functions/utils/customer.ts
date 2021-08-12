@@ -1,5 +1,5 @@
 import {sdk} from '@tests/utils';
-import {Customer} from '@sdk/node';
+import {Customer, CUSTOMER_PARTY_TYPE} from '@sdk/node';
 import {generateRandomName} from '@tests/functions/utils/generateRandomName';
 
 export const createRandomIds = (amount: number, prefix = 'R-'): string[] =>
@@ -12,7 +12,7 @@ export const createCustomers = async (
       companies.map(v => sdk.customer.create({
           // TODO: Only company and partyType are actually needed!
           company: v,
-          partyType: 'ORGANIZATION'
+          partyType: CUSTOMER_PARTY_TYPE.ORGANIZATION
       })));
 };
 
@@ -25,7 +25,7 @@ export const deleteCustomers = async (ids: string[]): Promise<void> => {
 export const createCustomer = async (companyName?: string): Promise<Customer> => {
     return await sdk.customer.create({
         company: companyName ?? generateRandomName(),
-        partyType: 'ORGANIZATION'
+        partyType: CUSTOMER_PARTY_TYPE.ORGANIZATION
     });
 };
 

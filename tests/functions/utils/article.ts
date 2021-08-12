@@ -1,8 +1,8 @@
-import {Article} from '@sdk/node';
+import {Article, ARTICLE_ARTICLE_TYPE} from '@sdk/node';
 import {sdk} from '@tests/utils';
 import {generateRandomName} from '@tests/functions/utils/generateRandomName';
 
-export const createArticle = async (procurementLeadDays?: number): Promise<Article> => {
+export const createArticle = async (additionalProperties?: {procurementLeadDays?: number, articleType?: ARTICLE_ARTICLE_TYPE}): Promise<Article> => {
     const unit = await sdk.unit.create({
         name: generateRandomName()
     });
@@ -10,8 +10,9 @@ export const createArticle = async (procurementLeadDays?: number): Promise<Artic
     return await sdk.article.create({
         name: generateRandomName(),
         articleNumber: generateRandomName(),
+        articleType: additionalProperties?.articleType,
         unitId: unit.id,
-        procurementLeadDays
+        procurementLeadDays: additionalProperties?.procurementLeadDays
     });
 };
 

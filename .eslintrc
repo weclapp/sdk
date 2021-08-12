@@ -26,7 +26,8 @@
 		"semi-spacing": ["error", {"before": false, "after": true}],
 		"space-infix-ops": "error",
 		"operator-linebreak": ["error", "after"],
-		"no-use-before-define": "error"
+		"no-use-before-define": "error",
+		"keyword-spacing": "error"
     },
 	"overrides": [
 		{
