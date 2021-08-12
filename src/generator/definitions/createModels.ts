@@ -31,7 +31,7 @@ export const createModels = (name: string, definition: OpenAPIV3.SchemaObject): 
         .map(([name, type]) => ({name, value: resolveDeclarationType(type, name, intSig), required: !!definition.required?.includes(name)}));
 
     const propertiesWithEnum = Object.entries(definition.properties ?? {}).map(([name,type]) => {
-        if(isReferenceObject(type) || !isNonArraySchemaObject(type) || !type?.enum?.length) {
+        if (isReferenceObject(type) || !isNonArraySchemaObject(type) || !type?.enum?.length) {
             return undefined;
         }
         return {
