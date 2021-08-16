@@ -160,4 +160,15 @@ describe('.some', () => {
           Joi.array().min(1)
         );
     });
+
+    it('Should require params to fetch some comments', async () => {
+        testSchema(
+          await sdk.comment.some({
+              params: {entityName: 'article', entityId: createdArticle.id!},
+              include: []
+          }),
+          await sdk.article.unique('123', {include: ['']}),
+          Joi.array().min(1)
+        );
+    });
 });

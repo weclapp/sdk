@@ -31,6 +31,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
     if (methods.get) {
         const returnType = resolveResponseType(methods.get);
         const serializedParameters = serializeParameters(resolveParameters(methods.get));
+        const hasRelatedEntities = `, Weclapp__RelatedEntities_${returnType}`;
 
         // Check if it's a top-level, by-id endpoint
         if (TOP_ID_REGEXP.test(path.path)) {
@@ -45,7 +46,7 @@ export const entityFunction = ({path, methods}: EndpointPath, target: Target): F
                         ['options', `Optional query options to fetch a ${entityName}.`]
                     ],
                     example: `const ${camelCase(entityName)} = await sdk.${camelCase(entityName)}.unique('7362');`,
-                    signature: `unique<Query extends EntityQuery<${returnType}>>(id: string, options?: Query)`,
+                    signature: `unique<Query extends EntityQuery<EntityGroup<${returnType}${hasRelatedEntities}>>>(id: string, options?: Query)`,
                     returnType: `UniqueReturn<${returnType}, Query>`,
                     returnValue: `_unique<${returnType}, Query>('/${path.entity}', id, options)`
                 }

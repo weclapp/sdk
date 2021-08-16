@@ -53,21 +53,33 @@ export type Select<T, Q extends Selectable<T>> = {
 }
 
 // Select wrapper for entity-queries
-export type OptionalSelect<T, Q extends EntityQuery<T>> =
-    Q['select'] extends Selectable<T> ? Select<T, Q['select']> : T
+export type OptionalSelect<T, Q extends EntityQuery<EntityGroup<T>>> =
+    Q['select'] extends Selectable<T> ? Select<T, Q['select']> : T;
+
+type EntityReference = Record<string, unknown> | undefined;
+
+interface Entity<T> {
+    entity: T;
+    references: undefined;
+}
+
+interface EntityWithReferences<T, R extends EntityReference> {
+    entity: T;
+    references: R;
+}
+
+export type EntityGroup<T, R extends EntityReference = undefined> = R extends undefined ? Entity<T> : EntityWithReferences<T, R>;
 
 // Entity model used to query a single or multiple entities
-export interface EntityQuery<Entity> {
-
+export interface EntityQuery<Entity extends EntityGroup<any, any>> {
     // If result should be serialized (e.g. non-defined fields nullable)
     serialize?: boolean;
 
     // Query only these properties
-    select?: Selectable<Entity>;
+    select?: Selectable<Entity['entity']>;
 
     // Resolve additional references
-    // TODO: Not all props refer to another entity
-    include?: (keyof Entity)[];
+    include?: (keyof Entity['references'])[];
 }
 
 export interface WrappedResponse<Data> {
@@ -93,22 +105,33 @@ interface RequiredParams<Params = Record<string, unknown>> {
     params: Params;
 }
 
-export interface ListQueryRequired<Entity, Params = Record<string, unknown>> extends EntityQuery<Entity>, SortQuery<Entity>, PaginationQuery, RequiredParams<Params> {
+export interface ListQueryRequired<Entity extends EntityGroup<any, any>, Params = Record<string, unknown>> extends EntityQuery<Entity>, SortQuery<Entity>, PaginationQuery, RequiredParams<Params> {
     filter?: Filterable<Entity>;
 }
 
-export interface FirstQueryRequired<Entity, Params = Record<string, unknown>> extends EntityQuery<Entity>, SortQuery<Entity>, RequiredParams<Params> {
+export interface FirstQueryRequired<Entity extends EntityGroup<any, any>, Params = Record<string, unknown>> extends EntityQuery<Entity>, SortQuery<Entity>, RequiredParams<Params> {
     filter?: Filterable<Entity>;
 }
 
-export type ListQuery<Entity, Params = Record<string, unknown>> = Partial<ListQueryRequired<Entity, Params>> | ListQueryRequired<Entity, Params>;
-export type FirstQuery<Entity, Params = Record<string, unknown>> = Partial<FirstQueryRequired<Entity, Params>> | FirstQueryRequired<Entity, Params>;
+export type ListQuery<
+  Entity,
+  Params = Record<string, unknown>,
+  RelatedEntities extends EntityReference = undefined
+> = Partial<ListQueryRequired<EntityGroup<Entity, RelatedEntities>, Params>> |
+    ListQueryRequired<EntityGroup<Entity, RelatedEntities>, Params>;
+
+export type FirstQuery<
+  Entity,
+  Params = Record<string, unknown>,
+  RelatedEntities extends EntityReference = undefined
+> = Partial<FirstQueryRequired<EntityGroup<Entity, RelatedEntities>, Params>> |
+  FirstQueryRequired<EntityGroup<Entity, RelatedEntities>, Params>;
 
 // Return value for the .unique and .first query
 export type UniqueReturn<
     Entity,
-    Query extends EntityQuery<Entity
-> = {}> = Query['include'] extends string[] ?
+    Query extends EntityQuery<EntityGroup<Entity>> = {}
+> = Query['include'] extends string[] ?
     WrappedResponse<OptionalSelect<Entity, Query>> :
     (OptionalSelect<Entity, Query> | null);
 

@@ -23,12 +23,14 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
 
         if (response) {
             const returnType = guessResponseEntity(response);
+            const hasRelatedEntities = `, Weclapp__RelatedEntities_${returnType}`;
+
             const someSignature = parameters?.some(v => v.required) ?
-              `some<Query extends ListQueryRequired<${returnType}, ${serializedParameters ?? 'Record<string, unknown>'}>>(options: Query)` :
-              `some<Query extends Partial<ListQueryRequired<${returnType}${serializedParameters ? ', ' + serializedParameters : ''}>>>(options?: Query)`;
+              `some<Query extends ListQueryRequired<EntityGroup<${returnType}${hasRelatedEntities}>, ${serializedParameters ?? 'Record<string, unknown>'}>>(options: Query)` :
+              `some<Query extends Partial<ListQueryRequired<EntityGroup<${returnType}${hasRelatedEntities}>${serializedParameters ? ', ' + serializedParameters : ', {}'}>>>(options?: Query)`;
             const firstSignature = parameters?.some(v => v.required) ?
-              `first<Query extends FirstQueryRequired<${returnType}, ${serializedParameters ?? 'Record<string, unknown>'}>>(options: Query)` :
-              `first<Query extends Partial<FirstQueryRequired<${returnType}${serializedParameters ? ', ' + serializedParameters : ''}>>>(options?: Query)`;
+              `first<Query extends FirstQueryRequired<EntityGroup<${returnType}${hasRelatedEntities}>, ${serializedParameters ?? 'Record<string, unknown>'}>>(options: Query)` :
+              `first<Query extends Partial<FirstQueryRequired<EntityGroup<${returnType}${hasRelatedEntities}>${serializedParameters ? ', ' + serializedParameters : ', {}'}>>>(options?: Query)`;
 
 
             // Fetch list
