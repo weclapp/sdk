@@ -7,7 +7,7 @@ export interface RelatedEntityProperty {
 }
 
 export const relatedEntityPropertyDefinition = (relatedEntities: RelatedEntityProperty[], indentLevel?: number): string => {
-    const str = relatedEntities.map(v => `readonly ${v.property}: unknown;`).join('\n');
+    const str = relatedEntities.map(v => `readonly ${v.property}: ${pascalCase(v.relatedEntity)};`).join('\n');
     return indentLevel !== undefined ? indent(str, indentLevel) : str;
 };
 

@@ -8,6 +8,7 @@ import {EnumDeclaration, tsEnumMemberDefinition, tsEnumName} from '@ts/enums';
 import {isNonArraySchemaObject, isReferenceObject, isRelatedEntitySchema, RelatedEntitySchema} from '@generator/guards';
 import {relatedEntitiesName, RelatedEntityProperty, relatedEntityPropertyDefinition} from '@ts/relatedEntities';
 import NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
+import {guessResponseEntity, resolveResponseType} from '@generator/utils/resolveResponseType';
 
 export interface GeneratedModels {
     source: string;
@@ -18,8 +19,9 @@ export interface GeneratedModels {
  * Creates base and create models
  * @param name
  * @param definition
+ * @param paths
  */
-export const createModels = (name: string, definition: OpenAPIV3.SchemaObject): GeneratedModels | null => {
+export const createModels = (name: string, definition: OpenAPIV3.SchemaObject, paths: OpenAPIV3.PathsObject): GeneratedModels | null => {
     const intSig = pascalCase(name);
 
     // Validate definition set
@@ -42,12 +44,19 @@ export const createModels = (name: string, definition: OpenAPIV3.SchemaObject): 
           enumValues: (type as NonArraySchemaObject).enum as string[]
       })) as EnumDeclaration[];
 
+    const endpoints = Object.entries(paths);
     const propertiesWithRelatedEntities = properties
       .filter(([, type]) => isRelatedEntitySchema(type))
-      .map(([name, type]) => ({
-          property: name,
-          relatedEntity: (type as RelatedEntitySchema)['x-relatedEntityName']
-      })) as RelatedEntityProperty[];
+      .map(([name, type]) => {
+          const endpointName = (type as RelatedEntitySchema)['x-relatedEntityName'];
+          const endpoint = endpoints.find(([path]) => path.endsWith(endpointName))?.[1] as OpenAPIV3.PathItemObject;
+          const responseType = endpoint?.get ? guessResponseEntity(resolveResponseType(endpoint.get)) : 'unknown';
+
+          return {
+              property: name,
+              relatedEntity: responseType
+          };
+      }) as RelatedEntityProperty[];
 
     const source = `
 ${tsBlockComment(`${intSig} entity.`)}
@@ -58,7 +67,7 @@ ${tsInterfaceProperties(baseEntries, 1)}
 ${tsBlockComment(`RelatedEntitiesMap for ${intSig} entity.`)}
 export type ${relatedEntitiesName(intSig)} = ${propertiesWithRelatedEntities.length ? `{
 ${relatedEntityPropertyDefinition(propertiesWithRelatedEntities, 1)}
-}` : 'undefined;'}
+}` : 'never;'}
 
 ${propertiesWithEnum.map(v => `
 ${tsBlockComment(`${v.enumName} enum for ${intSig} entity.`)}
