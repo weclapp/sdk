@@ -45,7 +45,7 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
 
     return `
 ${resolveImports(target)}
-import {Filterable, EntityGroup, EntityQuery, ListQuery, ListQueryRequired, FirstQuery, FirstQueryRequired, SomeReturn, UniqueReturn} from './types.base';
+import {Filterable, EntityQuery, ListQuery, ListQueryRequired, FirstQuery, FirstQueryRequired, SomeReturn, UniqueReturn} from './types.base';
 import {unwrap, params, flattenSelectable, flattenSortable, flattenFilterable} from './utils';
 import {Options, Method, RawRequest, WeclappResponse} from './types.api';
 export * from './types.models';
@@ -115,7 +115,7 @@ export const weclapp = ({
     };
 
     // Internal .unique implementation
-    const _unique = <Entity, Query extends EntityQuery<EntityGroup<Entity>>>(
+    const _unique = <Entity, Query extends EntityQuery<Entity>>(
         endpoint: string,
         id: string,
         options?: Query

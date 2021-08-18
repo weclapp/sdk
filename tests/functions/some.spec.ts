@@ -161,14 +161,19 @@ describe('.some', () => {
         );
     });
 
-    it('Should require params to fetch some comments', async () => {
+    it('Should only allow available referencedEntities params when fetching some articles', async () => {
         testSchema(
-          await sdk.comment.some({
-              params: {entityName: 'article', entityId: createdArticle.id!},
-              include: []
+          await sdk.article.some({
+              filter: {id: {EQ: createdArticle.id!}},
+              include: ['unitId']
           }),
-          await sdk.article.unique('123', {include: ['']}),
-          Joi.array().min(1)
+          Joi.object({
+              data: Joi.array(),
+              references: Joi.alternatives(
+                Joi.object(),
+                Joi.valid(null)
+              )
+          })
         );
     });
 });
