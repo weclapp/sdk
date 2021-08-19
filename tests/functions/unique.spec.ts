@@ -1,17 +1,21 @@
 import 'jest-extended';
 import * as Joi from 'joi';
 import {sdk, testSchema} from '../utils';
-import {Customer} from '@sdk/node';
+import {Article, Customer} from '@sdk/node';
+import {createArticle, deleteArticle} from './utils/article';
 import {createCustomer, deleteCustomer} from './utils/customer';
 
 describe('.unique', () => {
     let customer: Customer;
+    let createdArticle: Article;
 
     beforeAll( async () => {
         customer = await createCustomer();
+        createdArticle = await createArticle();
     });
     afterAll(async () => {
         await deleteCustomer(customer.id!);
+        await deleteArticle(createdArticle.id!, createdArticle.unitId);
     });
 
     it('Should fetch a single customer', async () => {
@@ -34,6 +38,21 @@ describe('.unique', () => {
                 firstName: Joi.string().optional(),
                 email: Joi.string().optional(),
                 id: Joi.string().required()
+            })
+        );
+    });
+
+    it('Should only fetch article with unit reference', async () => {
+        testSchema(
+            await sdk.article.unique(createdArticle.id!, {
+                include: ['unitId']
+            }),
+            Joi.object({
+                data: Joi.object(),
+                references: Joi.alternatives(
+                  Joi.object(),
+                  Joi.valid(null)
+                )
             })
         );
     });
