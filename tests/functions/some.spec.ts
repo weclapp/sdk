@@ -144,12 +144,32 @@ describe('.some', () => {
                 select: {company: true},
                 filter: {
                     OR: [
-                        {company: {EQ: companies[0]}},
-                        {company: {IN: [companies[1]]}}
+                        [
+                            {company: {EQ: companies[0]}},
+                            {company: {IN: [companies[1]]}}
+                        ]
                     ]
                 }
             })
         ).toBeArrayOfSize(2);
+    });
+
+    it('Should select two companies by an OR with or-groups', async () => {
+        expect(
+            await sdk.customer.some({
+                select: {company: true},
+                filter: {
+                    OR: [
+                        [
+                            {company: {IN: [...companies]}}
+                        ],
+                        [
+                            {company: {EQ: companies[0]}}
+                        ]
+                    ]
+                }
+            })
+        ).toBeArrayOfSize(1);
     });
 
     it('Should require params to fetch some comments', async () => {

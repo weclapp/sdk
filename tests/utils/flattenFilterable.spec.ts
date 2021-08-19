@@ -44,9 +44,11 @@ describe('flattenFilterable', () => {
         expect(flattenFilterable<User>({
             id: {IN: [1, 2, 3]},
             OR: [
-                {contact: {firstName: {EQ: 'Foo'}}},
-                {contact: {address: {city: {EQ: 'Bam'}}}},
-                {age: {EQ: 20}}
+                [
+                    {contact: {firstName: {EQ: 'Foo'}}},
+                    {contact: {address: {city: {EQ: 'Bam'}}}},
+                    {age: {EQ: 20}}
+                ]
             ]
         })).toEqual(expected);
     });
