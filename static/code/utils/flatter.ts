@@ -35,9 +35,11 @@ export const flattenFilterable = <T = any>(obj: Filterable<T>, base = ''): Map<s
 
         // Special OR operator
         if (key === 'OR' && !base && Array.isArray(val)) {
-            for (const or of val) {
-                for (const [key, prop] of flattenFilterable(or)) {
-                    props.set(`or-${key}`, prop);
+            for (const [i, orGroup] of Object.entries(val)) {
+                for (const or of orGroup) {
+                    for (const [key, prop] of flattenFilterable(or)) {
+                        props.set(`or${i === '0' ? '' : i}-${key}`, prop);
+                    }
                 }
             }
             continue;
