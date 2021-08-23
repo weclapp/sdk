@@ -103,20 +103,37 @@ Example with multiple filters:
 }
 ```
 
-It is possible to use _one_ OR condition at the very root of your query:
+> It is not possible to use operators in reverse, e.g. {LIKE: {username: '...'}}!
+
+It is possible to use _one_ OR condition at the very root of your query, each or-combination is defined within an array.
+Add multiple arrays to group the or-conditions by logical `AND`:
 
 ```json5
 
 {
    OR: [
-      {username: {EQ: 'John'}},
-      {age: {GT: 50}},
-      {email: {EQ: null}}
+        [
+            {username: {EQ: 'John'}}, 
+            {age: {GT: 50}}, 
+            {email: {EQ: null}}
+        ],
+        [
+            {username: {EQ: 'John'}}, 
+            {age: {LT: 60}}, 
+            {email: {EQ: null}}
+        ],
    ]
 }
+
 ```
 
-> It is not possible to use operators in reverse, e.g. {LIKE: {username: '...'}}!
+> This example translates to the following:
+> ```sql
+> (username = 'John' OR age > 50 OR email is null) AND (username = 'John' OR age < 60 OR email is null)
+> ```
+
+> To reproduce this in a raw query, each group has to contain the same suffix after the `or` operator keyword e.g.
+`or-username-eq=...&or-age-gt=...&or1-username-eq=...&or1-age-lt=...`
 
 #### `.count(filter?: QueryFilter<[Entity]>)`
 

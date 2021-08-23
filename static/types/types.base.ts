@@ -19,7 +19,7 @@ export type RootQueryFilter<T> = {
 
 // Takes an model and returns all possible filters.
 export type Filterable<T> = RootQueryFilter<T> &
-    {OR?: RootQueryFilter<T>[];} &
+    {OR?: RootQueryFilter<T>[][];} &
     Record<string, any>;
 
 // Only allow sort for non object or array properties. Map to available SortDirection for the remaining props
