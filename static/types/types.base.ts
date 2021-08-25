@@ -23,10 +23,20 @@ export type Filterable<T> = RootQueryFilter<T> &
     Record<string, any>;
 
 // Only allow sort for non object or array properties. Map to available SortDirection for the remaining props
-export type Sortable<T> = {
+export type Sortable<T, R> = R extends never ? EntitySortable<T> : EntitySortable<T> & ReferencesSortable<R>;
+
+type EntitySortable<T> = {
     [P in keyof T as T[P] extends Array<infer U> ?
-        never : T[P] extends object ?
-            never: P]?: SortDirection;
+      never : T[P] extends object ?
+        never: P]?: SortDirection;
+}
+
+// references can be sorted e.g. article with articleCategory.id
+type ReferencesSortable<T> = {
+    [P in keyof T as T[P] extends Array<infer U> ?
+      never : T[P] extends object ?
+        `${Uncapitalize<T[P] & string>}.${ReferencesSortable<T[P]> & string}`
+        : P]?: SortDirection;
 }
 
 // Maps all property types from an object to boolean (or the sub-object)
@@ -78,8 +88,8 @@ export interface WrappedResponse<Data> {
     references?: Record<string, unknown[]>;
 }
 
-interface SortQuery<Entity> {
-    sort?: Sortable<Entity>;
+interface SortQuery<Entity, RelatedEntities = never> {
+    sort?: Sortable<Entity, RelatedEntities>;
 }
 
 interface PaginationQuery {
@@ -91,11 +101,11 @@ interface RequiredParams<Params = Record<string, unknown>> {
     params: Params;
 }
 
-export interface ListQueryRequired<Entity, RelatedEntities, Params = Record<string, unknown>> extends EntityQuery<Entity, RelatedEntities>, SortQuery<Entity>, PaginationQuery, RequiredParams<Params> {
+export interface ListQueryRequired<Entity, RelatedEntities, Params = Record<string, unknown>> extends EntityQuery<Entity, RelatedEntities>, SortQuery<Entity, RelatedEntities>, PaginationQuery, RequiredParams<Params> {
     filter?: Filterable<Entity>;
 }
 
-export interface FirstQueryRequired<Entity, RelatedEntities, Params = Record<string, unknown>> extends EntityQuery<Entity, RelatedEntities>, SortQuery<Entity>, RequiredParams<Params> {
+export interface FirstQueryRequired<Entity, RelatedEntities, Params = Record<string, unknown>> extends EntityQuery<Entity, RelatedEntities>, SortQuery<Entity, RelatedEntities>, RequiredParams<Params> {
     filter?: Filterable<Entity>;
 }
 
