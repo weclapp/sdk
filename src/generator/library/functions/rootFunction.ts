@@ -26,11 +26,11 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
             const relatedEntities = `Weclapp__RelatedEntities_${returnType}`;
 
             const someSignature = parameters?.some(v => v.required) ?
-              `some<Query extends ListQueryRequired<${returnType}, ${relatedEntities}, ${serializedParameters ?? 'Record<string, unknown>'}>>(options: Query)` :
-              `some<Query extends Partial<ListQueryRequired<${returnType}, ${relatedEntities}${serializedParameters ? ', ' + serializedParameters : ', {}'}>>>(options?: Query)`;
+              `some<Query extends ListQueryRequired<${returnType}, ${serializedParameters ?? 'Record<string, unknown>'}, ${relatedEntities}>>(options: Query)` :
+              `some<Query extends Partial<ListQueryRequired<${returnType}${serializedParameters ? ', ' + serializedParameters : ', {}, '}${relatedEntities}>>>(options?: Query)`;
             const firstSignature = parameters?.some(v => v.required) ?
-              `first<Query extends FirstQueryRequired<${returnType}, ${relatedEntities}, ${serializedParameters ?? 'Record<string, unknown>'}>>(options: Query)` :
-              `first<Query extends Partial<FirstQueryRequired<${returnType}, ${relatedEntities}${serializedParameters ? ', ' + serializedParameters : ', {}'}>>>(options?: Query)`;
+              `first<Query extends FirstQueryRequired<${returnType}, ${serializedParameters ?? 'Record<string, unknown>'}, ${relatedEntities}>>(options: Query)` :
+              `first<Query extends Partial<FirstQueryRequired<${returnType}${serializedParameters ? ', ' + serializedParameters : ', {}, '}${relatedEntities}>>>(options?: Query)`;
 
 
             // Fetch list
