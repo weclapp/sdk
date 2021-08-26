@@ -70,4 +70,19 @@ describe('sort entities', () => {
         });
         expect(articles[0].procurementLeadDays! <= articles[1].procurementLeadDays! && articles[0].unitId! >= articles[1].unitId!).toBeTrue();
     });
+
+    it('Should sort the articles ascending by procurementLeadDays and descending by nested unit.id', async () => {
+        const articles = await sdk.article.some({
+            sort: {
+                procurementLeadDays: 'asc',
+                unit: {id: 'desc'}
+            },
+            filter: {
+                id: {
+                    IN: createdArticles.map(v => v.id).filter(Boolean) as string[]
+                }
+            }
+        });
+        expect(articles[0].procurementLeadDays! <= articles[1].procurementLeadDays! && articles[0].unitId! >= articles[1].unitId!).toBeTrue();
+    });
 });
