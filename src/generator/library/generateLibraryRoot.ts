@@ -153,8 +153,8 @@ export const weclapp = ({
             'pageSize': options?.pageSize ?? 10,
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
-            'sort': options?.sort ? flattenSortable(options.sort as any).join(',') : undefined,
-            'includeReferencedEntities': (options?.include as any)?.join(',')
+            'sort': options?.sort ? flattenSortable(options.sort).join(',') : undefined,
+            'includeReferencedEntities': options?.include?.join(',')
         }
     }).then(res => {
         return options?.include ? {
@@ -205,8 +205,8 @@ export const weclapp = ({
             'pageSize': 1,
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
-            'sort': options?.sort ? flattenSortable(options.sort as any).join(',') : undefined,
-            'includeReferencedEntities': (options?.include as any)?.join(',')
+            'sort': options?.sort ? flattenSortable(options.sort).join(',') : undefined,
+            'includeReferencedEntities': options?.include?.join(',')
         }
     }).then(res => {
         return options?.include ? {

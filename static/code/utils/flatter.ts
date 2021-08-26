@@ -70,17 +70,15 @@ export const flattenFilterable = <T = any>(obj: Filterable<T>, base = ''): Map<s
 export const flattenSortable = <T = any, R = any>(obj: Sortable<T, R>, base = ''): string[] => {
     const res: string[] = [];
 
-    if(obj) {
-        for (const [key, value] of Object.entries(obj)) {
-            if (value) {
-                const path = base + key;
-                const direction = value === 'desc' && !base ? '-': '';
+    for (const [key, value] of Object.entries(obj)) {
+        if (value) {
+            const path = base + key;
 
-                if (typeof value === 'object') {
-                    res.push(...flattenSortable(value as Sortable<T, R>, `${direction}${path}.`));
-                } else {
-                    res.push(path);
-                }
+            if (typeof value === 'object') {
+                res.push(...flattenSortable(value as Sortable<T, R>, `${path}.`));
+            } else {
+                const direction = value === 'desc' ? '-': '';
+                res.push(`${direction}${path}`);
             }
         }
     }

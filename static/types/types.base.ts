@@ -23,13 +23,14 @@ export type Filterable<T> = RootQueryFilter<T> &
     Record<string, any>;
 
 // Only allow sort for non object or array properties. Map to available SortDirection for the remaining props
-export type Sortable<T, R> = R extends never ? EntitySortable<T> | undefined : EntitySortable<T> & ReferencesSortable<R> | undefined;
+export type Sortable<T, R> = R extends never ? EntitySortable<T> : EntitySortable<T> | ReferencesSortable<R>;
 
 type EntitySortable<T> = {
     [P in keyof T as T[P] extends Array<infer U> ?
       never : T[P] extends object ?
         never: P]?: SortDirection;
 }
+
 export type ReferenceResolution = {
     entity: unknown;
     relatedEntity: unknown;
@@ -38,12 +39,12 @@ export type ReferenceResolution = {
 
 // references can be sorted e.g. article with articleCategory.id
 type ReferencesSortable<T> = {
-    [P in keyof T as T[P] extends never ? never : T[P] extends Array<infer U> ? never :
+    [P in keyof T as T[P] extends Array<infer U> ? never :
       T[P] extends ReferenceResolution ? T[P]['sortAndFilterProperty']
         : P
     ]?:
-    T[P] extends never ? never : T[P] extends Array<infer U> ? never:
-      T[P] extends ReferenceResolution ? ReferencesSortable<T[P]['entity']> & ReferencesSortable<T[P]['relatedEntity']>
+    T[P] extends Array<infer U> ? never:
+      T[P] extends ReferenceResolution ? ReferencesSortable<T[P]['entity']> | ReferencesSortable<T[P]['relatedEntity']>
         : SortDirection;
 }
 
