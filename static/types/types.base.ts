@@ -13,14 +13,21 @@ export type FilterObject =
 // Base filter without the OR part.
 export type RootQueryFilter<T> = {
     [P in keyof T]?:
-        T[P] extends Array<infer U> ? RootQueryFilter<U> :
-            T[P] extends object ? RootQueryFilter<T[P]> : FilterObject;
+        T[P] extends Array<infer U> | undefined ? RootQueryFilter<U> :
+            T[P] extends object | undefined ? RootQueryFilter<T[P]> : FilterObject<T[P]>;
+}
+
+export type ReferencesRootQueryFilter<T> = {
+    [P in keyof T as T[P] extends ReferenceResolution ? T[P]['sortAndFilterProperty']
+      : P]?:
+    T[P] extends Array<infer U> ? never :
+      T[P] extends ReferenceResolution ? ReferencesRootQueryFilter<T[P]['entity']> | ReferencesRootQueryFilter<T[P]['relatedEntity']>
+        : FilterObject<T[P]>;
 }
 
 // Takes an model and returns all possible filters.
-export type Filterable<T> = RootQueryFilter<T> &
-    {OR?: RootQueryFilter<T>[][];} &
-    Record<string, any>;
+export type Filterable<T, R = never> = R extends never ? RootQueryFilter<T> | {OR?: RootQueryFilter<T>[];}
+  : RootQueryFilter<T> | ReferencesRootQueryFilter<R> | {OR?: RootQueryFilter<T>[] | ReferencesRootQueryFilter<R>[];};
 
 // Only allow sort for non object or array properties. Map to available SortDirection for the remaining props
 export type Sortable<T, R> = R extends never ? EntitySortable<T> : EntitySortable<T> | ReferencesSortable<R>;
@@ -111,11 +118,11 @@ interface RequiredParams<Params = Record<string, unknown>> {
 }
 
 export interface ListQueryRequired<Entity, Params = Record<string, unknown>, RelatedEntities = any> extends EntityQuery<Entity, RelatedEntities>, SortQuery<Entity, RelatedEntities>, PaginationQuery, RequiredParams<Params> {
-    filter?: Filterable<Entity>;
+    filter?: Filterable<Entity, RelatedEntities>;
 }
 
 export interface FirstQueryRequired<Entity, Params = Record<string, unknown>, RelatedEntities = any> extends EntityQuery<Entity, RelatedEntities>, SortQuery<Entity, RelatedEntities>, RequiredParams<Params> {
-    filter?: Filterable<Entity>;
+    filter?: Filterable<Entity, RelatedEntities>;
 }
 
 export type ListQuery<Entity> = Partial<ListQueryRequired<Entity>> | ListQueryRequired<Entity>;

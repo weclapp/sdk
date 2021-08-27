@@ -28,7 +28,7 @@ export const flattenSelectable = <T = any>(obj: Selectable<T>, base = ''): strin
  * @param obj Object.
  * @param base Recursive base property.
  */
-export const flattenFilterable = <T = any>(obj: Filterable<T>, base = ''): Map<string, string> => {
+export const flattenFilterable = <T = any, R = any>(obj: Filterable<T, R>, base = ''): Map<string, string> => {
     const props = new Map<string, string>();
 
     for (const [key, val] of Object.entries(obj)) {
@@ -63,6 +63,8 @@ export const flattenFilterable = <T = any>(obj: Filterable<T>, base = ''): Map<s
             props.set(`${base}-${operator}`, String(val));
         }
     }
+
+    console.log(props)
 
     return props;
 };
