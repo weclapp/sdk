@@ -110,16 +110,16 @@ export const weclapp = ({
     };
 
     // Internal .count implementation
-    const _count = <Entity>(endpoint: string, filter?: Filterable<Entity>): Promise<number> => {
+    const _count = <Entity, RelatedEntities>(endpoint: string, filter?: Filterable<Entity, RelatedEntities>): Promise<number> => {
         return makeRequest<WeclappResponse<number>>(endpoint, {query: filter}).then(unwrap);
     };
 
     // Internal .unique implementation
-    const _unique = <Entity, Query extends EntityQuery<Entity>>(
+    const _unique = <Entity, RelatedEntities, Query extends EntityQuery<Entity, RelatedEntities>>(
         endpoint: string,
         id: string,
         options?: Query
-    ): Promise<UniqueReturn<Entity, Query>> => {
+    ): Promise<UniqueReturn<Entity, RelatedEntities, Query>> => {
 
         // The /id/:id endpoint for an entity does not have features like
         // including referenced entities or extracting specific properties.
@@ -142,19 +142,19 @@ export const weclapp = ({
     };
 
     // Internal .some implementation
-    const _some = <Entity, Query extends ListQuery<Entity>>(
+    const _some = <Entity, RelatedEntities, Query extends ListQuery<Entity, Record<string, unknown>, RelatedEntities>>(
         endpoint: string,
         options?: Query
-    ): Promise<SomeReturn<Entity, Query>> => makeRequest(endpoint, {
+    ): Promise<SomeReturn<Entity, RelatedEntities, Query>> => makeRequest(endpoint, {
         query: {
-            ...(options?.filter && Object.fromEntries(flattenFilterable(options.filter))), // We don't want the user to be able to re-write given properties below
+            ...(options?.filter && Object.fromEntries(flattenFilterable(options?.filter))), // We don't want the user to be able to re-write given properties below
             ...options?.params,
             'page': options?.page ?? 1,
             'pageSize': options?.pageSize ?? 10,
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
             'sort': options?.sort ? flattenSortable(options.sort).join(',') : undefined,
-            'includeReferencedEntities': options?.include?.join(',')
+            'includeReferencedEntities': (options?.include as any)?.join(',')
         }
     }).then(res => {
         return options?.include ? {
@@ -194,10 +194,10 @@ export const weclapp = ({
     };
 
     // Internal .first implementation
-    const _first = <Entity, Query extends FirstQuery<Entity>>(
+    const _first = <Entity, RelatedEntities, Query extends FirstQuery<Entity, Record<string, unknown>, RelatedEntities>>(
         endpoint: string,
         options?: Query
-    ): Promise<UniqueReturn<Entity, Query>> => makeRequest(endpoint, {
+    ): Promise<UniqueReturn<Entity, RelatedEntities, Query>> => makeRequest(endpoint, {
         query: {
             ...(options?.filter && Object.fromEntries(flattenFilterable(options.filter))), // We don't want the user to be able to re-write given properties below
             ...options?.params,
@@ -206,7 +206,7 @@ export const weclapp = ({
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
             'sort': options?.sort ? flattenSortable(options.sort).join(',') : undefined,
-            'includeReferencedEntities': options?.include?.join(',')
+            'includeReferencedEntities': (options?.include as any)?.join(',')
         }
     }).then(res => {
         return options?.include ? {

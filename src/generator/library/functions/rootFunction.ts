@@ -43,8 +43,8 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
                     parameters: [['options', `Options for how the ${entityName} should be queried.`]],
                     example: `const ${pluralize(camelCase(entityName))} = await sdk.${camelCase(entityName)}.some();`,
                     signature: someSignature,
-                    returnType: `SomeReturn<${returnType}, Query>`,
-                    returnValue: `_some<${returnType}, Query>('${path.path}', options)`
+                    returnType: `SomeReturn<${returnType}, ${relatedEntities}, Query>`,
+                    returnValue: `_some<${returnType}, ${relatedEntities}, Query>('${path.path}', options)`
                 }
             });
 
@@ -58,8 +58,8 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
                     parameters: [['options', 'Optional filters.']],
                     example: `const first${entityName} = await sdk.${camelCase(entityName)}.first();`,
                     signature: firstSignature,
-                    returnType: `UniqueReturn<${returnType}, Query>`,
-                    returnValue: `_first<${returnType}, Query>('${path.path}', options)`
+                    returnType: `UniqueReturn<${returnType}, ${relatedEntities}, Query>`,
+                    returnValue: `_first<${returnType}, ${relatedEntities}, Query>('${path.path}', options)`
                 }
             });
         } else {

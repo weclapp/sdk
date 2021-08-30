@@ -24,7 +24,7 @@ describe('.some', () => {
     afterAll(async () => {
         await deleteCustomers(createdCompanies.map(v => v.id).filter(Boolean) as string[]);
         await sdk.comment.delete(createdComment.id!);
-        await deleteArticle(createdArticle.id!);
+        await deleteArticle(createdArticle.id!, createdArticle.unitId);
     });
 
     it('Should return a list of customers', async () => {

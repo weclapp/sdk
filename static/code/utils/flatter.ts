@@ -64,8 +64,6 @@ export const flattenFilterable = <T = any, R = any>(obj: Filterable<T, R>, base 
         }
     }
 
-    console.log(props)
-
     return props;
 };
 
