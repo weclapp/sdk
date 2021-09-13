@@ -154,7 +154,7 @@ export const weclapp = ({
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
             'sort': options?.sort ? flattenSortable(options.sort).join(',') : undefined,
-            'includeReferencedEntities': (options?.include as any)?.join(',')
+            'includeReferencedEntities': options?.include?.join(',')
         }
     }).then(res => {
         return options?.include ? {
@@ -206,7 +206,7 @@ export const weclapp = ({
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
             'sort': options?.sort ? flattenSortable(options.sort).join(',') : undefined,
-            'includeReferencedEntities': (options?.include as any)?.join(',')
+            'includeReferencedEntities': options?.include?.join(',')
         }
     }).then(res => {
         return options?.include ? {

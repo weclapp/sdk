@@ -23,10 +23,29 @@ export type Filterable<T> = RootQueryFilter<T> &
     Record<string, any>;
 
 // Only allow sort for non object or array properties. Map to available SortDirection for the remaining props
-export type Sortable<T> = {
+export type Sortable<T, R> = R extends never ? EntitySortable<T> : EntitySortable<T> | ReferencesSortable<R>;
+
+type EntitySortable<T> = {
     [P in keyof T as T[P] extends Array<infer U> ?
-        never : T[P] extends object ?
-            never: P]?: SortDirection;
+      never : T[P] extends object ?
+        never: P]?: SortDirection;
+}
+
+export type ReferenceResolution = {
+    entity: unknown;
+    relatedEntity: unknown;
+    sortAndFilterProperty: string;
+}
+
+// references can be sorted e.g. article with articleCategory.id
+type ReferencesSortable<T> = {
+    [P in keyof T as T[P] extends Array<infer U> ? never :
+      T[P] extends ReferenceResolution ? T[P]['sortAndFilterProperty']
+        : P
+    ]?:
+    T[P] extends Array<infer U> ? never:
+      T[P] extends ReferenceResolution ? ReferencesSortable<T[P]['entity']> | ReferencesSortable<T[P]['relatedEntity']>
+        : SortDirection;
 }
 
 // Maps all property types from an object to boolean (or the sub-object)
@@ -78,8 +97,8 @@ export interface WrappedResponse<Data> {
     references?: Record<string, unknown[]>;
 }
 
-interface SortQuery<Entity> {
-    sort?: Sortable<Entity>;
+interface SortQuery<Entity, RelatedEntitiesSortAndFilter = never> {
+    sort?: Sortable<Entity, RelatedEntitiesSortAndFilter>;
 }
 
 interface PaginationQuery {
@@ -91,27 +110,17 @@ interface RequiredParams<Params = Record<string, unknown>> {
     params: Params;
 }
 
-export interface ListQueryRequired<Entity, RelatedEntities, Params = Record<string, unknown>> extends EntityQuery<Entity, RelatedEntities>, SortQuery<Entity>, PaginationQuery, RequiredParams<Params> {
+export interface ListQueryRequired<Entity, Params = Record<string, unknown>, RelatedEntities = any> extends EntityQuery<Entity, RelatedEntities>, SortQuery<Entity, RelatedEntities>, PaginationQuery, RequiredParams<Params> {
     filter?: Filterable<Entity>;
 }
 
-export interface FirstQueryRequired<Entity, RelatedEntities, Params = Record<string, unknown>> extends EntityQuery<Entity, RelatedEntities>, SortQuery<Entity>, RequiredParams<Params> {
+export interface FirstQueryRequired<Entity, Params = Record<string, unknown>, RelatedEntities = any> extends EntityQuery<Entity, RelatedEntities>, SortQuery<Entity, RelatedEntities>, RequiredParams<Params> {
     filter?: Filterable<Entity>;
 }
 
-export type ListQuery<
-  Entity,
-  Params = Record<string, unknown>,
-  RelatedEntities = never
-> = Partial<ListQueryRequired<Entity, RelatedEntities, Params>> |
-    ListQueryRequired<Entity, RelatedEntities, Params>;
+export type ListQuery<Entity> = Partial<ListQueryRequired<Entity>> | ListQueryRequired<Entity>;
 
-export type FirstQuery<
-  Entity,
-  Params = Record<string, unknown>,
-  RelatedEntities = never
-> = Partial<FirstQueryRequired<Entity, RelatedEntities, Params>> |
-  FirstQueryRequired<Entity, RelatedEntities, Params>;
+export type FirstQuery<Entity> = Partial<FirstQueryRequired<Entity>> | FirstQueryRequired<Entity>;
 
 // Return value for the .unique and .first query
 export type UniqueReturn<
