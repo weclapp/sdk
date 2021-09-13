@@ -180,4 +180,20 @@ describe('.some', () => {
           Joi.array().min(1)
         );
     });
+
+    it('Should only allow available referencedEntities params when fetching some articles', async () => {
+        testSchema(
+          await sdk.article.some({
+              filter: {id: {EQ: createdArticle.id!}},
+              include: ['unitId']
+          }),
+          Joi.object({
+              data: Joi.array(),
+              references: Joi.alternatives(
+                Joi.object(),
+                Joi.valid(null)
+              )
+          })
+        );
+    });
 });

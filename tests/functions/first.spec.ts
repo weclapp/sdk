@@ -87,4 +87,20 @@ describe('.first', () => {
             params: {entityName: 'article', entityId: createdArticle.id!}
         })).toBeObject();
     });
+
+    it('Should only fetch article with unit reference', async() => {
+        testSchema(
+          await sdk.article.first({
+              filter: {id: {EQ: createdArticle.id!}},
+              include: ['unitId']
+          }),
+          Joi.object({
+              data: Joi.object(),
+              references: Joi.alternatives(
+                Joi.object(),
+                Joi.valid(null)
+              )
+          })
+        );
+    });
 });

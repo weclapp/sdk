@@ -36,3 +36,11 @@ export const isRequestBodyObject = (v: any): v is OpenAPIV3.RequestBodyObject =>
 export const isNonArraySchemaObject = (v: any): v is OpenAPIV3.NonArraySchemaObjectType => {
     return ['string', 'undefined'].includes(typeof v.type);
 };
+
+export interface RelatedEntitySchema extends OpenAPIV3.NonArraySchemaObject{
+    'x-relatedEntityName': string;
+}
+
+export const isRelatedEntitySchema = (v: any): v is RelatedEntitySchema => {
+    return isObject(v) && isNonArraySchemaObject(v) && 'x-relatedEntityName' in v;
+};

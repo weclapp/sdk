@@ -52,7 +52,7 @@ void (async () => {
 
     // Generate import statement for type-declarations
     logger.infoLn('Generate entity models...');
-    const models = definitions(doc.components.schemas);
+    const models = definitions(doc);
     await writeSourceFile(files.types.models, models.source);
 
     // Copy static files

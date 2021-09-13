@@ -63,7 +63,7 @@ The `EntityQuery` and `FirstQuery` comes with the following options:
 
 * `serialize` _- If result should be serialized (e.g. non-defined fields nullable)._
 * `select` _- Query only these properties, it is highly recommended to always specify what you want - it'll lower the response time greatly._
-* `include` _- Experimental, type-less way of fetching additional entities._
+* `include` _- Experimental, type-safe way of fetching additional entities._
 * `filter` _- Query only entities which match the given criteria._
 * `params` _- Additional params for this entity, used in `.first()` and `.some()`._
 

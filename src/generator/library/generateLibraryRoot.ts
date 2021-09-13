@@ -98,7 +98,7 @@ export const weclapp = ({
                 ...headers
             }
         }).then(async res => {
-            const data = res.headers?.get('content-type')?.includes('application/json') ? res.json() : res;
+            const data = res.headers?.get('content-type')?.includes('application/json') ? await res.json() : res;
 
             // Check if response was successful
             if (!res.ok) {
@@ -131,7 +131,7 @@ export const weclapp = ({
                 'pageSize': 1,
                 'serializeNulls': options?.serialize,
                 'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
-                'includeReferencedEntities': options?.include?.join(',')
+                'includeReferencedEntities': (options?.include as any)?.join(',')
             }
         }).then(res => {
             return options?.include ? {
@@ -154,7 +154,7 @@ export const weclapp = ({
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
             'sort': options?.sort ? flattenSortable(options.sort).join(',') : undefined,
-            'includeReferencedEntities': options?.include?.join(',')
+            'includeReferencedEntities': (options?.include as any)?.join(',')
         }
     }).then(res => {
         return options?.include ? {
@@ -206,7 +206,7 @@ export const weclapp = ({
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
             'sort': options?.sort ? flattenSortable(options.sort).join(',') : undefined,
-            'includeReferencedEntities': options?.include?.join(',')
+            'includeReferencedEntities': (options?.include as any)?.join(',')
         }
     }).then(res => {
         return options?.include ? {

@@ -8,15 +8,16 @@ export interface DefinitionStats {
 
 /**
  * Generates a ts-file which will contain interfaces for the given definitions
- * @param definitions
+ * @param doc
  */
-export const definitions = (definitions: OpenAPIV3.SchemaObject): Result<DefinitionStats> => {
+export const definitions = (doc: OpenAPIV3.Document): Result<DefinitionStats> => {
     const exports: string[] = [];
+    const definitions: OpenAPIV3.SchemaObject = doc.components?.schemas ?? {};
     let source = '';
 
     // Loop through declarations and convert to ts interfaces
     for (const [name, definition] of Object.entries(definitions)) {
-        const models = createModels(name, definition);
+        const models = createModels(name, definition, doc.paths);
 
         if (models) {
             source += `${models.source}\n\n`;
