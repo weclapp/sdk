@@ -14,7 +14,7 @@ export type RootQueryFilter<T> = {
     [P in keyof T]?:
         T[P] extends Array<infer U> | undefined ? RootQueryFilter<U> :
             T[P] extends object | undefined ? RootQueryFilter<T[P]> : FilterObject<T[P]>;
-}
+};
 
 export type ReferencesRootQueryFilter<T> = {
     [P in keyof T as T[P] extends ReferenceResolution ? T[P]['sortAndFilterProperty']
@@ -24,11 +24,12 @@ export type ReferencesRootQueryFilter<T> = {
 }
 
 // Takes an model and returns all possible filters.
-export type Filterable<T, R = undefined> = R extends undefined ? RootQueryFilter<T> | {OR?: RootQueryFilter<T>[];}
-  : RootQueryFilter<T> | ReferencesRootQueryFilter<R> | {OR?: RootQueryFilter<T>[] | ReferencesRootQueryFilter<R>[];};
+// The "Record<string, unknown>" part is required for custom-attributes where it is not possibly to provide type safety.
+export type Filterable<T, R> = R extends undefined ? RootQueryFilter<T> | {OR?: RootQueryFilter<T>[][];} & Record<string, unknown>
+  : RootQueryFilter<T> | ReferencesRootQueryFilter<R> | {OR?: RootQueryFilter<T>[][] | ReferencesRootQueryFilter<R>[][];} & Record<string, unknown>;
 
 // Only allow sort for non object or array properties. Map to available SortDirection for the remaining props
-export type Sortable<T, R = undefined> = R extends undefined ? EntitySortable<T> : EntitySortable<T> | ReferencesSortable<R>;
+export type Sortable<T, R> = R extends undefined ? EntitySortable<T> : EntitySortable<T> | ReferencesSortable<R>;
 
 type EntitySortable<T> = {
     [P in keyof T as T[P] extends Array<infer U> ?
@@ -81,7 +82,7 @@ export type OptionalSelect<T, Q extends EntityQuery<T, any>> =
     Q['select'] extends Selectable<T> ? Select<T, Q['select']> : T;
 
 // Entity model used to query a single or multiple entities
-export interface EntityQuery<Entity, References = undefined> {
+export interface EntityQuery<Entity, RelatedEntities = undefined> {
     // If result should be serialized (e.g. non-defined fields nullable)
     serialize?: boolean;
 
@@ -89,7 +90,7 @@ export interface EntityQuery<Entity, References = undefined> {
     select?: Selectable<Entity>;
 
     // Resolve additional references
-    include?: References extends undefined ? undefined : (keyof References)[];
+    include?: RelatedEntities extends undefined ? undefined : (keyof RelatedEntities)[];
 }
 
 export interface WrappedResponse<Data> {
@@ -111,27 +112,17 @@ interface PaginationQuery {
     pageSize?: number;
 }
 
-interface RequiredParams<Params = Record<string, unknown>> {
-    params: Params;
+interface RequiredParams<Params> {
+    params?: Params;
 }
 
-export interface ListQueryRequired<Entity, Params = Record<string, unknown>, RelatedEntities = undefined> extends EntityQuery<Entity, RelatedEntities>, SortQuery<Entity, RelatedEntities>, PaginationQuery, RequiredParams<Params> {
+export interface ListQuery<Entity, Params, RelatedEntities> extends EntityQuery<Entity, RelatedEntities>, SortQuery<Entity, RelatedEntities>, PaginationQuery, RequiredParams<Params> {
     filter?: Filterable<Entity, RelatedEntities>;
 }
 
-export interface FirstQueryRequired<Entity, Params = Record<string, unknown>, RelatedEntities = undefined> extends EntityQuery<Entity, RelatedEntities>, SortQuery<Entity, RelatedEntities>, RequiredParams<Params> {
+export interface FirstQuery<Entity, Params, RelatedEntities> extends EntityQuery<Entity, RelatedEntities>, SortQuery<Entity, RelatedEntities>, RequiredParams<Params> {
     filter?: Filterable<Entity, RelatedEntities>;
 }
-
-export type ListQuery<
-  Entity,
-  Params = Record<string, unknown>,
-  RelatedEntities = undefined> = Partial<ListQueryRequired<Entity, Params, RelatedEntities>> | ListQueryRequired<Entity, Params, RelatedEntities>;
-
-export type FirstQuery<
-  Entity,
-  Params = Record<string, unknown>,
-  RelatedEntities = undefined> = Partial<FirstQueryRequired<Entity, Params, RelatedEntities>> | FirstQueryRequired<Entity, Params, RelatedEntities>;
 
 // Return value for the .unique and .first query
 export type UniqueReturn<

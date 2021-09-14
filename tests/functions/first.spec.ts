@@ -17,7 +17,7 @@ describe('.first', () => {
             entityName: 'article'
         });
     });
-    afterAll(async() => {
+    afterAll(async () => {
         await sdk.comment.delete(createdComment.id!);
         await deleteArticle(createdArticle.id!);
     });
@@ -82,25 +82,25 @@ describe('.first', () => {
         })).toBeObject();
     });
 
-    it('Should need required params to find comments', async() => {
+    it('Should need required params to find comments', async () => {
         expect(await sdk.comment.first({
             params: {entityName: 'article', entityId: createdArticle.id!}
         })).toBeObject();
     });
 
-    it('Should only fetch article with unit reference', async() => {
+    it('Should only fetch article with unit reference', async () => {
         testSchema(
-          await sdk.article.first({
-              filter: {id: {EQ: createdArticle.id!}},
-              include: ['unitId']
-          }),
-          Joi.object({
-              data: Joi.object(),
-              references: Joi.alternatives(
-                Joi.object(),
-                Joi.valid(null)
-              )
-          })
+            await sdk.article.first({
+                filter: {id: {EQ: createdArticle.id!}},
+                include: ['unitId']
+            }),
+            Joi.object({
+                data: Joi.object(),
+                references: Joi.alternatives(
+                    Joi.object(),
+                    Joi.valid(null)
+                )
+            })
         );
     });
 });

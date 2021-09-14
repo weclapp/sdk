@@ -24,14 +24,16 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
         if (response) {
             const returnType = guessResponseEntity(response);
             const relatedEntities = `Weclapp__RelatedEntities_${returnType}`;
+            const withParamsGenerics = [returnType, serializedParameters ?? 'Record<string, unknown>', relatedEntities].join(', ');
+            const withoutParamsGenerics = [returnType, serializedParameters ?? 'never', relatedEntities].join(', ');
 
             const someSignature = parameters?.some(v => v.required) ?
-              `some<Query extends ListQueryRequired<${returnType}, ${serializedParameters ?? 'Record<string, unknown>'}, ${relatedEntities}>>(options: Query)` :
-              `some<Query extends Partial<ListQueryRequired<${returnType}${serializedParameters ? ', ' + serializedParameters : ', {}, '}${relatedEntities}>>>(options?: Query)`;
-            const firstSignature = parameters?.some(v => v.required) ?
-              `first<Query extends FirstQueryRequired<${returnType}, ${serializedParameters ?? 'Record<string, unknown>'}, ${relatedEntities}>>(options: Query)` :
-              `first<Query extends Partial<FirstQueryRequired<${returnType}${serializedParameters ? ', ' + serializedParameters : ', {}, '}${relatedEntities}>>>(options?: Query)`;
+                `some<Query extends ListQuery<${withParamsGenerics}>>(options: Query)` :
+                `some<Query extends ListQuery<${withoutParamsGenerics}>>(options?: Query)`;
 
+            const firstSignature = parameters?.some(v => v.required) ?
+                `first<Query extends FirstQuery<${withParamsGenerics}>>(options: Query)` :
+                `first<Query extends FirstQuery<${withoutParamsGenerics}>>(options?: Query)`;
 
             // Fetch list
             functions.add(target, {

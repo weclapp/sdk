@@ -16,11 +16,11 @@ describe('flattenSelectable', () => {
         expect(flattenSelectable<User>({
             id: true,
             age: true,
-            contact: {
+            contacts: {
                 firstName: true,
                 lastName: true,
-                address: true
+                addresses: true
             }
-        })).toEqual(['id', 'age', 'contact.firstName', 'contact.lastName', 'contact.address']);
+        })).toEqual(['id', 'age', 'contacts.firstName', 'contacts.lastName', 'contacts.addresses']);
     });
 });

@@ -45,7 +45,7 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
 
     return `
 ${resolveImports(target)}
-import {Filterable, EntityQuery, ListQuery, ListQueryRequired, FirstQuery, FirstQueryRequired, SomeReturn, UniqueReturn} from './types.base';
+import {Filterable, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn} from './types.base';
 import {unwrap, params, flattenSelectable, flattenSortable, flattenFilterable} from './utils';
 import {Options, Method, RawRequest, WeclappResponse} from './types.api';
 export * from './types.models';
@@ -131,7 +131,7 @@ export const weclapp = ({
                 'pageSize': 1,
                 'serializeNulls': options?.serialize,
                 'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
-                'includeReferencedEntities': (options?.include as any)?.join(',')
+                'includeReferencedEntities': options?.include?.join(',')
             }
         }).then(res => {
             return options?.include ? {
@@ -154,7 +154,7 @@ export const weclapp = ({
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
             'sort': options?.sort ? flattenSortable(options.sort).join(',') : undefined,
-            'includeReferencedEntities': (options?.include as any)?.join(',')
+            'includeReferencedEntities': options?.include?.join(',')
         }
     }).then(res => {
         return options?.include ? {
@@ -206,7 +206,7 @@ export const weclapp = ({
             'serializeNulls': options?.serialize,
             'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
             'sort': options?.sort ? flattenSortable(options.sort).join(',') : undefined,
-            'includeReferencedEntities': (options?.include as any)?.join(',')
+            'includeReferencedEntities': options?.include?.join(',')
         }
     }).then(res => {
         return options?.include ? {
