@@ -67,7 +67,7 @@ ${tsInterfaceProperties(baseEntries, 1)}
 ${tsBlockComment(`RelatedEntitiesMap for ${intSig} entity.`)}
 export type ${relatedEntitiesName(intSig)} = ${propertiesWithRelatedEntities.length ? `{
 ${relatedEntityPropertyDefinition(propertiesWithRelatedEntities, 1)}
-}` : 'never;'}
+}` : 'undefined;'}
 
 ${propertiesWithEnum.map(v => `
 ${tsBlockComment(`${v.enumName} enum for ${intSig} entity.`)}

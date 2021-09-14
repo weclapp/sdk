@@ -45,7 +45,7 @@ export const generateLibraryRoot = (endpoints: string, doc: OpenAPIV3.Document, 
 
     return `
 ${resolveImports(target)}
-import {Filterable, EntityQuery, ListQuery, ListQueryRequired, FirstQuery, FirstQueryRequired, SomeReturn, UniqueReturn} from './types.base';
+import {Filterable, EntityQuery, ListQuery, FirstQuery, SomeReturn, UniqueReturn} from './types.base';
 import {unwrap, params, flattenSelectable, flattenSortable, flattenFilterable} from './utils';
 import {Options, Method, RawRequest, WeclappResponse} from './types.api';
 export * from './types.models';
@@ -110,16 +110,16 @@ export const weclapp = ({
     };
 
     // Internal .count implementation
-    const _count = <Entity>(endpoint: string, filter?: Filterable<Entity>): Promise<number> => {
+    const _count = <Entity, RelatedEntities>(endpoint: string, filter?: Filterable<Entity, RelatedEntities>): Promise<number> => {
         return makeRequest<WeclappResponse<number>>(endpoint, {query: filter}).then(unwrap);
     };
 
     // Internal .unique implementation
-    const _unique = <Entity, Query extends EntityQuery<Entity>>(
+    const _unique = <Entity, RelatedEntities, Query extends EntityQuery<Entity, RelatedEntities>>(
         endpoint: string,
         id: string,
         options?: Query
-    ): Promise<UniqueReturn<Entity, Query>> => {
+    ): Promise<UniqueReturn<Entity, RelatedEntities, Query>> => {
 
         // The /id/:id endpoint for an entity does not have features like
         // including referenced entities or extracting specific properties.
@@ -131,7 +131,7 @@ export const weclapp = ({
                 'pageSize': 1,
                 'serializeNulls': options?.serialize,
                 'properties': options?.select ? flattenSelectable(options.select).join(',') : undefined,
-                'includeReferencedEntities': (options?.include as any)?.join(',')
+                'includeReferencedEntities': options?.include?.join(',')
             }
         }).then(res => {
             return options?.include ? {
@@ -142,12 +142,12 @@ export const weclapp = ({
     };
 
     // Internal .some implementation
-    const _some = <Entity, Query extends ListQuery<Entity>>(
+    const _some = <Entity, RelatedEntities, Query extends ListQuery<Entity, Record<string, unknown>, RelatedEntities>>(
         endpoint: string,
         options?: Query
-    ): Promise<SomeReturn<Entity, Query>> => makeRequest(endpoint, {
+    ): Promise<SomeReturn<Entity, RelatedEntities, Query>> => makeRequest(endpoint, {
         query: {
-            ...(options?.filter && Object.fromEntries(flattenFilterable(options.filter))), // We don't want the user to be able to re-write given properties below
+            ...(options?.filter && Object.fromEntries(flattenFilterable(options?.filter))), // We don't want the user to be able to re-write given properties below
             ...options?.params,
             'page': options?.page ?? 1,
             'pageSize': options?.pageSize ?? 10,
@@ -194,10 +194,10 @@ export const weclapp = ({
     };
 
     // Internal .first implementation
-    const _first = <Entity, Query extends FirstQuery<Entity>>(
+    const _first = <Entity, RelatedEntities, Query extends FirstQuery<Entity, Record<string, unknown>, RelatedEntities>>(
         endpoint: string,
         options?: Query
-    ): Promise<UniqueReturn<Entity, Query>> => makeRequest(endpoint, {
+    ): Promise<UniqueReturn<Entity, RelatedEntities, Query>> => makeRequest(endpoint, {
         query: {
             ...(options?.filter && Object.fromEntries(flattenFilterable(options.filter))), // We don't want the user to be able to re-write given properties below
             ...options?.params,

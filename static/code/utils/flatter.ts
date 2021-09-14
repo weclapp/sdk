@@ -1,11 +1,6 @@
 import {Filterable, Selectable, Sortable} from '../types.base';
 
-/**
- * Flattens a selectable, possibly nested, record.
- * @param obj Object.
- * @param base Recursive base property.
- */
-export const flattenSelectable = <T = any>(obj: Selectable<T>, base = ''): string[] => {
+export const flattenSelectable = <T>(obj: Selectable<T> = {}, base = ''): string[] => {
     const res: string[] = [];
 
     for (const [key, value] of Object.entries(obj)) {
@@ -23,12 +18,7 @@ export const flattenSelectable = <T = any>(obj: Selectable<T>, base = ''): strin
     return res;
 };
 
-/**
- * Flattens a filterable, possibly nested, record.
- * @param obj Object.
- * @param base Recursive base property.
- */
-export const flattenFilterable = <T = any>(obj: Filterable<T>, base = ''): Map<string, string> => {
+export const flattenFilterable = <T, R = undefined>(obj: Filterable<T, R> = {}, base = ''): Map<string, string> => {
     const props = new Map<string, string>();
 
     for (const [key, val] of Object.entries(obj)) {
@@ -52,7 +42,7 @@ export const flattenFilterable = <T = any>(obj: Filterable<T>, base = ''): Map<s
         } else if (val !== null && typeof val === 'object') {
             const currentPath = base ? `${base}.${key}` : key;
 
-            for (const [key, prop] of flattenFilterable(val, currentPath)) {
+            for (const [key, prop] of flattenFilterable(val as Filterable<T, R>, currentPath)) {
                 props.set(key, prop);
             }
         } else if (val === null && ['EQ', 'NE'].includes(key)) {
@@ -67,7 +57,7 @@ export const flattenFilterable = <T = any>(obj: Filterable<T>, base = ''): Map<s
     return props;
 };
 
-export const flattenSortable = <T = any, R = any>(obj: Sortable<T, R>, base = ''): string[] => {
+export const flattenSortable = <T, R = undefined>(obj: Sortable<T, R> = {}, base = ''): string[] => {
     const res: string[] = [];
 
     for (const [key, value] of Object.entries(obj)) {

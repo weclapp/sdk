@@ -24,7 +24,7 @@ describe('.some', () => {
     afterAll(async () => {
         await deleteCustomers(createdCompanies.map(v => v.id).filter(Boolean) as string[]);
         await sdk.comment.delete(createdComment.id!);
-        await deleteArticle(createdArticle.id!);
+        await deleteArticle(createdArticle.id!, createdArticle.unitId);
     });
 
     it('Should return a list of customers', async () => {
@@ -115,7 +115,7 @@ describe('.some', () => {
             await sdk.customer.some({
                 select: {id: true},
                 include: ['responsibleUserId'],
-                filter: {id: {GT: 25}}
+                filter: {id: {GT: '25'}, company: {NE: null}}
             }),
             Joi.object({
                 data: Joi.array(),
@@ -174,26 +174,26 @@ describe('.some', () => {
 
     it('Should require params to fetch some comments', async () => {
         testSchema(
-          await sdk.comment.some({
-            params: {entityName: 'article', entityId: createdArticle.id!}
-          }),
-          Joi.array().min(1)
+            await sdk.comment.some({
+                params: {entityName: 'article', entityId: createdArticle.id!}
+            }),
+            Joi.array().min(1)
         );
     });
 
     it('Should only allow available referencedEntities params when fetching some articles', async () => {
         testSchema(
-          await sdk.article.some({
-              filter: {id: {EQ: createdArticle.id!}},
-              include: ['unitId']
-          }),
-          Joi.object({
-              data: Joi.array(),
-              references: Joi.alternatives(
-                Joi.object(),
-                Joi.valid(null)
-              )
-          })
+            await sdk.article.some({
+                filter: {id: {EQ: createdArticle.id!}},
+                include: ['unitId']
+            }),
+            Joi.object({
+                data: Joi.array(),
+                references: Joi.alternatives(
+                    Joi.object(),
+                    Joi.valid(null)
+                )
+            })
         );
     });
 });

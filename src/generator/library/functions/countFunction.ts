@@ -14,7 +14,7 @@ import {camelCase, pascalCase} from 'change-case';
  * @param endpoints
  */
 const guessEntityType = (endpoints: EndpointPath[]): string => {
-    const rootRequest = endpoints.find(v => v.path.type === SwaggerPathType.Entity)?.methods?.get;
+    const rootRequest = endpoints.find(v => v.path.type === SwaggerPathType.Root)?.methods?.get;
     return rootRequest ? guessResponseEntity(resolveResponseType(rootRequest)) : 'any';
 };
 
@@ -25,6 +25,7 @@ export const countFunction = ({path}: EndpointPath, endpoints: EndpointPath[], t
     const entityName = pascalCase(path.entity);
     const entityType = guessEntityType(endpoints);
     const pluralEntityName = pluralize(entityName);
+    const relatedEntities = `Weclapp__RelatedEntities_${entityType}`;
 
     return new FunctionList()
         .add(target, {
@@ -32,8 +33,8 @@ export const countFunction = ({path}: EndpointPath, endpoints: EndpointPath[], t
                 description: `Counts the amount of ${pluralEntityName} entities which match the given filter.`,
                 parameters: [['filter', `The filter for the ${pluralEntityName} we want to count.`]],
                 example: `const total${pluralEntityName} = await sdk.${camelCase(entityName)}.count();`,
-                signature: `count(filter?: Filterable<${entityType}>)`,
-                returnValue: `_count<${entityType}>('${path.path}', filter)`,
+                signature: `count(filter?: Filterable<${entityType}, ${relatedEntities}>)`,
+                returnValue: `_count<${entityType}, ${relatedEntities}>('${path.path}', filter)`,
                 returnType: 'number'
             }
         }).getAll();

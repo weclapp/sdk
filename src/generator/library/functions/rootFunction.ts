@@ -24,14 +24,16 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
         if (response) {
             const returnType = guessResponseEntity(response);
             const relatedEntities = `Weclapp__RelatedEntities_${returnType}`;
+            const withParamsGenerics = [returnType, serializedParameters ?? 'Record<string, unknown>', relatedEntities].join(', ');
+            const withoutParamsGenerics = [returnType, serializedParameters ?? 'never', relatedEntities].join(', ');
 
             const someSignature = parameters?.some(v => v.required) ?
-              `some<Query extends ListQueryRequired<${returnType}, ${serializedParameters ?? 'Record<string, unknown>'}, ${relatedEntities}>>(options: Query)` :
-              `some<Query extends Partial<ListQueryRequired<${returnType}${serializedParameters ? ', ' + serializedParameters : ', {}, '}${relatedEntities}>>>(options?: Query)`;
-            const firstSignature = parameters?.some(v => v.required) ?
-              `first<Query extends FirstQueryRequired<${returnType}, ${serializedParameters ?? 'Record<string, unknown>'}, ${relatedEntities}>>(options: Query)` :
-              `first<Query extends Partial<FirstQueryRequired<${returnType}${serializedParameters ? ', ' + serializedParameters : ', {}, '}${relatedEntities}>>>(options?: Query)`;
+                `some<Query extends ListQuery<${withParamsGenerics}>>(options: Query)` :
+                `some<Query extends ListQuery<${withoutParamsGenerics}>>(options?: Query)`;
 
+            const firstSignature = parameters?.some(v => v.required) ?
+                `first<Query extends FirstQuery<${withParamsGenerics}>>(options: Query)` :
+                `first<Query extends FirstQuery<${withoutParamsGenerics}>>(options?: Query)`;
 
             // Fetch list
             functions.add(target, {
@@ -43,8 +45,8 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
                     parameters: [['options', `Options for how the ${entityName} should be queried.`]],
                     example: `const ${pluralize(camelCase(entityName))} = await sdk.${camelCase(entityName)}.some();`,
                     signature: someSignature,
-                    returnType: `SomeReturn<${returnType}, Query>`,
-                    returnValue: `_some<${returnType}, Query>('${path.path}', options)`
+                    returnType: `SomeReturn<${returnType}, ${relatedEntities}, Query>`,
+                    returnValue: `_some<${returnType}, ${relatedEntities}, Query>('${path.path}', options)`
                 }
             });
 
@@ -58,8 +60,8 @@ export const rootFunction = ({path, methods}: EndpointPath, target: Target): Fun
                     parameters: [['options', 'Optional filters.']],
                     example: `const first${entityName} = await sdk.${camelCase(entityName)}.first();`,
                     signature: firstSignature,
-                    returnType: `UniqueReturn<${returnType}, Query>`,
-                    returnValue: `_first<${returnType}, Query>('${path.path}', options)`
+                    returnType: `UniqueReturn<${returnType}, ${relatedEntities}, Query>`,
+                    returnValue: `_first<${returnType}, ${relatedEntities}, Query>('${path.path}', options)`
                 }
             });
         } else {
