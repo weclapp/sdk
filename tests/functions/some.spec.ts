@@ -115,7 +115,7 @@ describe('.some', () => {
             await sdk.customer.some({
                 select: {id: true},
                 include: ['responsibleUserId'],
-                filter: {id: {GT: '25'}}
+                filter: {id: {GT: '25'}, company: {NE: null}}
             }),
             Joi.object({
                 data: Joi.array(),

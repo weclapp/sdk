@@ -1,12 +1,14 @@
 // Comparison operators
-export type SimpleOperators = 'EQ' | 'NE' | 'LT' | 'GT' | 'LE' | 'GE' | 'LIKE' | 'ILIKE' | 'NOT_LIKE' | 'NOT_ILIKE';
+export type EqualityOperators = 'EQ' | 'NE';
+export type ComparisonOperators = 'LT' | 'GT' | 'LE' | 'GE' | 'LIKE' | 'ILIKE' | 'NOT_LIKE' | 'NOT_ILIKE';
 export type ArrayOperators = 'IN' | 'NOT_IN';
-export type Operator = SimpleOperators | ArrayOperators;
+export type Operator = ComparisonOperators | ArrayOperators;
 export type SortDirection = 'asc' | 'desc'
 
 // Generic filter object
 export type FilterObject<T> =
-    { [K in SimpleOperators]?: T; } &
+    { [K in EqualityOperators]?: T | null; } &
+    { [K in ComparisonOperators]?: T; } &
     { [K in ArrayOperators]?: T[]; };
 
 // Base filter without the OR part.
@@ -24,9 +26,8 @@ export type ReferencesRootQueryFilter<T> = {
 }
 
 // Takes an model and returns all possible filters.
-// The "Record<string, unknown>" part is required for custom-attributes where it is not possibly to provide type safety.
-export type Filterable<T, R> = R extends undefined ? RootQueryFilter<T> | {OR?: RootQueryFilter<T>[][];} & Record<string, unknown>
-  : RootQueryFilter<T> | ReferencesRootQueryFilter<R> | {OR?: RootQueryFilter<T>[][] | ReferencesRootQueryFilter<R>[][];} & Record<string, unknown>;
+export type Filterable<T, R> = R extends undefined ? RootQueryFilter<T> | {OR?: RootQueryFilter<T>[][];}
+  : RootQueryFilter<T> | ReferencesRootQueryFilter<R> | {OR?: RootQueryFilter<T>[][] | ReferencesRootQueryFilter<R>[][];};
 
 // Only allow sort for non object or array properties. Map to available SortDirection for the remaining props
 export type Sortable<T, R> = R extends undefined ? EntitySortable<T> : EntitySortable<T> | ReferencesSortable<R>;
