@@ -5,10 +5,10 @@ import {generateSdk} from '@generator/library';
 import {logger} from '@logger';
 import {tsImport} from '@ts/modules';
 import {env} from '@utils/env';
+import {cli} from './cli';
 import {writeSourceFile} from '@utils/writeSourceFile';
 import {config} from 'dotenv';
-import {copy, mkdir, readFile, writeFile} from 'fs-extra';
-import {OpenAPIV3} from 'openapi-types';
+import {copy, mkdir, writeFile} from 'fs-extra';
 import path from 'path';
 
 // Load .env variables
@@ -40,12 +40,8 @@ void (async () => {
     const start = process.hrtime.bigint();
     await mkdir(distDocs(), {recursive: true});
     await mkdir(src(), {recursive: true});
+    const doc = await cli();
 
-    // Read openapi file and create model definitions
-    logger.infoLn('Read OpenAPI file...');
-
-    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-    const doc: OpenAPIV3.Document = JSON.parse(await readFile(env('SRC_OPENAPI'), 'utf-8'));
     if (!doc.components?.schemas) {
         return logger.errorLn('components.schemas missing.');
     }
