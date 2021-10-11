@@ -3,8 +3,7 @@
  * See https://stackoverflow.com/questions/45194598/using-process-env-in-typescript
  */
 interface CustomEnv {
-    SRC_OPENAPI: string;
-    SDK_REPOSITORY: string;
+    NODE_ENV: 'production' | 'development';
 }
 
 /**
