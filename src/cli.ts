@@ -15,15 +15,24 @@ interface Args {
 
 export const cli = async (): Promise<OpenAPIV3.Document> => {
     const {argv} = yargs(hideBin(process.argv))
+        .scriptName('sdk-generator')
         .usage('Usage: $0 <source> [flags]')
         .version(version)
         .example('$0 swagger.json', 'Generate the SDK based on the swagger.json file')
-        .example('$0 xxx.weclapp.com --key ABC-DEF', 'Generate the SDK based on the swagger.json file from the given weclapp instance using the API-Key')
+        .example('$0 xxx.weclapp.com --key ...', 'Generate the SDK based on the swagger.json file from the given weclapp instance using the API-Key')
         .help('h')
         .alias('v', 'version')
         .alias('h', 'help')
-        .alias('k', 'key').describe('k', 'API Key in case of an URL source')
-        .alias('x', 'include-hidden').describe('x', 'Include internal endpoints')
+        .option('k', {
+            alias: 'key',
+            describe: 'API Key in case of an URL source',
+            type: 'string'
+        })
+        .option('x', {
+            alias: 'include-hidden',
+            describe: 'Include internal endpoints',
+            type: 'boolean'
+        })
         .demandCommand()
         .epilog('Copyright 2021 weclapp');
 

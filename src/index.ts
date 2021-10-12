@@ -16,7 +16,7 @@ import {resolve, dirname} from 'path';
 config();
 
 // Path resolver
-const TARGET = env('NODE_ENV') === 'development' ? './sdk' : './node_modules';
+const TARGET = env('NODE_ENV') === 'development' ? './sdk' : './';
 const dist = async (...paths: string[]): Promise<string> => {
     const fullPath = resolve(TARGET, ...paths);
     await mkdirp(dirname(fullPath)).catch(() => null);
@@ -43,12 +43,9 @@ void (async () => {
     logger.infoLn('Copy static files...');
     await copy(srcStatic('types'), await dist('src'));
     await copy(srcStatic('code'), await dist('src'));
-    await copy(srcStatic('logo.svg'), await dist('www/logo.svg'));
-    await copy(srcStatic('README.md'), await dist('README.md'));
-    await copy(srcStatic('package.json'), await dist('package.json'));
 
     // Main library and documentation
-    logger.infoLn('Generate main SDK\'s...');
+    logger.infoLn('Generate main SDK...');
     const sdk = generateSdk(doc, Target.BROWSER_PROMISES);
     const modelsImport = tsImport('./types.models', models.stats.exports);
     await writeSourceFile(await dist('src/sdk.ts'), `${modelsImport}\n${sdk.source}`);

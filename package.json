@@ -1,17 +1,21 @@
 {
-    "name": "sdk-generator",
+    "name": "@weclapp/sdk",
     "version": "0.0.0",
     "description": "SDK generator based on a weclapp api swagger file",
-    "main": "./src/index.ts",
+    "main": "./main/index.js",
+    "module": "./main/index.mjs",
+    "types": "./main/index.d.ts",
     "author": "weclapp",
+    "bin": {
+        "sdk-generator": "bin/cli.js"
+    },
     "files": [
         "lib",
         "bin"
     ],
     "scripts": {
-        "sdk:build": "cross-env NODE_ENV=production rollup -c rollup.config.js",
-        "sdk:dev": "cross-env NODE_ENV=development rollup -c rollup.config.js --watch",
-        "start": "npm run gen:start && npm run sdk:build",
+        "cli:build": "cross-env NODE_ENV=production rollup -c rollup.config.js",
+        "cli:watch": "cross-env NODE_ENV=development rollup -c rollup.config.js --watch",
         "lint": "eslint {src,tests}/**/*.ts",
         "lint:fix": "npm run lint -- --fix",
         "test": "jest",
@@ -45,6 +49,7 @@
     },
     "dependencies": {
         "@rollup/plugin-json": "^4.1.0",
+        "rxjs": "^6.6.6",
         "chalk": "^4.1.2",
         "change-case": "^4.1.2",
         "dotenv": "^10.0.0",
