@@ -16,7 +16,6 @@ const resolveImports = (target: Target): string => {
     // Additional types, target-dependent
     if (isNodeTarget(target)) {
         imports.push(tsImport('node-fetch', ['Response'], 'fetch'));
-        imports.push(tsImport('url', ['URLSearchParams']));
     }
 
     if (isRXTarget(target)) {

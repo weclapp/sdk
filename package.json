@@ -27,11 +27,8 @@
         "url": "git@git.internal.weclapp.com:weclapp/weclapp-api/sdk-generator.git"
     },
     "devDependencies": {
-        "@types/fs-extra": "^9.0.13",
         "@types/jest": "^27.0.2",
-        "@types/node": "^16.10.3",
         "@types/node-fetch": "^2.5.12",
-        "@types/yargs": "^17.0.3",
         "@typescript-eslint/eslint-plugin": "^5.0.0",
         "@typescript-eslint/parser": "^5.0.0",
         "cross-env": "^7.0.3",
@@ -39,8 +36,6 @@
         "jest": "^27.2.5",
         "jest-extended": "^1.0.0",
         "joi": "^17.4.2",
-        "openapi-types": "^9.3.0",
-        "rxjs": "^7.4.0",
         "swagger2openapi": "^7.0.8",
         "ts-jest": "^27.0.5",
         "ts-node": "^10.3.0",
@@ -48,11 +43,15 @@
         "tsconfig-paths": "^3.11.0"
     },
     "dependencies": {
+        "@types/fs-extra": "^9.0.13",
+        "@types/yargs": "^17.0.3",
+        "@types/node": "^14.17.21",
         "@rollup/plugin-json": "^4.1.0",
-        "rxjs": "^6.6.6",
+        "openapi-types": "^9.3.0",
         "chalk": "^4.1.2",
         "change-case": "^4.1.2",
         "dotenv": "^10.0.0",
+        "rxjs": "^7.4.0",
         "fs-extra": "^10.0.0",
         "indent-string": "^4.0.0",
         "node-fetch": "^2.6.5",

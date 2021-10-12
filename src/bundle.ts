@@ -1,14 +1,17 @@
+import {env} from '@utils/env';
 import {terser} from 'rollup-plugin-terser';
 import ts from 'rollup-plugin-ts';
 import {rollup, RollupOptions} from 'rollup';
-import * as path from 'path';
+import {resolve} from 'path';
 
-// Short functions to resolve dist / src files
-const dist = (...paths: string[]) => path.resolve(process.cwd(), './sdk', ...paths);
-const src = (...paths: string[]) => path.resolve(dist(), 'src', ...paths);
+// Short functions to resolve dist / raw files
+const TARGET = env('NODE_ENV') === 'development' ? '../sdk' : '../';
+const tsconfig = resolve(__dirname, '../tsconfig.json');
+const dist = (...paths: string[]) => resolve(__dirname, TARGET, ...paths);
+const raw = (...paths: string[]) => dist('raw', ...paths);
 
 // Maps globals to everything
-const globals = (...globals: string[]) => globals.reduce((pv, cv) => ({[cv]: '*', ...pv}), {});
+const globals = (...globals: string[]) => Object.fromEntries(globals.map(v => [v, '*']));
 
 // Builds an output config with given defaults
 const output = (config: Record<string, unknown>) => ({
@@ -17,7 +20,7 @@ const output = (config: Record<string, unknown>) => ({
     ...config
 });
 
-// Generalized output files for noed bundles
+// Generalized output files for node bundles
 const nodeOutput = (dir: string) => [
     output({
         file: dist(dir, 'index.js'),
@@ -35,7 +38,7 @@ const bundles: RollupOptions[] = [
 
     // Browser bundle (promises)
     {
-        input: src('sdk.ts'),
+        input: raw('sdk.ts'),
         output: [
             output({
                 file: dist('main', 'index.js'),
@@ -47,12 +50,12 @@ const bundles: RollupOptions[] = [
                 format: 'es'
             })
         ],
-        plugins: [ts(), terser()]
+        plugins: [ts({tsconfig}), terser()]
     },
 
     // Browser bundle (rxjs)
     {
-        input: src('sdk.rx.ts'),
+        input: raw('sdk.rx.ts'),
         external: ['rxjs'],
         plugins: [ts(), terser()],
         output: [
@@ -72,25 +75,25 @@ const bundles: RollupOptions[] = [
 
     // NodeJS bundle (promises)
     {
-        input: src('sdk.node.ts'),
+        input: raw('sdk.node.ts'),
         output: nodeOutput('node'),
         external: ['node-fetch', 'url'],
-        plugins: [ts()]
+        plugins: [ts({tsconfig})]
     },
 
     // NodeJS bundle (rxjs)
     {
-        input: src('sdk.rx.node.ts'),
+        input: raw('sdk.rx.node.ts'),
         output: nodeOutput('node/rx'),
         external: ['node-fetch', 'url', 'rxjs'],
-        plugins: [ts()]
+        plugins: [ts({tsconfig})]
     },
 
     // Utilities
     {
-        input: src('utils/index.ts'),
+        input: raw('utils/index.ts'),
         output: nodeOutput('utils'),
-        plugins: [ts()]
+        plugins: [ts({tsconfig})]
     }
 ];
 

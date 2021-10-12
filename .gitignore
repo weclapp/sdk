@@ -5,5 +5,8 @@ coverage
 node_modules
 sdk
 lib
-openapi.json
-swagger.json
+raw
+docs
+main
+rx
+node
