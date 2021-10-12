@@ -33,6 +33,10 @@ generate:
     policy: pull-push
     paths:
       - node_modules/
+  artifacts:
+    expire_in: 4 weeks
+    paths:
+      - sdk
   script: |
     export NODE_ENV=development
     npm run cli:build

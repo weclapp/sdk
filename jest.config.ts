@@ -4,7 +4,7 @@ export default {
     testEnvironment: 'node',
     collectCoverageFrom: ['./sdk/node/**/*.js'],
     setupFiles: ['./tests/setup.ts'],
-    setupFilesAfterEnv: ['jest-extended'],
+    setupFilesAfterEnv: ['jest-extended/all'],
     moduleNameMapper: {
         '@sdk/(.*)$': '<rootDir>/sdk/$1',
         '@tests/(.*)$': '<rootDir>/tests/$1',
