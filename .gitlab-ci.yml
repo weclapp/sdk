@@ -33,18 +33,10 @@ generate:
     policy: pull-push
     paths:
       - node_modules/
-  artifacts:
-    expire_in: 4 weeks
-    paths:
-      - sdk
-      - ./openapi.json
-  variables:
-    SRC_OPENAPI: "./openapi.json"
-    SDK_REPOSITORY: "./sdk"
   script: |
-    export SDK_VERSION="0.0.0-$(date +"%+4Y%m%d%H%M")-$CI_COMMIT_SHORT_SHA"
-    npm run import:swagger
-    npm start
+    export NODE_ENV=development
+    npm run cli:build
+    ./bin/cli.js "$TEST_DOMAIN" --key "$TEST_API_KEY" --include-hidden
 
 test:
   extends: .npm:defaults
@@ -57,54 +49,3 @@ lint:
   stage: test
   dependencies: ['generate']
   script: npm run lint
-
-publish:repository:
-  extends: .publish:defaults
-  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-14-alpine-npm7
-  dependencies: ['generate']
-  variables:
-    REPOSITORY_REMOTE: https://$SDK_GIT_USER:$SDK_GIT_PASS@gitlab.internal.weclapp.com/weclapp/frontend/sdk.git
-  script: |
-    git clone "$REPOSITORY_REMOTE" sdk-remote --depth 1
-    cd sdk-remote
-    git rm -r --cached . # Clear cache in case the .gitignore has changed
-    mv .git ../sdk # Move git repo to newly build sdk
-    cd ../sdk
-    git config user.email "noreply@weclapp.com"
-    git config user.name "$SDK_GIT_USER"
-    git add --all . # Add all, remove files which has been removed
-    if [[ ! -z "$(git status --porcelain)" ]]; then
-      echo "Committing and pushing changes."
-      git commit -m "$CI_COMMIT_SHA"
-      git push "$REPOSITORY_REMOTE" master
-    else
-      echo "No changes to push."
-    fi
-
-publish:package:
-  extends: .publish:defaults
-  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-14-alpine-npm7
-  dependencies: ['generate']
-  script: |
-    cd sdk
-    echo "@weclapp:registry=${CI_API_V4_URL}/projects/153/packages/npm/" > ~/.npmrc
-    echo "${CI_API_V4_URL#https?}/projects/153/packages/npm/:_authToken=\${CI_JOB_TOKEN}" >> ~/.npmrc
-    npm publish
-
-publish:image:
-  extends: .publish:defaults
-  image: $CI_REGISTRY/weclapp_ops/base_images/docker:stable
-  tags: ['small']
-  services:
-    - name: $CI_REGISTRY/weclapp_ops/base_images/docker:stable-dind
-      alias: docker
-  variables:
-    DOCKER_HOST: tcp://docker:2376
-    DOCKER_TLS_CERTDIR: "/certs"
-    DOCKER_IMAGE_REF: $CI_REGISTRY_IMAGE:${CI_COMMIT_REF_SLUG}
-  before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  script: |
-    docker pull ${DOCKER_IMAGE_REF} || true
-    docker --config ~/.docker_bi/ build --cache-from ${DOCKER_IMAGE_REF} -t ${DOCKER_IMAGE_REF} .
-    docker push ${DOCKER_IMAGE_REF}
