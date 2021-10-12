@@ -7,8 +7,14 @@ import {hideBin} from 'yargs/helpers';
 import {version} from '../package.json';
 import fetch from 'node-fetch';
 
+interface Args {
+    key?: string;
+    includeHidden?: boolean;
+    _: (string | number)[];
+}
+
 export const cli = async (): Promise<OpenAPIV3.Document> => {
-    const {argv: {_: [src], key, includeHidden}} = yargs(hideBin(process.argv))
+    const {argv} = yargs(hideBin(process.argv))
         .usage('Usage: $0 <source> [flags]')
         .version(version)
         .example('$0 swagger.json', 'Generate the SDK based on the swagger.json file')
@@ -21,6 +27,8 @@ export const cli = async (): Promise<OpenAPIV3.Document> => {
         .demandCommand()
         .epilog('Copyright 2021 weclapp');
 
+    const {_: [src], key, includeHidden} = argv as Args;
+
     if (typeof src === 'number') {
         return Promise.reject('Expected string as command');
     }
@@ -30,8 +38,7 @@ export const cli = async (): Promise<OpenAPIV3.Document> => {
         return convertSwaggerToOpenAPI(JSON.parse(await readFile(src, 'utf-8')));
     }
 
-    logger.infoLn(`Try to interpret source as URL`);
-    const url = new URL(src.replace(/(^https?:\/\/|^)/, 'https:\/\/'));
+    const url = new URL(src.replace(/(^https?:\/\/|^)/, 'https://'));
     url.pathname = '/webapp/api/v1/meta/swagger.json';
 
     if (includeHidden) {
@@ -39,10 +46,11 @@ export const cli = async (): Promise<OpenAPIV3.Document> => {
     }
 
     logger.infoLn(`Source is a URL: ${url.toString()}`);
-    return fetch(url, {
+    return fetch(url.toString(), {
         headers: {
             'Accept': 'application/json',
             'AuthenticationToken': key as string
         }
-    }).then(res => res.json()).then(convertSwaggerToOpenAPI)
+    }).then(res => res.json()).then(convertSwaggerToOpenAPI);
+
 };

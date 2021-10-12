@@ -1,6 +1,6 @@
 import {terser} from 'rollup-plugin-terser';
 import ts from 'rollup-plugin-ts';
-import {OutputOptions, rollup, RollupOptions} from 'rollup';
+import {rollup, RollupOptions} from 'rollup';
 import * as path from 'path';
 
 // Short functions to resolve dist / src files
@@ -11,7 +11,7 @@ const src = (...paths: string[]) => path.resolve(dist(), 'src', ...paths);
 const globals = (...globals: string[]) => globals.reduce((pv, cv) => ({[cv]: '*', ...pv}), {});
 
 // Builds an output config with given defaults
-const output = (config: Record<string, any>) => ({
+const output = (config: Record<string, unknown>) => ({
     sourcemap: true,
     banner: `/*! Weclapp SDK */`,
     ...config
@@ -31,7 +31,7 @@ const nodeOutput = (dir: string) => [
     })
 ];
 
-const configs: RollupOptions[] = [
+const bundles: RollupOptions[] = [
 
     // Browser bundle (promises)
     {
@@ -96,7 +96,7 @@ const configs: RollupOptions[] = [
 
 export const buildSDK = async () => {
     return Promise.all(
-        configs.map(async config => {
+        bundles.map(async config => {
             const bundle = await rollup(config);
 
             if (Array.isArray(config.output)) {

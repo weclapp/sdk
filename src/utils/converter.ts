@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {OpenAPIV3} from 'openapi-types';
 
 // @ts-ignore
