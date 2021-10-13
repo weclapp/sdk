@@ -1,103 +1,96 @@
-import {env} from '@utils/env';
+import {resolve} from 'path';
 import {terser} from 'rollup-plugin-terser';
 import ts from 'rollup-plugin-ts';
 import {rollup, RollupOptions} from 'rollup';
-import {resolve} from 'path';
 
-// Short functions to resolve dist / raw files
-const TARGET = env('NODE_ENV') === 'development' ? '../sdk' : '../';
 const tsconfig = resolve(__dirname, '../tsconfig.lib.json');
-const dist = (...paths: string[]) => resolve(__dirname, TARGET, ...paths);
-const raw = (...paths: string[]) => dist('raw', ...paths);
+const resolveGlobals = (...globals: string[]) => Object.fromEntries(globals.map(v => [v, '*']));
 
-// Maps globals to everything
-const globals = (...globals: string[]) => Object.fromEntries(globals.map(v => [v, '*']));
-
-// Builds an output config with given defaults
-const output = (config: Record<string, unknown>) => ({
+const generateOutput = (config: Record<string, unknown>) => ({
     sourcemap: true,
     banner: `/*! Weclapp SDK */`,
     ...config
 });
 
-// Generalized output files for node bundles
-const nodeOutput = (dir: string) => [
-    output({
-        file: dist(dir, 'index.js'),
-        format: 'cjs',
-        globals: globals('node-fetch', 'url')
-    }),
-    output({
-        file: dist(dir, 'index.mjs'),
-        format: 'es',
-        globals: globals('node-fetch', 'url')
-    })
-];
+export const buildSDK = async (workingDirectory: string) => {
+    const raw = (...paths: string[]) => resolve(workingDirectory, 'raw', ...paths);
 
-const bundles: RollupOptions[] = [
+    const generateNodeOutput = (dir: string) => [
+        generateOutput({
+            file: resolve(workingDirectory, dir, 'index.js'),
+            format: 'cjs',
+            globals: resolveGlobals('node-fetch', 'url')
+        }),
+        generateOutput({
+            file: resolve(workingDirectory, dir, 'index.mjs'),
+            format: 'es',
+            globals: resolveGlobals('node-fetch', 'url')
+        })
+    ];
 
-    // Browser bundle (promises)
-    {
-        input: raw('sdk.ts'),
-        output: [
-            output({
-                file: dist('main', 'index.js'),
-                name: 'Weclapp',
-                format: 'umd'
-            }),
-            output({
-                file: dist('main', 'index.mjs'),
-                format: 'es'
-            })
-        ],
-        plugins: [ts({tsconfig}), terser()]
-    },
+    const bundles: RollupOptions[] = [
 
-    // Browser bundle (rxjs)
-    {
-        input: raw('sdk.rx.ts'),
-        external: ['rxjs'],
-        plugins: [ts({tsconfig}), terser()],
-        output: [
-            output({
-                file: dist('rx', 'index.js'),
-                name: 'Weclapp',
-                format: 'umd',
-                globals: globals('rxjs')
-            }),
-            output({
-                file: dist('rx', 'index.mjs'),
-                format: 'es',
-                globals: globals('rxjs')
-            })
-        ]
-    },
+        // Browser bundle (promises)
+        {
+            input: raw('sdk.ts'),
+            output: [
+                generateOutput({
+                    file: resolve(workingDirectory, 'main', 'index.js'),
+                    name: 'Weclapp',
+                    format: 'umd'
+                }),
+                generateOutput({
+                    file: resolve(workingDirectory, 'main', 'index.mjs'),
+                    format: 'es'
+                })
+            ],
+            plugins: [ts({tsconfig}), terser()]
+        },
 
-    // NodeJS bundle (promises)
-    {
-        input: raw('sdk.node.ts'),
-        output: nodeOutput('node'),
-        external: ['node-fetch', 'url'],
-        plugins: [ts({tsconfig})]
-    },
+        // Browser bundle (rxjs)
+        {
+            input: raw('sdk.rx.ts'),
+            external: ['rxjs'],
+            plugins: [ts({tsconfig}), terser()],
+            output: [
+                generateOutput({
+                    file: resolve(workingDirectory, 'rx', 'index.js'),
+                    name: 'Weclapp',
+                    format: 'umd',
+                    globals: resolveGlobals('rxjs')
+                }),
+                generateOutput({
+                    file: resolve(workingDirectory, 'rx', 'index.mjs'),
+                    format: 'es',
+                    globals: resolveGlobals('rxjs')
+                })
+            ]
+        },
 
-    // NodeJS bundle (rxjs)
-    {
-        input: raw('sdk.rx.node.ts'),
-        output: nodeOutput('node/rx'),
-        external: ['node-fetch', 'url', 'rxjs'],
-        plugins: [ts({tsconfig})]
-    },
+        // NodeJS bundle (promises)
+        {
+            input: raw('sdk.node.ts'),
+            output: generateNodeOutput('node'),
+            external: ['node-fetch', 'url'],
+            plugins: [ts({tsconfig})]
+        },
 
-    // Utilities
-    {
-        input: raw('utils/index.ts'),
-        output: nodeOutput('utils'),
-        plugins: [ts({tsconfig})]
-    }
-];
+        // NodeJS bundle (rxjs)
+        {
+            input: raw('sdk.rx.node.ts'),
+            output: generateNodeOutput('node/rx'),
+            external: ['node-fetch', 'url', 'rxjs'],
+            plugins: [ts({tsconfig})]
+        },
 
-export const buildSDK = async () => {
+        // Utilities
+        {
+            input: raw('utils/index.ts'),
+            output: generateNodeOutput('utils'),
+            plugins: [ts({tsconfig})]
+        }
+    ];
+
     return Promise.all(
         bundles.map(async config => {
             const bundle = await rollup(config);

@@ -37,8 +37,9 @@ generate:
     expire_in: 4 weeks
     paths:
       - sdk
+  variables:
+    NODE_ENV: development
   script: |
-    export NODE_ENV=development
     npm run cli:build
     ./bin/cli.js "$TEST_DOMAIN" --key "$TEST_API_KEY" --include-hidden
 

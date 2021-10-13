@@ -19,7 +19,8 @@ The following README is about the CLI - for the generated SDK please refer to th
 2. Run `npm run sdk:dev`.
 3. Run `./bin/cli.js -h` for usage information.
 
-> During development
+> During development the SDK will be build into the [sdk](./sdk) folder, in production the root folder will be used.
+> For usage information please consult the [manual](MANUAL.md).
 
 ## Project structure
 

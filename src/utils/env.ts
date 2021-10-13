@@ -1,6 +1,6 @@
 import {config} from 'dotenv';
 
-const {parsed = {}} = config();
+config();
 
 /**
  * Module augmentation doesn't seem to work correctly here, hence the custom function.
@@ -15,5 +15,5 @@ interface CustomEnv {
  * @param k
  */
 export function env<K extends keyof CustomEnv>(k: K): CustomEnv[K] {
-    return parsed[k] as CustomEnv[K];
+    return process.env[k] as CustomEnv[K];
 }
