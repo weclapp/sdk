@@ -6,7 +6,7 @@ import {resolve} from 'path';
 
 // Short functions to resolve dist / raw files
 const TARGET = env('NODE_ENV') === 'development' ? '../sdk' : '../';
-const tsconfig = resolve(__dirname, '../tsconfig.json');
+const tsconfig = resolve(__dirname, '../tsconfig.lib.json');
 const dist = (...paths: string[]) => resolve(__dirname, TARGET, ...paths);
 const raw = (...paths: string[]) => dist('raw', ...paths);
 
@@ -57,7 +57,7 @@ const bundles: RollupOptions[] = [
     {
         input: raw('sdk.rx.ts'),
         external: ['rxjs'],
-        plugins: [ts(), terser()],
+        plugins: [ts({tsconfig}), terser()],
         output: [
             output({
                 file: dist('rx', 'index.js'),

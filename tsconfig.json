@@ -5,11 +5,10 @@
         "noImplicitAny": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "experimentalDecorators": true,
         "resolveJsonModule": true,
         "moduleResolution": "node",
         "module": "commonjs",
-        "target": "ESNext",
+        "target": "ES2020",
         "sourceMap": false,
         "allowSyntheticDefaultImports": true,
         "baseUrl": ".",
@@ -26,8 +25,6 @@
     },
     "include": [
         "tests/**/*.ts",
-        "sdk/raw/*.ts",
-        "src/**/*.ts",
-        "raw/**/*.ts"
+        "src/**/*.ts"
     ]
 }

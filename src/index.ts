@@ -68,7 +68,10 @@ void (async () => {
     logger.printSummary();
     logger.infoLn(`SDK generated in ${duration}ms. Bye.`);
 })().catch((error: unknown) => {
-    logger.errorLn(`Fatal error: ${String(error)}`);
+    logger.errorLn(`Fatal error:`);
+
+    /* eslint-disable no-console */
+    console.error(error);
 }).finally(() => {
     logger.errors && process.exit(1);
 });
