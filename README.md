@@ -16,7 +16,7 @@
 The following README is about the CLI - for the generated SDK please refer to the [user manual](MANUAL.md).
 
 1. Copy the [.env.example](.env.example) to [.env](.env) and configure it accordingly. Make sure to set NODE_ENV to `development`.
-2. Run `npm run sdk:dev`.
+2. Run `npm run cli:watch`.
 3. Run `./bin/cli.js -h` for usage information.
 
 > During development the SDK will be build into the [sdk](./sdk) folder, in production the root folder will be used.
@@ -50,7 +50,7 @@ swagger.json to the [OpenAPI v3](https://swagger.io/specification/) format.
 
 There are a few scripts for development:
 
-* `npm run sdk:dev` _- Watches the SDK CLI and rebuilds it on every change._
+* `npm run cli:watch` _- Watches the SDK CLI and rebuilds it on every change._
 * `npm run lint:fix` _- Lints both the generator, and the generated SDK. Fixes errors where possible._
 * `npm run test:coverage` _- Test the SDK and collect code-coverage._
 
@@ -68,7 +68,7 @@ To use your freshly created SDK, you can refer to it locally to test it (replace
 
 ### Production
 
-To generate a production-ready SDK, simply run `npm run build`. This will generate the SDK and bundle it into the [SDK](sdk) folder. The process should finish without
+To generate a production-ready CLI, simply run `npm run cli:build`. This will generate the CLI and bundle it into the [lib](lib) folder. The process should finish without
 errors.
 
 The [Dockerfile](Dockerfile) will install all dependencies for this project. After building it, it can be used to generate the sdk and test it.
