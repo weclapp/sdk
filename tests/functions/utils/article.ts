@@ -11,7 +11,7 @@ export const createArticle = async (additionalProperties?: {procurementLeadDays?
         name: generateRandomName(),
         articleNumber: generateRandomName(),
         articleType: additionalProperties?.articleType,
-        unitId: unit.id,
+        unitId: unit.id as string,
         procurementLeadDays: additionalProperties?.procurementLeadDays
     });
 };
