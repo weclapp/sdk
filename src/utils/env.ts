@@ -1,10 +1,13 @@
+import {config} from 'dotenv';
+
+config();
+
 /**
  * Module augmentation doesn't seem to work correctly here, hence the custom function.
  * See https://stackoverflow.com/questions/45194598/using-process-env-in-typescript
  */
 interface CustomEnv {
-    SRC_OPENAPI: string;
-    SDK_REPOSITORY: string;
+    NODE_ENV: 'production' | 'development';
 }
 
 /**

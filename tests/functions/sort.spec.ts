@@ -11,7 +11,7 @@ describe('sort entities', () => {
         createdArticles.push(await createArticle({procurementLeadDays: 8}));
     });
     afterAll(async () => {
-        await deleteArticles(createdArticles.map(v => v.id) as string[], createdArticles.map(v => v.unitId) as string[]);
+        await deleteArticles(createdArticles.map(v => v.id) as string[], createdArticles.map(v => v.unitId) );
     });
 
     it('Should sort the articles ascending by unitId', async () => {
@@ -25,7 +25,7 @@ describe('sort entities', () => {
                 }
             }
         });
-        expect(articles[0].unitId! <= articles[1].unitId!).toBeTrue();
+        expect(articles[0].unitId <= articles[1].unitId).toBeTrue();
     });
 
     it('Should sort the articles decending by unitId', async () => {
@@ -39,7 +39,7 @@ describe('sort entities', () => {
                 }
             }
         });
-        expect(articles[0].unitId! >= articles[1].unitId!).toBeTrue();
+        expect(articles[0].unitId >= articles[1].unitId).toBeTrue();
     });
 
     it('Should sort the articles ascending by procurementLeadDays', async () => {
@@ -68,7 +68,7 @@ describe('sort entities', () => {
                 }
             }
         });
-        expect(articles[0].procurementLeadDays! <= articles[1].procurementLeadDays! && articles[0].unitId! >= articles[1].unitId!).toBeTrue();
+        expect(articles[0].procurementLeadDays! <= articles[1].procurementLeadDays! && articles[0].unitId >= articles[1].unitId).toBeTrue();
     });
 
     it('Should sort the articles ascending by procurementLeadDays and descending by nested unit.id', async () => {
@@ -83,6 +83,6 @@ describe('sort entities', () => {
                 }
             }
         });
-        expect(articles[0].procurementLeadDays! <= articles[1].procurementLeadDays! && articles[0].unitId! >= articles[1].unitId!).toBeTrue();
+        expect(articles[0].procurementLeadDays! <= articles[1].procurementLeadDays! && articles[0].unitId >= articles[1].unitId).toBeTrue();
     });
 });

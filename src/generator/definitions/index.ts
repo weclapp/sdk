@@ -17,7 +17,7 @@ export const definitions = (doc: OpenAPIV3.Document): Result<DefinitionStats> =>
 
     // Loop through declarations and convert to ts interfaces
     for (const [name, definition] of Object.entries(definitions)) {
-        const models = createModels(name, definition, doc.paths);
+        const models = createModels(name, definition as OpenAPIV3.SchemaObject, doc.paths);
 
         if (models) {
             source += `${models.source}\n\n`;

@@ -1,16 +1,6 @@
-<br/>
-<br/>
-
-<div align="center">
-    <img src="./www/logo.svg" alt="Logo" width="350"/>
-</div>
-
-<br/>
-
 <div align="center">
     <h3>weclapp Developer SDK</h3>
 </div>
-
 
 <p align="center">
     <a href="https://www.npmjs.com/package/@weclapp/sdk"><img
@@ -54,8 +44,8 @@ import {weclapp} from '@weclapp/sdk';
 
 Ready to get started?
 
-* Head to the API [documentation](docs/api.md) for further information.
-* Check out [our utilities](docs/utils.md) for utility functions and helpers.
+* Head to the API [documentation](static/docs/api.md) for further information.
+* Check out [our utilities](static/docs/utils.md) for utility functions and helpers.
 
 ### Packages
 

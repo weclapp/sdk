@@ -1,3 +1,4 @@
+import {buildSDK} from '@/src/bundle';
 import {Target} from '@enums/Target';
 import {definitions} from '@generator/definitions';
 import {generateAPIDocumentation} from '@generator/docs/api';
@@ -5,47 +6,28 @@ import {generateSdk} from '@generator/library';
 import {logger} from '@logger';
 import {tsImport} from '@ts/modules';
 import {env} from '@utils/env';
+import {cli} from './cli';
 import {writeSourceFile} from '@utils/writeSourceFile';
-import {config} from 'dotenv';
-import {copy, mkdir, readFile, writeFile} from 'fs-extra';
-import {OpenAPIV3} from 'openapi-types';
-import path from 'path';
+import {copy, writeFile, mkdirp} from 'fs-extra';
+import {resolve, dirname} from 'path';
 
-// Load .env variables
-config();
-
-// Path resolver
-const dist = (...paths: string[]) => path.resolve(__dirname, '../', env('SDK_REPOSITORY'), ...paths);
-const distDocs = (...paths: string[]) => dist('docs', ...paths);
-const srcStatic = (...paths: string[]) => path.resolve(__dirname, '../static', ...paths);
-const src = (...paths: string[]) => dist('src', ...paths);
-
-const files = {
-    sdks: {
-        promises: {
-            browser: src('sdk.ts'),
-            node: src('sdk.node.ts')
-        },
-        rxjs: {
-            browser: src('sdk.rx.ts'),
-            node: src('sdk.rx.node.ts')
-        }
-    },
-    types: {
-        models: src('types.models.ts')
-    }
+const workingDirectory = resolve(__dirname, env('NODE_ENV') === 'development' ? '../sdk' : '../');
+const dist = async (...paths: string[]): Promise<string> => {
+    const fullPath = resolve(workingDirectory, ...paths);
+    await mkdirp(dirname(fullPath)).catch(() => null);
+    return fullPath;
 };
+
+const resolveDocsDist = async (...paths: string[]) => dist('docs', ...paths);
+const resolveStaticContent = (...paths: string[]) => resolve(__dirname, '../static', ...paths);
+
+logger.infoLn(`Mode: ${env('NODE_ENV') ?? 'production'}`);
+logger.infoLn(`Working directory: ${workingDirectory}`);
 
 void (async () => {
     const start = process.hrtime.bigint();
-    await mkdir(distDocs(), {recursive: true});
-    await mkdir(src(), {recursive: true});
+    const doc = await cli();
 
-    // Read openapi file and create model definitions
-    logger.infoLn('Read OpenAPI file...');
-
-    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-    const doc: OpenAPIV3.Document = JSON.parse(await readFile(env('SRC_OPENAPI'), 'utf-8'));
     if (!doc.components?.schemas) {
         return logger.errorLn('components.schemas missing.');
     }
@@ -53,33 +35,42 @@ void (async () => {
     // Generate import statement for type-declarations
     logger.infoLn('Generate entity models...');
     const models = definitions(doc);
-    await writeSourceFile(files.types.models, models.source);
+    await writeSourceFile(await dist('raw/types.models.ts'), models.source);
 
     // Copy static files
     logger.infoLn('Copy static files...');
-    await copy(srcStatic('types'), src());
-    await copy(srcStatic('code'), src());
+    await copy(resolveStaticContent('types'), await dist('raw'));
+    await copy(resolveStaticContent('code'), await dist('raw'));
 
     // Main library and documentation
-    logger.infoLn('Generate main SDK\'s...');
+    logger.infoLn('Generate main SDK...');
     const sdk = generateSdk(doc, Target.BROWSER_PROMISES);
     const modelsImport = tsImport('./types.models', models.stats.exports);
-    await writeSourceFile(files.sdks.promises.browser, `${modelsImport}\n${sdk.source}`);
+    await writeSourceFile(await dist('raw/sdk.ts'), `${modelsImport}\n${sdk.source}`);
 
     logger.infoLn('Generate API documentation...');
-    await copy(srcStatic('docs', 'utils.md'), distDocs('utils.md'));
-    await writeSourceFile(distDocs('api.md'), await generateAPIDocumentation(sdk.stats, srcStatic('docs', 'api.md')));
+    await copy(resolveStaticContent('docs/utils.md'), await resolveDocsDist('utils.md'));
+    await writeSourceFile(await resolveDocsDist('api.md'), await generateAPIDocumentation(sdk.stats, resolveStaticContent('docs', 'api.md')));
 
     // Additional libraries
     logger.infoLn('Generate additional SDK\'s...');
-    await writeFile(files.sdks.promises.node, `${modelsImport}\n${generateSdk(doc, Target.NODE_PROMISES).source}`);
-    await writeFile(files.sdks.rxjs.browser, `${modelsImport}\n${generateSdk(doc, Target.BROWSER_RX).source}`);
-    await writeFile(files.sdks.rxjs.node, `${modelsImport}\n${generateSdk(doc, Target.NODE_RX).source}`);
+    await writeFile(await dist('raw/sdk.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_PROMISES).source}`);
+    await writeFile(await dist('raw/sdk.rx.ts'), `${modelsImport}\n${generateSdk(doc, Target.BROWSER_RX).source}`);
+    await writeFile(await dist('raw/sdk.rx.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_RX).source}`);
+
+    logger.infoLn('Bundle SDK (this may take some time)...');
+    await buildSDK(workingDirectory);
 
     // Print job summary
     const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
     logger.blankLn();
     logger.printSummary();
     logger.infoLn(`SDK generated in ${duration}ms. Bye.`);
+})().catch((error: unknown) => {
+    logger.errorLn(`Fatal error:`);
+
+    /* eslint-disable no-console */
+    console.error(error);
+}).finally(() => {
     logger.errors && process.exit(1);
-})();
+});
