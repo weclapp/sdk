@@ -14,11 +14,6 @@ describe('special functions', () => {
         await deleteArticle(article.id!, article.unitId);
     });
 
-    it('Should get special function extraInfoForApp for article', async () => {
-        const extraInfoForApp = await sdk.article.extraInfoForAppById(article.id!);
-        expect(extraInfoForApp).toBeObject();
-    });
-
     it('Should use special post function to upload image for article', async () => {
         const articleImage = await sdk.article.uploadArticleImageById(
           article.id!,
