@@ -1,3 +1,4 @@
+import {rm} from 'fs-extra';
 import {resolve} from 'path';
 import {terser} from 'rollup-plugin-terser';
 import ts from 'rollup-plugin-ts';
@@ -15,6 +16,12 @@ const generateOutput = (config: Record<string, unknown>) => ({
 export const buildSDK = async (workingDirectory: string) => {
     const raw = (...paths: string[]) => resolve(workingDirectory, 'raw', ...paths);
 
+    const dirs = {
+        main: resolve(workingDirectory, 'main'),
+        rx: resolve(workingDirectory, 'rx'),
+        node: resolve(workingDirectory, 'node')
+    };
+
     const generateNodeOutput = (dir: string) => [
         generateOutput({
             file: resolve(workingDirectory, dir, 'index.js'),
@@ -28,6 +35,9 @@ export const buildSDK = async (workingDirectory: string) => {
         })
     ];
 
+    // Remove build dirs
+    await Promise.all(Object.values(dirs).map(v => rm(v, {recursive: true, force: true})));
+
     const bundles: RollupOptions[] = [
 
         // Browser bundle (promises)
@@ -35,12 +45,12 @@ export const buildSDK = async (workingDirectory: string) => {
             input: raw('sdk.ts'),
             output: [
                 generateOutput({
-                    file: resolve(workingDirectory, 'main', 'index.js'),
+                    file: resolve(dirs.main, 'index.js'),
                     name: 'Weclapp',
                     format: 'umd'
                 }),
                 generateOutput({
-                    file: resolve(workingDirectory, 'main', 'index.mjs'),
+                    file: resolve(dirs.main, 'index.mjs'),
                     format: 'es'
                 })
             ],
@@ -54,13 +64,13 @@ export const buildSDK = async (workingDirectory: string) => {
             plugins: [ts({tsconfig}), terser()],
             output: [
                 generateOutput({
-                    file: resolve(workingDirectory, 'rx', 'index.js'),
+                    file: resolve(dirs.rx, 'index.js'),
                     name: 'Weclapp',
                     format: 'umd',
                     globals: resolveGlobals('rxjs')
                 }),
                 generateOutput({
-                    file: resolve(workingDirectory, 'rx', 'index.mjs'),
+                    file: resolve(dirs.rx, 'index.mjs'),
                     format: 'es',
                     globals: resolveGlobals('rxjs')
                 })
@@ -70,7 +80,7 @@ export const buildSDK = async (workingDirectory: string) => {
         // NodeJS bundle (promises)
         {
             input: raw('sdk.node.ts'),
-            output: generateNodeOutput('node'),
+            output: generateNodeOutput(dirs.node),
             external: ['node-fetch', 'url'],
             plugins: [ts({tsconfig})]
         },
@@ -78,7 +88,7 @@ export const buildSDK = async (workingDirectory: string) => {
         // NodeJS bundle (rxjs)
         {
             input: raw('sdk.rx.node.ts'),
-            output: generateNodeOutput('node/rx'),
+            output: generateNodeOutput(resolve(dirs.node, 'rx')),
             external: ['node-fetch', 'url', 'rxjs'],
             plugins: [ts({tsconfig})]
         },
