@@ -1,5 +1,6 @@
 import {logger} from '@logger';
 import {convertSwaggerToOpenAPI} from '@utils/converter';
+import {config} from 'dotenv';
 import {readFile, stat} from 'fs-extra';
 import {OpenAPIV3} from 'openapi-types';
 import yargs from 'yargs';
@@ -10,6 +11,7 @@ import fetch from 'node-fetch';
 interface Args {
     key?: string;
     includeHidden?: boolean;
+    fromEnv?: boolean;
     _: (string | number)[];
 }
 
@@ -33,10 +35,23 @@ export const cli = async (): Promise<OpenAPIV3.Document> => {
             describe: 'Include internal endpoints',
             type: 'boolean'
         })
-        .demandCommand()
-        .epilog('Copyright 2021 weclapp');
+        .option('e', {
+            alias: 'from-env',
+            describe: 'Use env variables WECLAPP_BACKEND_URL and WECLAPP_API_KEY as credentials',
+            type: 'boolean'
+        })
+        .epilog('Copyright 2021 weclapp') as {argv: Args};
 
-    const {_: [src], key, includeHidden} = argv as Args;
+    if (argv.fromEnv) {
+        config();
+    }
+
+    const {WECLAPP_API_KEY, WECLAPP_BACKEND_URL} = process.env;
+    const {
+        includeHidden,
+        key = WECLAPP_API_KEY as string,
+        _: [src = WECLAPP_BACKEND_URL as string]
+    } = argv;
 
     if (typeof src === 'number') {
         return Promise.reject('Expected string as command');
@@ -47,7 +62,7 @@ export const cli = async (): Promise<OpenAPIV3.Document> => {
         return convertSwaggerToOpenAPI(JSON.parse(await readFile(src, 'utf-8')));
     }
 
-    const url = new URL(src.replace(/(^https?:\/\/|^)/, 'https://'));
+    const url = new URL(src.startsWith('http') ? src : `https://${src}`);
     url.pathname = '/webapp/api/v1/meta/swagger.json';
 
     if (includeHidden) {
@@ -58,7 +73,7 @@ export const cli = async (): Promise<OpenAPIV3.Document> => {
     return fetch(url.toString(), {
         headers: {
             'Accept': 'application/json',
-            'AuthenticationToken': key as string
+            'AuthenticationToken': key
         }
     }).then(res => res.json()).then(convertSwaggerToOpenAPI);
 
