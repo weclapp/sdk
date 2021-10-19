@@ -8,7 +8,7 @@ export default [
         external: [
             'dotenv', 'fs-extra', 'change-case',
             'indent-string', 'chalk', 'fs',
-            'path', 'glob', 'os',
+            'path', 'glob', 'os', 'crypto',
             'child_process', 'util', 'yargs',
             'node-fetch', 'swagger2openapi', 'yargs/helpers',
             'rollup-plugin-ts', 'rollup-plugin-terser', 'rollup'

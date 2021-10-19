@@ -6,19 +6,15 @@ import {generateSdk} from '@generator/library';
 import {logger} from '@logger';
 import {tsImport} from '@ts/modules';
 import {env} from '@utils/env';
+import {hash} from '@utils/hash';
+import {tmpdir} from 'os';
 import {cli} from './cli';
 import {writeSourceFile} from '@utils/writeSourceFile';
-import {copy, writeFile, mkdirp} from 'fs-extra';
+import {copy, writeFile, mkdirp, stat, rm} from 'fs-extra';
 import {resolve, dirname} from 'path';
+import pkg from '../package.json';
 
 const workingDirectory = resolve(__dirname, env('NODE_ENV') === 'development' ? '../sdk' : '../');
-const dist = async (...paths: string[]): Promise<string> => {
-    const fullPath = resolve(workingDirectory, ...paths);
-    await mkdirp(dirname(fullPath)).catch(() => null);
-    return fullPath;
-};
-
-const resolveDocsDist = async (...paths: string[]) => dist('docs', ...paths);
 const resolveStaticContent = (...paths: string[]) => resolve(__dirname, '../static', ...paths);
 
 logger.infoLn(`Mode: ${env('NODE_ENV') ?? 'production'}`);
@@ -30,6 +26,26 @@ void (async () => {
 
     if (!doc.components?.schemas) {
         return logger.errorLn('components.schemas missing.');
+    }
+
+    // Resolve cache dir and key
+    const cacheKey = hash([pkg.version, JSON.stringify(doc)]).slice(-8);
+    const cacheDir = resolve(tmpdir(), 'weclapp-sdk-cache', cacheKey);
+    const tmpDir = resolve(__dirname, '../', '.sdk');
+
+    const dist = async (...paths: string[]): Promise<string> => {
+        const fullPath = resolve(tmpDir, ...paths);
+        await mkdirp(dirname(fullPath)).catch(() => null);
+        return fullPath;
+    };
+
+    const resolveDocsDist = async (...paths: string[]) => dist('docs', ...paths);
+
+    if (await stat(cacheDir).catch(() => false)) {
+        logger.successLn(`Cache match! (${cacheKey} / ${cacheDir})`);
+        await copy(cacheDir, workingDirectory);
+        logger.infoLn(`SDK copied from cache. Bye.`);
+        return;
     }
 
     // Generate import statement for type-declarations
@@ -59,18 +75,23 @@ void (async () => {
     await writeFile(await dist('raw/sdk.rx.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_RX).source}`);
 
     logger.infoLn('Bundle SDK (this may take some time)...');
-    await buildSDK(workingDirectory);
+    await buildSDK(tmpDir);
 
     // Print job summary
     const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
     logger.blankLn();
     logger.printSummary();
     logger.infoLn(`SDK generated in ${duration}ms. Bye.`);
+
+    // Cache and remove tmp dir
+    await copy(tmpDir, cacheDir);
+    await copy(tmpDir, workingDirectory);
+    await rm(tmpDir, {recursive: true, force: true});
 })().catch((error: unknown) => {
     logger.errorLn(`Fatal error:`);
 
     /* eslint-disable no-console */
     console.error(error);
-}).finally(() => {
+}).finally( () => {
     logger.errors && process.exit(1);
 });
