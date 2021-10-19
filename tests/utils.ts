@@ -3,8 +3,8 @@ import {weclapp as weclappRx} from '@sdk/node/rx';
 import {AnySchema} from 'joi';
 
 const options = {
-    apiKey: process.env.TEST_API_KEY as string,
-    domain: process.env.TEST_DOMAIN as string
+    apiKey: process.env.WECLAPP_API_KEY as string,
+    domain: process.env.WECLAPP_BACKEND_URL as string
 };
 
 // Create weclapp instances of both libraries

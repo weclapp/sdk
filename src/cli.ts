@@ -62,7 +62,7 @@ export const cli = async (): Promise<OpenAPIV3.Document> => {
         return convertSwaggerToOpenAPI(JSON.parse(await readFile(src, 'utf-8')));
     }
 
-    const url = new URL(src);
+    const url = new URL(src.startsWith('http') ? src : `https://${src}`);
     url.pathname = '/webapp/api/v1/meta/swagger.json';
 
     if (includeHidden) {

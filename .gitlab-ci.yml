@@ -39,8 +39,6 @@ generate:
       - sdk
   variables:
     NODE_ENV: development
-    WECLAPP_API_KEY: $TEST_API_KEY
-    WECLAPP_BACKEND_URL: $TEST_DOMAIN
   script: |
     npm run cli:build
     ./bin/cli.js --from-env
