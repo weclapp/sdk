@@ -42,56 +42,54 @@ void (async () => {
     const resolveDocsDist = async (...paths: string[]) => dist('docs', ...paths);
 
     if (await stat(cacheDir).catch(() => false)) {
-        logger.successLn(`Cache match! (${cacheKey} / ${cacheDir})`);
+        logger.successLn(`Cache match! (${cacheDir})`);
         await copy(cacheDir, workingDirectory);
-        logger.infoLn(`SDK copied from cache. Bye.`);
-        return;
+    } else {
+
+        // Generate import statement for type-declarations
+        logger.infoLn('Generate entity models...');
+        const models = definitions(doc);
+        await writeSourceFile(await dist('raw/types.models.ts'), models.source);
+
+        // Copy static files
+        logger.infoLn('Copy static files...');
+        await copy(resolveStaticContent('types'), await dist('raw'));
+        await copy(resolveStaticContent('code'), await dist('raw'));
+
+        // Main library and documentation
+        logger.infoLn('Generate main SDK...');
+        const sdk = generateSdk(doc, Target.BROWSER_PROMISES);
+        const modelsImport = tsImport('./types.models', models.stats.exports);
+        await writeSourceFile(await dist('raw/sdk.ts'), `${modelsImport}\n${sdk.source}`);
+
+        logger.infoLn('Generate API documentation...');
+        await copy(resolveStaticContent('docs/utils.md'), await resolveDocsDist('utils.md'));
+        await writeSourceFile(await resolveDocsDist('api.md'), await generateAPIDocumentation(sdk.stats, resolveStaticContent('docs', 'api.md')));
+
+        // Additional libraries
+        logger.infoLn('Generate additional SDK\'s...');
+        await writeFile(await dist('raw/sdk.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_PROMISES).source}`);
+        await writeFile(await dist('raw/sdk.rx.ts'), `${modelsImport}\n${generateSdk(doc, Target.BROWSER_RX).source}`);
+        await writeFile(await dist('raw/sdk.rx.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_RX).source}`);
+
+        logger.infoLn('Bundle SDK (this may take some time)...');
+        await buildSDK(tmpDir);
+        await copy(tmpDir, cacheDir);
+
+        // Print job summary
+        const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
+        logger.blankLn();
+        logger.printSummary();
+        logger.infoLn(`SDK generated in ${duration}ms.`);
     }
 
-    // Generate import statement for type-declarations
-    logger.infoLn('Generate entity models...');
-    const models = definitions(doc);
-    await writeSourceFile(await dist('raw/types.models.ts'), models.source);
-
-    // Copy static files
-    logger.infoLn('Copy static files...');
-    await copy(resolveStaticContent('types'), await dist('raw'));
-    await copy(resolveStaticContent('code'), await dist('raw'));
-
-    // Main library and documentation
-    logger.infoLn('Generate main SDK...');
-    const sdk = generateSdk(doc, Target.BROWSER_PROMISES);
-    const modelsImport = tsImport('./types.models', models.stats.exports);
-    await writeSourceFile(await dist('raw/sdk.ts'), `${modelsImport}\n${sdk.source}`);
-
-    logger.infoLn('Generate API documentation...');
-    await copy(resolveStaticContent('docs/utils.md'), await resolveDocsDist('utils.md'));
-    await writeSourceFile(await resolveDocsDist('api.md'), await generateAPIDocumentation(sdk.stats, resolveStaticContent('docs', 'api.md')));
-
-    // Additional libraries
-    logger.infoLn('Generate additional SDK\'s...');
-    await writeFile(await dist('raw/sdk.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_PROMISES).source}`);
-    await writeFile(await dist('raw/sdk.rx.ts'), `${modelsImport}\n${generateSdk(doc, Target.BROWSER_RX).source}`);
-    await writeFile(await dist('raw/sdk.rx.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_RX).source}`);
-
-    logger.infoLn('Bundle SDK (this may take some time)...');
-    await buildSDK(tmpDir);
-
-    // Print job summary
-    const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
-    logger.blankLn();
-    logger.printSummary();
-    logger.infoLn(`SDK generated in ${duration}ms. Bye.`);
-
-    // Cache and remove tmp dir
-    await copy(tmpDir, cacheDir);
-    await copy(tmpDir, workingDirectory);
     await rm(tmpDir, {recursive: true, force: true});
+    logger.successLn(`Cleanup done, Bye.`);
 })().catch((error: unknown) => {
     logger.errorLn(`Fatal error:`);
 
     /* eslint-disable no-console */
     console.error(error);
-}).finally( () => {
+}).finally(() => {
     logger.errors && process.exit(1);
 });

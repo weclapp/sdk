@@ -22,6 +22,9 @@ The following README is about the CLI - for the generated SDK please refer to th
 > During development the SDK will be build into the [sdk](./sdk) folder, in production the root folder will be used.
 > For usage information please consult the [manual](MANUAL.md).
 
+> The SDK is first generated into ./.sdk and then cached and moved to the corresponding target directory.
+> The package version and content of the swagger.json is used as cache key.
+
 ## Project structure
 
 Most of them are auto-generated.
