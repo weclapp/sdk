@@ -12,6 +12,6 @@
         "baseUrl": "."
     },
     "include": [
-        ".sdk/**/*.ts"
+        ".tmp/**/*.ts"
     ]
 }

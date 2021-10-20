@@ -10,12 +10,18 @@ import fetch from 'node-fetch';
 
 interface Args {
     key?: string;
+    cache?: boolean;
     includeHidden?: boolean;
     fromEnv?: boolean;
     _: (string | number)[];
 }
 
-export const cli = async (): Promise<OpenAPIV3.Document> => {
+interface CLIResult {
+    cache: boolean;
+    content: OpenAPIV3.Document
+}
+
+export const cli = async (): Promise<CLIResult> => {
     const {argv} = yargs(hideBin(process.argv))
         .scriptName('sdk-generator')
         .usage('Usage: $0 <source> [flags]')
@@ -29,6 +35,10 @@ export const cli = async (): Promise<OpenAPIV3.Document> => {
             alias: 'key',
             describe: 'API Key in case of an URL source',
             type: 'string'
+        }).option('c', {
+            alias: 'cache',
+            describe: 'If the generated SDK should cached',
+            type: 'boolean'
         })
         .option('x', {
             alias: 'include-hidden',
@@ -48,7 +58,7 @@ export const cli = async (): Promise<OpenAPIV3.Document> => {
 
     const {WECLAPP_API_KEY, WECLAPP_BACKEND_URL} = process.env;
     const {
-        includeHidden,
+        includeHidden, cache = false,
         key = WECLAPP_API_KEY as string,
         _: [src = WECLAPP_BACKEND_URL as string]
     } = argv;
@@ -59,7 +69,10 @@ export const cli = async (): Promise<OpenAPIV3.Document> => {
 
     if (await stat(src).catch(() => false)) {
         logger.infoLn(`Source is a file`);
-        return convertSwaggerToOpenAPI(JSON.parse(await readFile(src, 'utf-8')));
+        return {
+            cache,
+            content: await convertSwaggerToOpenAPI(JSON.parse(await readFile(src, 'utf-8')))
+        };
     }
 
     const url = new URL(src.startsWith('http') ? src : `https://${src}`);
@@ -70,11 +83,14 @@ export const cli = async (): Promise<OpenAPIV3.Document> => {
     }
 
     logger.infoLn(`Source is a URL: ${url.toString()}`);
-    return fetch(url.toString(), {
-        headers: {
-            'Accept': 'application/json',
-            'AuthenticationToken': key
-        }
-    }).then(res => res.json()).then(convertSwaggerToOpenAPI);
+    return {
+        cache,
+        content: await fetch(url.toString(), {
+            headers: {
+                'Accept': 'application/json',
+                'AuthenticationToken': key
+            }
+        }).then(res => res.json()).then(convertSwaggerToOpenAPI)
+    };
 
 };

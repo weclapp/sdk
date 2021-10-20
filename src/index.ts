@@ -7,7 +7,6 @@ import {logger} from '@logger';
 import {tsImport} from '@ts/modules';
 import {env} from '@utils/env';
 import {hash} from '@utils/hash';
-import {tmpdir} from 'os';
 import {cli} from './cli';
 import {writeSourceFile} from '@utils/writeSourceFile';
 import {copy, writeFile, mkdirp, stat, rm} from 'fs-extra';
@@ -22,7 +21,7 @@ logger.infoLn(`Working directory: ${workingDirectory}`);
 
 void (async () => {
     const start = process.hrtime.bigint();
-    const doc = await cli();
+    const {content: doc, cache: useCache} = await cli();
 
     if (!doc.components?.schemas) {
         return logger.errorLn('components.schemas missing.');
@@ -30,20 +29,18 @@ void (async () => {
 
     // Resolve cache dir and key
     const cacheKey = hash([pkg.version, JSON.stringify(doc)]).slice(-8);
-    const cacheDir = resolve(tmpdir(), 'weclapp-sdk-cache', cacheKey);
-    const tmpDir = resolve(__dirname, '../', '.sdk');
+    const cacheDir = resolve(__dirname, '../', '.tmp', cacheKey);
 
     const dist = async (...paths: string[]): Promise<string> => {
-        const fullPath = resolve(tmpDir, ...paths);
+        const fullPath = resolve(cacheDir, ...paths);
         await mkdirp(dirname(fullPath)).catch(() => null);
         return fullPath;
     };
 
     const resolveDocsDist = async (...paths: string[]) => dist('docs', ...paths);
 
-    if (await stat(cacheDir).catch(() => false)) {
+    if (useCache && await stat(cacheDir).catch(() => false)) {
         logger.successLn(`Cache match! (${cacheDir})`);
-        await copy(cacheDir, workingDirectory);
     } else {
 
         // Generate import statement for type-declarations
@@ -73,8 +70,7 @@ void (async () => {
         await writeFile(await dist('raw/sdk.rx.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_RX).source}`);
 
         logger.infoLn('Bundle SDK (this may take some time)...');
-        await buildSDK(tmpDir);
-        await copy(tmpDir, cacheDir);
+        await buildSDK(cacheDir);
 
         // Print job summary
         const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
@@ -83,7 +79,12 @@ void (async () => {
         logger.infoLn(`SDK generated in ${duration}ms.`);
     }
 
-    await rm(tmpDir, {recursive: true, force: true});
+    await copy(cacheDir, workingDirectory);
+
+    if (!useCache) {
+        await rm(cacheDir, {recursive: true, force: true});
+    }
+
     logger.successLn(`Cleanup done, Bye.`);
 })().catch((error: unknown) => {
     logger.errorLn(`Fatal error:`);

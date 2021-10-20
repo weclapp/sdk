@@ -1,6 +1,7 @@
 /.idea
 /.env
 /.test
+/.tmp
 /coverage
 /node_modules
 /sdk
