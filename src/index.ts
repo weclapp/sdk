@@ -6,19 +6,14 @@ import {generateSdk} from '@generator/library';
 import {logger} from '@logger';
 import {tsImport} from '@ts/modules';
 import {env} from '@utils/env';
+import {hash} from '@utils/hash';
 import {cli} from './cli';
 import {writeSourceFile} from '@utils/writeSourceFile';
-import {copy, writeFile, mkdirp} from 'fs-extra';
+import {copy, writeFile, mkdirp, stat, rm} from 'fs-extra';
 import {resolve, dirname} from 'path';
+import pkg from '../package.json';
 
 const workingDirectory = resolve(__dirname, env('NODE_ENV') === 'development' ? '../sdk' : '../');
-const dist = async (...paths: string[]): Promise<string> => {
-    const fullPath = resolve(workingDirectory, ...paths);
-    await mkdirp(dirname(fullPath)).catch(() => null);
-    return fullPath;
-};
-
-const resolveDocsDist = async (...paths: string[]) => dist('docs', ...paths);
 const resolveStaticContent = (...paths: string[]) => resolve(__dirname, '../static', ...paths);
 
 logger.infoLn(`Mode: ${env('NODE_ENV') ?? 'production'}`);
@@ -26,46 +21,71 @@ logger.infoLn(`Working directory: ${workingDirectory}`);
 
 void (async () => {
     const start = process.hrtime.bigint();
-    const doc = await cli();
+    const {content: doc, cache: useCache} = await cli();
 
     if (!doc.components?.schemas) {
         return logger.errorLn('components.schemas missing.');
     }
 
-    // Generate import statement for type-declarations
-    logger.infoLn('Generate entity models...');
-    const models = definitions(doc);
-    await writeSourceFile(await dist('raw/types.models.ts'), models.source);
+    // Resolve cache dir and key
+    const cacheKey = hash([pkg.version, JSON.stringify(doc)]).slice(-8);
+    const cacheDir = resolve(__dirname, '../', '.tmp', cacheKey);
 
-    // Copy static files
-    logger.infoLn('Copy static files...');
-    await copy(resolveStaticContent('types'), await dist('raw'));
-    await copy(resolveStaticContent('code'), await dist('raw'));
+    const dist = async (...paths: string[]): Promise<string> => {
+        const fullPath = resolve(cacheDir, ...paths);
+        await mkdirp(dirname(fullPath)).catch(() => null);
+        return fullPath;
+    };
 
-    // Main library and documentation
-    logger.infoLn('Generate main SDK...');
-    const sdk = generateSdk(doc, Target.BROWSER_PROMISES);
-    const modelsImport = tsImport('./types.models', models.stats.exports);
-    await writeSourceFile(await dist('raw/sdk.ts'), `${modelsImport}\n${sdk.source}`);
+    const resolveDocsDist = async (...paths: string[]) => dist('docs', ...paths);
 
-    logger.infoLn('Generate API documentation...');
-    await copy(resolveStaticContent('docs/utils.md'), await resolveDocsDist('utils.md'));
-    await writeSourceFile(await resolveDocsDist('api.md'), await generateAPIDocumentation(sdk.stats, resolveStaticContent('docs', 'api.md')));
+    if (useCache && await stat(cacheDir).catch(() => false)) {
+        logger.successLn(`Cache match! (${cacheDir})`);
+    } else {
 
-    // Additional libraries
-    logger.infoLn('Generate additional SDK\'s...');
-    await writeFile(await dist('raw/sdk.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_PROMISES).source}`);
-    await writeFile(await dist('raw/sdk.rx.ts'), `${modelsImport}\n${generateSdk(doc, Target.BROWSER_RX).source}`);
-    await writeFile(await dist('raw/sdk.rx.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_RX).source}`);
+        // Generate import statement for type-declarations
+        logger.infoLn('Generate entity models...');
+        const models = definitions(doc);
+        await writeSourceFile(await dist('raw/types.models.ts'), models.source);
 
-    logger.infoLn('Bundle SDK (this may take some time)...');
-    await buildSDK(workingDirectory);
+        // Copy static files
+        logger.infoLn('Copy static files...');
+        await copy(resolveStaticContent('types'), await dist('raw'));
+        await copy(resolveStaticContent('code'), await dist('raw'));
 
-    // Print job summary
-    const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
-    logger.blankLn();
-    logger.printSummary();
-    logger.infoLn(`SDK generated in ${duration}ms. Bye.`);
+        // Main library and documentation
+        logger.infoLn('Generate main SDK...');
+        const sdk = generateSdk(doc, Target.BROWSER_PROMISES);
+        const modelsImport = tsImport('./types.models', models.stats.exports);
+        await writeSourceFile(await dist('raw/sdk.ts'), `${modelsImport}\n${sdk.source}`);
+
+        logger.infoLn('Generate API documentation...');
+        await copy(resolveStaticContent('docs/utils.md'), await resolveDocsDist('utils.md'));
+        await writeSourceFile(await resolveDocsDist('api.md'), await generateAPIDocumentation(sdk.stats, resolveStaticContent('docs', 'api.md')));
+
+        // Additional libraries
+        logger.infoLn('Generate additional SDK\'s...');
+        await writeFile(await dist('raw/sdk.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_PROMISES).source}`);
+        await writeFile(await dist('raw/sdk.rx.ts'), `${modelsImport}\n${generateSdk(doc, Target.BROWSER_RX).source}`);
+        await writeFile(await dist('raw/sdk.rx.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_RX).source}`);
+
+        logger.infoLn('Bundle SDK (this may take some time)...');
+        await buildSDK(cacheDir);
+
+        // Print job summary
+        const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
+        logger.blankLn();
+        logger.printSummary();
+        logger.infoLn(`SDK generated in ${duration}ms.`);
+    }
+
+    await copy(cacheDir, workingDirectory);
+
+    if (!useCache) {
+        await rm(cacheDir, {recursive: true, force: true});
+    }
+
+    logger.successLn(`Cleanup done, Bye.`);
 })().catch((error: unknown) => {
     logger.errorLn(`Fatal error:`);
 

@@ -12,8 +12,6 @@
         "baseUrl": "."
     },
     "include": [
-        "utils/**/*.ts",
-        "sdk/raw/*.ts",
-        "raw/**/*.ts"
+        ".tmp/**/*.ts"
     ]
 }
