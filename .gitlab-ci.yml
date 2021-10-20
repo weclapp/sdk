@@ -41,7 +41,7 @@ generate:
     NODE_ENV: development
   script: |
     npm run cli:build
-    ./bin/cli.js --from-env
+    ./bin/cli.js --from-env --include-hidden
 
 test:
   extends: .npm:defaults
