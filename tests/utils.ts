@@ -1,5 +1,5 @@
-import {weclapp} from '@sdk/node';
-import {weclapp as weclappRx} from '@sdk/node/rx';
+import {weclapp} from '@sdk/raw/sdk';
+import {weclapp as weclappRx} from '@sdk/raw/sdk.rx';
 import {AnySchema} from 'joi';
 
 const options = {
