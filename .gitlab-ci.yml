@@ -1,10 +1,11 @@
 stages:
   - generate
-  - test
+  - lint
   - publish
 
 .npm:defaults:
-  tags: ['small']
+  tags:
+    - small
   image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-14-alpine-npm7
   cache:
     key: node_modules_cache
@@ -14,16 +15,6 @@ stages:
   before_script:
     - npm install --unsafe-perm --prefer-offline --no-audit
     - npm prune
-
-.publish:defaults:
-  tags: ['tiny']
-  stage: publish
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: on_success
-    - when: never
 
 generate:
   extends: .npm:defaults
@@ -43,14 +34,24 @@ generate:
     npm run cli:build
     ./bin/cli.js --from-env --include-hidden
 
-test:
-  extends: .npm:defaults
-  stage: test
-  dependencies: ['generate']
-  script: npm test
-
 lint:
   extends: .npm:defaults
-  stage: test
-  dependencies: ['generate']
+  stage: lint
+  dependencies:
+    - generate
   script: npm run lint
+
+publish:
+  tags:
+    - tiny
+  stage: publish
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-14-alpine-npm7
+  rules:
+    # Only allow publishing if tag matches semantic versioning (v1.0.0)
+    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+[.][0-9]+[.][0-9]+$/'
+    - when: never
+  dependencies:
+    - generate
+  variables:
+    GITLAB_AUTH_TOKEN: $CI_JOB_TOKEN
+  script: npm publish

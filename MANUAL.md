@@ -60,7 +60,6 @@ The weclapp SDK comes with several packages / folders.
 | `@weclapp/sdk/node` | NodeJS version, requires [node-fetch](https://www.npmjs.com/package/node-fetch). | In NodeJS. |
 | `@weclapp/sdk/node/rx` | NodeJS version with [RxJS](https://rxjs.dev/). | In NodeJS in combination with [RxJS](https://rxjs.dev/). |
 
-
 ### FAQ
 
 #### Types seem to be incompatible despite their name?
@@ -81,10 +80,23 @@ const customer: Customer = await sdk.customer.first();
 ```
 
 Solution:
+
 ```ts
 import weclapp, {Customer} from '@weclapp/sdk/node';
+
 const sdk = weclapp({...});
 
 // Note that we're now using the same Customer as returned!
 const customer: Customer = await sdk.customer.first();
 ```
+
+## Publishing
+
+Publishing is restricted to project maintainers. To publish sdk-generator to our package registry we need to do the
+following steps:
+
+1. Switch to master branch
+2. `npm version major|minor|patch|x.x.x`
+3. Push to master (don't forget to push tag as well)
+
+Gitlab CI pipeline will automatically publish package to registry with new version number.
