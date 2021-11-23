@@ -1,4 +1,5 @@
 stages:
+  - build
   - generate
   - lint
   - publish
@@ -12,27 +13,30 @@ stages:
     policy: pull
     paths:
       - node_modules/
-  before_script:
+
+build:
+  extends: .npm:defaults
+  stage: build
+  artifacts:
+    expire_in: 4 weeks
+    paths:
+      - lib
+  script:
     - npm install --unsafe-perm --prefer-offline --no-audit
     - npm prune
 
 generate:
   extends: .npm:defaults
   stage: generate
-  cache:
-    key: node_modules_cache
-    policy: pull-push
-    paths:
-      - node_modules/
+  dependencies:
+    - build
   artifacts:
     expire_in: 4 weeks
     paths:
       - sdk
   variables:
     NODE_ENV: development
-  script: |
-    npm run cli:build
-    ./bin/cli.js --from-env --include-hidden
+  script: ./bin/cli.js --from-env --include-hidden
 
 lint:
   extends: .npm:defaults
@@ -51,7 +55,7 @@ publish:
     - if: '$CI_COMMIT_TAG =~ /^v[0-9]+[.][0-9]+[.][0-9]+$/'
     - when: never
   dependencies:
-    - generate
+    - build
   variables:
     GITLAB_AUTH_TOKEN: $CI_JOB_TOKEN
   script: npm publish
