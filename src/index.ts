@@ -43,6 +43,9 @@ void (async () => {
         logger.successLn(`Cache match! (${cacheDir})`);
     } else {
 
+        // Store swagger.json file
+        await writeFile(await dist('openapi.json'), JSON.stringify(doc, null, 2));
+
         // Generate import statement for type-declarations
         logger.infoLn('Generate entity models...');
         const models = definitions(doc);

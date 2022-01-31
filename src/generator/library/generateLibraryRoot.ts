@@ -50,11 +50,6 @@ import {Options, Method, RawRequest, WeclappResponse} from './types.api';
 export * from './types.models';
 export * from './types.api';
 
-// TODO: Remove after swagger.json is fixed
-type Body2 = any;
-type Body3 = any;
-type Body4 = any;
-
 // Current version.
 export const version = '${pkg.version}';
 
