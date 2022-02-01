@@ -58,8 +58,8 @@ type ReferencesSortable<T> = {
 // Maps all property types from an object to boolean (or the sub-object)
 export type Selectable<T> = {
     [P in keyof T]?:
-        T[P] extends Array<infer U> | undefined ? (Selectable<U> | boolean) :
-            T[P] extends object | undefined ? (Selectable<T[P]> | boolean) : boolean;
+        T[P] extends Array<infer U> ? (Selectable<U> | boolean) :
+            T[P] extends Record<any, any> ? (Selectable<T[P]> | boolean) : boolean;
 }
 
 // Extracts properties based on the select query
@@ -72,10 +72,10 @@ export type Select<T, Q extends Selectable<T>> = {
     Q[P] extends true ? T[P] :
 
     // Array
-    T[P] extends Array<infer U> ? Select<U, Q[P]>[] :
+    T[P] extends Array<infer U> ? Select<U, Q[P] & Selectable<any>>[] :
 
     // Object
-    T[P] extends object ? Select<T[P], Q[P]> : never
+    T[P] extends Record<any, any> ? Select<T[P], Q[P] & Selectable<any>> : never
 }
 
 // Select wrapper for entity-queries

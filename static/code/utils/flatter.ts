@@ -1,9 +1,9 @@
 import {Filterable, Selectable, Sortable} from '../types.base';
 
-export const flattenSelectable = <T>(obj: Selectable<T> = {}, base = ''): string[] => {
+export const flattenSelectable = <T>(obj?: Selectable<T>, base = ''): string[] => {
     const res: string[] = [];
 
-    for (const [key, value] of Object.entries(obj)) {
+    for (const [key, value] of Object.entries(obj ?? {})) {
         if (value) {
             const path = base + key;
 
@@ -18,10 +18,10 @@ export const flattenSelectable = <T>(obj: Selectable<T> = {}, base = ''): string
     return res;
 };
 
-export const flattenFilterable = <T, R = undefined>(obj: Filterable<T, R> = {}, base = ''): Map<string, string> => {
+export const flattenFilterable = <T, R = undefined>(obj?: Filterable<T, R>, base = ''): Map<string, string> => {
     const props = new Map<string, string>();
 
-    for (const [key, val] of Object.entries(obj)) {
+    for (const [key, val] of Object.entries(obj ?? {})) {
 
         // Special OR operator
         if (key === 'OR' && !base && Array.isArray(val)) {
@@ -57,10 +57,10 @@ export const flattenFilterable = <T, R = undefined>(obj: Filterable<T, R> = {}, 
     return props;
 };
 
-export const flattenSortable = <T, R = undefined>(obj: Sortable<T, R> = {}, base = ''): string[] => {
+export const flattenSortable = <T, R = undefined>(obj?: Sortable<T, R>, base = ''): string[] => {
     const res: string[] = [];
 
-    for (const [key, value] of Object.entries(obj)) {
+    for (const [key, value] of Object.entries(obj ?? {})) {
         if (value) {
             const path = base + key;
 
