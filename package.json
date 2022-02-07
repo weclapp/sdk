@@ -1,6 +1,6 @@
 {
   "name": "@weclapp/sdk",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "SDK generator based on a weclapp api swagger file",
   "main": "./main/index.js",
   "module": "./main/index.mjs",
