@@ -130,9 +130,9 @@ export const weclapp = ({
             }
         }).then(res => {
             return options?.include ? {
-                data: res.result?.[0] ?? null,
-                references: res?.referencedEntities ?? null
-            } : (res.result?.[0] ?? null);
+                data: res.result?.[0] ?? undefined,
+                references: res?.referencedEntities ?? undefined
+            } : (res.result?.[0] ?? undefined);
         });
     };
 
@@ -154,8 +154,8 @@ export const weclapp = ({
     }).then(res => {
         return options?.include ? {
             data: res.result,
-            references: res?.referencedEntities ?? null
-        } : (res.result ?? null);
+            references: res?.referencedEntities ?? undefined
+        } : (res.result ?? undefined);
     });
 
     // Internal .delete implementation
@@ -206,8 +206,8 @@ export const weclapp = ({
     }).then(res => {
         return options?.include ? {
             data: res.result[0],
-            references: res?.referencedEntities ?? null
-        } : (res.result[0] ?? null);
+            references: res?.referencedEntities ?? undefined
+        } : (res.result[0] ?? undefined);
     });
     
     const _specialEndpointGet = <Entity>(endpoint: string, options?: Record<string, unknown>): Promise<Entity> => {

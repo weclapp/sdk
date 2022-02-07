@@ -132,7 +132,7 @@ export type UniqueReturn<
     Query extends EntityQuery<Entity, RelatedEntities> = {}
 > = Query['include'] extends string[] ?
     WrappedResponse<OptionalSelect<Entity, Query>> :
-    (OptionalSelect<Entity, Query> | null);
+    (OptionalSelect<Entity, Query> | undefined);
 
 // Return value for the .some function
 export type SomeReturn<
