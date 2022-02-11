@@ -106,7 +106,11 @@ export const weclapp = ({
 
     // Internal .count implementation
     const _count = <Entity, RelatedEntities>(endpoint: string, filter?: Filterable<Entity, RelatedEntities>): Promise<number> => {
-        return makeRequest<WeclappResponse<number>>(endpoint, {query: filter}).then(unwrap);
+        return makeRequest<WeclappResponse<number>>(endpoint, {
+            query: {
+                ...(filter && Object.fromEntries(flattenFilterable(filter)))
+            }
+        }).then(unwrap);
     };
 
     // Internal .unique implementation
