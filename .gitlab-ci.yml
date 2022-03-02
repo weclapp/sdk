@@ -7,7 +7,7 @@ stages:
 .npm:defaults:
   tags:
     - small
-  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-14-alpine-npm7
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-16-alpine
   cache:
     key: node_modules_cache
     policy: pull
@@ -49,7 +49,7 @@ publish:
   tags:
     - tiny
   stage: publish
-  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-14-alpine-npm7
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-16-alpine
   rules:
     # Only allow publishing if tag matches semantic versioning (v1.0.0)
     - if: '$CI_COMMIT_TAG =~ /^v[0-9]+[.][0-9]+[.][0-9]+$/'
