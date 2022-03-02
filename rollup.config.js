@@ -1,10 +1,11 @@
 import ts from 'rollup-plugin-ts';
 import json from '@rollup/plugin-json';
+import {string} from 'rollup-plugin-string';
 
 export default [
     {
         input: 'src/index.ts',
-        plugins: [ts(), json()],
+        plugins: [string({include: '**/*.raw.*'}), ts(), json()],
         external: [
             'dotenv', 'fs-extra', 'change-case',
             'indent-string', 'chalk', 'fs',

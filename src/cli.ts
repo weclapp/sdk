@@ -1,5 +1,5 @@
 import {logger} from '@logger';
-import {convertSwaggerToOpenAPI} from '@utils/converter';
+import {convertSwaggerToOpenAPI} from '@utils/openapi/convertSwaggerToOpenAPI';
 import {config} from 'dotenv';
 import {readFile, stat} from 'fs-extra';
 import {OpenAPIV3} from 'openapi-types';
@@ -18,7 +18,7 @@ interface Args {
 
 interface CLIResult {
     cache: boolean;
-    content: OpenAPIV3.Document
+    content: OpenAPIV3.Document;
 }
 
 export const cli = async (): Promise<CLIResult> => {

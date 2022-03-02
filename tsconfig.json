@@ -13,7 +13,7 @@
         "allowSyntheticDefaultImports": true,
         "baseUrl": ".",
         "paths": {
-            "@logger": ["src/logger.ts"],
+            "@logger": ["src/utils/logger.ts"],
             "@generator/*": ["src/generator/*"],
             "@enums/*": ["src/enums/*"],
             "@utils/*": ["src/utils/*"],

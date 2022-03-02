@@ -1,10 +1,5 @@
-import {buildSDK} from '@/src/bundle';
-import {Target} from '@enums/Target';
-import {definitions} from '@generator/definitions';
-import {generateAPIDocumentation} from '@generator/docs/api';
-import {generateSdk} from '@generator/library';
+import {generate} from '@generator/generate';
 import {logger} from '@logger';
-import {tsImport} from '@ts/modules';
 import {env} from '@utils/env';
 import {hash} from '@utils/hash';
 import {cli} from './cli';
@@ -14,7 +9,6 @@ import {resolve, dirname} from 'path';
 import pkg from '../package.json';
 
 const workingDirectory = resolve(__dirname, env('NODE_ENV') === 'development' ? '../sdk' : '../');
-const resolveStaticContent = (...paths: string[]) => resolve(__dirname, '../static', ...paths);
 const folders = ['docs', 'main', 'node', 'raw', 'rx', 'utils'];
 
 logger.infoLn(`Mode: ${env('NODE_ENV') ?? 'production'}`);
@@ -51,39 +45,15 @@ void (async () => {
         await writeFile(await tmp('openapi.json'), JSON.stringify(doc, null, 2));
 
         // Generate import statement for type-declarations
-        logger.infoLn('Generate entity models...');
-        const models = definitions(doc);
-        await writeSourceFile(await tmp('raw/types.models.ts'), models.source);
-
-        // Copy static files
-        logger.infoLn('Copy static files...');
-        await copy(resolveStaticContent('types'), await tmp('raw'));
-        await copy(resolveStaticContent('code'), await tmp('raw'));
-
-        // Main library and documentation
-        logger.infoLn('Generate main SDK...');
-        const sdk = generateSdk(doc, Target.BROWSER_PROMISES);
-        const modelsImport = tsImport('./types.models', models.stats.exports);
-        await writeSourceFile(await tmp('raw/sdk.ts'), `${modelsImport}\n${sdk.source}`);
-
-        logger.infoLn('Generate API documentation...');
-        await copy(resolveStaticContent('docs/utils.md'), await resolveDocsDist('utils.md'));
-        await writeSourceFile(await resolveDocsDist('api.md'), await generateAPIDocumentation(sdk.stats, resolveStaticContent('docs', 'api.md')));
-
-        // Additional libraries
-        logger.infoLn('Generate additional SDK\'s...');
-        await writeFile(await tmp('raw/sdk.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_PROMISES).source}`);
-        await writeFile(await tmp('raw/sdk.rx.ts'), `${modelsImport}\n${generateSdk(doc, Target.BROWSER_RX).source}`);
-        await writeFile(await tmp('raw/sdk.rx.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_RX).source}`);
-
-        logger.infoLn('Bundle SDK (this may take some time)...');
-        await buildSDK(cacheDir);
+        logger.infoLn('Generate types....');
+        const source = generate(doc);
+        await writeSourceFile(await tmp('raw/types.ts'), source);
 
         // Print job summary
         const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
         logger.blankLn();
+        logger.successLn(`SDK generated in ${duration}ms.`);
         logger.printSummary();
-        logger.infoLn(`SDK generated in ${duration}ms.`);
     }
 
     await copy(cacheDir, workingDirectory);
