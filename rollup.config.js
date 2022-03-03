@@ -5,7 +5,7 @@ import {string} from 'rollup-plugin-string';
 export default [
     {
         input: 'src/index.ts',
-        plugins: [string({include: '**/*.raw.*'}), ts(), json()],
+        plugins: [string({include: '**/*.ts.txt'}), ts(), json()],
         external: [
             'dotenv', 'fs-extra', 'change-case',
             'indent-string', 'chalk', 'fs',

@@ -1,20 +1,32 @@
 import {indent} from '@utils/indent';
 
-export interface InterfacePropertyType {
-    type: 'primitive' | 'reference';
-    value: string;
-}
-
 export interface InterfaceProperty {
     name: string;
-    type: InterfacePropertyType;
+    type?: string;
     required?: boolean;
 }
 
-export const generateInterface = (name: string, entries: InterfaceProperty[]): string => {
-    const body = entries
-        .map(({name, type, required}) => `${name}${required ? '' : '?'}: ${type.value};`)
+export const generateInterface = (name: string, entries: InterfaceProperty[], extend?: string): string => {
+    const signature = `${name} ${extend ? `extends ${extend}` : ''}`.trim();
+
+    const properties = entries
+        .filter(v => v.type !== undefined)
+        .map(({name, type, required}) => `${name}${required ? '' : '?'}: ${type};`)
         .join('\n');
 
-    return `export interface ${name} {\n${indent(body)}\n}`;
+    const body = properties.length ? `{\n${indent(properties)}\n}` : `{}`;
+    return `export interface ${signature} ${body}`;
+};
+
+export const createInterface = (
+    name: string,
+    extend?: string
+) => {
+    const properties: InterfaceProperty[] = [];
+
+    return {
+        properties, name,
+        add: (...props: InterfaceProperty[]) => properties.push(...props),
+        toString: () => generateInterface(name, properties, extend)
+    };
 };

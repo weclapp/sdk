@@ -1,8 +1,8 @@
 export enum Target {
-    BROWSER_PROMISES,
-    BROWSER_RX,
-    NODE_PROMISES,
-    NODE_RX
+    BROWSER_PROMISES = 'browser',
+    BROWSER_RX = 'browser.rx',
+    NODE_PROMISES = 'node',
+    NODE_RX = 'node.rx'
 }
 
 /**

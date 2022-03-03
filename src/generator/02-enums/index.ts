@@ -8,6 +8,8 @@ export interface GeneratedEnum {
     properties: string[];
 }
 
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 const extractEnum = (
     property: string,
     schema: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject
@@ -17,7 +19,10 @@ const extractEnum = (
     }
 
     if (schema.enum?.length) {
-        return {properties: schema.enum, source: generateEnum(property, schema.enum)};
+        return {
+            properties: schema.enum,
+            source: generateEnum(property, schema.enum)
+        };
     } else if (schema.type === 'array') {
         return extractEnum(property, schema.items);
     }

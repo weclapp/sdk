@@ -1,0 +1,121 @@
+let globalConfig: ServiceConfig | undefined;
+
+export const getGlobalConfig = (): ServiceConfig | undefined => {
+    return globalConfig;
+};
+
+export const setGlobalConfig = (cfg?: ServiceConfig) => {
+    globalConfig = cfg;
+};
+
+export interface ServiceConfig {
+    key?: string;
+    domain?: string;
+    secure?: boolean;
+}
+
+const api = async (
+    cfg: ServiceConfig | undefined = globalConfig,
+    endpoint: string,
+    payload: {
+        method?: string,
+        query?: Record<string, any>,
+        body?: any
+        unwrap?: boolean
+    } = {}
+): Promise<any> => {
+    if (!cfg) {
+        throw new Error(`ServiceConfig missing.`);
+    }
+
+    const isBinaryData = false;
+    const contentType = isBinaryData ? 'octet-stream' : 'json';
+    const params = new URLSearchParams(Object.entries(payload.query ?? {}));
+    const protocol = (cfg.secure ?? true) ? 'https' : 'http';
+
+    return fetch(`${protocol}://${cfg.domain}/webapp/api/v1${endpoint}?${params}`, {
+        ...(payload.body && {body: isBinaryData ? payload.body : JSON.stringify(payload.body)}),
+        ...(!cfg.key && {credentials: 'same-origin'}),
+        method: payload.method ?? 'get',
+        headers: {
+            'Content-Type': `application/${contentType}`,
+            'Accept': 'application/json',
+            ...(cfg.key && {'AuthenticationToken': cfg.key})
+        }
+    }).then(async res => {
+        const data = res.headers?.get('content-type')?.includes('application/json') ? await res.json() : res;
+
+        // Check if response was successful
+        if (!res.ok) {
+            throw data;
+        }
+
+        return payload.unwrap ? data.result : data;
+    });
+};
+
+const _count = (
+    cfg: ServiceConfig | undefined,
+    endpoint: string,
+    filter?: QueryFilter<any>
+) => api(cfg, endpoint, {
+    query: {
+        query: flattenFilter(filter),
+        unwrap: true
+    }
+});
+
+const _some = (
+    cfg: ServiceConfig | undefined,
+    endpoint: string,
+    query?: SomeQuery<any, any, any, any>
+) => api(cfg, endpoint, {
+    query: {
+        properties: flattenSelect(query?.select).join(','),
+        includeReferencedEntities: Object.keys(query?.include ?? {}).map((v: string) => `${v}Id`).join(','),
+        ...flattenFilter(query?.filter),
+        ...query?.params
+    }
+}).then(data => ({entities: data.result, references: data.referencedEntities}));
+
+const _remove = (
+    cfg: ServiceConfig | undefined,
+    endpoint: string
+) => api(cfg, endpoint, {
+    method: 'delete'
+}).then(() => undefined);
+
+const _create = (
+    cfg: ServiceConfig | undefined,
+    endpoint: string,
+    data: any
+) => api(cfg, endpoint, {
+    method: 'post',
+    body: data
+});
+
+const _update = (
+    cfg: ServiceConfig | undefined,
+    endpoint: string,
+    data: any
+) => api(cfg, endpoint, {
+    method: 'put',
+    body: data,
+    query: {ignoreMissingProperties: true}
+});
+
+const _unique = (
+    cfg: ServiceConfig | undefined,
+    endpoint: string
+) => api(cfg, endpoint);
+
+const _generic = (
+    cfg: ServiceConfig | undefined,
+    method: string,
+    endpoint: string,
+    payload: GenericQuery<any, any>
+) => api(cfg, endpoint, {
+    method,
+    body: payload.body,
+    query: payload.params
+});

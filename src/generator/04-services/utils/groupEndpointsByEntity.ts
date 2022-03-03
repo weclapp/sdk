@@ -4,7 +4,7 @@ import {OpenAPIV3} from 'openapi-types';
 
 export interface ParsedEndpoint {
     endpoint: WeclappEndpoint;
-    path: OpenAPIV3.PathsObject;
+    path: OpenAPIV3.PathItemObject;
 }
 
 export type GroupedEndpoints = Map<string, ParsedEndpoint[]>;
@@ -15,21 +15,15 @@ export const groupEndpointsByEntity = (paths: OpenAPIV3.PathsObject): GroupedEnd
     for (const [rawPath, path] of Object.entries(paths)) {
         const endpoint = parseEndpointPath(rawPath);
 
-        if (!endpoint) {
+        if (!endpoint || !path) {
             logger.errorLn(`Failed to parse ${rawPath}`);
             continue;
         }
 
         if (endpoints.has(endpoint.entity)) {
-            endpoints.get(endpoint.entity)?.push({
-                endpoint,
-                path: path as OpenAPIV3.PathsObject
-            });
+            endpoints.get(endpoint.entity)?.push({endpoint, path});
         } else {
-            endpoints.set(endpoint.entity, [{
-                endpoint,
-                path: path as OpenAPIV3.PathsObject
-            }]);
+            endpoints.set(endpoint.entity, [{endpoint, path}]);
         }
     }
 

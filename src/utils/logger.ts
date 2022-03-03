@@ -1,13 +1,15 @@
-// Code taken from https://github.com/Simonwep/li18nt/blob/master/src/cli/utils/log.ts
-import {pluralize} from '@utils/pluralize';
 /* eslint-disable no-console */
+import {pluralize} from '@utils/pluralize';
 import chalk, {Chalk} from 'chalk';
 
-const {stdout} = process;
-
 export const logger = new class {
+    public active = true;
     public warnings = 0;
     public errors = 0;
+
+    public write(str = ''): void {
+        process.stdout.write(str);
+    }
 
     public blankLn(str = ''): void {
         this.blank(`${str}\n`);
@@ -34,29 +36,29 @@ export const logger = new class {
     }
 
     public blank(str: string): void {
-        stdout.write(str);
+        this.write(str);
     }
 
     public warn(str: string): void {
-        stdout.write(`${chalk.yellowBright('[!]')} ${str}`);
+        this.write(`${chalk.yellowBright('[!]')} ${str}`);
         this.warnings++;
     }
 
     public error(str: string): void {
-        stdout.write(`${chalk.redBright('[X]')} ${str}`);
+        this.write(`${chalk.redBright('[X]')} ${str}`);
         this.errors++;
     }
 
     public success(str: string): void {
-        stdout.write(`${chalk.greenBright('[✓]')} ${str}`);
+        this.write(`${chalk.greenBright('[✓]')} ${str}`);
     }
 
     public info(str: string): void {
-        stdout.write(`${chalk.blueBright('[i]')} ${str}`);
+        this.write(`${chalk.blueBright('[i]')} ${str}`);
     }
 
     public debug(str: string): void {
-        stdout.write(`[-] ${str}`);
+        this.write(`[-] ${str}`);
     }
 
     public printSummary(): void {

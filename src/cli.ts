@@ -2,11 +2,11 @@ import {logger} from '@logger';
 import {convertSwaggerToOpenAPI} from '@utils/openapi/convertSwaggerToOpenAPI';
 import {config} from 'dotenv';
 import {readFile, stat} from 'fs-extra';
+import fetch from 'node-fetch';
 import {OpenAPIV3} from 'openapi-types';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 import {version} from '../package.json';
-import fetch from 'node-fetch';
 
 interface Args {
     key?: string;

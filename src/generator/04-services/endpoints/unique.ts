@@ -3,23 +3,23 @@ import {generateArrowFunction} from '@ts/generateArrowFunction';
 import {generateArrowFunctionType} from '@ts/generateArrowFunctionType';
 import {pascalCase} from 'change-case';
 
-const functionName = 'count';
+const functionName = 'unique';
 
-export const generateCountEndpoint: ServiceFunctionGenerator = ({endpoint}): GeneratedServiceFunction => {
+export const generateUniqueEndpoint: ServiceFunctionGenerator = ({endpoint}): GeneratedServiceFunction => {
     const entity = pascalCase(endpoint.entity);
     const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
 
     const functionSource = generateArrowFunction({
         name: functionName,
         signature: interfaceName,
-        returns: `_${functionName}(cfg, '${endpoint.path}', query)`,
-        params: ['query']
+        params: ['id'],
+        returns: `_${functionName}(cfg, \`${endpoint.path.replace('{id}', '${id}')}\`)`
     });
 
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
-        params: [`query?: QueryFilter<${entity}>`],
-        returns: 'Promise<number>'
+        params: ['id: string'],
+        returns: `Promise<${entity}>`
     });
 
     return {

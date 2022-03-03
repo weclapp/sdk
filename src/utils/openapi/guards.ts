@@ -3,10 +3,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {OpenAPIV3} from 'openapi-types';
 
-/**
- * This module contains a set of lightweight type-guards for openapi-v3 types.
- */
-
 export const isObject = (v: any): v is Record<any, any> => {
     return v !== null && typeof v === 'object' && !Array.isArray(v);
 };
@@ -34,7 +30,7 @@ export const isRequestBodyObject = (v: any): v is OpenAPIV3.RequestBodyObject =>
 };
 
 export const isNonArraySchemaObject = (v: any): v is OpenAPIV3.NonArraySchemaObjectType => {
-    return ['string', 'undefined'].includes(typeof v.type);
+    return isObject(v) && ['string', 'undefined'].includes(typeof v.type);
 };
 
 export interface RelatedEntitySchema extends OpenAPIV3.NonArraySchemaObject {

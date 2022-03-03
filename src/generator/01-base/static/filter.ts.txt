@@ -1,0 +1,126 @@
+// Filter properties
+type EqualityOperators = 'EQ' | 'NE';
+type ComparisonOperators = 'LT' | 'GT' | 'LE' | 'GE' | 'LIKE' | 'ILIKE' | 'NOT_LIKE' | 'NOT_ILIKE';
+type ArrayOperators = 'IN' | 'NOT_IN';
+type Operator = EqualityOperators | ComparisonOperators | ArrayOperators;
+
+type MapOperators<T> = { [K in EqualityOperators]?: T | null; } &
+    { [K in ComparisonOperators]?: T; } &
+    { [K in ArrayOperators]?: T[]; };
+
+type QueryFilter<T> = {
+    [P in keyof T]?: T[P] extends Array<infer U> ?
+        QueryFilter<U> : T[P] extends object ?
+            QueryFilter<T[P]> : MapOperators<T[P]>;
+};
+
+// Select properties
+type QuerySelect<T> = {
+    [P in keyof T]?:
+    T[P] extends Array<infer U> | undefined ? (QuerySelect<U> | boolean) :
+        T[P] extends Record<any, any> | undefined ? (QuerySelect<T[P]> | boolean) : boolean;
+}
+
+type Select<T, Q extends QuerySelect<T>> = {
+
+    // Filter out excluded properties beforehand
+    [P in keyof T as Q[P] extends boolean ? P : Q[P] extends object ? P : never]:
+
+    // Property
+    Q[P] extends true ? T[P] :
+
+        // Array
+        T[P] extends Array<infer U> ? Select<U, Q[P] & QuerySelect<any>>[] :
+
+            // Object
+            T[P] extends Record<any, any> ? Select<T[P], Q[P] & QuerySelect<any>> : never
+}
+
+// Endpoint configurations
+type SomeQuery<E extends Record<any, any>, // Entity
+    P extends Record<any, any>, // Endpoint params
+    I extends QuerySelect<any>, // Select for referenced entities
+    S extends QuerySelect<any> // Select for entity properties
+> = {
+    include?: I;
+    filter?: QueryFilter<E>;
+    select?: S;
+    params?: P;
+};
+
+type SomeQueryReturn<E extends Record<any, any>, // Entity
+    R extends Record<any, any>, // Map of referenced-entity ids to their corresponding entity
+    I extends QuerySelect<any>, // Select for referenced entities
+    S extends QuerySelect<any> // Select for entity properties
+> = {
+    entities: Select<E, S>[];
+    references: Select<R, I>;
+};
+
+type GenericQuery<P, B> = {
+    params?: P;
+    body?: B;
+};
+
+// Utils
+const simple: string[] = ['EQ', 'NE', 'LT', 'GT', 'LE', 'GE', 'LIKE', 'NOT_LIKE', 'ILIKE', 'NOT_ILIKE'];
+const array: string[] = ['IN', 'NOT_IN'];
+const filterMap: Record<Operator, string> = {
+    EQ: 'eq',
+    NE: 'ne',
+    LT: 'lt',
+    GT: 'gt',
+    LE: 'le',
+    GE: 'ge',
+    LIKE: 'like',
+    NOT_LIKE: 'notlike',
+    ILIKE: 'ilike',
+    NOT_ILIKE: 'notilike',
+    IN: 'in',
+    NOT_IN: 'notin'
+};
+
+const flattenFilter = (obj: QueryFilter<any> = {}): Record<string, string> => {
+    const flatten = (obj: QueryFilter<any> = {}): [string, string][] => {
+        const entries: [string, string][] = [];
+
+        for (const [prop, propValue] of Object.entries(obj)) {
+            for (const [filter, value] of Object.entries(propValue as object)) {
+
+                if (value === undefined) {
+                    continue;
+                }
+
+                if (simple.includes(filter)) {
+                    entries.push([`${prop}-${filterMap[filter as Operator]}`, value]);
+                } else if (array.includes(filter)) {
+                    entries.push([`${prop}-${filterMap[filter as Operator]}`, `[${value}]`]);
+                } else {
+                    entries.push(
+                        ...flatten(propValue as QueryFilter<any>)
+                            .map(v => [`${prop}.${v[0]}`, v[1]]) as [string, string][]
+                    );
+                    break;
+                }
+            }
+        }
+
+        return entries;
+    };
+
+    return Object.fromEntries(flatten(obj));
+};
+
+const flattenSelect = (obj: Select<any, any> = {}): string[] => {
+    const entries: string[] = [];
+
+    for (const [prop, value] of Object.entries(obj)) {
+        if (typeof value === 'object' && value) {
+            entries.push(...flattenSelect(value).map(v => `${prop}.${v}`));
+        } else if (value) {
+            entries.push(prop);
+        }
+    }
+
+    return entries;
+};
