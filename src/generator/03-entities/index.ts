@@ -1,8 +1,7 @@
-import {createInterface} from '@ts/generateInterface';
+import {generateInterface, InterfaceProperty} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
-import {generateTypeScriptType} from '@utils/openapi/generateTypeScriptType';
+import {convertToTypeScriptType} from '@utils/openapi/convertToTypeScriptType';
 import {isRelatedEntitySchema} from '@utils/openapi/guards';
-import {typeFallback} from '@utils/openapi/typeFallback';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
@@ -15,28 +14,28 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
 
     for (const [schemaName, schema] of schemas) {
         const entity = pascalCase(schemaName);
-        const referenceInterface = createInterface(`${entity}_References`);
-        const entityInterface = createInterface(entity);
+        const entityInterface: InterfaceProperty[] = [];
+        const referenceInterface: InterfaceProperty[] = [];
         const requiredProps = schema.required ?? [];
 
         for (const [name, property] of Object.entries(schema.properties ?? {})) {
             if (isRelatedEntitySchema(property)) {
                 const relatedEntity = property['x-relatedEntityName'];
 
-                referenceInterface.add({
+                referenceInterface.push({
                     name: name.replace(/Id$/, ''),
                     type: `${pascalCase(relatedEntity)}[]`
                 });
             }
 
-            const type = typeFallback(generateTypeScriptType(property, name));
+            const type = convertToTypeScriptType(property, name).toString();
             const required = requiredProps.includes(name);
-            entityInterface.add({name, type, required});
+            entityInterface.push({name, type, required});
         }
 
         const source = generateStatements(
-            entityInterface.toString(),
-            referenceInterface.toString()
+            generateInterface(entity, entityInterface),
+            generateInterface(`${entity}_References`, referenceInterface)
         );
 
         entities.set(entity, {source});

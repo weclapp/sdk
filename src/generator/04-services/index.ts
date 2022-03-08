@@ -1,3 +1,4 @@
+import {Target} from '@enums/Target';
 import {generateCountEndpoint} from '@generator/04-services/endpoints/count';
 import {generateCreateEndpoint} from '@generator/04-services/endpoints/create';
 import {generateGenericEndpoint} from '@generator/04-services/endpoints/generic';
@@ -46,7 +47,7 @@ const generators: Record<WeclappEndpointType, Record<string, ServiceFunctionGene
     }
 };
 
-export const generateServices = (doc: OpenAPIV3.Document): Map<string, GeneratedService> => {
+export const generateServices = (doc: OpenAPIV3.Document, target: Target): Map<string, GeneratedService> => {
     const services: Map<string, GeneratedService> = new Map();
     const grouped = groupEndpointsByEntity(doc.paths);
 
@@ -61,7 +62,7 @@ export const generateServices = (doc: OpenAPIV3.Document): Map<string, Generated
             for (const [method, config] of Object.entries(path)) {
                 if (resolver[method]) {
                     functions.push(resolver[method]({
-                        endpoint, method,
+                        endpoint, method, target,
                         path: config as OpenAPIV3.OperationObject
                     }));
                 } else {

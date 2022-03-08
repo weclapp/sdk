@@ -1,15 +1,11 @@
-import {indent} from '@utils/indent';
+interface Import {
+    src: string;
+    imports?: string[];
+    default?: string;
+}
 
-export const generateImport = (source: string, imports: string[], def?: string): string => {
-
-    // Total string length of import
-    const totalStringLength = imports.reduce((pv, cv) => pv + cv.length + 1, 0);
-    const defaultImport = def ? `${def}, ` : '';
-
-    // Use multi-lines if too long
-    if (totalStringLength > 80) {
-        return `import ${defaultImport}{\n${indent(imports.join(',\n'))}\n} from '${source}';`;
-    } else {
-        return `import ${defaultImport}{${imports.join(', ')}} from '${source}';`;
-    }
+export const generateImport = (opt: Import): string => {
+    const imports = [opt.default, opt.imports?.length ? `{${opt.imports.join(', ')}}` : ''];
+    return `import ${imports.filter(Boolean).join(', ')} from '${opt.src}';`;
 };
+

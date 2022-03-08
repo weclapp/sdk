@@ -1,8 +1,9 @@
-import {generateTypeScriptType} from '@utils/openapi/generateTypeScriptType';
 import {isParameterObject} from '@utils/openapi/guards';
 import {OpenAPIV3} from 'openapi-types';
 
-export const generateParametersType = ({parameters = []}: OpenAPIV3.OperationObject): string | undefined => {
+type Parameters = OpenAPIV3.OperationObject['parameters'];
+
+export const convertParametersToSchema = (parameters: Parameters = []): OpenAPIV3.SchemaObject => {
     const properties: [string, OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject][] = [];
     const required: string[] = [];
 
@@ -15,12 +16,8 @@ export const generateParametersType = ({parameters = []}: OpenAPIV3.OperationObj
         }
     }
 
-    if (!properties.length) {
-        return undefined;
-    }
-
-    return generateTypeScriptType({
+    return {
         type: 'object', required,
         properties: Object.fromEntries(properties)
-    });
+    };
 };

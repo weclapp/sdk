@@ -12,7 +12,8 @@ export default [
             'path', 'glob', 'os', 'crypto',
             'child_process', 'util', 'yargs',
             'node-fetch', 'swagger2openapi', 'yargs/helpers',
-            'rollup-plugin-ts', 'rollup-plugin-terser', 'rollup'
+            'rollup-plugin-ts', 'rollup-plugin-terser', 'rollup',
+            'openapi-types'
         ],
         output: {
             file: 'lib/cli.js',

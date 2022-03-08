@@ -1,19 +1,25 @@
+import {resolveResponseType} from '@enums/Target';
 import {GeneratedServiceFunction, ServiceFunctionGenerator} from '@generator/04-services/types';
 import {generateGenericFunctionName} from '@generator/04-services/utils/generateGenericFunctionName';
-import {generateParametersType} from '@generator/04-services/utils/generateParametersType';
 import {generateRequestBodyType} from '@generator/04-services/utils/generateRequestBodyType';
 import {generateResponseBodyType} from '@generator/04-services/utils/generateResponseBodyType';
 import {generateArrowFunction} from '@ts/generateArrowFunction';
 import {generateArrowFunctionType} from '@ts/generateArrowFunctionType';
-import {generateInterface} from '@ts/generateInterface';
-import {typeFallback} from '@utils/openapi/typeFallback';
+import {generateInterfaceFromObject} from '@ts/generateInterface';
+import {convertParametersToSchema} from '@utils/openapi/convertParametersToSchema';
+import {convertToTypeScriptType, createObjectType} from '@utils/openapi/convertToTypeScriptType';
 import {pascalCase} from 'change-case';
 
-export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerator => ({method, path, endpoint}): GeneratedServiceFunction => {
+export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerator => ({target, method, path, endpoint}): GeneratedServiceFunction => {
     const functionName = generateGenericFunctionName(endpoint.path, suffix);
     const entity = pascalCase(endpoint.entity);
     const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
     const entityQuery = `${interfaceName}_Query`;
+
+    const params = createObjectType({
+        params: convertToTypeScriptType(convertParametersToSchema(path.parameters)),
+        body: generateRequestBodyType(path)
+    });
 
     const functionSource = generateArrowFunction({
         name: functionName,
@@ -25,7 +31,7 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
         params: ['id: string', `query: ${entityQuery}`],
-        returns: `Promise<${typeFallback(generateResponseBodyType(path))}>`
+        returns: `${resolveResponseType(target)}<${generateResponseBodyType(path)}>`
     });
 
     return {
@@ -34,10 +40,7 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
         interfaces: [
             {
                 name: entityQuery,
-                source: generateInterface(entityQuery, [
-                    {required: true, name: 'params', type: generateParametersType(path)},
-                    {required: true, name: 'body', type: generateRequestBodyType(path)}
-                ])
+                source: generateInterfaceFromObject(entityQuery, params)
             }
         ]
     };

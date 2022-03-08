@@ -58,64 +58,64 @@ const _count = (
     cfg: ServiceConfig | undefined,
     endpoint: string,
     filter?: QueryFilter<any>
-) => api(cfg, endpoint, {
+) => wrapResponse(() => api(cfg, endpoint, {
     query: {
         query: flattenFilter(filter),
         unwrap: true
     }
-});
+}));
 
 const _some = (
     cfg: ServiceConfig | undefined,
     endpoint: string,
-    query?: SomeQuery<any, any, any, any>
-) => api(cfg, endpoint, {
+    query?: SomeQuery<any, any, any> & {params?: Record<any, any>}
+) => wrapResponse(() => api(cfg, endpoint, {
     query: {
         properties: flattenSelect(query?.select).join(','),
         includeReferencedEntities: Object.keys(query?.include ?? {}).map((v: string) => `${v}Id`).join(','),
         ...flattenFilter(query?.filter),
         ...query?.params
     }
-}).then(data => ({entities: data.result, references: data.referencedEntities}));
+}).then(data => ({entities: data.result, references: data.referencedEntities})));
 
 const _remove = (
     cfg: ServiceConfig | undefined,
     endpoint: string
-) => api(cfg, endpoint, {
+) => wrapResponse(() => api(cfg, endpoint, {
     method: 'delete'
-}).then(() => undefined);
+}).then(() => undefined));
 
 const _create = (
     cfg: ServiceConfig | undefined,
     endpoint: string,
     data: any
-) => api(cfg, endpoint, {
+) => wrapResponse(() => api(cfg, endpoint, {
     method: 'post',
     body: data
-});
+}));
 
 const _update = (
     cfg: ServiceConfig | undefined,
     endpoint: string,
     data: any
-) => api(cfg, endpoint, {
+) => wrapResponse(() => api(cfg, endpoint, {
     method: 'put',
     body: data,
     query: {ignoreMissingProperties: true}
-});
+}));
 
 const _unique = (
     cfg: ServiceConfig | undefined,
     endpoint: string
-) => api(cfg, endpoint);
+) => wrapResponse(() => api(cfg, endpoint));
 
 const _generic = (
     cfg: ServiceConfig | undefined,
     method: string,
     endpoint: string,
     payload: GenericQuery<any, any>
-) => api(cfg, endpoint, {
+) => wrapResponse(() => api(cfg, endpoint, {
     method,
     body: payload.body,
     query: payload.params
-});
+}));

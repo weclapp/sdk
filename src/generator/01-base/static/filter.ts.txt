@@ -38,14 +38,12 @@ type Select<T, Q extends QuerySelect<T>> = {
 
 // Endpoint configurations
 type SomeQuery<E extends Record<any, any>, // Entity
-    P extends Record<any, any>, // Endpoint params
     I extends QuerySelect<any>, // Select for referenced entities
     S extends QuerySelect<any> // Select for entity properties
 > = {
     include?: I;
     filter?: QueryFilter<E>;
     select?: S;
-    params?: P;
 };
 
 type SomeQueryReturn<E extends Record<any, any>, // Entity

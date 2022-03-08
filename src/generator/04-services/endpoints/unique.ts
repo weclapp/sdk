@@ -1,3 +1,4 @@
+import {resolveResponseType} from '@enums/Target';
 import {GeneratedServiceFunction, ServiceFunctionGenerator} from '@generator/04-services/types';
 import {generateArrowFunction} from '@ts/generateArrowFunction';
 import {generateArrowFunctionType} from '@ts/generateArrowFunctionType';
@@ -5,7 +6,7 @@ import {pascalCase} from 'change-case';
 
 const functionName = 'unique';
 
-export const generateUniqueEndpoint: ServiceFunctionGenerator = ({endpoint}): GeneratedServiceFunction => {
+export const generateUniqueEndpoint: ServiceFunctionGenerator = ({target, endpoint}): GeneratedServiceFunction => {
     const entity = pascalCase(endpoint.entity);
     const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
 
@@ -19,7 +20,7 @@ export const generateUniqueEndpoint: ServiceFunctionGenerator = ({endpoint}): Ge
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
         params: ['id: string'],
-        returns: `Promise<${entity}>`
+        returns: `${resolveResponseType(target)}<${entity}>`
     });
 
     return {
