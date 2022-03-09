@@ -59,10 +59,8 @@ const _count = (
     endpoint: string,
     filter?: QueryFilter<any>
 ) => wrapResponse(() => api(cfg, endpoint, {
-    query: {
-        query: flattenFilter(filter),
-        unwrap: true
-    }
+    unwrap: true,
+    query: flattenFilter(filter)
 }));
 
 const _some = (

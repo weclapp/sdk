@@ -1,7 +1,7 @@
 stages:
   - build
   - generate
-  - lint
+  - test
   - publish
 
 .npm:defaults:
@@ -36,11 +36,20 @@ generate:
       - sdk
   variables:
     NODE_ENV: development
-  script: ./bin/cli.js --from-env --include-hidden
+  script:
+    - chmod +x ./bin/cli.js
+    - ./bin/cli.js --from-env --include-hidden
+
+test:
+  extends: .npm:defaults
+  stage: test
+  dependencies:
+    - generate
+  script: npm run test
 
 lint:
   extends: .npm:defaults
-  stage: lint
+  stage: test
   dependencies:
     - generate
   script: npm run lint

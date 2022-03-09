@@ -1,3 +1,4 @@
+import {bundle} from '@/src/bundle';
 import {Target} from '@enums/Target';
 import {generate} from '@generator/generate';
 import {logger} from '@logger';
@@ -19,10 +20,6 @@ void (async () => {
     const start = process.hrtime.bigint();
     const {content: doc, cache: useCache} = await cli();
 
-    if (!doc.components?.schemas) {
-        return logger.errorLn('components.schemas missing.');
-    }
-
     // Resolve cache dir and key
     const cacheKey = hash([pkg.version, JSON.stringify(doc)]).slice(-8);
     const cacheDir = resolve(__dirname, '../', '.tmp', cacheKey);
@@ -33,8 +30,6 @@ void (async () => {
         await mkdirp(dirname(fullPath)).catch(() => null);
         return fullPath;
     };
-
-    // const resolveDocsDist = async (...paths: string[]) => tmp('docs', ...paths);
 
     if (useCache && await stat(cacheDir).catch(() => false)) {
         logger.successLn(`Cache match! (${cacheDir})`);
@@ -48,14 +43,17 @@ void (async () => {
         // Generate SDKs
         for (const target of Object.values(Target)) {
             logger.infoLn(`Generate SDK (target: ${target})`);
-            await writeSourceFile(await tmp(`raw/${target}.ts`), generate(doc, target));
+            await writeSourceFile(await tmp(`src/${target}.ts`), generate(doc, target));
         }
+
+        // Bundle
+        logger.infoLn('Bundle SDK (this may take some time)...');
+        await bundle(cacheDir);
 
         // Print job summary
         const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
         logger.blankLn();
         logger.successLn(`SDK generated in ${duration}ms.`);
-        logger.printSummary();
     }
 
     await copy(cacheDir, workingDirectory);
@@ -65,6 +63,7 @@ void (async () => {
     }
 
     logger.successLn(`Cleanup done, Bye.`);
+    logger.printSummary();
 })().catch((error: unknown) => {
     logger.errorLn(`Fatal error:`);
 
