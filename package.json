@@ -21,6 +21,10 @@
   "publishConfig": {
     "@weclapp:registry": "https://gitlab.internal.weclapp.com/api/v4/projects/145/packages/npm/"
   },
+  "engines": {
+	"node": "^16.13.0",
+	"npm": "^8.1.0"
+  },
   "scripts": {
     "cli:build": "cross-env NODE_ENV=production rollup -c rollup.config.js",
     "cli:watch": "cross-env NODE_ENV=development rollup -c rollup.config.js --watch",
