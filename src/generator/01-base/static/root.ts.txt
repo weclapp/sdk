@@ -70,7 +70,7 @@ const _some = (
 ) => wrapResponse(() => api(cfg, endpoint, {
     query: {
         properties: flattenSelect(query?.select).join(','),
-        includeReferencedEntities: Object.keys(query?.include ?? {}).map((v: string) => `${v}Id`).join(','),
+        includeReferencedEntities: Object.keys(query?.include ?? {}).join(','),
         ...flattenFilter(query?.filter),
         ...query?.params
     }

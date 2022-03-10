@@ -36,8 +36,13 @@ type Select<T, Q extends QuerySelect<T>> = {
             T[P] extends Record<any, any> ? Select<T[P], Q[P] & QuerySelect<any>> : never
 }
 
+type MapKeys<T, S extends Record<keyof T, string>> = {
+    [K in keyof T as S[K]]: T[K];
+};
+
 // Endpoint configurations
-type SomeQuery<E extends Record<any, any>, // Entity
+type SomeQuery<
+    E extends Record<string, any>, // Entity
     I extends QuerySelect<any>, // Select for referenced entities
     S extends QuerySelect<any> // Select for entity properties
 > = {
@@ -46,13 +51,15 @@ type SomeQuery<E extends Record<any, any>, // Entity
     select?: S;
 };
 
-type SomeQueryReturn<E extends Record<any, any>, // Entity
-    R extends Record<any, any>, // Map of referenced-entity ids to their corresponding entity
+type SomeQueryReturn<
+    E extends Record<string, any>, // Entity
+    R extends Record<string, any>, // Map of referenced-entity names to the type
+    M extends Record<keyof R, string>, // Map of referenced-entity-id names to their entity name
     I extends QuerySelect<any>, // Select for referenced entities
     S extends QuerySelect<any> // Select for entity properties
 > = {
     entities: Select<E, S>[];
-    references: Select<R, I>;
+    references: MapKeys<Select<R, I>, M>;
 };
 
 type GenericQuery<P, B> = {

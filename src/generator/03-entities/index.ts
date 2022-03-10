@@ -16,16 +16,15 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
         const entity = pascalCase(schemaName);
         const entityInterface: InterfaceProperty[] = [];
         const referenceInterface: InterfaceProperty[] = [];
+        const referenceMappingsInterface: InterfaceProperty[] = [];
         const requiredProps = schema.required ?? [];
 
         for (const [name, property] of Object.entries(schema.properties ?? {})) {
             if (isRelatedEntitySchema(property)) {
                 const relatedEntity = property['x-relatedEntityName'];
-
-                referenceInterface.push({
-                    name: name.replace(/Id$/, ''),
-                    type: `${pascalCase(relatedEntity)}[]`
-                });
+                const type = `${pascalCase(relatedEntity)}[]`;
+                referenceInterface.push({name, type, required: true});
+                referenceMappingsInterface.push({name, type: `'${relatedEntity}'`, required: true});
             }
 
             const type = convertToTypeScriptType(property, name).toString();
@@ -35,7 +34,8 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
 
         const source = generateStatements(
             generateInterface(entity, entityInterface),
-            generateInterface(`${entity}_References`, referenceInterface)
+            generateInterface(`${entity}_References`, referenceInterface),
+            generateInterface(`${entity}_Mappings`, referenceMappingsInterface)
         );
 
         entities.set(entity, {source});

@@ -14,6 +14,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({target, path, en
     // Required interface names
     const entity = pascalCase(endpoint.entity);
     const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
+    const entityMappings = `${entity}_Mappings`;
     const entityReferences = `${entity}_References`;
     const entityParameters = `${interfaceName}_Parameters`;
     const type = createObjectType({
@@ -22,9 +23,9 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({target, path, en
 
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
-        generics: [`S extends QuerySelect<${entity}>`, `R extends QuerySelect<${entityReferences}>`],
+        generics: [`S extends QuerySelect<${entity}>`, `R extends QuerySelect<${entityMappings}>`],
         params: [`query?: SomeQuery<${entity}, R, S> & ${entityParameters}`],
-        returns: `${resolveResponseType(target)}<SomeQueryReturn<${entity}, ${entityReferences}, R, S>>`
+        returns: `${resolveResponseType(target)}<SomeQueryReturn<${entity}, ${entityReferences}, ${entityMappings}, R, S>>`
     });
 
     const functionSource = generateArrowFunction({
