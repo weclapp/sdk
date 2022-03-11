@@ -20,7 +20,7 @@ export const bundle = async (workingDirectory: string) => {
         node: resolve(workingDirectory, 'node')
     };
 
-    const src = (...paths: string[]) => resolve(workingDirectory, 'src', ...paths);
+    const raw = (...paths: string[]) => resolve(workingDirectory, 'raw', ...paths);
 
     const generateNodeOutput = (dir: string) => [
         generateOutput({
@@ -42,7 +42,7 @@ export const bundle = async (workingDirectory: string) => {
 
         // Browser bundle (promises)
         {
-            input: src('browser.ts'),
+            input: raw('browser.ts'),
             output: [
                 generateOutput({
                     file: resolve(dirs.main, 'index.js'),
@@ -60,7 +60,7 @@ export const bundle = async (workingDirectory: string) => {
         // Browser bundle (rxjs)
         {
             external: ['rxjs'],
-            input: src('browser.rx.ts'),
+            input: raw('browser.rx.ts'),
             plugins: [ts({tsconfig}), terser()],
             output: [
                 generateOutput({
@@ -79,7 +79,7 @@ export const bundle = async (workingDirectory: string) => {
 
         // NodeJS bundle (promises)
         {
-            input: src('node.ts'),
+            input: raw('node.ts'),
             output: generateNodeOutput(dirs.node),
             external: ['node-fetch', 'url'],
             plugins: [ts({tsconfig})]
@@ -87,7 +87,7 @@ export const bundle = async (workingDirectory: string) => {
 
         // NodeJS bundle (rxjs)
         {
-            input: src('node.rx.ts'),
+            input: raw('node.rx.ts'),
             output: generateNodeOutput(resolve(dirs.node, 'rx')),
             external: ['node-fetch', 'url', 'rxjs'],
             plugins: [ts({tsconfig})]

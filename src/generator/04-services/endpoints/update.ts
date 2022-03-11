@@ -1,5 +1,6 @@
 import {resolveResponseType} from '@enums/Target';
 import {GeneratedServiceFunction, ServiceFunctionGenerator} from '@generator/04-services/types';
+import {insertPathPlaceholder} from '@generator/04-services/utils/insertPathPlaceholder';
 import {generateArrowFunction} from '@ts/generateArrowFunction';
 import {generateArrowFunctionType} from '@ts/generateArrowFunctionType';
 import {pascalCase} from 'change-case';
@@ -21,7 +22,7 @@ export const generateUpdateEndpoint: ServiceFunctionGenerator = ({target, endpoi
     const functionSource = generateArrowFunction({
         name: functionName,
         signature: interfaceName,
-        returns: `_${functionName}(cfg, \`${endpoint.path.replace('{id}', '${id}')}\`, data)`,
+        returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, {id: '${id}'})}\`, data)`,
         params: ['id', 'data']
     });
 

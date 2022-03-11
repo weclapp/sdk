@@ -8,5 +8,5 @@ export const getService = <K extends keyof WeclappServices>(name: K): WeclappSer
         domain: process.env.WECLAPP_BACKEND_URL as string,
         key: process.env.WECLAPP_API_KEY as string,
         secure: true
-    });
+    }) as WeclappServices[K];
 };

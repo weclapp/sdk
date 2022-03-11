@@ -1,5 +1,6 @@
 import {resolveResponseType} from '@enums/Target';
 import {GeneratedServiceFunction, ServiceFunctionGenerator} from '@generator/04-services/types';
+import {insertPathPlaceholder} from '@generator/04-services/utils/insertPathPlaceholder';
 import {generateArrowFunction} from '@ts/generateArrowFunction';
 import {generateArrowFunctionType} from '@ts/generateArrowFunctionType';
 import {pascalCase} from 'change-case';
@@ -14,7 +15,7 @@ export const generateUniqueEndpoint: ServiceFunctionGenerator = ({target, endpoi
         name: functionName,
         signature: interfaceName,
         params: ['id'],
-        returns: `_${functionName}(cfg, \`${endpoint.path.replace('{id}', '${id}')}\`)`
+        returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, {id: '${id}'})}\`)`
     });
 
     const interfaceSource = generateArrowFunctionType({

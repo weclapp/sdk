@@ -3,6 +3,7 @@ import {GeneratedServiceFunction, ServiceFunctionGenerator} from '@generator/04-
 import {generateGenericFunctionName} from '@generator/04-services/utils/generateGenericFunctionName';
 import {generateRequestBodyType} from '@generator/04-services/utils/generateRequestBodyType';
 import {generateResponseBodyType} from '@generator/04-services/utils/generateResponseBodyType';
+import {insertPathPlaceholder} from '@generator/04-services/utils/insertPathPlaceholder';
 import {generateArrowFunction} from '@ts/generateArrowFunction';
 import {generateArrowFunctionType} from '@ts/generateArrowFunctionType';
 import {generateInterfaceFromObject} from '@ts/generateInterface';
@@ -25,7 +26,7 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
         name: functionName,
         signature: interfaceName,
         params: ['id', 'query'],
-        returns: `_generic(cfg, '${method}', \`${endpoint.path.replace('{id}', '${id}')}\`, query)`
+        returns: `_generic(cfg, '${method}', \`${insertPathPlaceholder(endpoint.path, {id: '${id}'})}\`, query)`
     });
 
     const interfaceSource = generateArrowFunctionType({
@@ -40,7 +41,7 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
         interfaces: [
             {
                 name: entityQuery,
-                source: generateInterfaceFromObject(entityQuery, params)
+                source: generateInterfaceFromObject(entityQuery, params, true)
             }
         ]
     };

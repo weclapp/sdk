@@ -34,8 +34,6 @@ void (async () => {
     if (useCache && await stat(cacheDir).catch(() => false)) {
         logger.successLn(`Cache match! (${cacheDir})`);
     } else {
-        logger.infoLn('Cleanup old SDK...');
-        await Promise.all(folders.map(async dir => rm(dist(dir), {recursive: true}).catch(() => 0)));
 
         // Store swagger.json file
         await writeFile(await tmp('openapi.json'), JSON.stringify(doc, null, 2));
@@ -43,17 +41,20 @@ void (async () => {
         // Generate SDKs
         for (const target of Object.values(Target)) {
             logger.infoLn(`Generate SDK (target: ${target})`);
-            await writeSourceFile(await tmp(`src/${target}.ts`), generate(doc, target));
+            await writeSourceFile(await tmp(`raw/${target}.ts`), generate(doc, target));
         }
 
         // Bundle
-        logger.infoLn('Bundle SDK (this may take some time)...');
+        logger.infoLn('Bundle SDKs (this may take some time)...');
         await bundle(cacheDir);
 
         // Print job summary
         const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
         logger.blankLn();
         logger.successLn(`SDK generated in ${duration}ms.`);
+
+        // Remove old SDK
+        await Promise.all(folders.map(async dir => rm(dist(dir), {recursive: true}).catch(() => 0)));
     }
 
     await copy(cacheDir, workingDirectory);

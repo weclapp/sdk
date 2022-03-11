@@ -1,3 +1,3 @@
 export const CONSTANTS = Object.freeze({
-    PLACEHOLDER_MISSING_TYPE: 'unknown /* error: cannot resolve type */'
+    PLACEHOLDER_MISSING_TYPE: 'any /* error: cannot resolve type */'
 });
