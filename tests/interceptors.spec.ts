@@ -3,7 +3,7 @@ import {Request, Response} from 'node-fetch';
 import {assert, test} from 'vitest';
 
 test('Intercept the request and response', async () => {
-    const party = await getService('party', {
+    const party = getService('party', {
         interceptors: {
             request: (req) => assert.instanceOf(req, Request),
             response: (res) => assert.instanceOf(res, Response)
@@ -15,7 +15,7 @@ test('Intercept the request and response', async () => {
 
 test('Fake a response', async () => {
     const count = Math.floor(Math.random() * 1000);
-    const party = await getService('party', {
+    const party = getService('party', {
         interceptors: {
             request() {
                 return new Response(`{"result": ${count}}`, {

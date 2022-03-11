@@ -1,7 +1,7 @@
 import {isNodeTarget, isRXTarget, Target} from '@enums/Target';
 import {generateImport} from '@ts/generateImport';
 import {generateStatements} from '@ts/generateStatements';
-import filter from './static/filter.ts.txt';
+import types from './static/types.ts.txt';
 import root from './static/root.ts.txt';
 
 const resolveImports = (target: Target): string => {
@@ -25,7 +25,7 @@ export const generateBase = (target: Target): string => {
     return generateStatements(
         resolveImports(target),
         resolveMappings(target),
-        filter,
+        types,
         root
     );
 };

@@ -12,7 +12,7 @@ import {convertToTypeScriptType, createObjectType} from '@utils/openapi/convertT
 import {pascalCase} from 'change-case';
 
 export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerator => ({target, method, path, endpoint}): GeneratedServiceFunction => {
-    const functionName = generateGenericFunctionName(endpoint.path, suffix);
+    const functionName = generateGenericFunctionName(endpoint.path, suffix, method === 'get' ? 'get' : undefined);
     const entity = pascalCase(endpoint.entity);
     const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
     const entityQuery = `${interfaceName}_Query`;
