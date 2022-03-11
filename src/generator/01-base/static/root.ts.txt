@@ -1,18 +1,18 @@
-let globalConfig: ServiceConfig | undefined;
-
-export const getGlobalConfig = (): ServiceConfig | undefined => {
-    return globalConfig;
-};
-
-export const setGlobalConfig = (cfg?: ServiceConfig) => {
-    globalConfig = cfg;
-};
-
 export interface ServiceConfig {
     key?: string;
     domain?: string;
     secure?: boolean;
+    signal?: AbortSignal;
+    interceptors?: {
+        request?: (request: Request) => Request | Response | void;
+        response?: (response: Response) => Response | void;
+    };
 }
+
+let globalConfig: ServiceConfig | undefined;
+
+export const getGlobalConfig = (): ServiceConfig | undefined => globalConfig;
+export const setGlobalConfig = (cfg?: ServiceConfig) => globalConfig = cfg;
 
 const api = async (
     cfg: ServiceConfig | undefined = globalConfig,
@@ -33,25 +33,46 @@ const api = async (
     const params = new URLSearchParams(Object.entries(payload.query ?? {}));
     const protocol = (cfg.secure ?? true) ? 'https' : 'http';
 
-    return fetch(`${protocol}://${cfg.domain}/webapp/api/v1${endpoint}?${params}`, {
+    const interceptRequest = cfg.interceptors?.request ?? (v => v);
+    const interceptResponse = cfg.interceptors?.response ?? (v => v);
+
+    let domain = cfg.domain;
+    if (!domain && typeof location !== undefined) {
+        domain = location.host;
+    }
+
+    if (!domain) {
+        throw new Error('Please specify a domain');
+    }
+
+    const request = new Request(`${protocol}://${domain}/webapp/api/v1${endpoint}?${params}`, {
         ...(payload.body && {body: isBinaryData ? payload.body : JSON.stringify(payload.body)}),
         ...(!cfg.key && {credentials: 'same-origin'}),
+        signal: cfg.signal,
         method: payload.method ?? 'get',
         headers: {
             'Content-Type': `application/${contentType}`,
             'Accept': 'application/json',
             ...(cfg.key && {'AuthenticationToken': cfg.key})
         }
-    }).then(async res => {
-        const data = res.headers?.get('content-type')?.includes('application/json') ? await res.json() : res;
-
-        // Check if response was successful
-        if (!res.ok) {
-            throw data;
-        }
-
-        return payload.unwrap ? data.result : data;
     });
+
+    let res = interceptRequest(request) ?? request;
+    if (!(res instanceof Response)) {
+        res = await fetch(res);
+    }
+
+    res = (await interceptResponse(res)) ?? res;
+
+    const data = res.headers?.get('content-type')?.includes('application/json') ?
+        await res.json() : res;
+
+    // Check if response was successful
+    if (!res.ok) {
+        throw data;
+    }
+
+    return payload.unwrap ? data.result : data;
 };
 
 const _count = (
