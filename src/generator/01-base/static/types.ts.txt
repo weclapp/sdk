@@ -40,6 +40,11 @@ type MapKeys<T, S extends Record<keyof T, string>> = {
     [K in keyof T as S[K]]: T[K];
 };
 
+type CustomAttributeFilter =
+    string | number | boolean |
+    {id: string;} |
+    {entityName: string; entityId: string;};
+
 // Endpoint configurations
 type SomeQuery<
     E extends Record<string, any>, // Entity
@@ -49,12 +54,13 @@ type SomeQuery<
     include?: I;
     filter?: QueryFilter<E>;
     select?: S;
+    customAttributes?: Record<number, CustomAttributeFilter>;
 };
 
 type SomeQueryReturn<
     E extends Record<string, any>, // Entity
     R extends Record<string, any>, // Map of referenced-entity names to the type
-    M extends Record<keyof R, string>, // Map of referenced-entity-id names to their entity name
+    M extends Record<keyof Select<R, I>, string>, // Map of referenced-entity-id names to their entity name
     I extends QuerySelect<any>, // Select for referenced entities
     S extends QuerySelect<any> // Select for entity properties
 > = {
@@ -114,6 +120,24 @@ const flattenFilter = (obj: QueryFilter<any> = {}): Record<string, string> => {
     };
 
     return Object.fromEntries(flatten(obj));
+};
+
+const flattenCustomAttributes = (obj: Record<number, CustomAttributeFilter> = {}): Record<string, string> => {
+    const entries: [string, string][] = [];
+
+    for (const [id, filter] of Object.entries(obj)) {
+        const key = `customAttribute${id}`;
+
+        if (typeof filter === 'object') {
+            for (const [prop, value] of Object.entries(filter)) {
+                entries.push([`${key}.${prop}-eq`, String(value)]);
+            }
+        } else {
+            entries.push([`${key}-eq`, String(filter)]);
+        }
+    }
+
+    return Object.fromEntries(entries);
 };
 
 const flattenSelect = (obj: Select<any, any> = {}): string[] => {

@@ -92,6 +92,7 @@ const _some = (
     query: {
         properties: flattenSelect(query?.select).join(','),
         includeReferencedEntities: Object.keys(query?.include ?? {}).join(','),
+        ...flattenCustomAttributes(query?.customAttributes),
         ...flattenFilter(query?.filter),
         ...query?.params
     }
