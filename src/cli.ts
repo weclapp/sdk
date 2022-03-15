@@ -92,5 +92,4 @@ export const cli = async (): Promise<CLIResult> => {
             }
         }).then(res => res.json()).then(convertSwaggerToOpenAPI)
     };
-
 };

@@ -22,13 +22,9 @@ export const generate = (doc: OpenAPIV3.Document, target: Target): string => {
 
     return generateStatements(
         generateBase(target),
-        generateBlockComment('ENUMS'),
-        [...enums.values()].map(v => v.source).join('\n\n'),
-        generateBlockComment('ENTITIES'),
-        [...entities.values()].map(v => v.source).join('\n\n'),
-        generateBlockComment('SERVICES'),
-        [...services.values()].map(v => v.source).join('\n\n'),
-        generateBlockComment('MAPS'),
-        maps.source
+        generateBlockComment('ENUMS', generateStatements(...[...enums.values()].map(v => v.source))),
+        generateBlockComment('ENTITIES', generateStatements(...[...entities.values()].map(v => v.source))),
+        generateBlockComment('SERVICES', generateStatements(...[...services.values()].map(v => v.source))),
+        generateBlockComment('MAPS', maps.source)
     );
 };

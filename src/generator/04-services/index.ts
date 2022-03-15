@@ -89,9 +89,7 @@ export const generateServices = (doc: OpenAPIV3.Document, target: Target): Map<s
         );
 
         const func = `export const ${serviceName} = (cfg?: ServiceConfig): ${serviceTypeName} => ${funcBody};`;
-        const description = generateBlockComment(`${pascalCase(entity)} service`);
-        const source = generateStatements(description, types, func);
-
+        const source = generateBlockComment(`${pascalCase(entity)} service`, generateStatements(types, func));
         services.set(entity, {entity, serviceName, serviceTypeName, source});
     }
 

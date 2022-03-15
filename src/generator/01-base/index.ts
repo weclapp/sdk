@@ -1,8 +1,8 @@
 import {isNodeTarget, isRXTarget, Target} from '@enums/Target';
 import {generateImport} from '@ts/generateImport';
 import {generateStatements} from '@ts/generateStatements';
-import types from './static/types.ts.txt';
 import root from './static/root.ts.txt';
+import types from './static/types.ts.txt';
 
 const resolveImports = (target: Target): string => {
     const imports: string[] = [];

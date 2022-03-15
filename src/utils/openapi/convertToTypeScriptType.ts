@@ -1,4 +1,5 @@
 /* eslint-disable no-use-before-define */
+import {CONSTANTS} from '@/src/constants';
 import {indent} from '@utils/indent';
 import {isReferenceObject} from '@utils/openapi/guards';
 import {pascalCase} from 'change-case';
@@ -66,7 +67,7 @@ export const createObjectType = (value: ObjectType['value'], required: string[] 
                 return `${name + (isRequired ? '' : '?')}: ${value.toString()};`;
             });
 
-        return properties.length ? `{\n${indent(properties.join('\n'))}\n}` : '{}';
+        return properties.length ? `{\n${indent(properties.join('\n'))}\n}` : CONSTANTS.EMPTY_OBJECT_TYPE;
     }
 });
 

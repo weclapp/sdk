@@ -1,7 +1,6 @@
 stages:
   - build
   - generate
-  - test
   - publish
 
 .npm:defaults:
@@ -39,13 +38,6 @@ generate:
   script:
     - chmod +x ./bin/cli.js
     - ./bin/cli.js --from-env --include-hidden
-
-lint:
-  extends: .npm:defaults
-  stage: test
-  dependencies:
-    - generate
-  script: npm run lint
 
 publish:
   tags:

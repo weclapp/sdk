@@ -1,8 +1,8 @@
 import {rm} from 'fs-extra';
 import {resolve} from 'path';
+import {rollup, RollupOptions} from 'rollup';
 import {terser} from 'rollup-plugin-terser';
 import ts from 'rollup-plugin-ts';
-import {rollup, RollupOptions} from 'rollup';
 
 const tsconfig = resolve(__dirname, '../tsconfig.lib.json');
 const resolveGlobals = (...globals: string[]) => Object.fromEntries(globals.map(v => [v, '*']));
