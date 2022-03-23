@@ -18,15 +18,23 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({target, path, en
     const entityMappings = `${entity}_Mappings`;
     const entityReferences = `${entity}_References`;
     const entityParameters = `${interfaceName}_Parameters`;
-    const type = createObjectType({
-        params: convertToTypeScriptType(convertParametersToSchema(path.parameters))
+    const parameterSchema = convertParametersToSchema(path.parameters);
+
+    // We already cover page, pageSize and sort
+    parameterSchema.properties = Object.fromEntries(
+        Object.entries(parameterSchema.properties ?? {})
+            .filter(v => !['page', 'pageSize', 'sort'].includes(v[0]))
+    );
+
+    const parameters = createObjectType({
+        params: convertToTypeScriptType(parameterSchema)
     });
 
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
-        generics: [`S extends QuerySelect<${entity}>`, `R extends QuerySelect<${entityMappings}>`],
-        params: [`query?: SomeQuery<${entity}, R, S> & ${entityParameters}`],
-        returns: `${resolveResponseType(target)}<SomeQueryReturn<${entity}, ${entityReferences}, ${entityMappings}, R, S>>`
+        generics: [`S extends QuerySelect<${entity}>`, `I extends QuerySelect<${entityMappings}>`],
+        params: [`query${parameters.isFullyOptional() ? '?' : ''}: SomeQuery<${entity}, I, S> & ${entityParameters}`],
+        returns: `${resolveResponseType(target)}<SomeQueryReturn<${entity}, ${entityReferences}, ${entityMappings}, I, S>>`
     });
 
     const functionSource = generateArrowFunction({
@@ -43,7 +51,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({target, path, en
         interfaces: [
             {
                 name: entityParameters,
-                source: generateInterfaceFromObject(entityParameters, type, true)
+                source: generateInterfaceFromObject(entityParameters, parameters, true)
             }
         ]
     };

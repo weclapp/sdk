@@ -1,31 +1,37 @@
 // Filter properties
-type EqualityOperators = 'EQ' | 'NE';
-type ComparisonOperators = 'LT' | 'GT' | 'LE' | 'GE' | 'LIKE' | 'ILIKE' | 'NOT_LIKE' | 'NOT_ILIKE';
-type ArrayOperators = 'IN' | 'NOT_IN';
-type Operator = EqualityOperators | ComparisonOperators | ArrayOperators;
+export type EqualityOperators = 'EQ' | 'NE';
+export type ComparisonOperators = 'LT' | 'GT' | 'LE' | 'GE' | 'LIKE' | 'ILIKE' | 'NOT_LIKE' | 'NOT_ILIKE';
+export type ArrayOperators = 'IN' | 'NOT_IN';
+export type Operator = EqualityOperators | ComparisonOperators | ArrayOperators;
 
-type MapOperators<T> = { [K in EqualityOperators]?: T | null; } &
+export type MapOperators<T> = { [K in EqualityOperators]?: T | null; } &
     { [K in ComparisonOperators]?: T; } &
     { [K in ArrayOperators]?: T[]; };
 
-type MainQueryFiler<T> = {
-    [P in keyof T]?: T[P] extends Array<infer U> ?
-        MainQueryFiler<U> : T[P] extends object ?
-            MainQueryFiler<T[P]> : MapOperators<T[P]>;
+export type MainQueryFiler<T> = {
+    [P in keyof T]?:
+        T[P] extends Array<infer U> | undefined ? MainQueryFiler<U> :
+            T[P] extends Record<any, any> | undefined ? MainQueryFiler<T[P]> : MapOperators<T[P]>;
 };
 
-type QueryFilter<T> = MainQueryFiler<T> & {
+export type QueryFilter<T> = MainQueryFiler<T> & {
     OR?: MainQueryFiler<T>[][];
 };
 
+export type Sort<T> = {
+    [P in keyof T]?: T[P] extends Array<infer U> | undefined ?
+        Sort<U> : T[P] extends object | undefined ?
+            Sort<T[P]> : 'asc' | 'desc';
+};
+
 // Select properties
-type QuerySelect<T> = {
+export type QuerySelect<T> = {
     [P in keyof T]?:
         T[P] extends Array<infer U> | undefined ? (QuerySelect<U> | boolean) :
             T[P] extends Record<any, any> | undefined ? (QuerySelect<T[P]> | boolean) : boolean;
 }
 
-type Select<T, Q extends QuerySelect<T>> = {
+export type Select<T, Q extends QuerySelect<T>> = {
 
     // Filter out excluded properties beforehand
     [P in keyof T as Q[P] extends boolean ? P : Q[P] extends object ? P : never]:
@@ -40,29 +46,40 @@ type Select<T, Q extends QuerySelect<T>> = {
             T[P] extends Record<any, any> ? Select<T[P], Q[P] & QuerySelect<any>> : never
 }
 
-type MapKeys<T, S extends Record<keyof T, string>> = {
+export type MapKeys<T, S extends Record<keyof T, string>> = {
     [K in keyof T as S[K]]: T[K];
 };
 
-type CustomAttributeFilter =
+export type CustomAttributeFilter =
     string | number | boolean |
     {id: string;} |
     {entityName: string; entityId: string;};
 
 // Endpoint configurations
-type SomeQuery<
-    E extends Record<string, any>, // Entity
+export type CountQuery<E> = {
+    filter?: QueryFilter<E>;
+};
+
+export type Params<E> = {
+    page?: number;
+    pageSize?: number;
+    sort?: Sort<E>[];
+};
+
+export type SomeQuery<
+    E, // Entity
     I extends QuerySelect<any>, // Select for referenced entities
     S extends QuerySelect<any> // Select for entity properties
 > = {
     include?: I;
     filter?: QueryFilter<E>;
     select?: S;
+    params?: Params<E>;
     customAttributes?: Record<number, CustomAttributeFilter>;
 };
 
-type SomeQueryReturn<
-    E extends Record<string, any>, // Entity
+export type SomeQueryReturn<
+    E, // Entity
     R extends Record<string, any>, // Map of referenced-entity names to the type
     M extends Record<keyof Select<R, I>, string>, // Map of referenced-entity-id names to their entity name
     I extends QuerySelect<any>, // Select for referenced entities
@@ -72,13 +89,14 @@ type SomeQueryReturn<
     references: MapKeys<Select<R, I>, M>;
 };
 
-type GenericQuery<P, B> = {
+export type GenericQuery<P, B> = {
     params?: P;
     body?: B;
 };
 
 // Utils
-const simple: string[] = ['EQ', 'NE', 'LT', 'GT', 'LE', 'GE', 'LIKE', 'NOT_LIKE', 'ILIKE', 'NOT_ILIKE'];
+const equality: string[] = ['EQ', 'NE'];
+const simple: string[] = [...equality, 'LT', 'GT', 'LE', 'GE', 'LIKE', 'NOT_LIKE', 'ILIKE', 'NOT_ILIKE'];
 const array: string[] = ['IN', 'NOT_IN'];
 const filterMap: Record<Operator, string> = {
     EQ: 'eq',
@@ -106,7 +124,7 @@ const flattenFilter = (obj: QueryFilter<any> = {}): Record<string, string> => {
                     for (const or of propValue[i]) {
                         entries.push(
                             ...flatten(or)
-                                .map(v => [`or${i}-${v[0]}`, v[1]]) as [string, string][]
+                                .map(v => [`or${i || ''}-${v[0]}`, v[1]]) as [string, string][]
                         );
                     }
                 }
@@ -121,9 +139,16 @@ const flattenFilter = (obj: QueryFilter<any> = {}): Record<string, string> => {
                 }
 
                 if (simple.includes(filter)) {
-                    entries.push([`${prop}-${filterMap[filter as Operator]}`, value]);
+                    if (value === null && equality.includes(filter)) {
+                        entries.push([`${prop}-${filter === 'EQ' ? 'null' : 'notnull'}`, '']);
+                    } else {
+                        entries.push([`${prop}-${filterMap[filter as Operator]}`, value]);
+                    }
                 } else if (array.includes(filter)) {
-                    entries.push([`${prop}-${filterMap[filter as Operator]}`, `[${value}]`]);
+                    entries.push([
+                        `${prop}-${filterMap[filter as Operator]}`,
+                        `[${value.map((v: string | number) => typeof v === 'string' ? `"${v}"` : v)}]`
+                    ]);
                 } else {
                     entries.push(
                         ...flatten(propValue as QueryFilter<any>)
@@ -170,4 +195,24 @@ const flattenSelect = (obj: Select<any, any> = {}): string[] => {
     }
 
     return entries;
+};
+
+export const flattenSort = (obj: Sort<any>[] = []): {sort: string} => {
+    const flatten = (obj: Sort<any>, base = ''): string | undefined => {
+        const [key, value] = Object.entries(obj ?? {})[0] ?? [];
+
+        if (key && value) {
+            const path = base + key;
+
+            if (typeof value === 'object') {
+                return flatten(value, path ? `${path}.` : '');
+            } else if (['asc', 'desc'].includes(value)) {
+                return `${value === 'desc' ? '-' : ''}${path}`;
+            }
+        }
+
+        return undefined;
+    };
+
+    return {sort: obj.map(v => flatten(v)).filter(Boolean).join(',')};
 };

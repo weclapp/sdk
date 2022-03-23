@@ -1,10 +1,6 @@
 import {indent} from '@utils/indent';
 
-export const concat = (
-    strings: string[],
-    separator = ', ',
-    maxLength = 80
-): string => {
+export const concat = (strings: string[], separator = ', ', maxLength = 80): string => {
     const joined = strings.join(separator);
 
     if (joined.length > maxLength) {

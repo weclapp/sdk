@@ -23,7 +23,6 @@ export const generateMaps = ({services, entities}: MapsGenerator): GeneratedMaps
     const entityTuple = generateType('WeclappEntity', 'keyof WeclappEntities');
 
     const functionSets: Map<string, string[]> = new Map();
-
     for (const {entity, generatedFunctions} of services) {
         for (const func of generatedFunctions) {
             functionSets.set(func, [...(functionSets.get(func) ?? []), entity]);
@@ -32,11 +31,11 @@ export const generateMaps = ({services, entities}: MapsGenerator): GeneratedMaps
 
     return {
         source: generateStatements(
-            entityTypes,
-            entityTuple,
             serviceTypes,
             serviceValues,
             serviceInstanceValues,
+            entityTypes,
+            entityTuple,
             ...[...functionSets.entries()]
                 .map(v => generateTuple(pascalCase(`EntitiesWith_${v[0]}`), v[1]))
         )

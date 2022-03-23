@@ -59,10 +59,6 @@ void (async () => {
 
     await copy(cacheDir, workingDirectory);
 
-    if (!useCache) {
-        await rm(cacheDir, {recursive: true, force: true});
-    }
-
     logger.successLn(`Cleanup done, Bye.`);
     logger.printSummary();
 })().catch((error: unknown) => {
