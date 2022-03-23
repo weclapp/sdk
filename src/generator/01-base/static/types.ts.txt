@@ -21,8 +21,8 @@ type QueryFilter<T> = MainQueryFiler<T> & {
 // Select properties
 type QuerySelect<T> = {
     [P in keyof T]?:
-    T[P] extends Array<infer U> | undefined ? (QuerySelect<U> | boolean) :
-        T[P] extends Record<any, any> | undefined ? (QuerySelect<T[P]> | boolean) : boolean;
+        T[P] extends Array<infer U> | undefined ? (QuerySelect<U> | boolean) :
+            T[P] extends Record<any, any> | undefined ? (QuerySelect<T[P]> | boolean) : boolean;
 }
 
 type Select<T, Q extends QuerySelect<T>> = {

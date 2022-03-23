@@ -1,5 +1,6 @@
 import {generateInterface, InterfaceProperty} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
+import {generateString} from '@ts/generateString';
 import {convertToTypeScriptType} from '@utils/openapi/convertToTypeScriptType';
 import {isRelatedEntitySchema} from '@utils/openapi/guards';
 import {pascalCase} from 'change-case';
@@ -24,7 +25,7 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
                 const relatedEntity = property['x-relatedEntityName'];
                 const type = `${pascalCase(relatedEntity)}[]`;
                 referenceInterface.push({name, type, required: true});
-                referenceMappingsInterface.push({name, type: `'${relatedEntity}'`, required: true});
+                referenceMappingsInterface.push({name, type: generateString(relatedEntity), required: true});
             }
 
             const type = convertToTypeScriptType(property, name).toString();

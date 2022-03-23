@@ -8,6 +8,7 @@ export interface Export {
 }
 
 export interface GeneratedServiceFunction {
+    name: string;
     type: Export;
     func: Export;
     interfaces?: Export[];

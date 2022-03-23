@@ -7,6 +7,7 @@ import {insertPathPlaceholder} from '@generator/04-services/utils/insertPathPlac
 import {generateArrowFunction} from '@ts/generateArrowFunction';
 import {generateArrowFunctionType} from '@ts/generateArrowFunctionType';
 import {generateInterfaceFromObject} from '@ts/generateInterface';
+import {generateString} from '@ts/generateString';
 import {convertParametersToSchema} from '@utils/openapi/convertParametersToSchema';
 import {convertToTypeScriptType, createObjectType} from '@utils/openapi/convertToTypeScriptType';
 import {pascalCase} from 'change-case';
@@ -26,7 +27,7 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
         name: functionName,
         signature: interfaceName,
         params: ['id', 'query'],
-        returns: `_generic(cfg, '${method}', \`${insertPathPlaceholder(endpoint.path, {id: '${id}'})}\`, query)`
+        returns: `_generic(cfg, ${generateString(method)}, \`${insertPathPlaceholder(endpoint.path, {id: '${id}'})}\`, query)`
     });
 
     const interfaceSource = generateArrowFunctionType({
@@ -36,6 +37,7 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
     });
 
     return {
+        name: functionName,
         type: {name: interfaceName, source: interfaceSource},
         func: {name: functionName, source: functionSource},
         interfaces: [

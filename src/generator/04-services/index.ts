@@ -22,6 +22,7 @@ export interface GeneratedService {
     serviceName: string;
     serviceTypeName: string;
     source: string;
+    generatedFunctions: string[];
 }
 
 const generators: Record<WeclappEndpointType, Record<string, ServiceFunctionGenerator>> = {
@@ -90,7 +91,8 @@ export const generateServices = (doc: OpenAPIV3.Document, target: Target): Map<s
 
         const func = `export const ${serviceName} = (cfg?: ServiceConfig): ${serviceTypeName} => ${funcBody};`;
         const source = generateBlockComment(`${pascalCase(entity)} service`, generateStatements(types, func));
-        services.set(entity, {entity, serviceName, serviceTypeName, source});
+        const generatedFunctions = functions.map(v => v.name);
+        services.set(entity, {entity, serviceName, serviceTypeName, source, generatedFunctions});
     }
 
     return services;

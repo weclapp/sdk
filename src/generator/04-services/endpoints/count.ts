@@ -2,6 +2,7 @@ import {resolveResponseType} from '@enums/Target';
 import {GeneratedServiceFunction, ServiceFunctionGenerator} from '@generator/04-services/types';
 import {generateArrowFunction} from '@ts/generateArrowFunction';
 import {generateArrowFunctionType} from '@ts/generateArrowFunctionType';
+import {generateString} from '@ts/generateString';
 import {pascalCase} from 'change-case';
 
 const functionName = 'count';
@@ -13,7 +14,7 @@ export const generateCountEndpoint: ServiceFunctionGenerator = ({target, endpoin
     const functionSource = generateArrowFunction({
         name: functionName,
         signature: interfaceName,
-        returns: `_${functionName}(cfg, '${endpoint.path}', query)`,
+        returns: `_${functionName}(cfg, ${generateString(endpoint.path)}, query)`,
         params: ['query']
     });
 
@@ -24,6 +25,7 @@ export const generateCountEndpoint: ServiceFunctionGenerator = ({target, endpoin
     });
 
     return {
+        name: functionName,
         type: {name: interfaceName, source: interfaceSource},
         func: {name: functionName, source: functionSource}
     };

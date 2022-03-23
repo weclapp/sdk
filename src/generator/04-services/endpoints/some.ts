@@ -3,6 +3,7 @@ import {GeneratedServiceFunction, ServiceFunctionGenerator} from '@generator/04-
 import {generateArrowFunction} from '@ts/generateArrowFunction';
 import {generateArrowFunctionType} from '@ts/generateArrowFunctionType';
 import {generateInterfaceFromObject} from '@ts/generateInterface';
+import {generateString} from '@ts/generateString';
 import {convertParametersToSchema} from '@utils/openapi/convertParametersToSchema';
 import {convertToTypeScriptType, createObjectType} from '@utils/openapi/convertToTypeScriptType';
 import {pascalCase} from 'change-case';
@@ -31,11 +32,12 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({target, path, en
     const functionSource = generateArrowFunction({
         name: functionName,
         signature: interfaceName,
-        returns: `_${functionName}(cfg, '${endpoint.path}', query)`,
+        returns: `_${functionName}(cfg, ${generateString(endpoint.path)}, query)`,
         params: ['query']
     });
 
     return {
+        name: functionName,
         type: {name: interfaceName, source: interfaceSource},
         func: {name: functionName, source: functionSource},
         interfaces: [
