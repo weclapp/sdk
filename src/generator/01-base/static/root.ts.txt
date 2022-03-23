@@ -131,9 +131,9 @@ const _generic = (
     cfg: ServiceConfig | undefined,
     method: string,
     endpoint: string,
-    payload: GenericQuery<any, any>
+    payload?: GenericQuery<any, any>
 ) => wrapResponse(() => api(cfg, endpoint, {
     method,
-    body: payload.body,
-    query: payload.params
+    body: payload?.body,
+    query: payload?.params
 }));
