@@ -31,9 +31,6 @@ interface ServiceConfig {
     // If you want to use https, defaults to true.
     secure?: boolean;
 
-    // An optional AbortSignal from an AbortController to abort the (fetch-)request.
-    signal?: AbortSignal;
-
     // Optional request/response interceptors.
     interceptors?: {
 

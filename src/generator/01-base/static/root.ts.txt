@@ -2,7 +2,6 @@ export interface ServiceConfig {
     key?: string;
     domain?: string;
     secure?: boolean;
-    signal?: AbortSignal;
     interceptors?: {
         request?: (request: Request) => Request | Response | void;
         response?: (response: Response) => Response | void;
@@ -37,7 +36,7 @@ const api = async (
     const interceptResponse = cfg.interceptors?.response ?? (v => v);
 
     let domain = cfg.domain;
-    if (!domain && typeof location !== undefined) {
+    if (!domain && typeof location !== 'undefined') {
         domain = location.host;
     }
 
@@ -48,7 +47,6 @@ const api = async (
     const request = new Request(`${protocol}://${domain}/webapp/api/v1${endpoint}?${params}`, {
         ...(payload.body && {body: isBinaryData ? payload.body : JSON.stringify(payload.body)}),
         ...(!cfg.key && {credentials: 'same-origin'}),
-        signal: cfg.signal,
         method: payload.method ?? 'get',
         headers: {
             'Content-Type': `application/${contentType}`,

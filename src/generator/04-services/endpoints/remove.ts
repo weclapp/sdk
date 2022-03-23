@@ -1,3 +1,4 @@
+import {resolveResponseType} from '@enums/Target';
 import {GeneratedServiceFunction, ServiceFunctionGenerator} from '@generator/04-services/types';
 import {insertPathPlaceholder} from '@generator/04-services/utils/insertPathPlaceholder';
 import {generateArrowFunction} from '@ts/generateArrowFunction';
@@ -6,7 +7,7 @@ import {pascalCase} from 'change-case';
 
 const functionName = 'remove';
 
-export const generateRemoveEndpoint: ServiceFunctionGenerator = ({endpoint}): GeneratedServiceFunction => {
+export const generateRemoveEndpoint: ServiceFunctionGenerator = ({target, endpoint}): GeneratedServiceFunction => {
     const entity = pascalCase(endpoint.entity);
     const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
 
@@ -19,7 +20,8 @@ export const generateRemoveEndpoint: ServiceFunctionGenerator = ({endpoint}): Ge
 
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
-        params: ['id: string']
+        params: ['id: string'],
+        returns: `${resolveResponseType(target)}<void>`
     });
 
     return {
