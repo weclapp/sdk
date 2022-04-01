@@ -12,6 +12,9 @@ stages:
     policy: pull
     paths:
       - node_modules/
+  before_script:
+    - npm install --unsafe-perm --prefer-offline --no-audit
+    - npm prune
 
 build:
   extends: .npm:defaults
@@ -21,8 +24,7 @@ build:
     paths:
       - lib
   script:
-    - npm install --unsafe-perm --prefer-offline --no-audit
-    - npm prune
+    - npm run cli:build
 
 generate:
   extends: .npm:defaults
@@ -53,3 +55,27 @@ publish:
   variables:
     GITLAB_AUTH_TOKEN: $CI_JOB_TOKEN
   script: npm publish
+
+publish:snapshot:
+  tags:
+    - tiny
+  stage: publish
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-16-alpine
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - when: never
+  dependencies:
+    - build
+  variables:
+    GITLAB_AUTH_TOKEN: $CI_JOB_TOKEN
+  script: |
+    LATEST_TAG=$(git describe --abbrev=0)
+    LATEST_TAG_RAW=$(echo "$LATEST_TAG" | sed 's/v//')
+    COMMITS_SINCE_LAST_TAG=$(git rev-list "$LATEST_TAG"..HEAD --count)
+    VERSION="$LATEST_TAG_RAW-dev.$COMMITS_SINCE_LAST_TAG"
+    echo "Publish version '$VERSION'..."
+    npm version "$VERSION" --git-tag-version=false
+    npm publish

@@ -30,8 +30,7 @@
     "lint:fix": "npm run lint -- --fix",
     "test": "vitest run",
     "test:watch": "vitest",
-    "coverage": "vitest run --coverage",
-    "postinstall": "npm run cli:build"
+    "coverage": "vitest run --coverage"
   },
   "repository": {
     "type": "git",
