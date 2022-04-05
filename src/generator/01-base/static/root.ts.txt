@@ -110,20 +110,19 @@ const _some = (
     cfg: ServiceConfig | undefined,
     endpoint: string,
     query?: SomeQuery<any, any, any> & {params?: Record<any, any>}
-) => wrapResponse(() => {
-    const {sort, ...params} = query?.params ?? {};
-
-    return api(cfg, endpoint, {
+) => wrapResponse(() => api(cfg, endpoint, {
         query: {
+            serializeNulls: query?.serializeNulls,
             properties: flattenSelect(query?.select).join(','),
             includeReferencedEntities: Object.keys(query?.include ?? {}).join(','),
-            ...flattenCustomAttributes(query?.customAttributes),
+            ...flattenOrFilter(query?.or),
             ...flattenFilter(query?.filter),
-            ...flattenSort(sort),
-            ...params
+            ...flattenSort(query?.sort),
+            ...query?.params,
+            ...query?.pagination
         }
-    }).then(data => ({entities: data.result, references: data.referencedEntities}));
-});
+    }).then(data => ({entities: data.result, references: data.referencedEntities}))
+);
 
 const _remove = (
     cfg: ServiceConfig | undefined,
@@ -153,8 +152,9 @@ const _update = (
 
 const _unique = (
     cfg: ServiceConfig | undefined,
-    endpoint: string
-) => wrapResponse(() => api(cfg, endpoint));
+    endpoint: string,
+    query?: UniqueQuery
+) => wrapResponse(() => api(cfg, endpoint, {query}));
 
 const _generic = (
     cfg: ServiceConfig | undefined,

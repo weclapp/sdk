@@ -14,13 +14,14 @@ export const generateUniqueEndpoint: ServiceFunctionGenerator = ({target, endpoi
     const functionSource = generateArrowFunction({
         name: functionName,
         signature: interfaceName,
-        params: ['id'],
-        returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, {id: '${id}'})}\`)`
+        params: ['id', 'query'],
+        returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, {id: '${id}'})}\`, query)`
     });
 
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
-        params: ['id: string'],
+        params: ['id: string', 'query?: Q'],
+        generics: ['Q extends UniqueQuery'],
         returns: `${resolveResponseType(target)}<${entity}>`
     });
 

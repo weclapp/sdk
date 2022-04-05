@@ -1,4 +1,5 @@
 import {GeneratedService} from '@generator/04-services';
+import {concat} from '@ts/concat';
 import {generateInterface} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
 import {generateTuple} from '@ts/generateTuple';
@@ -21,6 +22,7 @@ export const generateMaps = ({services, entities}: MapsGenerator): GeneratedMaps
     const entityTypes = generateInterface('WeclappEntities', entities.map(v => ({required: true, name: camelCase(v), type: v})));
     const serviceTypes = generateType('WeclappServices', 'typeof weclappServices');
     const entityTuple = generateType('WeclappEntity', 'keyof WeclappEntities');
+    const weclappService = generateType('WeclappService', concat(services.map(v => v.serviceTypeName), ' | '));
 
     const functionSets: Map<string, string[]> = new Map();
     for (const {entity, generatedFunctions} of services) {
@@ -36,6 +38,7 @@ export const generateMaps = ({services, entities}: MapsGenerator): GeneratedMaps
             serviceInstanceValues,
             entityTypes,
             entityTuple,
+            weclappService,
             ...[...functionSets.entries()]
                 .map(v => generateTuple(pascalCase(`EntitiesWith_${v[0]}`), v[1]))
         )
