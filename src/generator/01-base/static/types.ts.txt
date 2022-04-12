@@ -33,7 +33,7 @@ export type QuerySelect<T> = {
             T[P] extends Record<any, any> | undefined ? (QuerySelect<T[P]> | boolean) : boolean;
 }
 
-export type Select<T, Q extends QuerySelect<T>> = {
+export type Select<T, Q extends (QuerySelect<T> | undefined)> = Q extends QuerySelect<T> ? {
 
     // Filter out excluded properties beforehand
     [P in keyof T as Q[P] extends boolean ? P : Q[P] extends object ? P : never]:
@@ -46,7 +46,7 @@ export type Select<T, Q extends QuerySelect<T>> = {
 
             // Object
             T[P] extends Record<any, any> ? Select<T[P], Q[P] & QuerySelect<any>> : never
-}
+} : undefined;
 
 export type MapKeys<T, S extends Record<keyof T, string>> = {
     [K in keyof T as S[K]]: T[K];
@@ -63,8 +63,8 @@ export type Pagination = {
 };
 
 export type SomeQuery<E, // Entity
-    I extends QuerySelect<any>, // Select for referenced entities
-    S extends QuerySelect<any> // Select for entity properties
+    I extends (QuerySelect<any> | undefined), // Select for referenced entities
+    S extends (QuerySelect<any> | undefined) // Select for entity properties
 > = {
     serializeNulls?: boolean;
     include?: I;
@@ -79,14 +79,15 @@ export type UniqueQuery = {
     serializeNulls?: boolean;
 }
 
-export type SomeQueryReturn<E, // Entity
-    R extends Record<string, any>, // Map of referenced-entity names to the type
-    M extends Record<keyof Select<R, I>, string>, // Map of referenced-entity-id names to their entity name
-    I extends QuerySelect<any>, // Select for referenced entities
-    S extends QuerySelect<any> // Select for entity properties
+export type SomeQueryReturn<
+    E, // Entity
+    R, // Map of referenced-entity names to the type
+    M, // Map of referenced-entity-id names to their entity name
+    I extends (QuerySelect<any> | undefined), // Select for referenced entities
+    S extends (QuerySelect<any> | undefined) // Select for entity properties
 > = {
-    entities: Select<E, S>[];
-    references: MapKeys<Select<R, I>, M>;
+    entities: (S extends QuerySelect<E> ? Select<E, S> : E)[];
+    references: I extends QuerySelect<R> ? MapKeys<Select<R, I>, M & Record<any, any>> : {};
 };
 
 export type GenericQuery<P, B> = {

@@ -32,7 +32,10 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({target, path, en
 
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
-        generics: [`S extends QuerySelect<${entity}>`, `I extends QuerySelect<${entityMappings}>`],
+        generics: [
+            `S extends (QuerySelect<${entity}> | undefined) = undefined`,
+            `I extends (QuerySelect<${entityMappings}> | undefined) = undefined`
+        ],
         params: [`query${parameters.isFullyOptional() ? '?' : ''}: SomeQuery<${entity}, I, S> & ${entityParameters}`],
         returns: `${resolveResponseType(target)}<SomeQueryReturn<${entity}, ${entityReferences}, ${entityMappings}, I, S>>`
     });
