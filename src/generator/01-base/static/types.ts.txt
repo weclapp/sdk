@@ -15,10 +15,16 @@ export type QueryFilter<T> = {
 };
 
 export type Sort<T> = {
-    [P in keyof T]?: T[P] extends Array<infer U> | undefined ?
-        Sort<U> : T[P] extends object | undefined ?
-            Sort<T[P]> : 'asc' | 'desc';
-};
+    [K in keyof T]?: {
+        [V in keyof T]?:
+            V extends K ?
+                T[V] extends Array<infer U> | undefined ?
+                    U extends object ?
+                        Sort<U> : never :
+                            T[V] extends object | undefined ?
+                                Sort<T[V]> : 'asc' | 'desc' : never;
+    };
+}[keyof T];
 
 // Select properties
 export type CustomAttributeFilter = {
@@ -62,7 +68,8 @@ export type Pagination = {
     pageSize?: number;
 };
 
-export type SomeQuery<E, // Entity
+export type SomeQuery<
+    E, // Entity
     I extends (QuerySelect<any> | undefined), // Select for referenced entities
     S extends (QuerySelect<any> | undefined) // Select for entity properties
 > = {
