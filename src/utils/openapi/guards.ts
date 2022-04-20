@@ -15,6 +15,10 @@ export const isReferenceObject = (v: any): v is OpenAPIV3.ReferenceObject => {
     return isObject(v) && typeof v.$ref === 'string';
 };
 
+export const isObjectSchemaObject = (v: any): v is OpenAPIV3.SchemaObject => {
+    return isObject(v) && v.type === 'object' && isObject(v.properties);
+};
+
 export const isArraySchemaObject = (v: any): v is OpenAPIV3.ArraySchemaObject => {
     return isObject(v) && v.type === 'array' && typeof v.items === 'object';
 };

@@ -1,5 +1,6 @@
 import {generateEnum} from '@ts/generateEnum';
-import {isReferenceObject} from '@utils/openapi/guards';
+import {convertToTypeScriptType} from '@utils/openapi/convertToTypeScriptType';
+import {isObjectSchemaObject, isReferenceObject} from '@utils/openapi/guards';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
@@ -32,12 +33,18 @@ export const generateEnums = (schemas: Map<string, OpenAPIV3.SchemaObject>): Map
     const enums: Map<string, GeneratedEnum> = new Map();
 
     for (const [, schema] of schemas) {
-        for (const [propName, prop] of Object.entries(schema.properties ?? {})) {
-            const name = pascalCase(propName);
-            const found = extractEnum(name, prop);
+        const propertyLists = [schema, ...(schema.allOf ?? [])]
+            .filter(v => isObjectSchemaObject(v) && v.properties)
+            .map(v => (v as OpenAPIV3.SchemaObject).properties);
 
-            if (found && !enums.has(name)) {
-                enums.set(name, found);
+        for (const properties of propertyLists) {
+            for (const [propName, prop] of Object.entries(properties as OpenAPIV3.SchemaObject)) {
+                const name = pascalCase(propName);
+                const found = extractEnum(name, prop);
+
+                if (found && !enums.has(name)) {
+                    enums.set(name, found);
+                }
             }
         }
     }

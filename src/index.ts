@@ -18,7 +18,7 @@ logger.infoLn(`Working directory: ${workingDirectory}`);
 
 void (async () => {
     const start = process.hrtime.bigint();
-    const {content: doc, cache: useCache} = await cli();
+    const {content: doc, swagger, cache: useCache} = await cli();
 
     // Resolve cache dir and key
     const cacheKey = hash([pkg.version, JSON.stringify(doc)]).slice(-8);
@@ -37,6 +37,7 @@ void (async () => {
 
         // Store swagger.json file
         await writeFile(await tmp('openapi.json'), JSON.stringify(doc, null, 2));
+        await writeFile(await tmp('swagger.json'), JSON.stringify(swagger, null, 2));
 
         // Generate SDKs
         for (const target of Object.values(Target)) {

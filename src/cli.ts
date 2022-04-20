@@ -3,7 +3,7 @@ import {convertSwaggerToOpenAPI} from '@utils/openapi/convertSwaggerToOpenAPI';
 import {config} from 'dotenv';
 import {readFile, stat} from 'fs-extra';
 import fetch from 'node-fetch';
-import {OpenAPIV3} from 'openapi-types';
+import {OpenAPIV2, OpenAPIV3} from 'openapi-types';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 import {version} from '../package.json';
@@ -18,6 +18,7 @@ interface Args {
 
 interface CLIResult {
     cache: boolean;
+    swagger: OpenAPIV2.Document;
     content: OpenAPIV3.Document;
 }
 
@@ -69,10 +70,9 @@ export const cli = async (): Promise<CLIResult> => {
 
     if (await stat(src).catch(() => false)) {
         logger.infoLn(`Source is a file`);
-        return {
-            cache,
-            content: await convertSwaggerToOpenAPI(JSON.parse(await readFile(src, 'utf-8')))
-        };
+        const swagger = JSON.parse(await readFile(src, 'utf-8'));
+        const content = await convertSwaggerToOpenAPI(swagger);
+        return {cache, swagger,  content};
     }
 
     const url = new URL(src.startsWith('http') ? src : `https://${src}`);
@@ -83,13 +83,14 @@ export const cli = async (): Promise<CLIResult> => {
     }
 
     logger.infoLn(`Source is a URL: ${url.toString()}`);
-    return {
-        cache,
-        content: await fetch(url.toString(), {
-            headers: {
-                'Accept': 'application/json',
-                'AuthenticationToken': key
-            }
-        }).then(res => res.json()).then(convertSwaggerToOpenAPI)
-    };
+
+    const swagger = await fetch(url.toString(), {
+        headers: {
+            'Accept': 'application/json',
+            'AuthenticationToken': key
+        }
+    }).then(res => res.json());
+
+    const content = await convertSwaggerToOpenAPI(swagger);
+    return {cache, swagger, content};
 };
