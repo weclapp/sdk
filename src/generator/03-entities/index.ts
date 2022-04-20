@@ -44,7 +44,7 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
         if (schema.allOf?.length) {
             for (const item of schema.allOf) {
                 if (isReferenceObject(item)) {
-                    extend = convertToTypeScriptType(item).value as string;
+                    extend = convertToTypeScriptType(item).toString();
                 } else if (isObjectSchemaObject(item)) {
                     processProperties(item.properties);
                 }

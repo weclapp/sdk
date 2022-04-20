@@ -1,15 +1,21 @@
 import {CONSTANTS} from '@/src/constants';
-import {convertToTypeScriptType} from '@utils/openapi/convertToTypeScriptType';
+import {AnyType, convertToTypeScriptType, createSimpleType, createTupleType} from '@utils/openapi/convertToTypeScriptType';
 import {isReferenceObject} from '@utils/openapi/guards';
 import {OpenAPIV3} from 'openapi-types';
 
-export const generateResponseBodyType = ({responses}: OpenAPIV3.OperationObject): string => {
-    const body = responses['200'];
+export const generateResponseBodyType = (operation: OpenAPIV3.OperationObject): AnyType => {
+    const body = operation.responses['200'];
 
     if (isReferenceObject(body)) {
-        return convertToTypeScriptType(body).toString();
+        return convertToTypeScriptType(body);
     }
 
-    const schema = Object.values(body?.content ?? {})?.[0]?.schema;
-    return schema ? convertToTypeScriptType(schema).toString() : CONSTANTS.PLACEHOLDER_MISSING_TYPE;
+    const types: AnyType[] = [];
+    for (const {schema} of Object.values(body.content ?? {})) {
+        if (schema) {
+            types.push(convertToTypeScriptType(schema));
+        }
+    }
+
+    return types.length ? createTupleType(types) : createSimpleType(CONSTANTS.PLACEHOLDER_MISSING_TYPE);
 };

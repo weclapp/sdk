@@ -33,7 +33,7 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
         params: ['id: string', `query${params.isFullyOptional() ? '?' : ''}: ${entityQuery}`],
-        returns: `${resolveResponseType(target)}<${generateResponseBodyType(path)}>`
+        returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`
     });
 
     return {

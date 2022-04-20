@@ -1,31 +1,33 @@
 /* eslint-disable no-use-before-define */
+import {concat} from '@ts/concat';
 import {indent} from '@utils/indent';
 import {isReferenceObject} from '@utils/openapi/guards';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
-interface Type<V> {
+interface Type {
     type: string;
-    value: V;
-
     toString(): string;
 }
 
-export interface ReferenceType extends Type<string> {
+export interface ReferenceType extends Type {
     type: 'reference';
 }
 
-export interface PrimitiveType extends Type<'unknown' | 'number' | 'string' | 'boolean'> {
-    type: 'primitive';
+export interface SimpleType extends Type {
+    type: 'simple';
 }
 
-export interface ArrayType extends Type<AnyType> {
+export interface ArrayType extends Type {
     type: 'array';
 }
 
-export interface ObjectType extends Type<Record<string, AnyType | undefined>> {
+export interface TupleType extends Type {
+    type: 'tuple';
+}
+
+export interface ObjectType extends Type {
     type: 'object';
-    required: string[];
 
     isFullyOptional(): boolean;
 
@@ -34,23 +36,26 @@ export interface ObjectType extends Type<Record<string, AnyType | undefined>> {
 
 export const createReferenceType = (value: string): ReferenceType => ({
     type: 'reference',
-    value: pascalCase(value),
     toString: () => pascalCase(value)
 });
 
-export const createPrimitiveType = (value: PrimitiveType['value']): PrimitiveType => ({
-    type: 'primitive', value,
+export const createSimpleType = (value: string): SimpleType => ({
+    type: 'simple',
     toString: () => value
 });
 
-export const createArrayType = (value: ArrayType['value']): ArrayType => ({
-    type: 'array', value,
+export const createArrayType = (value: Type): ArrayType => ({
+    type: 'array',
     toString: () => `${value.toString()}[]`
 });
 
-export const createObjectType = (value: ObjectType['value'], required: string[] = []): ObjectType => ({
+export const createTupleType = (value: Type[]): TupleType => ({
+    type: 'tuple',
+    toString: () => concat([...new Set(value.map(v => v.toString()))], ' | ')
+});
+
+export const createObjectType = (value: Record<string, Type | undefined>, required: string[] = []): ObjectType => ({
     type: 'object',
-    value, required,
     isFullyOptional: () => {
         return !required.length && Object.values(value)
             .filter(v => v?.type === 'object')
@@ -70,7 +75,7 @@ export const createObjectType = (value: ObjectType['value'], required: string[] 
     }
 });
 
-export type AnyType = ArrayType | ObjectType | PrimitiveType | ReferenceType;
+export type AnyType = ArrayType | ObjectType | SimpleType | ReferenceType | TupleType;
 
 export const convertToTypeScriptType = (
     schema: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject,
@@ -79,16 +84,17 @@ export const convertToTypeScriptType = (
     if (isReferenceObject(schema)) {
         return createReferenceType(schema.$ref.replace(/.*\//, ''));
     } else if (schema.enum) {
-        return property ? createReferenceType(property) : createPrimitiveType('unknown');
+        return property ? createReferenceType(property) : createSimpleType('unknown');
     } else {
         switch (schema.type) {
             case 'integer':
             case 'number':
-                return createPrimitiveType('number');
+                return createSimpleType('number');
             case 'string':
-                return createPrimitiveType('string');
+                // TODO: Browser use buffer?!
+                return schema.format === 'binary' ? createSimpleType('Buffer') : createSimpleType('string');
             case 'boolean':
-                return createPrimitiveType('boolean');
+                return createSimpleType('boolean');
             case 'object': {
                 const {properties = {}, required = []} = schema;
                 return createObjectType(
@@ -101,7 +107,7 @@ export const convertToTypeScriptType = (
             case 'array':
                 return createArrayType(convertToTypeScriptType(schema.items, property));
             default:
-                return createPrimitiveType('unknown');
+                return createSimpleType('unknown');
         }
     }
 };
