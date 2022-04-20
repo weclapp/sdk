@@ -3,6 +3,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {OpenAPIV3} from 'openapi-types';
 
+interface EnumSchemaObject {
+    enum: string[];
+    type: 'string';
+}
+
+interface ObjectSchemaObject {
+    type: 'object';
+    properties: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject>;
+}
+
 export const isObject = (v: any): v is Record<any, any> => {
     return v !== null && typeof v === 'object' && !Array.isArray(v);
 };
@@ -15,8 +25,12 @@ export const isReferenceObject = (v: any): v is OpenAPIV3.ReferenceObject => {
     return isObject(v) && typeof v.$ref === 'string';
 };
 
-export const isObjectSchemaObject = (v: any): v is OpenAPIV3.SchemaObject => {
+export const isObjectSchemaObject = (v: any): v is OpenAPIV3.SchemaObject & ObjectSchemaObject => {
     return isObject(v) && v.type === 'object' && isObject(v.properties);
+};
+
+export const isEnumSchemaObject = (v: any): v is OpenAPIV3.NonArraySchemaObject & EnumSchemaObject => {
+    return isObject(v) && v.type === 'string' && Array.isArray(v.enum);
 };
 
 export const isArraySchemaObject = (v: any): v is OpenAPIV3.ArraySchemaObject => {

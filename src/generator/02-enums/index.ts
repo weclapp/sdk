@@ -1,6 +1,5 @@
 import {generateEnum} from '@ts/generateEnum';
-import {convertToTypeScriptType} from '@utils/openapi/convertToTypeScriptType';
-import {isObjectSchemaObject, isReferenceObject} from '@utils/openapi/guards';
+import {isEnumSchemaObject} from '@utils/openapi/guards';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
@@ -9,42 +8,18 @@ export interface GeneratedEnum {
     properties: string[];
 }
 
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-const extractEnum = (
-    property: string,
-    schema: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject
-): GeneratedEnum | undefined => {
-    if (isReferenceObject(schema)) {
-        return;
-    }
-
-    if (schema.enum?.length) {
-        return {
-            properties: schema.enum,
-            source: generateEnum(property, schema.enum)
-        };
-    } else if (schema.type === 'array') {
-        return extractEnum(property, schema.items);
-    }
-};
-
 export const generateEnums = (schemas: Map<string, OpenAPIV3.SchemaObject>): Map<string, GeneratedEnum> => {
     const enums: Map<string, GeneratedEnum> = new Map();
 
-    for (const [, schema] of schemas) {
-        const propertyLists = [schema, ...(schema.allOf ?? [])]
-            .filter(v => isObjectSchemaObject(v) && v.properties)
-            .map(v => (v as OpenAPIV3.SchemaObject).properties);
+    for (const [propName, schema] of schemas) {
+        if (isEnumSchemaObject(schema)) {
+            const name = pascalCase(propName);
 
-        for (const properties of propertyLists) {
-            for (const [propName, prop] of Object.entries(properties as OpenAPIV3.SchemaObject)) {
-                const name = pascalCase(propName);
-                const found = extractEnum(name, prop);
-
-                if (found && !enums.has(name)) {
-                    enums.set(name, found);
-                }
+            if (!enums.has(name)) {
+                enums.set(name, {
+                    properties: schema.enum,
+                    source: generateEnum(name, schema.enum)
+                });
             }
         }
     }

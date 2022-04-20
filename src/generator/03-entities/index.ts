@@ -2,7 +2,7 @@ import {generateInterface, InterfaceProperty} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
 import {generateString} from '@ts/generateString';
 import {convertToTypeScriptType} from '@utils/openapi/convertToTypeScriptType';
-import {isObjectSchemaObject, isReferenceObject, isRelatedEntitySchema} from '@utils/openapi/guards';
+import {isEnumSchemaObject, isObjectSchemaObject, isReferenceObject, isRelatedEntitySchema} from '@utils/openapi/guards';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
@@ -14,6 +14,11 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
     const entities: Map<string, GeneratedEntity> = new Map();
 
     for (const [schemaName, schema] of schemas) {
+
+        if (isEnumSchemaObject(schema)) {
+            continue;
+        }
+
         const entity = pascalCase(schemaName);
         const entityInterface: InterfaceProperty[] = [];
         const referenceInterface: InterfaceProperty[] = [];

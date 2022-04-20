@@ -22,6 +22,7 @@ interface CLIResult {
     content: OpenAPIV3.Document;
 }
 
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 export const cli = async (): Promise<CLIResult> => {
     const {argv} = yargs(hideBin(process.argv))
         .scriptName('sdk-generator')
