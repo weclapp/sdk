@@ -14,8 +14,8 @@ export interface ReferenceType extends Type {
     type: 'reference';
 }
 
-export interface SimpleType extends Type {
-    type: 'simple';
+export interface RawType extends Type {
+    type: 'raw';
 }
 
 export interface ArrayType extends Type {
@@ -39,8 +39,8 @@ export const createReferenceType = (value: string): ReferenceType => ({
     toString: () => pascalCase(value)
 });
 
-export const createSimpleType = (value: string): SimpleType => ({
-    type: 'simple',
+export const createRawType = (value: string): RawType => ({
+    type: 'raw',
     toString: () => value
 });
 
@@ -49,9 +49,9 @@ export const createArrayType = (value: Type): ArrayType => ({
     toString: () => `${value.toString()}[]`
 });
 
-export const createTupleType = (value: Type[]): TupleType => ({
+export const createTupleType = (value: (Type | string)[]): TupleType => ({
     type: 'tuple',
-    toString: () => concat([...new Set(value.map(v => v.toString()))], ' | ')
+    toString: () => concat([...new Set(value.map(v => typeof v === 'string' ? `'${v}'` : v.toString()))], ' | ')
 });
 
 export const createObjectType = (value: Record<string, Type | undefined>, required: string[] = []): ObjectType => ({
@@ -75,7 +75,7 @@ export const createObjectType = (value: Record<string, Type | undefined>, requir
     }
 });
 
-export type AnyType = ArrayType | ObjectType | SimpleType | ReferenceType | TupleType;
+export type AnyType = ArrayType | ObjectType | RawType | ReferenceType | TupleType;
 
 export const convertToTypeScriptType = (
     schema: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject,
@@ -83,18 +83,19 @@ export const convertToTypeScriptType = (
 ): AnyType => {
     if (isReferenceObject(schema)) {
         return createReferenceType(schema.$ref.replace(/.*\//, ''));
-    } else if (schema.enum) {
-        return property ? createReferenceType(property) : createSimpleType('unknown');
     } else {
         switch (schema.type) {
             case 'integer':
             case 'number':
-                return createSimpleType('number');
+                return createRawType('number');
             case 'string':
-                // TODO: Browser use buffer?!
-                return schema.format === 'binary' ? createSimpleType('Buffer') : createSimpleType('string');
+                if (schema.enum) {
+                    return property ? createReferenceType(property) : createTupleType(schema.enum as string[]);
+                } else {
+                    return schema.format === 'binary' ? createRawType('Buffer') : createRawType('string');
+                }
             case 'boolean':
-                return createSimpleType('boolean');
+                return createRawType('boolean');
             case 'object': {
                 const {properties = {}, required = []} = schema;
                 return createObjectType(
@@ -107,7 +108,7 @@ export const convertToTypeScriptType = (
             case 'array':
                 return createArrayType(convertToTypeScriptType(schema.items, property));
             default:
-                return createSimpleType('unknown');
+                return createRawType('unknown');
         }
     }
 };
