@@ -39,7 +39,7 @@ generate:
     NODE_ENV: development
   script:
     - chmod +x ./bin/cli.js
-    - ./bin/cli.js --from-env --include-hidden
+    - ./bin/cli.js tests/openapi.json
 
 publish:
   tags:

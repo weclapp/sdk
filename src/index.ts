@@ -2,7 +2,6 @@ import {bundle} from '@/src/bundle';
 import {Target} from '@enums/Target';
 import {generate} from '@generator/generate';
 import {logger} from '@logger';
-import {env} from '@utils/env';
 import {hash} from '@utils/hash';
 import {writeSourceFile} from '@utils/writeSourceFile';
 import {copy, mkdirp, rm, stat, writeFile} from 'fs-extra';
@@ -10,15 +9,14 @@ import {dirname, resolve} from 'path';
 import pkg from '../package.json';
 import {cli} from './cli';
 
-const workingDirectory = resolve(__dirname, env('NODE_ENV') === 'development' ? '../sdk' : '../');
+const workingDirectory = resolve(__dirname, '../sdk');
 const folders = ['docs', 'main', 'node', 'raw', 'rx', 'utils'];
 
-logger.infoLn(`Mode: ${env('NODE_ENV') ?? 'production'}`);
 logger.infoLn(`Working directory: ${workingDirectory}`);
 
 void (async () => {
     const start = process.hrtime.bigint();
-    const {content: doc, swagger, cache: useCache} = await cli();
+    const {content: doc, cache: useCache} = await cli();
 
     // Resolve cache dir and key
     const cacheKey = hash([pkg.version, JSON.stringify(doc)]).slice(-8);
@@ -31,13 +29,16 @@ void (async () => {
         return fullPath;
     };
 
+    if (useCache) {
+        logger.infoLn(`Cache ID: ${cacheKey}`);
+    }
+
     if (useCache && await stat(cacheDir).catch(() => false)) {
         logger.successLn(`Cache match! (${cacheDir})`);
     } else {
 
         // Store swagger.json file
         await writeFile(await tmp('openapi.json'), JSON.stringify(doc, null, 2));
-        await writeFile(await tmp('swagger.json'), JSON.stringify(swagger, null, 2));
 
         // Generate SDKs
         for (const target of Object.values(Target)) {

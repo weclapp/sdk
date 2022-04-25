@@ -21,10 +21,53 @@
 	"node": "^16.13.0",
 	"npm": "^8.1.0"
   },
+
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./sdk/main/index.d.ts",
+        "default": "./sdk/main/index.mjs"
+      },
+      "require": {
+        "types": "./sdk/main/index.d.ts",
+        "default": "./sdk/main/index.js"
+      }
+    },
+    "./rx": {
+      "import": {
+        "types": "./sdk/rx/index.d.ts",
+        "default": "./sdk/rx/index.mjs"
+      },
+      "require": {
+        "types": "./sdk/rx/index.d.ts",
+        "default": "./sdk/rx/index.js"
+      }
+    },
+    "./node": {
+      "import": {
+        "types": "./sdk/node/index.d.ts",
+        "default": "./sdk/node/index.mjs"
+      },
+      "require": {
+        "types": "./sdk/node/index.d.ts",
+        "default": "./sdk/node/index.js"
+      }
+    },
+    "./node/rx": {
+      "import": {
+        "types": "./sdk/node/rx/index.d.ts",
+        "default": "./sdk/node/rx/index.mjs"
+      },
+      "require": {
+        "types": "./sdk/node/rx/index.d.ts",
+        "default": "./sdk/node/rx/index.js"
+      }
+    }
+  },
   "scripts": {
     "cli:build": "cross-env NODE_ENV=production rollup -c rollup.config.js",
     "cli:watch": "cross-env NODE_ENV=development rollup -c rollup.config.js --watch",
-    "sdk:build": "./bin/cli.js --from-env --include-hidden",
+    "sdk:build": "./bin/cli.js .tmp/openapi.json --cache",
     "lint": "eslint {src,tests}/**/*.ts",
     "lint:fix": "npm run lint -- --fix",
     "test": "vitest run",
@@ -54,14 +97,15 @@
     "dotenv": "^16.0.0",
     "fs-extra": "^10.0.1",
     "indent-string": "^4.0.0",
-    "node-fetch": "^2.6.7",
     "openapi-types": "^10.0.0",
     "rollup": "^2.70.1",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-ts": "^2.0.5",
-    "rxjs": "^7.5.5",
-    "swagger2openapi": "^7.0.8",
     "typescript": "^4.6.3",
     "yargs": "^17.4.0"
+  },
+  "peerDependencies": {
+    "node-fetch": "^2.6.7",
+    "rxjs": "^7.5.5"
   }
 }

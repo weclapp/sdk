@@ -9,6 +9,7 @@ export default [
         plugins: [string({include: '**/*.ts.txt'}), ts(), json()],
         external: [
             ...Object.keys(pkg.dependencies),
+            ...Object.keys(pkg.peerDependencies),
             'path', 'crypto', 'yargs/helpers'
         ],
         output: {

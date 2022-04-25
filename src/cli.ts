@@ -1,9 +1,8 @@
 import {logger} from '@logger';
-import {convertSwaggerToOpenAPI} from '@utils/openapi/convertSwaggerToOpenAPI';
 import {config} from 'dotenv';
 import {readFile, stat} from 'fs-extra';
 import fetch from 'node-fetch';
-import {OpenAPIV2, OpenAPIV3} from 'openapi-types';
+import {OpenAPIV3} from 'openapi-types';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 import {version} from '../package.json';
@@ -18,7 +17,6 @@ interface Args {
 
 interface CLIResult {
     cache: boolean;
-    swagger: OpenAPIV2.Document;
     content: OpenAPIV3.Document;
 }
 
@@ -28,8 +26,8 @@ export const cli = async (): Promise<CLIResult> => {
         .scriptName('sdk-generator')
         .usage('Usage: $0 <source> [flags]')
         .version(version)
-        .example('$0 swagger.json', 'Generate the SDK based on the swagger.json file')
-        .example('$0 xxx.weclapp.com --key ...', 'Generate the SDK based on the swagger.json file from the given weclapp instance using the API-Key')
+        .example('$0 swagger.json', 'Generate the SDK based on the openapi / swagger file')
+        .example('$0 xxx.weclapp.com --key ...', 'Generate the SDK based on the openapi / swagger file from the given weclapp instance using the API-Key')
         .help('h')
         .alias('v', 'version')
         .alias('h', 'help')
@@ -71,27 +69,27 @@ export const cli = async (): Promise<CLIResult> => {
 
     if (await stat(src).catch(() => false)) {
         logger.infoLn(`Source is a file`);
-        const swagger = JSON.parse(await readFile(src, 'utf-8'));
-        const content = await convertSwaggerToOpenAPI(swagger);
-        return {cache, swagger,  content};
+        const content = JSON.parse(await readFile(src, 'utf-8'));
+        return {cache, content};
     }
 
     const url = new URL(src.startsWith('http') ? src : `https://${src}`);
-    url.pathname = '/webapp/api/v1/meta/swagger.json';
+    url.pathname = '/webapp/api/v1/meta/openapi.json';
 
     if (includeHidden) {
         url.searchParams.set('includeHidden', 'true');
     }
 
-    logger.infoLn(`Source is a URL: ${url.toString()}`);
+    const content = await fetch(url.toString(), {
+        headers: {'Accept': 'application/json', 'AuthenticationToken': key}
+    }).then(res => res.ok ? res.json() : undefined);
 
-    const swagger = await fetch(url.toString(), {
-        headers: {
-            'Accept': 'application/json',
-            'AuthenticationToken': key
-        }
-    }).then(res => res.json());
+    if (!content) {
+        logger.errorLn(`Couldn't fetch file ${url.toString()} `);
+        return Promise.reject();
+    } else {
+        logger.infoLn(`Use remote file: ${url.toString()}`);
+    }
 
-    const content = await convertSwaggerToOpenAPI(swagger);
-    return {cache, swagger, content};
+    return {cache, content};
 };
