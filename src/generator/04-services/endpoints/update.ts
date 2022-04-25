@@ -15,15 +15,15 @@ export const generateUpdateEndpoint: ServiceFunctionGenerator = ({target, endpoi
 
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
-        params: [`id: string, data: Partial<${entity}>`],
+        params: ['id: string', `data: Partial<${entity}>`, 'options?: UpdateQuery'],
         returns: `${resolveResponseType(target)}<${entity}>`
     });
 
     const functionSource = generateArrowFunction({
         name: functionName,
         signature: interfaceName,
-        returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, {id: '${id}'})}\`, data)`,
-        params: ['id', 'data']
+        returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, {id: '${id}'})}\`, data, options)`,
+        params: ['id', 'data', 'options']
     });
 
     return {

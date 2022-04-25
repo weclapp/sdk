@@ -102,6 +102,10 @@ export type GenericQuery<P, B> = {
     body?: B;
 };
 
+export type UpdateQuery = {
+    ignoreMissingProperties?: boolean;
+}
+
 // Utils
 const equality: string[] = ['EQ', 'NE'];
 const simple: string[] = [...equality, 'LT', 'GT', 'LE', 'GE', 'LIKE', 'NOT_LIKE', 'ILIKE', 'NOT_ILIKE'];

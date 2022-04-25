@@ -38,12 +38,14 @@ void (async () => {
 
         // Store swagger.json file
         await writeFile(await tmp('openapi.json'), JSON.stringify(doc, null, 2));
+        logger.infoLn(`Generate SDK (targets: ${targets.join(', ')})`);
 
         // Generate SDKs
-        for (const target of targets) {
-            logger.infoLn(`Generate SDK (target: ${target})`);
-            await writeSourceFile(await tmp(`raw/${target}.ts`), generate(doc, target));
-        }
+        await Promise.all(
+            targets.map(async target =>
+                writeSourceFile(await tmp(`raw/${target}.ts`), generate(doc, target))
+            )
+        );
 
         // Bundle
         logger.infoLn('Bundle (this may take some time)...');

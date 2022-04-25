@@ -143,11 +143,12 @@ const _create = (
 const _update = (
     cfg: ServiceConfig | undefined,
     endpoint: string,
-    data: any
+    data: any,
+    {ignoreMissingProperties = true}: UpdateQuery = {}
 ) => wrapResponse(() => api(cfg, endpoint, {
     method: 'put',
     body: data,
-    query: {ignoreMissingProperties: true}
+    query: {ignoreMissingProperties}
 }));
 
 const _unique = (
