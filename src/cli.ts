@@ -1,3 +1,4 @@
+import {Target} from '@enums/Target';
 import {logger} from '@logger';
 import {config} from 'dotenv';
 import {readFile, stat} from 'fs-extra';
@@ -12,11 +13,13 @@ interface Args {
     cache?: boolean;
     includeHidden?: boolean;
     fromEnv?: boolean;
+    target?: string[];
     _: (string | number)[];
 }
 
 interface CLIResult {
     cache: boolean;
+    targets: Target[];
     content: OpenAPIV3.Document;
 }
 
@@ -35,7 +38,8 @@ export const cli = async (): Promise<CLIResult> => {
             alias: 'key',
             describe: 'API Key in case of an URL source',
             type: 'string'
-        }).option('c', {
+        })
+        .option('c', {
             alias: 'cache',
             describe: 'If the generated SDK should cached',
             type: 'boolean'
@@ -50,15 +54,23 @@ export const cli = async (): Promise<CLIResult> => {
             describe: 'Use env variables WECLAPP_BACKEND_URL and WECLAPP_API_KEY as credentials',
             type: 'boolean'
         })
+        .option('t', {
+            alias: 'target',
+            describe: 'Define targets, example: -t node.rx browser',
+            type: 'array'
+        })
         .epilog('Copyright 2021 weclapp') as {argv: Args};
 
     if (argv.fromEnv) {
         config();
     }
-
+    const possibleTargets = Object.values(Target) as string[];
     const {WECLAPP_API_KEY, WECLAPP_BACKEND_URL} = process.env;
+
     const {
-        includeHidden, cache = false,
+        includeHidden,
+        target = possibleTargets,
+        cache = false,
         key = WECLAPP_API_KEY as string,
         _: [src = WECLAPP_BACKEND_URL as string]
     } = argv;
@@ -67,10 +79,18 @@ export const cli = async (): Promise<CLIResult> => {
         return Promise.reject('Expected string as command');
     }
 
+    const targets = target as Target[];
+    for (const target of targets) {
+        if (!possibleTargets.includes(target)) {
+            logger.errorLn(`Unknown target: ${target}. Possible values are ${possibleTargets.join(' / ')}`);
+            return Promise.reject();
+        }
+    }
+
     if (await stat(src).catch(() => false)) {
         logger.infoLn(`Source is a file`);
         const content = JSON.parse(await readFile(src, 'utf-8'));
-        return {cache, content};
+        return {cache, targets, content};
     }
 
     const url = new URL(src.startsWith('http') ? src : `https://${src}`);
@@ -91,5 +111,5 @@ export const cli = async (): Promise<CLIResult> => {
         logger.infoLn(`Use remote file: ${url.toString()}`);
     }
 
-    return {cache, content};
+    return {cache, targets, content};
 };

@@ -1,5 +1,6 @@
+import {Target} from '@enums/Target';
 import {rm} from 'fs-extra';
-import {resolve} from 'path';
+import {resolve, basename} from 'path';
 import {rollup, RollupOptions} from 'rollup';
 import {terser} from 'rollup-plugin-terser';
 import ts from 'rollup-plugin-ts';
@@ -13,7 +14,7 @@ const generateOutput = (config: Record<string, unknown>) => ({
     ...config
 });
 
-export const bundle = async (workingDirectory: string) => {
+export const bundle = async (workingDirectory: string, targets: Target[]) => {
     const dirs = {
         main: resolve(workingDirectory, 'main'),
         rx: resolve(workingDirectory, 'rx'),
@@ -92,7 +93,7 @@ export const bundle = async (workingDirectory: string) => {
             external: ['node-fetch', 'url', 'rxjs'],
             plugins: [ts({tsconfig})]
         }
-    ];
+    ].filter(v => targets.includes(basename(v.input, '.ts') as Target));
 
     return Promise.all(
         bundles.map(async config => {

@@ -1,5 +1,4 @@
 import {bundle} from '@/src/bundle';
-import {Target} from '@enums/Target';
 import {generate} from '@generator/generate';
 import {logger} from '@logger';
 import {hash} from '@utils/hash';
@@ -16,10 +15,10 @@ logger.infoLn(`Working directory: ${workingDirectory}`);
 
 void (async () => {
     const start = process.hrtime.bigint();
-    const {content: doc, cache: useCache} = await cli();
+    const {content: doc, cache: useCache, targets} = await cli();
 
     // Resolve cache dir and key
-    const cacheKey = hash([pkg.version, JSON.stringify(doc)]).slice(-8);
+    const cacheKey = hash([pkg.version, JSON.stringify(doc), ...targets]).slice(-8);
     const cacheDir = resolve(__dirname, '../', '.tmp', cacheKey);
 
     const dist = (...paths: string[]) => resolve(workingDirectory, ...paths);
@@ -41,14 +40,14 @@ void (async () => {
         await writeFile(await tmp('openapi.json'), JSON.stringify(doc, null, 2));
 
         // Generate SDKs
-        for (const target of Object.values(Target)) {
+        for (const target of targets) {
             logger.infoLn(`Generate SDK (target: ${target})`);
             await writeSourceFile(await tmp(`raw/${target}.ts`), generate(doc, target));
         }
 
         // Bundle
-        logger.infoLn('Bundle SDKs (this may take some time)...');
-        await bundle(cacheDir);
+        logger.infoLn('Bundle (this may take some time)...');
+        await bundle(cacheDir, targets);
 
         // Print job summary
         const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
