@@ -2,9 +2,6 @@
   "name": "@weclapp/sdk",
   "version": "0.3.3",
   "description": "SDK generator based on a weclapp api swagger file",
-  "main": "./main/index.js",
-  "module": "./main/index.mjs",
-  "types": "./main/index.d.ts",
   "author": "weclapp",
   "bin": {
     "sdk-generator": "./bin/cli.js"
@@ -21,7 +18,6 @@
 	"node": "^16.13.0",
 	"npm": "^8.1.0"
   },
-
   "exports": {
     ".": {
       "import": {
@@ -29,8 +25,8 @@
         "default": "./sdk/main/index.mjs"
       },
       "require": {
-        "types": "./sdk/main/index.d.ts",
-        "default": "./sdk/main/index.js"
+        "types": "./sdk/main/index.cjs.d.ts",
+        "default": "./sdk/main/index.cjs"
       }
     },
     "./rx": {
@@ -39,8 +35,8 @@
         "default": "./sdk/rx/index.mjs"
       },
       "require": {
-        "types": "./sdk/rx/index.d.ts",
-        "default": "./sdk/rx/index.js"
+        "types": "./sdk/rx/index.cjs.d.ts",
+        "default": "./sdk/rx/index.cjs"
       }
     },
     "./node": {
@@ -49,8 +45,8 @@
         "default": "./sdk/node/index.mjs"
       },
       "require": {
-        "types": "./sdk/node/index.d.ts",
-        "default": "./sdk/node/index.js"
+        "types": "./sdk/node/index.cjs.d.ts",
+        "default": "./sdk/node/index.cjs"
       }
     },
     "./node/rx": {
@@ -59,8 +55,8 @@
         "default": "./sdk/node/rx/index.mjs"
       },
       "require": {
-        "types": "./sdk/node/rx/index.d.ts",
-        "default": "./sdk/node/rx/index.js"
+        "types": "./sdk/node/rx/index.cjs.d.ts",
+        "default": "./sdk/node/rx/index.cjs"
       }
     }
   },

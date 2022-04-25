@@ -25,7 +25,7 @@ export const bundle = async (workingDirectory: string, targets: Target[]) => {
 
     const generateNodeOutput = (dir: string) => [
         generateOutput({
-            file: resolve(workingDirectory, dir, 'index.js'),
+            file: resolve(workingDirectory, dir, 'index.cjs'),
             format: 'cjs',
             globals: resolveGlobals('node-fetch', 'url')
         }),
