@@ -18,45 +18,18 @@
 	"node": "^16.13.0",
 	"npm": "^8.1.0"
   },
+  "types": "./sdk/dist/index.d.ts",
+  "main": "./sdk/dist/index.cjs",
+  "module": "./sdk/dist/index.mjs",
   "exports": {
     ".": {
       "import": {
-        "types": "./sdk/main/index.d.ts",
-        "default": "./sdk/main/index.mjs"
+        "types": "./sdk/dist/index.d.ts",
+        "default": "./sdk/dist/index.mjs"
       },
       "require": {
-        "types": "./sdk/main/index.cjs.d.ts",
-        "default": "./sdk/main/index.cjs"
-      }
-    },
-    "./rx": {
-      "import": {
-        "types": "./sdk/rx/index.d.ts",
-        "default": "./sdk/rx/index.mjs"
-      },
-      "require": {
-        "types": "./sdk/rx/index.cjs.d.ts",
-        "default": "./sdk/rx/index.cjs"
-      }
-    },
-    "./node": {
-      "import": {
-        "types": "./sdk/node/index.d.ts",
-        "default": "./sdk/node/index.mjs"
-      },
-      "require": {
-        "types": "./sdk/node/index.cjs.d.ts",
-        "default": "./sdk/node/index.cjs"
-      }
-    },
-    "./node/rx": {
-      "import": {
-        "types": "./sdk/node/rx/index.d.ts",
-        "default": "./sdk/node/rx/index.mjs"
-      },
-      "require": {
-        "types": "./sdk/node/rx/index.cjs.d.ts",
-        "default": "./sdk/node/rx/index.cjs"
+        "types": "./sdk/dist/index.cjs.d.ts",
+        "default": "./sdk/dist/index.cjs"
       }
     }
   },

@@ -13,13 +13,13 @@ interface Args {
     cache?: boolean;
     includeHidden?: boolean;
     fromEnv?: boolean;
-    target?: string[];
+    target?: Target;
     _: (string | number)[];
 }
 
 interface CLIResult {
     cache: boolean;
-    targets: Target[];
+    target: Target;
     content: OpenAPIV3.Document;
 }
 
@@ -56,20 +56,19 @@ export const cli = async (): Promise<CLIResult> => {
         })
         .option('t', {
             alias: 'target',
-            describe: 'Define targets, example: -t node.rx browser',
-            type: 'array'
+            describe: 'Define targets, example: -t browser',
+            type: 'string'
         })
         .epilog('Copyright 2021 weclapp') as {argv: Args};
 
     if (argv.fromEnv) {
         config();
     }
-    const possibleTargets = Object.values(Target) as string[];
     const {WECLAPP_API_KEY, WECLAPP_BACKEND_URL} = process.env;
 
     const {
         includeHidden,
-        target = possibleTargets,
+        target = Target.BROWSER_PROMISES,
         cache = false,
         key = WECLAPP_API_KEY as string,
         _: [src = WECLAPP_BACKEND_URL as string]
@@ -79,18 +78,15 @@ export const cli = async (): Promise<CLIResult> => {
         return Promise.reject('Expected string as command');
     }
 
-    const targets = target as Target[];
-    for (const target of targets) {
-        if (!possibleTargets.includes(target)) {
-            logger.errorLn(`Unknown target: ${target}. Possible values are ${possibleTargets.join(' / ')}`);
-            return Promise.reject();
-        }
+    if (!Object.values(Target).includes(target)) {
+        logger.errorLn(`Unknown target: ${target}. Possible values are ${Object.values(Target).join(', ')}`);
+        return Promise.reject();
     }
 
     if (await stat(src).catch(() => false)) {
         logger.infoLn(`Source is a file`);
         const content = JSON.parse(await readFile(src, 'utf-8'));
-        return {cache, targets, content};
+        return {cache, target, content};
     }
 
     const url = new URL(src.startsWith('http') ? src : `https://${src}`);
@@ -111,5 +107,5 @@ export const cli = async (): Promise<CLIResult> => {
         logger.infoLn(`Use remote file: ${url.toString()}`);
     }
 
-    return {cache, targets, content};
+    return {cache, target, content};
 };
