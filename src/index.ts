@@ -11,8 +11,6 @@ import {cli} from './cli';
 const workingDirectory = resolve(__dirname, '../sdk');
 const folders = ['docs', 'main', 'node', 'raw', 'rx', 'utils'];
 
-logger.infoLn(`Working directory: ${workingDirectory}`);
-
 void (async () => {
     const start = process.hrtime.bigint();
     const {content: doc, cache: useCache, target} = await cli();
