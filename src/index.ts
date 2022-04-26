@@ -38,7 +38,7 @@ void (async () => {
 
         // Store swagger.json file
         await writeFile(await tmp('openapi.json'), JSON.stringify(doc, null, 2));
-        logger.infoLn(`Generate SDK (targets: ${targets.join(', ')})`);
+        logger.infoLn(`Generate (targets: ${targets.join(', ')})`);
 
         // Generate SDKs
         await Promise.all(

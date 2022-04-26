@@ -17,6 +17,7 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
     const entity = pascalCase(endpoint.entity);
     const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
     const entityQuery = `${interfaceName}_Query`;
+    const hasId = endpoint.path.includes('{id}');
 
     const params = createObjectType({
         params: convertToTypeScriptType(convertParametersToSchema(path.parameters)),
@@ -26,13 +27,13 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
     const functionSource = generateArrowFunction({
         name: functionName,
         signature: interfaceName,
-        params: ['id', 'query'],
+        params: hasId ? ['id', 'query'] : ['query'],
         returns: `_generic(cfg, ${generateString(method)}, \`${insertPathPlaceholder(endpoint.path, {id: '${id}'})}\`, query)`
     });
 
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
-        params: ['id: string', `query${params.isFullyOptional() ? '?' : ''}: ${entityQuery}`],
+        params: [...(hasId ? ['id: string'] : []), `query${params.isFullyOptional() ? '?' : ''}: ${entityQuery}`],
         returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`
     });
 
