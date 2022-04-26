@@ -36,12 +36,13 @@
   "scripts": {
     "cli:build": "cross-env NODE_ENV=production rollup -c rollup.config.js",
     "cli:watch": "cross-env NODE_ENV=development rollup -c rollup.config.js --watch",
-    "sdk:build": "./bin/cli.js tests/openapi.json",
+    "sdk:build": "./bin/cli.js tests/openapi.json --cache",
     "lint": "eslint {src,tests}/**/*.ts",
     "lint:fix": "npm run lint -- --fix",
+    "release": "standard-version",
     "test": "vitest run",
     "test:watch": "vitest",
-    "coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage"
   },
   "repository": {
     "type": "git",

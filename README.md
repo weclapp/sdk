@@ -30,10 +30,15 @@ Please refer to the [docs](docs) for how the generated SDK looks like.
 
 ## Publishing
 
-Publishing is restricted to project maintainers. To publish sdk-generator to our package registry we need to do the following steps:
+Publishing is restricted to project maintainers. To publish component-library to our package registry we need to do the
+following steps:
 
 1. Switch to master branch
-2. `npm version major|minor|patch|x.x.x`
-3. Push to master (don't forget to push tag as well)
+2. To make a new version use script `npm run release` in local terminal
+    1. For patch `npm run release -- --release-as patch`
+    2. For minor `npm run release -- --release-as minor`
+    3. For major `npm run release -- --release-as major`
+3. The new tag is generated, [CHANGELOG.md](CHANGELOG.md) updated and changes committed
+4. Push to master (don't forget to push tag as well, e.g `git push --follow-tags origin master`)
 
 Gitlab CI pipeline will automatically publish package to registry with new version number.
