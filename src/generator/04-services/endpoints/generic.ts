@@ -21,7 +21,7 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
 
     const params = createObjectType({
         params: convertToTypeScriptType(convertParametersToSchema(path.parameters)),
-        body: generateRequestBodyType(path)
+        body: method === 'get' ? undefined : generateRequestBodyType(path)
     });
 
     const functionSource = generateArrowFunction({
