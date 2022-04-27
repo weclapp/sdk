@@ -49,7 +49,7 @@ const api = async (
         interceptors: {...globalConfig?.interceptors, ...cfg?.interceptors}
     };
 
-    const isBinaryData = false;
+    const isBinaryData = payload.body instanceof BinaryClass;
     const contentType = isBinaryData ? 'octet-stream' : 'json';
     const params = new URLSearchParams(Object.entries(payload.query ?? {}));
     const protocol = (cfg.secure ?? true) ? 'https' : 'http';

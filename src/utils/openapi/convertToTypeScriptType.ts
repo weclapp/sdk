@@ -92,7 +92,7 @@ export const convertToTypeScriptType = (
                 if (schema.enum) {
                     return property ? createReferenceType(property) : createTupleType(schema.enum as string[]);
                 } else {
-                    return schema.format === 'binary' ? createRawType('Buffer') : createRawType('string');
+                    return schema.format === 'binary' ? createRawType('binary') : createRawType('string');
                 }
             case 'boolean':
                 return createRawType('boolean');

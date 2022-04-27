@@ -16,3 +16,7 @@ export const isRXTarget = (target: Target): boolean => {
 export const resolveResponseType = (target: Target) => {
     return isRXTarget(target) ? 'Observable' : 'Promise';
 };
+
+export const resolveBinaryType = (target: Target) => {
+    return isNodeTarget(target) ? 'Buffer' : 'Blob';
+};

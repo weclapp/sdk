@@ -1,4 +1,4 @@
-import {resolveResponseType} from '@enums/Target';
+import {resolveBinaryType, resolveResponseType, Target} from '@enums/Target';
 import {GeneratedServiceFunction, ServiceFunctionGenerator} from '@generator/04-services/types';
 import {generateGenericFunctionName} from '@generator/04-services/utils/generateGenericFunctionName';
 import {generateRequestBodyType} from '@generator/04-services/utils/generateRequestBodyType';
@@ -9,8 +9,12 @@ import {generateArrowFunctionType} from '@ts/generateArrowFunctionType';
 import {generateInterfaceFromObject} from '@ts/generateInterface';
 import {generateString} from '@ts/generateString';
 import {convertParametersToSchema} from '@utils/openapi/convertParametersToSchema';
-import {convertToTypeScriptType, createObjectType} from '@utils/openapi/convertToTypeScriptType';
+import {AnyType, convertToTypeScriptType, createObjectType, createRawType} from '@utils/openapi/convertToTypeScriptType';
 import {pascalCase} from 'change-case';
+
+const wrapBody = (type: AnyType, target: Target): AnyType => {
+    return type.toString() === 'binary' ? createRawType(resolveBinaryType(target)) : type;
+};
 
 export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerator => ({target, method, path, endpoint}): GeneratedServiceFunction => {
     const functionName = generateGenericFunctionName(endpoint.path, suffix, method === 'get' ? 'get' : undefined);
@@ -21,7 +25,7 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
 
     const params = createObjectType({
         params: convertToTypeScriptType(convertParametersToSchema(path.parameters)),
-        body: method === 'get' ? undefined : generateRequestBodyType(path)
+        body: method === 'get' ? undefined : wrapBody(generateRequestBodyType(path), target)
     });
 
     const functionSource = generateArrowFunction({
@@ -34,7 +38,7 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
         params: [...(hasId ? ['id: string'] : []), `query${params.isFullyOptional() ? '?' : ''}: ${entityQuery}`],
-        returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`
+        returns: `${resolveResponseType(target)}<${wrapBody(generateResponseBodyType(path), target).toString()}>`
     });
 
     return {
