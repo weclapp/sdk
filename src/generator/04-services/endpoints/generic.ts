@@ -1,4 +1,4 @@
-import {resolveBinaryType, resolveResponseType, Target} from '@enums/Target';
+import {resolveResponseType} from '@enums/Target';
 import {GeneratedServiceFunction, ServiceFunctionGenerator} from '@generator/04-services/types';
 import {generateGenericFunctionName} from '@generator/04-services/utils/generateGenericFunctionName';
 import {generateRequestBodyType} from '@generator/04-services/utils/generateRequestBodyType';
@@ -12,8 +12,8 @@ import {convertParametersToSchema} from '@utils/openapi/convertParametersToSchem
 import {AnyType, convertToTypeScriptType, createObjectType, createRawType} from '@utils/openapi/convertToTypeScriptType';
 import {pascalCase} from 'change-case';
 
-const wrapBody = (type: AnyType, target: Target): AnyType => {
-    return type.toString() === 'binary' ? createRawType(resolveBinaryType(target)) : type;
+const wrapBody = (type: AnyType): AnyType => {
+    return type.toString() === 'binary' ? createRawType('Blob') : type; // node-fetch returns a Blob as well
 };
 
 export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerator => ({target, method, path, endpoint}): GeneratedServiceFunction => {
@@ -25,20 +25,23 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
 
     const params = createObjectType({
         params: convertToTypeScriptType(convertParametersToSchema(path.parameters)),
-        body: method === 'get' ? undefined : wrapBody(generateRequestBodyType(path), target)
+        body: method === 'get' ? undefined : wrapBody(generateRequestBodyType(path))
     });
+
+    const responseBody = generateResponseBodyType(path);
+    const forceBlobResponse = String(responseBody.toString() === 'binary');
 
     const functionSource = generateArrowFunction({
         name: functionName,
         signature: interfaceName,
         params: hasId ? ['id', 'query'] : ['query'],
-        returns: `_generic(cfg, ${generateString(method)}, \`${insertPathPlaceholder(endpoint.path, {id: '${id}'})}\`, query)`
+        returns: `_generic(cfg, ${generateString(method)}, \`${insertPathPlaceholder(endpoint.path, {id: '${id}'})}\`, query, ${forceBlobResponse})`
     });
 
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
         params: [...(hasId ? ['id: string'] : []), `query${params.isFullyOptional() ? '?' : ''}: ${entityQuery}`],
-        returns: `${resolveResponseType(target)}<${wrapBody(generateResponseBodyType(path), target).toString()}>`
+        returns: `${resolveResponseType(target)}<${wrapBody(responseBody).toString()}>`
     });
 
     return {

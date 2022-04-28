@@ -1,8 +1,9 @@
 export interface RequestPayload {
-    method?: string,
-    query?: Record<string, any>,
-    body?: any
-    unwrap?: boolean
+    method?: string;
+    query?: Record<string, any>;
+    body?: any;
+    unwrap?: boolean;
+    forceBlob?: boolean;
 }
 
 export interface ServiceConfig {
@@ -83,8 +84,8 @@ const api = async (
     }
 
     res = await interceptResponse(res) ?? res;
-    const data = res.headers?.get('content-type')?.includes('application/json') ?
-        await res.json() : res;
+    const data = !payload.forceBlob && res.headers?.get('content-type')?.includes('application/json') ?
+        await res.json() : await res.blob();
 
     // Check if response was successful
     if (!res.ok) {
@@ -161,9 +162,11 @@ const _generic = (
     cfg: ServiceConfig | undefined,
     method: string,
     endpoint: string,
-    payload?: GenericQuery<any, any>
+    payload?: GenericQuery<any, any>,
+    forceBlob?: boolean
 ) => wrapResponse(() => api(cfg, endpoint, {
     method,
+    forceBlob,
     body: payload?.body,
     query: payload?.params
 }));
