@@ -1,6 +1,6 @@
 {
   "name": "@weclapp/sdk",
-  "version": "0.3.3",
+  "version": "1.0.0",
   "description": "SDK generator based on a weclapp api swagger file",
   "author": "weclapp",
   "bin": {
@@ -15,8 +15,8 @@
     "@weclapp:registry": "https://gitlab.internal.weclapp.com/api/v4/projects/145/packages/npm/"
   },
   "engines": {
-	"node": "^16.13.0",
-	"npm": "^8.1.0"
+    "node": "^16.13.0",
+    "npm": "^8.1.0"
   },
   "types": "./sdk/dist/index.d.ts",
   "main": "./sdk/dist/index.cjs",
@@ -53,6 +53,7 @@
     "@typescript-eslint/parser": "^5.21.0",
     "eslint": "^8.14.0",
     "rollup-plugin-string": "^3.0.0",
+    "standard-version": "^9.3.2",
     "vitest": "^0.10.0"
   },
   "dependencies": {
