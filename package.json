@@ -2,9 +2,6 @@
   "name": "@weclapp/sdk",
   "version": "0.3.3",
   "description": "SDK generator based on a weclapp api swagger file",
-  "main": "./main/index.js",
-  "module": "./main/index.mjs",
-  "types": "./main/index.d.ts",
   "author": "weclapp",
   "bin": {
     "sdk-generator": "./bin/cli.js"
@@ -12,10 +9,6 @@
   "files": [
     "bin",
     "lib",
-    "src",
-    "static",
-    "rollup.config.js",
-    "tsconfig.json",
     "tsconfig.lib.json"
   ],
   "publishConfig": {
@@ -25,54 +18,64 @@
 	"node": "^16.13.0",
 	"npm": "^8.1.0"
   },
+  "types": "./sdk/dist/index.d.ts",
+  "main": "./sdk/dist/index.cjs",
+  "module": "./sdk/dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./sdk/dist/index.d.ts",
+        "default": "./sdk/dist/index.mjs"
+      },
+      "require": {
+        "types": "./sdk/dist/index.cjs.d.ts",
+        "default": "./sdk/dist/index.cjs"
+      }
+    }
+  },
   "scripts": {
     "cli:build": "cross-env NODE_ENV=production rollup -c rollup.config.js",
     "cli:watch": "cross-env NODE_ENV=development rollup -c rollup.config.js --watch",
-    "sdk:build": "./bin/cli.js --from-env --include-hidden",
+    "sdk:build": "./bin/cli.js tests/openapi.json --target node",
     "lint": "eslint {src,tests}/**/*.ts",
     "lint:fix": "npm run lint -- --fix",
-    "test": "jest",
-    "test:coverage": "jest --coverage",
-    "test:dev": "jest --watch",
-    "postinstall": "npm run cli:build"
+    "release": "standard-version",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "repository": {
     "type": "git",
     "url": "git@git.internal.weclapp.com:weclapp/weclapp-api/sdk-generator.git"
   },
   "devDependencies": {
-    "@types/jest": "^27.4.0",
-    "@typescript-eslint/eslint-plugin": "^5.10.2",
-    "@typescript-eslint/parser": "^5.10.2",
-    "eslint": "^8.8.0",
-    "jest": "^27.4.7",
-    "jest-extended": "^2.0.0",
-    "joi": "^17.6.0",
-    "ts-jest": "^27.1.3",
-    "ts-node": "^10.4.0",
-    "ts-node-dev": "^1.1.8",
-    "tsconfig-paths": "^3.12.0"
+    "@typescript-eslint/eslint-plugin": "^5.21.0",
+    "@typescript-eslint/parser": "^5.21.0",
+    "eslint": "^8.14.0",
+    "rollup-plugin-string": "^3.0.0",
+    "vitest": "^0.10.0"
   },
   "dependencies": {
-    "@types/node-fetch": "^2.5.12",
-    "@types/fs-extra": "^9.0.13",
-    "@types/yargs": "^17.0.8",
-    "@types/node": "^16.11.22",
     "@rollup/plugin-json": "^4.1.0",
-    "cross-env": "^7.0.3",
-    "swagger2openapi": "^7.0.8",
-    "openapi-types": "^10.0.0",
+    "@types/fs-extra": "^9.0.13",
+    "@types/node": "^16.11.31",
+    "@types/node-fetch": "^2.6.1",
+    "@types/yargs": "^17.0.10",
     "chalk": "^4.1.2",
     "change-case": "^4.1.2",
-    "dotenv": "^15.0.0",
-    "rxjs": "^7.5.2",
-    "fs-extra": "^10.0.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.0.0",
+    "fs-extra": "^10.1.0",
     "indent-string": "^4.0.0",
-    "node-fetch": "^2.6.7",
-    "rollup": "^2.66.1",
+    "openapi-types": "^11.0.0",
+    "rollup": "^2.70.2",
     "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-ts": "^2.0.5",
-    "typescript": "^4.5.5",
-    "yargs": "^17.3.1"
+    "rollup-plugin-ts": "^2.0.7",
+    "typescript": "^4.6.3",
+    "yargs": "^17.4.1"
+  },
+  "peerDependencies": {
+    "node-fetch": "^2.6.7",
+    "rxjs": "^7.5.5"
   }
 }

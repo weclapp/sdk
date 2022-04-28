@@ -1,35 +1,22 @@
-import {buildSDK} from '@/src/bundle';
-import {Target} from '@enums/Target';
-import {definitions} from '@generator/definitions';
-import {generateAPIDocumentation} from '@generator/docs/api';
-import {generateSdk} from '@generator/library';
+import {bundle} from '@/src/bundle';
+import {generate} from '@generator/generate';
 import {logger} from '@logger';
-import {tsImport} from '@ts/modules';
-import {env} from '@utils/env';
 import {hash} from '@utils/hash';
-import {cli} from './cli';
 import {writeSourceFile} from '@utils/writeSourceFile';
-import {copy, writeFile, mkdirp, stat, rm} from 'fs-extra';
-import {resolve, dirname} from 'path';
+import {copy, mkdirp, rm, stat, writeFile} from 'fs-extra';
+import {dirname, resolve} from 'path';
 import pkg from '../package.json';
+import {cli} from './cli';
 
-const workingDirectory = resolve(__dirname, env('NODE_ENV') === 'development' ? '../sdk' : '../');
-const resolveStaticContent = (...paths: string[]) => resolve(__dirname, '../static', ...paths);
+const workingDirectory = resolve(__dirname, '../sdk');
 const folders = ['docs', 'main', 'node', 'raw', 'rx', 'utils'];
-
-logger.infoLn(`Mode: ${env('NODE_ENV') ?? 'production'}`);
-logger.infoLn(`Working directory: ${workingDirectory}`);
 
 void (async () => {
     const start = process.hrtime.bigint();
-    const {content: doc, cache: useCache} = await cli();
-
-    if (!doc.components?.schemas) {
-        return logger.errorLn('components.schemas missing.');
-    }
+    const {content: doc, cache: useCache, target} = await cli();
 
     // Resolve cache dir and key
-    const cacheKey = hash([pkg.version, JSON.stringify(doc)]).slice(-8);
+    const cacheKey = hash([pkg.version, JSON.stringify(doc), target]).slice(-8);
     const cacheDir = resolve(__dirname, '../', '.tmp', cacheKey);
 
     const dist = (...paths: string[]) => resolve(workingDirectory, ...paths);
@@ -39,60 +26,38 @@ void (async () => {
         return fullPath;
     };
 
-    const resolveDocsDist = async (...paths: string[]) => tmp('docs', ...paths);
+    if (useCache) {
+        logger.infoLn(`Cache ID: ${cacheKey}`);
+    }
 
     if (useCache && await stat(cacheDir).catch(() => false)) {
         logger.successLn(`Cache match! (${cacheDir})`);
     } else {
-        logger.infoLn('Cleanup old SDK...');
-        await Promise.all(folders.map(async dir => rm(dist(dir), {recursive: true}).catch(() => 0)));
 
         // Store swagger.json file
         await writeFile(await tmp('openapi.json'), JSON.stringify(doc, null, 2));
+        logger.infoLn(`Generate (target: ${target})`);
 
-        // Generate import statement for type-declarations
-        logger.infoLn('Generate entity models...');
-        const models = definitions(doc);
-        await writeSourceFile(await tmp('raw/types.models.ts'), models.source);
+        // Generate SDKs
+        await writeSourceFile(await tmp('src', `${target}.ts`), generate(doc, target));
 
-        // Copy static files
-        logger.infoLn('Copy static files...');
-        await copy(resolveStaticContent('types'), await tmp('raw'));
-        await copy(resolveStaticContent('code'), await tmp('raw'));
-
-        // Main library and documentation
-        logger.infoLn('Generate main SDK...');
-        const sdk = generateSdk(doc, Target.BROWSER_PROMISES);
-        const modelsImport = tsImport('./types.models', models.stats.exports);
-        await writeSourceFile(await tmp('raw/sdk.ts'), `${modelsImport}\n${sdk.source}`);
-
-        logger.infoLn('Generate API documentation...');
-        await copy(resolveStaticContent('docs/utils.md'), await resolveDocsDist('utils.md'));
-        await writeSourceFile(await resolveDocsDist('api.md'), await generateAPIDocumentation(sdk.stats, resolveStaticContent('docs', 'api.md')));
-
-        // Additional libraries
-        logger.infoLn('Generate additional SDK\'s...');
-        await writeFile(await tmp('raw/sdk.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_PROMISES).source}`);
-        await writeFile(await tmp('raw/sdk.rx.ts'), `${modelsImport}\n${generateSdk(doc, Target.BROWSER_RX).source}`);
-        await writeFile(await tmp('raw/sdk.rx.node.ts'), `${modelsImport}\n${generateSdk(doc, Target.NODE_RX).source}`);
-
-        logger.infoLn('Bundle SDK (this may take some time)...');
-        await buildSDK(cacheDir);
+        // Bundle
+        logger.infoLn('Bundle (this may take some time)...');
+        await bundle(cacheDir, target);
 
         // Print job summary
         const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
         logger.blankLn();
-        logger.printSummary();
-        logger.infoLn(`SDK generated in ${duration}ms.`);
+        logger.successLn(`SDK generated in ${duration}ms.`);
+
+        // Remove old SDK
+        await Promise.all(folders.map(async dir => rm(dist(dir), {recursive: true}).catch(() => 0)));
     }
 
     await copy(cacheDir, workingDirectory);
 
-    if (!useCache) {
-        await rm(cacheDir, {recursive: true, force: true});
-    }
-
     logger.successLn(`Cleanup done, Bye.`);
+    logger.printSummary();
 })().catch((error: unknown) => {
     logger.errorLn(`Fatal error:`);
 
