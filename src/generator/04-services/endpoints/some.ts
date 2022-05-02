@@ -15,6 +15,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({target, path, en
     // Required interface names
     const entity = pascalCase(endpoint.entity);
     const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
+    const entityFilter = `${entity}_Filter`;
     const entityMappings = `${entity}_Mappings`;
     const entityReferences = `${entity}_References`;
     const entityParameters = `${interfaceName}_Parameters`;
@@ -36,7 +37,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({target, path, en
             `S extends (QuerySelect<${entity}> | undefined) = undefined`,
             `I extends (QuerySelect<${entityMappings}> | undefined) = undefined`
         ],
-        params: [`query${parameters.isFullyOptional() ? '?' : ''}: SomeQuery<${entity}, I, S> & ${entityParameters}`],
+        params: [`query${parameters.isFullyOptional() ? '?' : ''}: SomeQuery<${entity}, ${entityFilter}, I, S> & ${entityParameters}`],
         returns: `${resolveResponseType(target)}<SomeQueryReturn<${entity}, ${entityReferences}, ${entityMappings}, I, S>>`
     });
 

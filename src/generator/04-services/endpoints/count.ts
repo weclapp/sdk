@@ -12,6 +12,7 @@ const functionName = 'count';
 
 export const generateCountEndpoint: ServiceFunctionGenerator = ({path, target, endpoint}): GeneratedServiceFunction => {
     const entity = pascalCase(endpoint.entity);
+    const entityFilter = `${entity}_Filter`;
     const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
     const entityParameters = `${interfaceName}_Parameters`;
     const parameterSchema = convertParametersToSchema(path.parameters);
@@ -29,7 +30,7 @@ export const generateCountEndpoint: ServiceFunctionGenerator = ({path, target, e
 
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
-        params: [`query${parameters.isFullyOptional() ? '?' : ''}: CountQuery<${entity}> & ${entityParameters}`],
+        params: [`query${parameters.isFullyOptional() ? '?' : ''}: CountQuery<${entityFilter}> & ${entityParameters}`],
         returns: `${resolveResponseType(target)}<number>`
     });
 

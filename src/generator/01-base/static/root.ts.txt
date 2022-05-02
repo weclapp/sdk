@@ -110,7 +110,7 @@ const _count = (
 const _some = (
     cfg: ServiceConfig | undefined,
     endpoint: string,
-    query?: SomeQuery<any, any, any> & {params?: Record<any, any>}
+    query?: SomeQuery<any, any, any, any> & {params?: Record<any, any>}
 ) => wrapResponse(() => api(cfg, endpoint, {
         query: {
             serializeNulls: query?.serializeNulls,

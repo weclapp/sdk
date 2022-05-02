@@ -13,11 +13,12 @@ export const generateInterfaceFromObject = (
     propagateOptionalProperties?: boolean
 ): string => `export interface ${name} ${obj.toString(propagateOptionalProperties)}`;
 
-export const generateInterface = (name: string, entries: InterfaceProperty[], extend?: string): string => {
-    const signature = `${name} ${extend ? `extends ${extend}` : ''}`.trim();
+export const generateInterface = (name: string, entries: InterfaceProperty[], extend?: string | string[]): string => {
+    const signature = `${name} ${extend ? `extends ${Array.isArray(extend) ? extend.join(', ') : extend}` : ''}`.trim();
 
     const properties = entries
         .filter(v => v.type !== undefined)
+        .filter((value, index, array) => array.findIndex(v => v.name === value.name) === index)
         .map(({name, type, required}) => `${name}${required ? '' : '?'}: ${type as string};`)
         .join('\n');
 

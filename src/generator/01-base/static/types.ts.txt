@@ -70,14 +70,15 @@ export type Pagination = {
 
 export type SomeQuery<
     E, // Entity
+    F, // Entity filter
     I extends (QuerySelect<any> | undefined), // Select for referenced entities
     S extends (QuerySelect<any> | undefined) // Select for entity properties
 > = {
     serializeNulls?: boolean;
     include?: I;
-    filter?: QueryFilter<E> & CustomAttributeFilter;
+    filter?: QueryFilter<F> & CustomAttributeFilter;
     select?: S;
-    or?: (QueryFilter<E> & CustomAttributeFilter)[];
+    or?: (QueryFilter<F> & CustomAttributeFilter)[];
     sort?: Sort<E>[];
     pagination?: Pagination;
 };

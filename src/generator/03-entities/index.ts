@@ -21,6 +21,7 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
 
         const entity = pascalCase(schemaName);
         const entityInterface: InterfaceProperty[] = [];
+        const filterInterface: InterfaceProperty[] = [];
         const referenceInterface: InterfaceProperty[] = [];
         const referenceMappingsInterface: InterfaceProperty[] = [];
         const requiredProps = schema.required ?? [];
@@ -28,9 +29,11 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
 
         const processProperties = (props: Record<string, OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject> = {}) => {
             for (const [name, property] of Object.entries(props)) {
+
                 if (isRelatedEntitySchema(property)) {
                     const relatedEntity = property['x-relatedEntityName'];
                     const type = `${pascalCase(relatedEntity)}[]`;
+                    filterInterface.push({name: relatedEntity, type, required: true});
                     referenceInterface.push({name, type, required: true});
                     referenceMappingsInterface.push({name, type: generateString(relatedEntity), required: true});
                 }
@@ -53,9 +56,18 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
 
         processProperties(schema.properties);
         const source = generateStatements(
-            generateInterface(entity, entityInterface, extend),
+            generateInterface(
+                entity,
+                entityInterface.filter(property => {
+                    return !(
+                        !property.name.endsWith('Id') &&
+                        filterInterface.find(v => property.name.startsWith(v.name))
+                    );
+                }),
+                extend),
             generateInterface(`${entity}_References`, referenceInterface),
-            generateInterface(`${entity}_Mappings`, referenceMappingsInterface)
+            generateInterface(`${entity}_Mappings`, referenceMappingsInterface),
+            generateInterface(`${entity}_Filter`, filterInterface, extend ? [entity, `${extend}_Filter`] : undefined)
         );
 
         entities.set(entity, {source});
