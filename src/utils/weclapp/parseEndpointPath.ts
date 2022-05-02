@@ -1,4 +1,5 @@
 import {memoize} from '@utils/memoize';
+import {camelCase} from 'change-case';
 
 /**
  * ROOT           => /article
@@ -31,11 +32,14 @@ export interface WeclappSpecialEndpoint {
 export type WeclappEndpoint = WeclappNormalEndpoint | WeclappSpecialEndpoint;
 
 export const parseEndpointPath = memoize((path: string): WeclappNormalEndpoint | WeclappSpecialEndpoint | undefined => {
-    const [, entity, ...rest] = path.split('/');
+    const [, rawEntityName, ...rest] = path.split('/');
 
-    if (!entity) {
+    if (!rawEntityName) {
         return undefined;
     }
+
+    // Convert all entity names to camel-case
+    const entity = camelCase(rawEntityName);
 
     if (!rest.length) {
         return {path, entity, type: WeclappEndpointType.ROOT};

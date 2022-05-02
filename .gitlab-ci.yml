@@ -3,6 +3,11 @@ stages:
   - generate
   - publish
 
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - when: always
+
 .npm:defaults:
   tags:
     - small
@@ -63,7 +68,7 @@ publish:snapshot:
   image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-16-alpine
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
+      when: manual
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
     - when: never
