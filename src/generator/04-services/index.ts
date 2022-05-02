@@ -22,7 +22,7 @@ export interface GeneratedService {
     serviceName: string;
     serviceTypeName: string;
     source: string;
-    generatedFunctions: string[];
+    functions: GeneratedServiceFunction[];
 }
 
 const generators: Record<WeclappEndpointType, Record<string, ServiceFunctionGenerator>> = {
@@ -62,10 +62,9 @@ export const generateServices = (doc: OpenAPIV3.Document, target: Target): Map<s
 
             for (const [method, config] of Object.entries(path)) {
                 if (resolver[method]) {
-                    functions.push(resolver[method]({
-                        endpoint, method, target,
-                        path: config as OpenAPIV3.OperationObject
-                    }));
+                    const path = config as OpenAPIV3.OperationObject;
+
+                    functions.push(resolver[method]({endpoint, method, target, path}));
                 } else {
                     logger.errorLn(`Failed to generate a function for ${method.toUpperCase()}:${endpoint.type} ${endpoint.path}`);
                 }
@@ -91,8 +90,7 @@ export const generateServices = (doc: OpenAPIV3.Document, target: Target): Map<s
 
         const func = `export const ${serviceName} = (cfg?: ServiceConfig): ${serviceTypeName} => ${funcBody};`;
         const source = generateBlockComment(`${pascalCase(entity)} service`, generateStatements(types, func));
-        const generatedFunctions = functions.map(v => v.name);
-        services.set(entity, {entity, serviceName, serviceTypeName, source, generatedFunctions});
+        services.set(entity, {entity, serviceName, serviceTypeName, source, functions});
     }
 
     return services;

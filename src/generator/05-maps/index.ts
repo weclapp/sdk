@@ -1,8 +1,7 @@
 import {GeneratedService} from '@generator/04-services';
 import {concat} from '@ts/concat';
-import {generateInterface} from '@ts/generateInterface';
+import {generateInterface, InterfaceProperty} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
-import {generateTuple} from '@ts/generateTuple';
 import {generateType} from '@ts/generateType';
 import {indent} from '@utils/indent';
 import {camelCase, pascalCase} from 'change-case';
@@ -24,10 +23,17 @@ export const generateMaps = ({services, entities}: MapsGenerator): GeneratedMaps
     const entityTuple = generateType('WeclappEntity', 'keyof WeclappEntities');
     const weclappService = generateType('WeclappService', concat(services.map(v => v.serviceTypeName), ' | '));
 
-    const functionSets: Map<string, string[]> = new Map();
-    for (const {entity, generatedFunctions} of services) {
-        for (const func of generatedFunctions) {
-            functionSets.set(func, [...(functionSets.get(func) ?? []), entity]);
+    const entityDescriptors: Map<string, InterfaceProperty[]> = new Map();
+
+    for (const {entity, functions} of services) {
+        for (const {name} of functions) {
+            entityDescriptors.set(name, [
+                ...(entityDescriptors.get(name) ?? []), {
+                    name: entity,
+                    required: true,
+                    type: `${pascalCase(entity)}Service_${pascalCase(name)}`
+                }
+            ]);
         }
     }
 
@@ -39,8 +45,8 @@ export const generateMaps = ({services, entities}: MapsGenerator): GeneratedMaps
             entityTypes,
             entityTuple,
             weclappService,
-            ...[...functionSets.entries()]
-                .map(v => generateTuple(pascalCase(`EntitiesWith_${v[0]}`), v[1]))
+            ...[...entityDescriptors.entries()]
+                .map(v => generateInterface(pascalCase(`EntitiesWith_${v[0]}`), v[1]))
         )
     };
 };
