@@ -35,7 +35,7 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
         name: functionName,
         signature: interfaceName,
         params: hasId ? ['id', 'query'] : ['query'],
-        returns: `_generic(cfg, ${generateString(method)}, \`${insertPathPlaceholder(endpoint.path, {id: '${id}'})}\`, query, ${forceBlobResponse})`
+        returns: `_generic(cfg, ${generateString(method.toUpperCase())}, \`${insertPathPlaceholder(endpoint.path, {id: '${id}'})}\`, query, ${forceBlobResponse})`
     });
 
     const interfaceSource = generateArrowFunctionType({

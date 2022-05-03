@@ -1,5 +1,7 @@
+export type RequestPayloadMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE'  | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'PATCH';
+
 export interface RequestPayload {
-    method?: string;
+    method?: RequestPayloadMethod;
     query?: Record<string, any>;
     body?: any;
     unwrap?: boolean;
@@ -36,7 +38,7 @@ let globalConfig: ServiceConfig | undefined;
 export const getGlobalConfig = (): ServiceConfig | undefined => globalConfig;
 export const setGlobalConfig = (cfg?: ServiceConfig) => globalConfig = cfg;
 
-const api = async (
+export const raw = async (
     cfg: ServiceConfig | undefined = globalConfig,
     endpoint: string,
     payload: RequestPayload = {}
@@ -99,7 +101,7 @@ const _count = (
     cfg: ServiceConfig | undefined,
     endpoint: string,
     query?: CountQuery<any> & {params?: Record<any, any>}
-) => wrapResponse(() => api(cfg, endpoint, {
+) => wrapResponse(() => raw(cfg, endpoint, {
     unwrap: true,
     query: {
         ...flattenFilter(query?.filter),
@@ -111,7 +113,7 @@ const _some = (
     cfg: ServiceConfig | undefined,
     endpoint: string,
     query?: SomeQuery<any, any, any, any> & {params?: Record<any, any>}
-) => wrapResponse(() => api(cfg, endpoint, {
+) => wrapResponse(() => raw(cfg, endpoint, {
         query: {
             serializeNulls: query?.serializeNulls,
             properties: flattenSelect(query?.select).join(','),
@@ -128,16 +130,16 @@ const _some = (
 const _remove = (
     cfg: ServiceConfig | undefined,
     endpoint: string
-) => wrapResponse(() => api(cfg, endpoint, {
-    method: 'delete'
+) => wrapResponse(() => raw(cfg, endpoint, {
+    method: 'DELETE'
 }).then(() => undefined));
 
 const _create = (
     cfg: ServiceConfig | undefined,
     endpoint: string,
     data: any
-) => wrapResponse(() => api(cfg, endpoint, {
-    method: 'post',
+) => wrapResponse(() => raw(cfg, endpoint, {
+    method: 'POST',
     body: data
 }));
 
@@ -146,8 +148,8 @@ const _update = (
     endpoint: string,
     data: any,
     {ignoreMissingProperties = true}: UpdateQuery = {}
-) => wrapResponse(() => api(cfg, endpoint, {
-    method: 'put',
+) => wrapResponse(() => raw(cfg, endpoint, {
+    method: 'PUT',
     body: data,
     query: {ignoreMissingProperties}
 }));
@@ -156,15 +158,15 @@ const _unique = (
     cfg: ServiceConfig | undefined,
     endpoint: string,
     query?: UniqueQuery
-) => wrapResponse(() => api(cfg, endpoint, {query}));
+) => wrapResponse(() => raw(cfg, endpoint, {query}));
 
 const _generic = (
     cfg: ServiceConfig | undefined,
-    method: string,
+    method: RequestPayloadMethod,
     endpoint: string,
     payload?: GenericQuery<any, any>,
     forceBlob?: boolean
-) => wrapResponse(() => api(cfg, endpoint, {
+) => wrapResponse(() => raw(cfg, endpoint, {
     method,
     forceBlob,
     body: payload?.body,

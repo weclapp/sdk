@@ -77,3 +77,35 @@ console.log(`Total amount of parties: ${await party.count()}`)
 ```
 
 > If a global config is specified as well the one passed to the service will **always** take precedence over the global one!
+
+#### Using the raw function
+
+The raw function can be used if none of the provided function suits your needs:
+
+```ts
+import {raw} from '@weclapp/sdk';
+
+const result = await raw(
+    cfg: ServiceConfig | undefined = globalConfig,
+    endpoint: string,
+    payload: RequestPayload = {}
+);
+```
+
+where `RequestPayload` looks like this:
+
+
+```ts
+interface RequestPayload {
+    method?: RequestPayloadMethod; // Request method
+    query?: Record<string, any>; // Query parameters
+    body?: any; // Optional body
+
+    // In case the response body is an object with a result-prop the value will be extracted
+    unwrap?: boolean;
+
+    // If in any case the response should be returned as a blob.
+    // Required for download endpoints as json will be parsed automatically.
+    forceBlob?: boolean;
+}
+```
