@@ -18,13 +18,19 @@ interface MapsGenerator {
 export const generateMaps = ({services, entities}: MapsGenerator): GeneratedMaps => {
     const serviceValues = `export const weclappServices = {\n${indent(services.map(v => `${v.entity}: ${v.serviceName}`).join(',\n'))}\n}`;
     const serviceInstanceValues = `export const weclappServiceInstances = {\n${indent(services.map(v => `${v.entity}: ${v.serviceName}()`).join(',\n'))}\n}`;
-    const entityTypes = generateInterface('WeclappEntities', entities.map(v => ({required: true, name: camelCase(v), type: v})));
+
+    const entityTypes = generateInterface(
+        'WeclappEntities',
+        entities
+            .filter(entity => services.find(s => pascalCase(s.entity) === entity))
+            .map(v => ({required: true, name: camelCase(v), type: v}))
+    );
+
     const serviceTypes = generateType('WeclappServices', 'typeof weclappServices');
     const entityTuple = generateType('WeclappEntity', 'keyof WeclappEntities');
     const weclappService = generateType('WeclappService', concat(services.map(v => v.serviceTypeName), ' | '));
 
     const entityDescriptors: Map<string, InterfaceProperty[]> = new Map();
-
     for (const {entity, functions} of services) {
         for (const {name} of functions) {
             entityDescriptors.set(name, [
