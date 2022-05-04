@@ -59,13 +59,14 @@ export type MapKeys<T, S extends Record<keyof T, string>> = {
 };
 
 // Endpoint configurations
-export type CountQuery<E> = {
-    filter?: QueryFilter<E>;
+export type CountQuery<F> = {
+    filter?: QueryFilter<F>;
+    or?: (QueryFilter<F> & CustomAttributeFilter)[];
 };
 
 export type Pagination = {
-    page?: number;
-    pageSize?: number;
+    page: number;
+    pageSize: number;
 };
 
 export type SomeQuery<

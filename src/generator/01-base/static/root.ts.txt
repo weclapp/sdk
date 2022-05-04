@@ -54,7 +54,7 @@ export const raw = async (
 
     const isBinaryData = payload.body instanceof BinaryClass;
     const contentType = isBinaryData ? 'octet-stream' : 'json';
-    const params = new URLSearchParams(Object.entries(payload.query ?? {}));
+    const params = new URLSearchParams(Object.entries(payload.query ?? {}).filter(v => v[1]));
     const protocol = (cfg.secure ?? true) ? 'https' : 'http';
 
     const interceptRequest = cfg.interceptors?.request ?? (v => v);
@@ -105,6 +105,7 @@ const _count = (
     unwrap: true,
     query: {
         ...flattenFilter(query?.filter),
+        ...flattenOrFilter(query?.or),
         ...query?.params
     }
 }));

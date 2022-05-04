@@ -9,6 +9,10 @@ import {convertToTypeScriptType, createObjectType} from '@utils/openapi/convertT
 import {pascalCase} from 'change-case';
 
 const functionName = 'some';
+const excludedParameters = [
+    'page', 'pageSize', 'sort',
+    'serializeNulls', 'properties', 'includeReferencedEntities'
+];
 
 export const generateSomeEndpoint: ServiceFunctionGenerator = ({target, path, endpoint}): GeneratedServiceFunction => {
 
@@ -24,7 +28,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({target, path, en
     // We already cover page, pageSize and sort
     parameterSchema.properties = Object.fromEntries(
         Object.entries(parameterSchema.properties ?? {})
-            .filter(v => !['page', 'pageSize', 'sort'].includes(v[0]))
+            .filter(v => !excludedParameters.includes(v[0]))
     );
 
     const parameters = createObjectType({

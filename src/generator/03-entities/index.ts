@@ -1,4 +1,4 @@
-import {generateInterface, InterfaceProperty} from '@ts/generateInterface';
+import {generateInterface, generateInterfaceType, InterfaceProperty} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
 import {generateString} from '@ts/generateString';
 import {convertToTypeScriptType} from '@utils/openapi/convertToTypeScriptType';
@@ -57,17 +57,23 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
         processProperties(schema.properties);
         const source = generateStatements(
             generateInterface(
-                entity,
-                entityInterface.filter(property => {
-                    return !(
-                        !property.name.endsWith('Id') &&
-                        filterInterface.find(v => property.name.startsWith(v.name))
-                    );
-                }),
-                extend),
+                entity, entityInterface.map(property => {
+                    let deprecated = false;
+
+                    if (property.name.endsWith('Name')) {
+                        const rawName = property.name.slice(0, -4);
+                        deprecated =
+                            filterInterface.some(v => v.name === rawName) &&
+                            entityInterface.some(v => v.name.endsWith('Id') && v.name.slice(0, -2) === rawName);
+                    }
+
+
+                    return deprecated ? {...property, comment: `@deprecated`} : property;
+                }), extend
+            ),
             generateInterface(`${entity}_References`, referenceInterface),
             generateInterface(`${entity}_Mappings`, referenceMappingsInterface),
-            generateInterface(`${entity}_Filter`, filterInterface, extend ? [entity, `${extend}_Filter`] : undefined)
+            generateInterfaceType(`${entity}_Filter`, filterInterface, extend ? [entity, `${extend}_Filter`] : undefined)
         );
 
         entities.set(entity, {source});
