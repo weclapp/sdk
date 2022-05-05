@@ -26,6 +26,13 @@ export const generateMaps = ({services, entities}: MapsGenerator): GeneratedMaps
             .map(v => ({required: true, name: camelCase(v), type: v}))
     );
 
+    const entityUpdateTypes = generateInterface(
+        'WeclappUpdateEntities',
+        entities
+            .filter(v => v.startsWith('CreateOrUpdate'))
+            .map(v => ({required: true, name: camelCase(v.slice(14)), type: v}))
+    );
+
     const serviceTypes = generateType('WeclappServices', 'typeof weclappServices');
     const entityTuple = generateType('WeclappEntity', 'keyof WeclappEntities');
     const weclappService = generateType('WeclappService', concat(services.map(v => v.serviceTypeName), ' | '));
@@ -49,6 +56,7 @@ export const generateMaps = ({services, entities}: MapsGenerator): GeneratedMaps
             serviceValues,
             serviceInstanceValues,
             entityTypes,
+            entityUpdateTypes,
             entityTuple,
             weclappService,
             ...[...entityDescriptors.entries()]
