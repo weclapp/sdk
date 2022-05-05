@@ -76,7 +76,7 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
             generateInterfaceType(`${entity}_Filter`, filterInterface, extend ? [entity, `${extend}_Filter`] : undefined)
         );
 
-        entities.set(entity, {source});
+        entities.set(schemaName, {source});
     }
 
     return entities;

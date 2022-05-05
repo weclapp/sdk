@@ -20,22 +20,23 @@ export const generateMaps = ({services, entities}: MapsGenerator): GeneratedMaps
     const serviceInstanceValues = `export const weclappServiceInstances = {\n${indent(services.map(v => `${v.entity}: ${v.serviceName}()`).join(',\n'))}\n}`;
 
     const entityTypes = generateInterface(
-        'WeclappEntities',
+        'WEntities',
         entities
-            .filter(entity => services.find(s => pascalCase(s.entity) === entity))
-            .map(v => ({required: true, name: camelCase(v), type: v}))
+            .filter(entity => services.some(s => s.entity === entity))
+            .map(v => ({required: true, name: v, type: pascalCase(v)}))
     );
 
     const entityUpdateTypes = generateInterface(
-        'WeclappUpdateEntities',
+        'CreateOrUpdateWEntities',
         entities
-            .filter(v => v.startsWith('CreateOrUpdate'))
-            .map(v => ({required: true, name: camelCase(v.slice(14)), type: v}))
+            .filter(v => v.startsWith('createOrUpdate'))
+            .map(v => ({required: true, name: camelCase(v.slice(14)), type: pascalCase(v)}))
     );
 
-    const serviceTypes = generateType('WeclappServices', 'typeof weclappServices');
-    const entityTuple = generateType('WeclappEntity', 'keyof WeclappEntities');
-    const weclappService = generateType('WeclappService', concat(services.map(v => v.serviceTypeName), ' | '));
+    const serviceTypes = generateType('WServices', 'typeof weclappServiceInstances');
+    const serviceFactoryTypes = generateType('WServiceFactories', 'typeof weclappServices');
+    const entityTuple = generateType('WEntity', 'keyof WEntities');
+    const weclappService = generateType('WService', concat(services.map(v => v.serviceTypeName), ' | '));
 
     const entityDescriptors: Map<string, InterfaceProperty[]> = new Map();
     for (const {entity, functions} of services) {
@@ -53,6 +54,7 @@ export const generateMaps = ({services, entities}: MapsGenerator): GeneratedMaps
     return {
         source: generateStatements(
             serviceTypes,
+            serviceFactoryTypes,
             serviceValues,
             serviceInstanceValues,
             entityTypes,
@@ -60,7 +62,7 @@ export const generateMaps = ({services, entities}: MapsGenerator): GeneratedMaps
             entityTuple,
             weclappService,
             ...[...entityDescriptors.entries()]
-                .map(v => generateInterface(pascalCase(`EntitiesWith_${v[0]}`), v[1]))
+                .map(v => generateInterface(pascalCase(`WEntitiesWith_${v[0]}`), v[1]))
         )
     };
 };
