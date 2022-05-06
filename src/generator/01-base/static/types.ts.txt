@@ -10,8 +10,9 @@ export type MapOperators<T> = { [K in EqualityOperators]?: T | null; } &
 
 export type QueryFilter<T> = {
     [P in keyof T]?:
-    T[P] extends Array<infer U> | undefined ? QueryFilter<U> :
-        T[P] extends Record<any, any> | undefined ? QueryFilter<T[P]> : MapOperators<T[P]>;
+        T[P] extends Array<infer U> | undefined ?
+            U extends Record<any, any> ? QueryFilter<U> : MapOperators<U> :
+                T[P] extends Record<any, any> | undefined ? QueryFilter<T[P]> : MapOperators<T[P]>;
 };
 
 export type Sort<T> = {
