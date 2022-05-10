@@ -10,10 +10,10 @@ import {extractSchemas} from '@utils/openapi/extractSchemas';
 import {OpenAPIV3} from 'openapi-types';
 
 export const generate = (doc: OpenAPIV3.Document, target: Target): string => {
-    const schemas = extractSchemas(doc);
+    const {schemas, aliases} = extractSchemas(doc);
     const enums = generateEnums(schemas);
     const entities = generateEntities(schemas);
-    const services = generateServices(doc, target);
+    const services = generateServices(doc, target, aliases);
 
     const maps = generateMaps({
         services: [...services.values()],

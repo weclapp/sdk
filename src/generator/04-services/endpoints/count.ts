@@ -10,10 +10,11 @@ import {pascalCase} from 'change-case';
 
 const functionName = 'count';
 
-export const generateCountEndpoint: ServiceFunctionGenerator = ({path, target, endpoint}): GeneratedServiceFunction => {
-    const entity = pascalCase(endpoint.entity);
+export const generateCountEndpoint: ServiceFunctionGenerator = ({aliases, path, target, endpoint}): GeneratedServiceFunction => {
+    const service = pascalCase(endpoint.entity);
+    const entity = aliases.get(service) ?? service;
     const entityFilter = `${entity}_Filter`;
-    const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
+    const interfaceName = `${service}Service_${pascalCase(functionName)}`;
     const entityParameters = `${interfaceName}_Parameters`;
     const parameterSchema = convertParametersToSchema(path.parameters);
 

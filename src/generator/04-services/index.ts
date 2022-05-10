@@ -48,7 +48,7 @@ const generators: Record<WeclappEndpointType, Record<string, ServiceFunctionGene
     }
 };
 
-export const generateServices = (doc: OpenAPIV3.Document, target: Target): Map<string, GeneratedService> => {
+export const generateServices = (doc: OpenAPIV3.Document, target: Target, aliases: Map<string, string>): Map<string, GeneratedService> => {
     const services: Map<string, GeneratedService> = new Map();
     const grouped = groupEndpointsByEntity(doc.paths);
 
@@ -64,7 +64,7 @@ export const generateServices = (doc: OpenAPIV3.Document, target: Target): Map<s
                 if (resolver[method]) {
                     const path = config as OpenAPIV3.OperationObject;
 
-                    functions.push(resolver[method]({endpoint, method, target, path}));
+                    functions.push(resolver[method]({endpoint, method, target, path, aliases}));
                 } else {
                     logger.errorLn(`Failed to generate a function for ${method.toUpperCase()}:${endpoint.type} ${endpoint.path}`);
                 }

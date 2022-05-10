@@ -14,15 +14,16 @@ const excludedParameters = [
     'serializeNulls', 'properties', 'includeReferencedEntities'
 ];
 
-export const generateSomeEndpoint: ServiceFunctionGenerator = ({target, path, endpoint}): GeneratedServiceFunction => {
+export const generateSomeEndpoint: ServiceFunctionGenerator = ({aliases, target, path, endpoint}): GeneratedServiceFunction => {
 
     // Required interface names
-    const entity = pascalCase(endpoint.entity);
-    const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
+    const service = pascalCase(endpoint.entity);
+    const entity = aliases.get(service) ?? service;
+    const interfaceName = `${service}Service_${pascalCase(functionName)}`;
     const entityFilter = `${entity}_Filter`;
     const entityMappings = `${entity}_Mappings`;
     const entityReferences = `${entity}_References`;
-    const entityParameters = `${interfaceName}_Parameters`;
+    const entityParameters = `${service}_Parameters`;
     const parameterSchema = convertParametersToSchema(path.parameters);
 
     // We already cover page, pageSize and sort

@@ -19,6 +19,7 @@ export interface ServiceFunctionGeneratorConfig {
     method: string;
     path: OpenAPIV3.OperationObject;
     endpoint: WeclappEndpoint;
+    aliases: Map<string, string>;
 }
 
 export type ServiceFunctionGenerator = (v: ServiceFunctionGeneratorConfig) => GeneratedServiceFunction;

@@ -1,10 +1,17 @@
 import {isArraySchemaObject, isReferenceObject, isResponseObject} from '@utils/openapi/guards';
 import {parseEndpointPath, WeclappEndpointType} from '@utils/weclapp/parseEndpointPath';
+import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
+interface ExtractSchemasResult {
+    schemas: Map<string, OpenAPIV3.SchemaObject>;
+    aliases: Map<string, string>;
+}
+
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-export const extractSchemas = (doc: OpenAPIV3.Document): Map<string, OpenAPIV3.SchemaObject> => {
+export const extractSchemas = (doc: OpenAPIV3.Document): ExtractSchemasResult => {
     const schemas: Map<string, OpenAPIV3.SchemaObject> = new Map();
+    const aliases: Map<string, string> = new Map();
 
     for (const [name, schema] of Object.entries(doc.components?.schemas ?? {})) {
         if (!isReferenceObject(schema)) {
@@ -41,16 +48,12 @@ export const extractSchemas = (doc: OpenAPIV3.Document): Map<string, OpenAPIV3.S
 
                 const {items} = itemsSchema;
                 if (isReferenceObject(items)) {
-                    const entity = items.$ref.replace(/.*\//, '');
-                    const schema = schemas.get(entity);
-
-                    if (schema) {
-                        schemas.set(parsed.entity, schema);
-                    }
+                    const entity = pascalCase(items.$ref.replace(/.*\//, ''));
+                    aliases.set(pascalCase(parsed.entity), entity);
                 }
             }
         }
     }
 
-    return schemas;
+    return {schemas, aliases};
 };
