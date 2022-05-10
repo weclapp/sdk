@@ -1,7 +1,6 @@
 import {generateInterface, generateInterfaceType, InterfaceProperty} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
 import {generateString} from '@ts/generateString';
-import {generateType} from '@ts/generateType';
 import {convertToTypeScriptType} from '@utils/openapi/convertToTypeScriptType';
 import {isEnumSchemaObject, isObjectSchemaObject, isReferenceObject, isRelatedEntitySchema} from '@utils/openapi/guards';
 import {pascalCase} from 'change-case';

@@ -18,7 +18,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({aliases, target,
 
     // Required interface names
     const service = pascalCase(endpoint.entity);
-    const entity = aliases.get(service) ?? service;
+    const entity = aliases.get(endpoint.entity) ?? service;
     const interfaceName = `${service}Service_${pascalCase(functionName)}`;
     const entityFilter = `${entity}_Filter`;
     const entityMappings = `${entity}_Mappings`;

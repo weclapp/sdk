@@ -48,8 +48,8 @@ export const extractSchemas = (doc: OpenAPIV3.Document): ExtractSchemasResult =>
 
                 const {items} = itemsSchema;
                 if (isReferenceObject(items)) {
-                    const entity = pascalCase(items.$ref.replace(/.*\//, ''));
-                    aliases.set(pascalCase(parsed.entity), entity);
+                    const entity = items.$ref.replace(/.*\//, '');
+                    aliases.set(parsed.entity, pascalCase(entity));
                 }
             }
         }

@@ -12,7 +12,7 @@ const functionName = 'count';
 
 export const generateCountEndpoint: ServiceFunctionGenerator = ({aliases, path, target, endpoint}): GeneratedServiceFunction => {
     const service = pascalCase(endpoint.entity);
-    const entity = aliases.get(service) ?? service;
+    const entity = aliases.get(endpoint.entity) ?? service;
     const entityFilter = `${entity}_Filter`;
     const interfaceName = `${service}Service_${pascalCase(functionName)}`;
     const entityParameters = `${interfaceName}_Parameters`;

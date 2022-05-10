@@ -17,7 +17,8 @@ export const generate = (doc: OpenAPIV3.Document, target: Target): string => {
 
     const maps = generateMaps({
         services: [...services.values()],
-        entities: [...entities.keys()]
+        entities: [...entities.keys()],
+        aliases
     });
 
     return generateStatements(

@@ -13,9 +13,10 @@ interface GeneratedMaps {
 interface MapsGenerator {
     services: GeneratedService[];
     entities: string[];
+    aliases: Map<string, string>;
 }
 
-export const generateMaps = ({services, entities}: MapsGenerator): GeneratedMaps => {
+export const generateMaps = ({services, entities, aliases}: MapsGenerator): GeneratedMaps => {
     const serviceValues = `export const weclappServices = {\n${indent(services.map(v => `${v.entity}: ${v.serviceName}`).join(',\n'))}\n}`;
     const serviceInstanceValues = `export const weclappServiceInstances = {\n${indent(services.map(v => `${v.entity}: ${v.serviceName}()`).join(',\n'))}\n}`;
 
@@ -24,6 +25,7 @@ export const generateMaps = ({services, entities}: MapsGenerator): GeneratedMaps
         entities
             .filter(entity => services.some(s => s.entity === entity))
             .map(v => ({required: true, name: v, type: pascalCase(v)}))
+            .concat([...aliases].map(v => ({required: true, name: v[0], type: pascalCase(v[1])})))
     );
 
     const entityUpdateTypes = generateInterface(
@@ -62,7 +64,7 @@ export const generateMaps = ({services, entities}: MapsGenerator): GeneratedMaps
             entityTuple,
             weclappService,
             ...[...entityDescriptors.entries()]
-                .map(v => generateInterface(pascalCase(`WEntitiesWith_${v[0]}`), v[1]))
+                .map(v => generateInterface(pascalCase(`WServicesWith_${v[0]}`), v[1]))
         )
     };
 };
