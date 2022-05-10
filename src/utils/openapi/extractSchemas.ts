@@ -1,22 +1,14 @@
-import {isArraySchemaObject, isReferenceObject, isRequestBodyObject, isResponseObject} from '@utils/openapi/guards';
+import {isArraySchemaObject, isReferenceObject, isResponseObject} from '@utils/openapi/guards';
 import {parseEndpointPath, WeclappEndpointType} from '@utils/weclapp/parseEndpointPath';
 import {OpenAPIV3} from 'openapi-types';
 
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 export const extractSchemas = (doc: OpenAPIV3.Document): Map<string, OpenAPIV3.SchemaObject> => {
-    const schemas = new Map();
+    const schemas: Map<string, OpenAPIV3.SchemaObject> = new Map();
 
     for (const [name, schema] of Object.entries(doc.components?.schemas ?? {})) {
-        schemas.set(name, schema);
-    }
-
-    for (const [name, body] of Object.entries(doc.components?.requestBodies ?? {})) {
-        if (isRequestBodyObject(body)) {
-            const schema = Object.values(body.content)[0]?.schema;
-
-            if (!isReferenceObject(schema)) {
-                schemas.set(name, schema);
-            }
+        if (!isReferenceObject(schema)) {
+            schemas.set(name, schema);
         }
     }
 
@@ -50,12 +42,15 @@ export const extractSchemas = (doc: OpenAPIV3.Document): Map<string, OpenAPIV3.S
                 const {items} = itemsSchema;
                 if (isReferenceObject(items)) {
                     const entity = items.$ref.replace(/.*\//, '');
-                    schemas.set(parsed.entity, schemas.get(entity));
+                    const schema = schemas.get(entity);
+
+                    if (schema) {
+                        schemas.set(parsed.entity, schema);
+                    }
                 }
             }
         }
     }
-
 
     return schemas;
 };

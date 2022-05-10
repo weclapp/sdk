@@ -53,8 +53,9 @@ export const isNonArraySchemaObject = (v: any): v is OpenAPIV3.NonArraySchemaObj
 
 export interface RelatedEntitySchema extends OpenAPIV3.NonArraySchemaObject {
     'x-relatedEntityName': string;
+    'x-relatedEntityService': string;
 }
 
 export const isRelatedEntitySchema = (v: any): v is RelatedEntitySchema => {
-    return isObject(v) && isNonArraySchemaObject(v) && 'x-relatedEntityName' in v;
+    return isObject(v) && isNonArraySchemaObject(v) && 'x-relatedEntityName' in v && 'x-relatedEntityService' in v;
 };

@@ -1,5 +1,6 @@
 import {resolveResponseType} from '@enums/Target';
 import {GeneratedServiceFunction, ServiceFunctionGenerator} from '@generator/04-services/types';
+import {generateResponseBodyType} from '@generator/04-services/utils/generateResponseBodyType';
 import {insertPathPlaceholder} from '@generator/04-services/utils/insertPathPlaceholder';
 import {generateArrowFunction} from '@ts/generateArrowFunction';
 import {generateArrowFunctionType} from '@ts/generateArrowFunctionType';
@@ -7,7 +8,7 @@ import {pascalCase} from 'change-case';
 
 const functionName = 'unique';
 
-export const generateUniqueEndpoint: ServiceFunctionGenerator = ({target, endpoint}): GeneratedServiceFunction => {
+export const generateUniqueEndpoint: ServiceFunctionGenerator = ({target, path, endpoint}): GeneratedServiceFunction => {
     const entity = pascalCase(endpoint.entity);
     const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
 
@@ -22,7 +23,7 @@ export const generateUniqueEndpoint: ServiceFunctionGenerator = ({target, endpoi
         type: interfaceName,
         params: ['id: string', 'query?: Q'],
         generics: ['Q extends UniqueQuery'],
-        returns: `${resolveResponseType(target)}<${entity}>`
+        returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`
     });
 
     return {
