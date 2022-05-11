@@ -20,13 +20,13 @@ export const generateMaps = ({services, entities, aliases}: MapsGenerator): Gene
     const serviceValues = `export const weclappServices = {\n${indent(services.map(v => `${v.entity}: ${v.serviceName}`).join(',\n'))}\n}`;
     const serviceInstanceValues = `export const weclappServiceInstances = {\n${indent(services.map(v => `${v.entity}: ${v.serviceName}()`).join(',\n'))}\n}`;
 
-    const entityTypes = generateInterface(
-        'WEntities',
-        entities
-            .filter(entity => services.some(s => s.entity === entity))
-            .map(v => ({required: true, name: v, type: pascalCase(v)}))
-            .concat([...aliases].map(v => ({required: true, name: v[0], type: pascalCase(v[1])})))
-    );
+    const entityInterfaceProperties = entities
+        .filter(entity => services.some(s => s.entity === entity))
+        .map(v => ({required: true, name: v, type: pascalCase(v)}))
+        .concat([...aliases].map(v => ({required: true, name: v[0], type: pascalCase(v[1])})));
+    
+    const entityFilter = generateInterface('WEntityFilters', entityInterfaceProperties.map(v => ({...v, type: `${v.type}_Filter`})));
+    const entityTypes = generateInterface('WEntities', entityInterfaceProperties);
 
     const entityUpdateTypes = generateInterface(
         'CreateOrUpdateWEntities',
@@ -61,6 +61,7 @@ export const generateMaps = ({services, entities, aliases}: MapsGenerator): Gene
             serviceInstanceValues,
             entityTypes,
             entityUpdateTypes,
+            entityFilter,
             entityTuple,
             weclappService,
             ...[...entityDescriptors.entries()]
