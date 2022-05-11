@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "SDK generator based on a weclapp api swagger file",
   "author": "weclapp",
+  "sideEffects": false,
   "bin": {
     "sdk-generator": "./bin/cli.js"
   },
