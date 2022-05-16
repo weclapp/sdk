@@ -1,6 +1,6 @@
 {
   "name": "@weclapp/sdk",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "SDK generator based on a weclapp api swagger file",
   "author": "weclapp",
   "sideEffects": false,
@@ -40,7 +40,6 @@
     "sdk:build": "./bin/cli.js tests/openapi.json --target node",
     "lint": "eslint {src,tests}/**/*.ts",
     "lint:fix": "npm run lint -- --fix",
-    "release": "standard-version",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
@@ -54,7 +53,6 @@
     "@typescript-eslint/parser": "^5.21.0",
     "eslint": "^8.14.0",
     "rollup-plugin-string": "^3.0.0",
-    "standard-version": "^9.3.2",
     "vitest": "^0.10.0"
   },
   "dependencies": {
