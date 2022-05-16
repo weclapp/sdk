@@ -44,7 +44,11 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
                 }
 
                 const type = convertToTypeScriptType(property, name).toString();
-                entityInterface.push({name, type, required: meta.required});
+                entityInterface.push({
+                    name, type,
+                    required: meta.required,
+                    readonly: !isReferenceObject(property) && property.readOnly
+                });
             }
         };
 

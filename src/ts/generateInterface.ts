@@ -8,6 +8,7 @@ export interface InterfaceProperty {
     name: string;
     type?: string;
     required?: boolean;
+    readonly?: boolean;
     comment?: string;
 }
 
@@ -15,9 +16,12 @@ const generateInterfaceProperties = (entries: InterfaceProperty[]): string => {
     const properties = entries
         .filter(v => v.type !== undefined)
         .filter((value, index, array) => array.findIndex(v => v.name === value.name) === index)
-        .map(({name, type, required, comment}) =>
-            `${comment ? `${generateBlockComment(comment)}\n` : ''}${name}${required ? '' : '?'}: ${type as string};`
-        )
+        .map(({name, type, required, readonly, comment}) => {
+            const cmd = comment ? `${generateBlockComment(comment)}\n` : '';
+            const req = required ? '' : '?';
+            const rol = readonly ? 'readonly ' : '';
+            return `${rol + cmd + name + req}: ${type as string};`;
+        })
         .join('\n');
 
     return properties.length ? `{\n${indent(properties)}\n}` : `{}`;
