@@ -14,33 +14,37 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
     const entities: Map<string, GeneratedEntity> = new Map();
 
     for (const [schemaName, schema] of schemas) {
-
         if (isEnumSchemaObject(schema)) {
             continue;
         }
 
         const entity = pascalCase(schemaName);
+
+        // Entity and filter
         const entityInterface: InterfaceProperty[] = [];
         const filterInterface: InterfaceProperty[] = [];
+
+        // Referenced entities and property-to-referenced-entity mapping
         const referenceInterface: InterfaceProperty[] = [];
         const referenceMappingsInterface: InterfaceProperty[] = [];
-        const requiredProps = schema.required ?? [];
         let extend = undefined;
 
         const processProperties = (props: Record<string, OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject> = {}) => {
             for (const [name, property] of Object.entries(props)) {
+                const meta = isRelatedEntitySchema(property) ? property['x-weclapp'] : {};
 
-                if (isRelatedEntitySchema(property)) {
-                    const relatedEntity = property['x-relatedEntityName'];
-                    const type = `${pascalCase(relatedEntity)}[]`;
-                    filterInterface.push({name: relatedEntity, type, required: true});
+                if (meta.entity) {
+                    const type = `${pascalCase(meta.entity)}[]`;
                     referenceInterface.push({name, type, required: true});
-                    referenceMappingsInterface.push({name, type: generateString(relatedEntity), required: true});
+                    filterInterface.push({name: meta.entity, type, required: true});
+                }
+
+                if (meta.service) {
+                    referenceMappingsInterface.push({name, type: generateString(meta.service), required: true});
                 }
 
                 const type = convertToTypeScriptType(property, name).toString();
-                const required = requiredProps.includes(name);
-                entityInterface.push({name, type, required});
+                entityInterface.push({name, type, required: meta.required});
             }
         };
 

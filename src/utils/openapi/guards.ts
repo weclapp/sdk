@@ -45,11 +45,16 @@ export const isNonArraySchemaObject = (v: any): v is OpenAPIV3.NonArraySchemaObj
     return isObject(v) && ['string', 'undefined'].includes(typeof v.type);
 };
 
-export interface RelatedEntitySchema extends OpenAPIV3.NonArraySchemaObject {
-    'x-relatedEntityName': string;
-    'x-relatedEntityService': string;
+export interface WeclappMetaProperties {
+    entity?: string;
+    service?: string;
+    required?: boolean;
 }
 
-export const isRelatedEntitySchema = (v: any): v is RelatedEntitySchema => {
-    return isObject(v) && isNonArraySchemaObject(v) && 'x-relatedEntityName' in v && 'x-relatedEntityService' in v;
+export interface WeclappSchemaObject extends OpenAPIV3.NonArraySchemaObject {
+    'x-weclapp': WeclappMetaProperties;
+}
+
+export const isRelatedEntitySchema = (v: any): v is WeclappSchemaObject => {
+    return isObject(v) && isNonArraySchemaObject(v) && 'x-weclapp' in v && isObject(v['x-weclapp']);
 };
