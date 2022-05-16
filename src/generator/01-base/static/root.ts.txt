@@ -70,7 +70,11 @@ export const raw = async (
     }
 
     const request = new Request(`${protocol}://${host}/webapp/api/v1${endpoint}?${params}`, {
-        ...(payload.body && {body: isBinaryData ? payload.body : JSON.stringify(payload.body)}),
+        ...(payload.body && {
+            body: isBinaryData
+                ? payload.body
+                : JSON.stringify(payload.body, (key, value) => value === undefined ? null : value)
+        }),
         ...(!cfg.key && {credentials: 'same-origin'}),
         method: payload.method ?? 'get',
         headers: {
