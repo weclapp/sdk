@@ -22,7 +22,7 @@ export const generateCreateEndpoint: ServiceFunctionGenerator = ({target, path, 
 
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
-        params: [`data: Partial<${generateRequestBodyType(path).toString()}>`],
+        params: [`data: DeepPartial<${generateRequestBodyType(path).toString()}>`],
         returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`
     });
 

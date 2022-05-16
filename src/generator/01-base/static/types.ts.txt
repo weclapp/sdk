@@ -1,3 +1,8 @@
+// Utils
+type DeepPartial<T> = T extends object ? {
+    [P in keyof T]?: DeepPartial<T[P]>;
+} : T;
+
 // Filter properties
 export type EqualityOperators = 'EQ' | 'NE';
 export type ComparisonOperators = 'LT' | 'GT' | 'LE' | 'GE' | 'LIKE' | 'ILIKE' | 'NOT_LIKE' | 'NOT_ILIKE';
