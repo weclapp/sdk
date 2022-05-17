@@ -17,6 +17,8 @@ interface MapsGenerator {
 }
 
 export const generateMaps = ({services, entities, aliases}: MapsGenerator): GeneratedMaps => {
+    const entityNames = `export const wEntityNames = [\n${indent(entities.map(v => `'${v}'`).join(',\n'))}\n];`;
+    const serviceNames = `export const wServiceNames = [\n${indent(services.map(v => `'${v.entity}'`).join(',\n'))}\n];`;
     const serviceValues = `export const weclappServices = {\n${indent(services.map(v => `${v.entity}: ${v.serviceName}`).join(',\n'))}\n}`;
     const serviceInstanceValues = `export const weclappServiceInstances = {\n${indent(services.map(v => `${v.entity}: ${v.serviceName}()`).join(',\n'))}\n}`;
 
@@ -24,7 +26,7 @@ export const generateMaps = ({services, entities, aliases}: MapsGenerator): Gene
         .filter(entity => services.some(s => s.entity === entity))
         .map(v => ({required: true, name: v, type: pascalCase(v)}))
         .concat([...aliases].map(v => ({required: true, name: v[0], type: pascalCase(v[1])})));
-    
+
     const entityFilter = generateInterface('WEntityFilters', entityInterfaceProperties.map(v => ({...v, type: `${v.type}_Filter`})));
     const entityTypes = generateInterface('WEntities', entityInterfaceProperties);
 
@@ -59,6 +61,8 @@ export const generateMaps = ({services, entities, aliases}: MapsGenerator): Gene
             serviceFactoryTypes,
             serviceValues,
             serviceInstanceValues,
+            entityNames,
+            serviceNames,
             entityTypes,
             entityUpdateTypes,
             entityFilter,
