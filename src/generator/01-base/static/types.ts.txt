@@ -222,7 +222,7 @@ const flattenSelect = (obj: Select<any, any> = {}): string[] => {
     return entries;
 };
 
-export const flattenSort = (obj: Sort<any>[] = []): {sort: string} => {
+export const flattenSort = (obj: Sort<any>[] = []): {sort?: string} => {
     const flatten = (obj: Sort<any>, base = ''): string | undefined => {
         const [key, value] = Object.entries(obj ?? {})[0] ?? [];
 
@@ -239,5 +239,6 @@ export const flattenSort = (obj: Sort<any>[] = []): {sort: string} => {
         return undefined;
     };
 
-    return {sort: obj.map(v => flatten(v)).filter(Boolean).join(',')};
+    const sorts = obj.map(v => flatten(v)).filter(Boolean);
+    return sorts.length ? {sort: sorts.join(',')} : {};
 };

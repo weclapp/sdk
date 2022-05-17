@@ -54,7 +54,7 @@ export const raw = async (
 
     const isBinaryData = payload.body instanceof BinaryClass;
     const contentType = isBinaryData ? 'octet-stream' : 'json';
-    const params = new URLSearchParams(Object.entries(payload.query ?? {}).filter(v => v[1]));
+    const params = new URLSearchParams(Object.entries(payload.query ?? {}).filter(v => v[1] !== undefined));
     const protocol = (cfg.secure ?? true) ? 'https' : 'http';
 
     const interceptRequest = cfg.interceptors?.request ?? (v => v);
@@ -121,8 +121,8 @@ const _some = (
 ) => wrapResponse(() => raw(cfg, endpoint, {
         query: {
             serializeNulls: query?.serializeNulls,
-            properties: flattenSelect(query?.select).join(','),
-            includeReferencedEntities: Object.keys(query?.include ?? {}).join(','),
+            properties: query?.select ? flattenSelect(query.select).join(',') : undefined,
+            includeReferencedEntities: query?.include ? Object.keys(query.include).join(',') : undefined,
             ...flattenOrFilter(query?.or),
             ...flattenFilter(query?.filter),
             ...flattenSort(query?.sort),
