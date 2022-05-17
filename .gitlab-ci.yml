@@ -78,7 +78,7 @@ publish:snapshot:
   variables:
     GITLAB_AUTH_TOKEN: $CI_JOB_TOKEN
   script: |
-    LATEST_TAG=$(git describe --abbrev=0)
+    LATEST_TAG=$(git describe --tags --abbrev=0)
     LATEST_TAG_RAW=$(echo "$LATEST_TAG" | sed 's/v//')
     COMMITS_SINCE_LAST_TAG=$(git rev-list "$LATEST_TAG"..HEAD --count)
     VERSION="$LATEST_TAG_RAW-dev.$COMMITS_SINCE_LAST_TAG"
