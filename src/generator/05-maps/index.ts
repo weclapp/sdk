@@ -17,14 +17,18 @@ interface MapsGenerator {
 }
 
 export const generateMaps = ({services, entities, aliases}: MapsGenerator): GeneratedMaps => {
+    const entitiesWithService = entities.filter(entity => services.some(s => s.entity === entity));
+
+    const entityNames = `export const wEntityNames: WEntity[] = [\n${indent(entitiesWithService.map(v => `'${v}'`).join(',\n'))}\n];`;
+    const serviceNames = `export const wServiceNames: WService[] = [\n${indent(services.map(v => `'${v.entity}'`).join(',\n'))}\n];`;
+
     const serviceValues = `export const weclappServices = {\n${indent(services.map(v => `${v.entity}: ${v.serviceName}`).join(',\n'))}\n}`;
     const serviceInstanceValues = `export const weclappServiceInstances = {\n${indent(services.map(v => `${v.entity}: ${v.serviceName}()`).join(',\n'))}\n}`;
 
-    const entityInterfaceProperties = entities
-        .filter(entity => services.some(s => s.entity === entity))
+    const entityInterfaceProperties = entitiesWithService
         .map(v => ({required: true, name: v, type: pascalCase(v)}))
         .concat([...aliases].map(v => ({required: true, name: v[0], type: pascalCase(v[1])})));
-    
+
     const entityFilter = generateInterface('WEntityFilters', entityInterfaceProperties.map(v => ({...v, type: `${v.type}_Filter`})));
     const entityTypes = generateInterface('WEntities', entityInterfaceProperties);
 
@@ -38,7 +42,7 @@ export const generateMaps = ({services, entities, aliases}: MapsGenerator): Gene
     const serviceTypes = generateType('WServices', 'typeof weclappServiceInstances');
     const serviceFactoryTypes = generateType('WServiceFactories', 'typeof weclappServices');
     const entityTuple = generateType('WEntity', 'keyof WEntities');
-    const weclappService = generateType('WService', concat(services.map(v => v.serviceTypeName), ' | '));
+    const weclappService = generateType('WService','keyof WServices');
 
     const entityDescriptors: Map<string, InterfaceProperty[]> = new Map();
     for (const {entity, functions} of services) {
@@ -59,6 +63,8 @@ export const generateMaps = ({services, entities, aliases}: MapsGenerator): Gene
             serviceFactoryTypes,
             serviceValues,
             serviceInstanceValues,
+            entityNames,
+            serviceNames,
             entityTypes,
             entityUpdateTypes,
             entityFilter,
