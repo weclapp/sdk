@@ -1,5 +1,4 @@
 import {GeneratedService} from '@generator/04-services';
-import {concat} from '@ts/concat';
 import {generateInterface, InterfaceProperty} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
 import {generateType} from '@ts/generateType';
