@@ -12,17 +12,25 @@ interface GeneratedMaps {
 interface MapsGenerator {
     services: GeneratedService[];
     entities: string[];
+    enums: string[];
     aliases: Map<string, string>;
 }
 
-export const generateMaps = ({services, entities, aliases}: MapsGenerator): GeneratedMaps => {
+const obj = (list: string[]) =>
+    `{\n${indent(list.join(',\n'))}\n}`;
+
+const arr = (list: string[]) =>
+    `[\n${indent(list.join(',\n'))}\n]`;
+
+export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator): GeneratedMaps => {
     const entitiesWithService = entities.filter(entity => services.some(s => s.entity === entity));
 
-    const entityNames = `export const wEntityNames: WEntity[] = [\n${indent(entitiesWithService.map(v => `'${v}'`).join(',\n'))}\n];`;
-    const serviceNames = `export const wServiceNames: WService[] = [\n${indent(services.map(v => `'${v.entity}'`).join(',\n'))}\n];`;
+    const weclappEnums = `export const wEnums = ${obj(enums)};`;
+    const entityNames = `export const wEntityNames: WEntity[] = ${arr(entitiesWithService.map(v => `'${v}'`))};`;
+    const serviceNames = `export const wServiceNames: WService[] = ${arr(services.map(v => `'${v.entity}'`))};`;
 
-    const serviceValues = `export const weclappServices = {\n${indent(services.map(v => `${v.entity}: ${v.serviceName}`).join(',\n'))}\n}`;
-    const serviceInstanceValues = `export const weclappServiceInstances = {\n${indent(services.map(v => `${v.entity}: ${v.serviceName}()`).join(',\n'))}\n}`;
+    const serviceValues = `export const weclappServices = ${obj(services.map(v => `${v.entity}: ${v.serviceName}`))};`;
+    const serviceInstanceValues = `export const weclappServiceInstances = ${obj(services.map(v => `${v.entity}: ${v.serviceName}()`))};`;
 
     const entityInterfaceProperties = entitiesWithService
         .map(v => ({required: true, name: v, type: pascalCase(v)}))
@@ -38,10 +46,12 @@ export const generateMaps = ({services, entities, aliases}: MapsGenerator): Gene
             .map(v => ({required: true, name: camelCase(v.slice(14)), type: pascalCase(v)}))
     );
 
+    const weclappEnumTypes = generateType('WEnums', 'typeof wEnums');
     const serviceTypes = generateType('WServices', 'typeof weclappServiceInstances');
     const serviceFactoryTypes = generateType('WServiceFactories', 'typeof weclappServices');
     const entityTuple = generateType('WEntity', 'keyof WEntities');
     const weclappService = generateType('WService','keyof WServices');
+
 
     const entityDescriptors: Map<string, InterfaceProperty[]> = new Map();
     for (const {entity, functions} of services) {
@@ -69,6 +79,8 @@ export const generateMaps = ({services, entities, aliases}: MapsGenerator): Gene
             entityFilter,
             entityTuple,
             weclappService,
+            weclappEnums,
+            weclappEnumTypes,
             ...[...entityDescriptors.entries()]
                 .map(v => generateInterface(pascalCase(`WServicesWith_${v[0]}`), v[1]))
         )

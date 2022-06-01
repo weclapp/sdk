@@ -19,14 +19,6 @@
 
 
 
-```ts
-const sdk = weclapp();
-
-
-```
-
-
-
 ### Additional context
 
 <!-- If this is an RFC, this will be the place to propose ideas. -->
