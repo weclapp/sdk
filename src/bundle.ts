@@ -25,7 +25,7 @@ export const bundle = async (workingDirectory: string, target: Target) => {
             globals: resolveGlobals('node-fetch', 'url')
         }),
         generateOutput({
-            file: dist('index.mjs'),
+            file: dist('index.js'),
             format: 'es',
             globals: resolveGlobals('node-fetch', 'url')
         })
@@ -44,7 +44,7 @@ export const bundle = async (workingDirectory: string, target: Target) => {
                     format: 'umd'
                 }),
                 generateOutput({
-                    file: dist('index.mjs'),
+                    file: dist('index.js'),
                     format: 'es'
                 })
             ],
@@ -62,7 +62,7 @@ export const bundle = async (workingDirectory: string, target: Target) => {
                     globals: resolveGlobals('rxjs')
                 }),
                 generateOutput({
-                    file: dist('index.mjs'),
+                    file: dist('index.js'),
                     format: 'es',
                     globals: resolveGlobals('rxjs')
                 })
