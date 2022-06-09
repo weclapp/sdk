@@ -21,17 +21,12 @@
   },
   "types": "./sdk/dist/index.d.ts",
   "main": "./sdk/dist/index.cjs",
-  "module": "./sdk/dist/index.mjs",
+  "module": "./sdk/dist/index.js",
   "exports": {
     ".": {
-      "import": {
-        "types": "./sdk/dist/index.d.ts",
-        "default": "./sdk/dist/index.mjs"
-      },
-      "require": {
-        "types": "./sdk/dist/index.cjs.d.ts",
-        "default": "./sdk/dist/index.cjs"
-      }
+      "types": "./sdk/dist/index.d.ts",
+      "import": "./sdk/dist/index.js",
+      "require": "./sdk/dist/index.cjs"
     }
   },
   "scripts": {
@@ -49,16 +44,16 @@
     "url": "git@git.internal.weclapp.com:weclapp/weclapp-api/sdk-generator.git"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.27.0",
-    "@typescript-eslint/parser": "^5.27.0",
-    "eslint": "^8.16.0",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
+    "eslint": "^8.17.0",
     "rollup-plugin-string": "^3.0.0",
-    "vitest": "^0.13.0"
+    "vitest": "^0.14.1"
   },
   "dependencies": {
     "@rollup/plugin-json": "^4.1.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/node": "^16.11.38",
+    "@types/node": "^16.11.39",
     "@types/node-fetch": "^2.6.1",
     "@types/yargs": "^17.0.10",
     "chalk": "^4.1.2",
@@ -67,11 +62,11 @@
     "dotenv": "^16.0.1",
     "fs-extra": "^10.1.0",
     "indent-string": "^4.0.0",
-    "openapi-types": "^11.0.1",
-    "rollup": "^2.75.4",
+    "openapi-types": "^12.0.0",
+    "rollup": "^2.75.6",
     "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-ts": "^3.0.1",
-    "typescript": "^4.6.4",
+    "rollup-plugin-ts": "^3.0.2",
+    "typescript": "^4.7.3",
     "yargs": "^17.5.1"
   },
   "peerDependencies": {
