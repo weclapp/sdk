@@ -22,7 +22,7 @@ const resolveMappings = (target: Target) =>
     `const wrapResponse = ${isRXTarget(target) ? 'defer' : '(v: (...args: any[]) => any) => v()'};`;
 
 const resolveBinaryClass = (target: Target) =>
-    `const BinaryClass = ${resolveBinaryType(target)};`;
+    `const resolveBinaryObject = () => ${resolveBinaryType(target)};`;
 
 export const generateBase = (target: Target): string => {
     return generateStatements(

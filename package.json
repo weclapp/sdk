@@ -32,7 +32,7 @@
   "scripts": {
     "cli:build": "cross-env NODE_ENV=production rollup -c rollup.config.js",
     "cli:watch": "cross-env NODE_ENV=development rollup -c rollup.config.js --watch",
-    "sdk:build": "./bin/cli.js tests/openapi.json --target node",
+    "sdk:build": "./bin/cli.js tests/openapi.json --target browser.rx",
     "lint": "eslint {src,tests}/**/*.ts",
     "lint:fix": "npm run lint -- --fix",
     "test": "vitest run",
