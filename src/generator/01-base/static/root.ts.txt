@@ -52,7 +52,7 @@ export const raw = async (
         interceptors: {...globalConfig?.interceptors, ...cfg?.interceptors}
     };
 
-    const isBinaryData = payload.body instanceof BinaryClass;
+    const isBinaryData = payload.body instanceof resolveBinaryObject();
     const contentType = isBinaryData ? 'octet-stream' : 'json';
     const params = new URLSearchParams(Object.entries(payload.query ?? {}).filter(v => v[1] !== undefined));
     const protocol = (cfg.secure ?? true) ? 'https' : 'http';
