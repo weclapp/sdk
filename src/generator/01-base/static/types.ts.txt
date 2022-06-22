@@ -102,7 +102,7 @@ export type SomeQueryReturn<
     S extends (QuerySelect<any> | undefined) // Select for entity properties
 > = {
     entities: (S extends QuerySelect<E> ? Select<E, S> : E)[];
-    references: I extends QuerySelect<R> ? MapKeys<Select<R, I>, M & Record<any, any>> : {};
+    references: I extends QuerySelect<R> ? Partial<MapKeys<Select<R, I>, M & Record<any, any>>> : {};
 };
 
 export type GenericQuery<P, B> = {
