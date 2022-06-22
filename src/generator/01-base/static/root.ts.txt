@@ -129,7 +129,7 @@ const _some = (
             ...query?.params,
             ...query?.pagination
         }
-    }).then(data => ({entities: data.result, references: data.referencedEntities}))
+    }).then(data => ({entities: data.result, references: data.referencedEntities ?? {}}))
 );
 
 const _remove = (
