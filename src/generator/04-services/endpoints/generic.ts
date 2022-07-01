@@ -1,4 +1,4 @@
-import {resolveResponseType} from '@enums/Target';
+import {isNodeTarget, resolveResponseType, Target} from '@enums/Target';
 import {GeneratedServiceFunction, ServiceFunctionGenerator} from '@generator/04-services/types';
 import {generateGenericFunctionName} from '@generator/04-services/utils/generateGenericFunctionName';
 import {generateRequestBodyType} from '@generator/04-services/utils/generateRequestBodyType';
@@ -12,8 +12,10 @@ import {convertParametersToSchema} from '@utils/openapi/convertParametersToSchem
 import {AnyType, convertToTypeScriptType, createObjectType, createRawType} from '@utils/openapi/convertToTypeScriptType';
 import {pascalCase} from 'change-case';
 
-const wrapBody = (type: AnyType): AnyType => {
-    return type.toString() === 'binary' ? createRawType('Blob') : type; // node-fetch returns a Blob as well
+const wrapBody = (type: AnyType, target: Target): AnyType => {
+    return type.toString() === 'binary'
+        ? createRawType(isNodeTarget(target) ? 'BodyInit' : 'Blob')
+        : type; // node-fetch returns a Blob as well
 };
 
 export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerator => ({target, method, path, endpoint}): GeneratedServiceFunction => {
@@ -25,7 +27,7 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
 
     const params = createObjectType({
         params: convertToTypeScriptType(convertParametersToSchema(path.parameters)),
-        body: method === 'get' ? undefined : wrapBody(generateRequestBodyType(path))
+        body: method === 'get' ? undefined : wrapBody(generateRequestBodyType(path), target)
     });
 
     const responseBody = generateResponseBodyType(path);
@@ -41,7 +43,7 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
         params: [...(hasId ? ['id: string'] : []), `query${params.isFullyOptional() ? '?' : ''}: ${entityQuery}`],
-        returns: `${resolveResponseType(target)}<${wrapBody(responseBody).toString()}>`
+        returns: `${resolveResponseType(target)}<${wrapBody(responseBody, target).toString()}>`
     });
 
     return {
