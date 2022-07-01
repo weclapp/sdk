@@ -53,7 +53,6 @@ export const raw = async (
     };
 
     const isBinaryData = payload.body instanceof resolveBinaryObject();
-    const contentType = isBinaryData ? 'octet-stream' : 'json';
     const params = new URLSearchParams(Object.entries(payload.query ?? {}).filter(v => v[1] !== undefined));
     const protocol = (cfg.secure ?? true) ? 'https' : 'http';
 
@@ -78,9 +77,9 @@ export const raw = async (
         ...(!cfg.key && {credentials: 'same-origin'}),
         method: payload.method ?? 'get',
         headers: {
-            'Content-Type': `application/${contentType}`,
             'Accept': 'application/json',
-            ...(cfg.key && {'AuthenticationToken': cfg.key})
+            ...(cfg.key && {'AuthenticationToken': cfg.key}),
+            ...(!isBinaryData && {'Content-Type': 'application/json'} )
         }
     });
 

@@ -13,9 +13,9 @@ import {AnyType, convertToTypeScriptType, createObjectType, createRawType} from 
 import {pascalCase} from 'change-case';
 
 const wrapBody = (type: AnyType, target: Target): AnyType => {
-    return type.toString() === 'binary'
-        ? createRawType(isNodeTarget(target) ? 'BodyInit' : 'Blob')
-        : type; // node-fetch returns a Blob as well
+    return type.toString() === 'binary' ?
+        createRawType(isNodeTarget(target) ? 'BodyInit' : 'Blob') :
+        type; // node-fetch returns a Blob as well
 };
 
 export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerator => ({target, method, path, endpoint}): GeneratedServiceFunction => {
