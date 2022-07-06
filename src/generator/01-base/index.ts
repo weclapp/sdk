@@ -8,7 +8,7 @@ const resolveImports = (target: Target): string => {
     const imports: string[] = [];
 
     if (isNodeTarget(target)) {
-        imports.push(generateImport({src: 'node-fetch', imports: ['Request', 'Response'], default: 'fetch'}));
+        imports.push(generateImport({src: 'node-fetch', imports: ['Request', 'Response', 'BodyInit'], default: 'fetch'}));
     }
 
     if (isRXTarget(target)) {
