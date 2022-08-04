@@ -2,7 +2,7 @@ import {generateInterface, generateInterfaceType, InterfaceProperty} from '@ts/g
 import {generateStatements} from '@ts/generateStatements';
 import {generateString} from '@ts/generateString';
 import {convertToTypeScriptType} from '@utils/openapi/convertToTypeScriptType';
-import {isEnumSchemaObject, isObjectSchemaObject, isReferenceObject, isRelatedEntitySchema} from '@utils/openapi/guards';
+import {isEnumSchemaObject, isNonArraySchemaObject, isObjectSchemaObject, isReferenceObject, isRelatedEntitySchema} from '@utils/openapi/guards';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
@@ -44,8 +44,10 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
                 }
 
                 const type = convertToTypeScriptType(property, name).toString();
+                const comment = isNonArraySchemaObject(property) && property.format ? `format: ${property.format}` : undefined;
+
                 entityInterface.push({
-                    name, type,
+                    name, type, comment,
                     required: meta.required,
                     readonly: !isReferenceObject(property) && property.readOnly
                 });
