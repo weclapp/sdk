@@ -79,8 +79,8 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
                     return deprecated ? {...property, comment: `@deprecated`} : property;
                 }), extend
             ),
-            generateInterface(`${entity}_References`, referenceInterface),
-            generateInterface(`${entity}_Mappings`, referenceMappingsInterface),
+            generateInterface(`${entity}_References`, referenceInterface, extend ? [`${extend}_References`] : undefined),
+            generateInterface(`${entity}_Mappings`, referenceMappingsInterface, extend ? [`${extend}_Mappings`] : undefined),
             generateInterfaceType(`${entity}_Filter`, filterInterface, extend ? [entity, `${extend}_Filter`] : undefined)
         );
 

@@ -36,6 +36,8 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
         .map(v => ({required: true, name: v, type: pascalCase(v)}))
         .concat([...aliases].map(v => ({required: true, name: v[0], type: pascalCase(v[1])})));
 
+    const entityReferences = generateInterface('WEntityReferences', entityInterfaceProperties.map(v => ({...v, type: `${v.type}_References`})));
+    const entityMappings = generateInterface('WEntityMappings', entityInterfaceProperties.map(v => ({...v, type: `${v.type}_Mappings`})));
     const entityFilter = generateInterface('WEntityFilters', entityInterfaceProperties.map(v => ({...v, type: `${v.type}_Filter`})));
     const entityTypes = generateInterface('WEntities', entityInterfaceProperties);
 
@@ -51,7 +53,6 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
     const serviceFactoryTypes = generateType('WServiceFactories', 'typeof weclappServices');
     const entityTuple = generateType('WEntity', 'keyof WEntities');
     const weclappService = generateType('WService','keyof WServices');
-
 
     const entityDescriptors: Map<string, InterfaceProperty[]> = new Map();
     for (const {entity, functions} of services) {
@@ -76,6 +77,8 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
             serviceNames,
             entityTypes,
             entityUpdateTypes,
+            entityReferences,
+            entityMappings,
             entityFilter,
             entityTuple,
             weclappService,
