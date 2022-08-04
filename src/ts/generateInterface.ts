@@ -1,4 +1,4 @@
-import {generateBlockComment} from '@ts/generateComment';
+import {generateInlineComment} from '@ts/generateComment';
 import {generateType} from '@ts/generateType';
 import {arrayify} from '@utils/arrayify';
 import {indent} from '@utils/indent';
@@ -17,10 +17,10 @@ const generateInterfaceProperties = (entries: InterfaceProperty[]): string => {
         .filter(v => v.type !== undefined)
         .filter((value, index, array) => array.findIndex(v => v.name === value.name) === index)
         .map(({name, type, required, readonly, comment}) => {
-            const cmd = comment ? `${generateBlockComment(comment)}\n` : '';
+            const cmd = comment ? `${generateInlineComment(comment)}\n` : '';
             const req = required ? '' : '?';
             const rol = readonly ? 'readonly ' : '';
-            return `${rol + cmd + name + req}: ${type as string};`;
+            return `${cmd + rol + name + req}: ${type as string};`;
         })
         .join('\n');
 
