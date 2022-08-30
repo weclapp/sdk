@@ -15,18 +15,16 @@ export const generate = (doc: OpenAPIV3.Document, target: Target): string => {
     const entities = generateEntities(schemas);
     const services = generateServices(doc, target, aliases);
 
-    const maps = generateMaps({
-        services: [...services.values()],
-        entities: [...entities.keys()],
-        enums: [...enums.keys()],
-        aliases
-    });
-
     return generateStatements(
         generateBase(target),
         generateBlockComment('ENUMS', generateStatements(...[...enums.values()].map(v => v.source))),
         generateBlockComment('ENTITIES', generateStatements(...[...entities.values()].map(v => v.source))),
         generateBlockComment('SERVICES', generateStatements(...[...services.values()].map(v => v.source))),
-        generateBlockComment('MAPS', maps.source)
+        generateBlockComment('MAPS', generateMaps({
+            services: [...services.values()],
+            entities: [...entities.keys()],
+            enums: [...enums.keys()],
+            aliases
+        }).source)
     );
 };
