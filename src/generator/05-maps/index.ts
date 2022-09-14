@@ -1,5 +1,7 @@
 import {GeneratedService} from '@generator/04-services';
-import {generateInterface, InterfaceProperty} from '@ts/generateInterface';
+import {generateString} from '@ts/generateString';
+import {generateGroupedServiceInterfaces} from './generateGroupedServiceInterfaces';
+import {generateInterface} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
 import {generateType} from '@ts/generateType';
 import {indent} from '@utils/indent';
@@ -25,12 +27,12 @@ const arr = (list: string[]) =>
 export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator): GeneratedMaps => {
     const entitiesWithService = entities.filter(entity => services.some(s => s.entity === entity));
 
-    const weclappEnums = `export const wEnums = ${obj(enums)};`;
-    const entityNames = `export const wEntityNames: WEntity[] = ${arr(entitiesWithService.map(v => `'${v}'`))};`;
+    const enumsArray = `export const wEnums = ${obj(enums)};`;
+    const entityNames = `export const wEntityNames: WEntity[] = ${arr(entities.map(v => `'${v}'`))};`;
     const serviceNames = `export const wServiceNames: WService[] = ${arr(services.map(v => `'${v.entity}'`))};`;
 
-    const serviceValues = `export const weclappServices = ${obj(services.map(v => `${v.entity}: ${v.serviceName}`))};`;
-    const serviceInstanceValues = `export const weclappServiceInstances = ${obj(services.map(v => `${v.entity}: ${v.serviceName}()`))};`;
+    const serviceValues = `export const wServiceFactories = ${obj(services.map(v => `${v.entity}: ${v.serviceName}`))};`;
+    const serviceInstanceValues = `export const wServices = ${obj(services.map(v => `${v.entity}: ${v.serviceName}()`))};`;
 
     const entityInterfaceProperties = entitiesWithService
         .map(v => ({required: true, name: v, type: pascalCase(v)}))
@@ -39,53 +41,46 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
     const entityReferences = generateInterface('WEntityReferences', entityInterfaceProperties.map(v => ({...v, type: `${v.type}_References`})));
     const entityMappings = generateInterface('WEntityMappings', entityInterfaceProperties.map(v => ({...v, type: `${v.type}_Mappings`})));
     const entityFilter = generateInterface('WEntityFilters', entityInterfaceProperties.map(v => ({...v, type: `${v.type}_Filter`})));
-    const entityTypes = generateInterface('WEntities', entityInterfaceProperties);
 
-    const entityUpdateTypes = generateInterface(
-        'CreateOrUpdateWEntities',
-        entities
-            .filter(v => v.startsWith('createOrUpdate'))
-            .map(v => ({required: true, name: camelCase(v.slice(14)), type: pascalCase(v)}))
-    );
+    const servicesList = generateInterface('WEntityServices', entityInterfaceProperties.map(entityWithService => ({
+        ...entityWithService,
+        type: generateString(camelCase(entityWithService.type))
+    })));
 
-    const weclappEnumTypes = generateType('WEnums', 'typeof wEnums');
-    const serviceTypes = generateType('WServices', 'typeof weclappServiceInstances');
-    const serviceFactoryTypes = generateType('WServiceFactories', 'typeof weclappServices');
-    const entityTuple = generateType('WEntity', 'keyof WEntities');
-    const weclappService = generateType('WService','keyof WServices');
-
-    const entityDescriptors: Map<string, InterfaceProperty[]> = new Map();
-    for (const {entity, functions} of services) {
-        for (const {name} of functions) {
-            entityDescriptors.set(name, [
-                ...(entityDescriptors.get(name) ?? []), {
-                    name: entity,
-                    required: true,
-                    type: `${pascalCase(entity)}Service_${pascalCase(name)}`
-                }
-            ]);
-        }
-    }
+    const entitiesList = generateInterface('WEntities', entities.map(entity => ({
+        name: entity,
+        type: pascalCase(entity),
+        required: true
+    })));
 
     return {
         source: generateStatements(
-            serviceTypes,
-            serviceFactoryTypes,
+            /* JS Values */
             serviceValues,
             serviceInstanceValues,
             entityNames,
             serviceNames,
-            entityTypes,
-            entityUpdateTypes,
+            enumsArray,
+
+            /* Map of entity to references / mappings and filters*/
             entityReferences,
             entityMappings,
             entityFilter,
-            entityTuple,
-            weclappService,
-            weclappEnums,
-            weclappEnumTypes,
-            ...[...entityDescriptors.entries()]
-                .map(v => generateInterface(pascalCase(`WServicesWith_${v[0]}`), v[1]))
+
+            /* List of all entities with their corresponding service */
+            entitiesList,
+            servicesList,
+
+            /* type-ofs and types */
+            generateType('WServices', 'typeof wServices'),
+            generateType('WServiceFactories', 'typeof wServiceFactories'),
+            generateType('WService', 'keyof WServices'),
+            generateType('WEntity', 'keyof WEntities'),
+            generateType('WEnums', 'typeof wEnums'),
+            generateType('WEnum', 'keyof WEnums'),
+
+            /* All functions grouped by service supporting it */
+            ...generateGroupedServiceInterfaces(services)
         )
     };
 };

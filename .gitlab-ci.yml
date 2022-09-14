@@ -8,16 +8,25 @@ workflow:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - when: always
 
+.npm:config: &npm_config
+  - npm config set @weclapp:registry $CI_API_V4_URL/packages/npm/
+  - npm config set //gitlab.internal.weclapp.com/api/v4/packages/npm/:_authToken $CI_JOB_TOKEN
+  - npm config set //gitlab.internal.weclapp.com/api/v4/projects/$CI_PROJECT_ID/packages/npm/:_authToken $CI_JOB_TOKEN
+
+.node:image:
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-16-alpine
+
 .npm:defaults:
   tags:
     - small
-  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-16-alpine
+  extends: .node:image
   cache:
     key: node_modules_cache
     policy: pull
     paths:
       - node_modules/
   before_script:
+    - *npm_config
     - npm install --unsafe-perm --prefer-offline --no-audit
     - npm prune
 
@@ -50,22 +59,23 @@ publish:
   tags:
     - tiny
   stage: publish
-  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-16-alpine
+  extends: .node:image
   rules:
     # Only allow publishing if tag matches semantic versioning (v1.0.0)
     - if: '$CI_COMMIT_TAG =~ /^v[0-9]+[.][0-9]+[.][0-9]+$/'
     - when: never
   dependencies:
     - build
-  variables:
-    GITLAB_AUTH_TOKEN: $CI_JOB_TOKEN
-  script: npm publish
+  before_script:
+    - *npm_config
+  script:
+    - npm publish
 
 publish:snapshot:
   tags:
     - tiny
   stage: publish
-  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-16-alpine
+  extends: .node:image
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: manual
@@ -75,13 +85,13 @@ publish:snapshot:
     - when: never
   dependencies:
     - build
-  variables:
-    GITLAB_AUTH_TOKEN: $CI_JOB_TOKEN
-  script: |
-    LATEST_TAG=$(git describe --tags --abbrev=0)
-    LATEST_TAG_RAW=$(echo "$LATEST_TAG" | sed 's/v//')
-    COMMITS_SINCE_LAST_TAG=$(git rev-list "$LATEST_TAG"..HEAD --count)
-    VERSION="$LATEST_TAG_RAW-dev.$COMMITS_SINCE_LAST_TAG"
-    echo "Publish version '$VERSION'..."
-    npm version "$VERSION" --git-tag-version=false
-    npm publish
+  before_script:
+    - *npm_config
+  script:
+    - LATEST_TAG=$(git describe --tags --abbrev=0)
+    - LATEST_TAG_RAW=$(echo "$LATEST_TAG" | sed 's/v//')
+    - COMMITS_SINCE_LAST_TAG=$(git rev-list "$LATEST_TAG"..HEAD --count)
+    - VERSION="$LATEST_TAG_RAW-dev.$COMMITS_SINCE_LAST_TAG"
+    - echo "Publish version '$VERSION'..."
+    - npm version "$VERSION" --git-tag-version=false
+    - npm publish
