@@ -77,6 +77,7 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
             generateType('WService', 'keyof WServices'),
             generateType('WEntity', 'keyof WEntities'),
             generateType('WEnums', 'typeof wEnums'),
+            generateType('WEnum', 'keyof WEnums'),
 
             /* All functions grouped by service supporting it */
             ...generateGroupedServiceInterfaces(services)
