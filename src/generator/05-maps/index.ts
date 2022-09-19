@@ -38,9 +38,10 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
         .map(v => ({required: true, name: v, type: pascalCase(v)}))
         .concat([...aliases].map(v => ({required: true, name: v[0], type: pascalCase(v[1])})));
 
-    const entityReferences = generateInterface('WEntityReferences', entityInterfaceProperties.map(v => ({...v, type: `${v.type}_References`})));
-    const entityMappings = generateInterface('WEntityMappings', entityInterfaceProperties.map(v => ({...v, type: `${v.type}_Mappings`})));
-    const entityFilter = generateInterface('WEntityFilters', entityInterfaceProperties.map(v => ({...v, type: `${v.type}_Filter`})));
+    const entitiesInterfaces = entities.map((v) => ({required: true, name: v, type: pascalCase(v)}));
+    const entityReferences = generateInterface('WEntityReferences', entitiesInterfaces.map(v => ({...v, type: `${v.type}_References`})));
+    const entityMappings = generateInterface('WEntityMappings', entitiesInterfaces.map(v => ({...v, type: `${v.type}_Mappings`})));
+    const entityFilter = generateInterface('WEntityFilters', entitiesInterfaces.map(v => ({...v, type: `${v.type}_Filter`})));
 
     const servicesList = generateInterface('WEntityServices', entityInterfaceProperties.map(entityWithService => ({
         ...entityWithService,
