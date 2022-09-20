@@ -1,11 +1,11 @@
 import {GeneratedService} from '@generator/04-services';
-import {generateString} from '@ts/generateString';
+import {generateBlockComment} from '@ts/generateComment';
 import {generateGroupedServiceInterfaces} from './generateGroupedServiceInterfaces';
 import {generateInterface} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
 import {generateType} from '@ts/generateType';
 import {indent} from '@utils/indent';
-import {camelCase, pascalCase} from 'change-case';
+import {pascalCase} from 'change-case';
 
 interface GeneratedMaps {
     source: string;
@@ -43,16 +43,17 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
     const entityMappings = generateInterface('WEntityMappings', entitiesInterfaces.map(v => ({...v, type: `${v.type}_Mappings`})));
     const entityFilter = generateInterface('WEntityFilters', entitiesInterfaces.map(v => ({...v, type: `${v.type}_Filter`})));
 
-    const servicesList = generateInterface('WEntityServices', entityInterfaceProperties.map(entityWithService => ({
-        ...entityWithService,
-        type: generateString(camelCase(entityWithService.type))
-    })));
-
-    const entitiesList = generateInterface('WEntities', entities.map(entity => ({
-        name: entity,
-        type: pascalCase(entity),
-        required: true
-    })));
+    const entitiesList = generateInterface('WEntities', [
+        ...entities.map(entity => ({
+            name: entity,
+            type: pascalCase(entity),
+            required: true
+        })),
+        ...entityInterfaceProperties.map(entityWithService => ({
+            ...entityWithService,
+            type: pascalCase(entityWithService.type)
+        }))
+    ]);
 
     return {
         source: generateStatements(
@@ -69,8 +70,21 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
             entityFilter,
 
             /* List of all entities with their corresponding service */
-            entitiesList,
-            servicesList,
+            generateBlockComment(`
+                This interfaces merges two maps:
+                - Map<[entityName], [entityInterfaceName]>
+                - Map<[serviceName], [entityInterfaceName]>
+                
+                Where [entityName] is 
+                - the name of a nested entity (e.g. 'address' from Party)
+                - the name of an entity (e.g. 'party', 'article' etc.)
+                
+                Where [serviceName] is the name of an endpoint (e.g. for /article its 'article')
+               
+                Where [entityInterfaceName] is
+                - the underlying type for this entity
+                - the type for what is returned by the api
+            `, entitiesList),
 
             /* type-ofs and types */
             generateType('WServices', 'typeof wServices'),
