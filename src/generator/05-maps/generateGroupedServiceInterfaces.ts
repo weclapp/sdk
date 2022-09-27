@@ -1,5 +1,6 @@
 import {GeneratedService} from '@generator/04-services';
 import {generateInterface, InterfaceProperty} from '@ts/generateInterface';
+import {generateType} from '@ts/generateType';
 import {pascalCase} from 'change-case';
 
 /**
@@ -19,6 +20,14 @@ export const generateGroupedServiceInterfaces = (services: GeneratedService[]) =
             ]);
         }
     }
-    return [...entityDescriptors.entries()]
-        .map(v => generateInterface(pascalCase(`WServicesWith_${v[0]}`), v[1]));
+
+    const descriptors = [...entityDescriptors.entries()];
+
+    return [
+        ...descriptors.map(v => generateInterface(pascalCase(`WServicesWith_${v[0]}`), v[1])),
+        ...descriptors.map(v => generateType(
+            pascalCase(`WServiceWith_${v[0]}`),
+            `keyof ${pascalCase(`WServicesWith_${v[0]}`)}`
+        ))
+    ];
 };
