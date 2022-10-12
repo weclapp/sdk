@@ -1,4 +1,3 @@
-// Utils
 export type DeepPartial<T> = T extends object ? {
     [P in keyof T]?: DeepPartial<T[P]>;
 } : T;
@@ -112,6 +111,14 @@ export type GenericQuery<P, B> = {
 
 export type UpdateQuery = {
     ignoreMissingProperties?: boolean;
+}
+
+// Entity meta types
+export interface WEntityPropertyMeta {
+    type?: 'boolean' | 'string' | 'integer' | 'array';
+    format?: 'int32' | 'timestamp';
+    service?: WService;
+    entity?: WEntity;
 }
 
 // Utils

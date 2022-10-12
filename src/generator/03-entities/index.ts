@@ -2,11 +2,27 @@ import {generateInterface, generateInterfaceType, InterfaceProperty} from '@ts/g
 import {generateStatements} from '@ts/generateStatements';
 import {generateString} from '@ts/generateString';
 import {convertToTypeScriptType} from '@utils/openapi/convertToTypeScriptType';
-import {isEnumSchemaObject, isNonArraySchemaObject, isObjectSchemaObject, isReferenceObject, isRelatedEntitySchema} from '@utils/openapi/guards';
-import {pascalCase} from 'change-case';
+import {
+    isArraySchemaObject,
+    isEnumSchemaObject,
+    isNonArraySchemaObject,
+    isObjectSchemaObject,
+    isReferenceObject,
+    isRelatedEntitySchema
+} from '@utils/openapi/guards';
+import {camelCase, pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
+export interface PropertyMetaData {
+    type?: string;
+    format?: string;
+    service?: string;
+    entity?: string;
+}
+
 export interface GeneratedEntity {
+    properties: Map<string, PropertyMetaData>;
+    extends?: string;
     source: string;
 }
 
@@ -14,6 +30,8 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
     const entities: Map<string, GeneratedEntity> = new Map();
 
     for (const [schemaName, schema] of schemas) {
+
+        // Enums are generated separately
         if (isEnumSchemaObject(schema)) {
             continue;
         }
@@ -27,6 +45,10 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
         // Referenced entities and property-to-referenced-entity mapping
         const referenceInterface: InterfaceProperty[] = [];
         const referenceMappingsInterface: InterfaceProperty[] = [];
+
+        const properties = new Map<string, PropertyMetaData>();
+
+        // The parent entity
         let extend = undefined;
 
         const processProperties = (props: Record<string, OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject> = {}) => {
@@ -51,6 +73,15 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
                     required: meta.required,
                     readonly: !isReferenceObject(property) && property.readOnly
                 });
+
+                properties.set(name, {
+                    entity: meta.entity,
+                    service: meta.service,
+                    ...(isArraySchemaObject(property) && {
+                        format: property.format,
+                        type: property.type
+                    })
+                })
             }
         };
 
@@ -86,7 +117,11 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
             generateInterfaceType(`${entity}_Filter`, filterInterface, extend ? [entity, `${extend}_Filter`] : undefined)
         );
 
-        entities.set(schemaName, {source});
+        entities.set(schemaName, {
+            extends: extend ? camelCase(extend) : extend,
+            properties,
+            source
+        });
     }
 
     return entities;

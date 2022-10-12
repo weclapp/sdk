@@ -13,7 +13,7 @@ export const generate = (doc: OpenAPIV3.Document, target: Target): string => {
     const {schemas, aliases} = extractSchemas(doc);
     const enums = generateEnums(schemas);
     const entities = generateEntities(schemas);
-    const services = generateServices(doc, target, aliases);
+    const services = generateServices(doc, target, aliases, entities);
 
     return generateStatements(
         generateBase(target),
