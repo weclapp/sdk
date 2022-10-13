@@ -1,6 +1,6 @@
 import {Target} from '@enums/Target';
 import {GeneratedEntity} from '@generator/03-entities';
-import {generateString} from '@ts/generateString';
+import {generateMetaPropertiesObject} from '@generator/04-services/utils/generateMetaPropertiesObject';
 import {generateCountEndpoint} from './endpoints/count';
 import {generateCreateEndpoint} from './endpoints/create';
 import {generateGenericEndpoint} from './endpoints/generic';
@@ -61,14 +61,14 @@ export const generateServices = (
     const grouped = groupEndpointsByEntity(doc.paths);
 
     for (const [endpoint, paths] of grouped) {
-        const generatedEntity = entities.get(endpoint);
         const serviceName = camelCase(`${endpoint}Service`);
         const serviceTypeName = pascalCase(`${endpoint}Service`);
         const serviceMetaInformationName = pascalCase(`${endpoint}_Meta`);
         const entity = aliases.get(endpoint) ?? endpoint;
+        const generatedEntity = entities.get(entity);
 
+        // Service functions
         const functions: GeneratedServiceFunction[] = [];
-
         for (const {path, endpoint} of paths) {
             const resolver = generators[endpoint.type];
 
@@ -83,25 +83,17 @@ export const generateServices = (
             }
         }
 
+        // Meta information
         const metaInformation = generateObject({
-            properties: generatedEntity ? generateObject(Object.fromEntries(
-                Array.from(generatedEntity.properties.entries())
-                    .map(([property, meta]) => [
-                        property,
-                        Object.fromEntries(Object.entries(meta).map(([property, value]) => [
-                            property,
-                            value ? generateString(value) : undefined
-                        ]))
-                    ])
-            )) : 'undefined'
+            properties: generatedEntity ? generateMetaPropertiesObject(generatedEntity, entities) : 'undefined'
         });
 
         const metaInterface = generateInterface(serviceMetaInformationName, [
             {name: 'properties', type: `Partial<Record<keyof ${pascalCase(entity)}, WEntityPropertyMeta>>`}
         ]);
 
+        // Construct service type
         const hasSomeEndpoint = paths.some(v => v.endpoint.type === WeclappEndpointType.ROOT);
-
         const types = generateStatements(
             ...functions.flatMap(v => v.interfaces?.map(v => v.source) ?? []),
             ...functions.map(v => v.type.source),
@@ -116,6 +108,7 @@ export const generateServices = (
             ])
         );
 
+        // Construct service value
         const funcBody = generateBlockStatements(
             ...functions.map(v => v.func.source),
             ...(hasSomeEndpoint ? [`const meta: ${serviceMetaInformationName} = ${metaInformation};`] : []),

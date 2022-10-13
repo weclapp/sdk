@@ -81,7 +81,7 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
                         format: property.format,
                         type: property.type
                     })
-                })
+                });
             }
         };
 
