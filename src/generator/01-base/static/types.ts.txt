@@ -114,12 +114,15 @@ export type UpdateQuery = {
 }
 
 // Entity meta types
-export interface WEntityPropertyMeta {
-    type?: 'boolean' | 'string' | 'integer' | 'array';
-    format?: 'int32' | 'timestamp';
-    service?: WService;
-    entity?: WEntity;
-}
+export type WEntityPropertyMeta = { service?: string; entity?: string; } & (
+    { type: 'integer'; format: 'int32' | 'int64' | 'duration' | 'date' | 'date-time'; } |
+    { type: 'number'; format: 'double'; } |
+    { type: 'boolean'; format?: 'boolean'; } |
+    { type: 'string'; format?: 'decimal' | 'html'; } |
+    { type: 'array'; } |
+    { type: 'object'; } |
+    { type?: never; format?: never; }
+);
 
 // Utils
 const equality: string[] = ['EQ', 'NE'];
