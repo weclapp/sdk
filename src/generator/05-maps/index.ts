@@ -25,8 +25,6 @@ const arr = (list: string[]) =>
     `[\n${indent(list.join(',\n'))}\n]`;
 
 export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator): GeneratedMaps => {
-    const entitiesWithService = entities.filter(entity => services.some(s => s.entity === entity));
-
     const enumsArray = `export const wEnums = ${obj(enums)};`;
     const entityNames = `export const wEntityNames: WEntity[] = ${arr(entities.map(v => `'${v}'`))};`;
     const serviceNames = `export const wServiceNames: WService[] = ${arr(services.map(v => `'${v.entity}'`))};`;
@@ -34,26 +32,30 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
     const serviceValues = `export const wServiceFactories = ${obj(services.map(v => `${v.entity}: ${v.serviceName}`))};`;
     const serviceInstanceValues = `export const wServices = ${obj(services.map(v => `${v.entity}: ${v.serviceName}()`))};`;
 
-    const entityInterfaceProperties = entitiesWithService
-        .map(v => ({required: true, name: v, type: pascalCase(v)}))
-        .concat([...aliases].map(v => ({required: true, name: v[0], type: pascalCase(v[1])})));
-
-    const entitiesInterfaces = [
+    const entityInterfaces = [
         ...entities.map(entity => ({
             name: entity,
             type: pascalCase(entity),
             required: true
         })),
-        ...entityInterfaceProperties.map(entityWithService => ({
-            ...entityWithService,
-            type: pascalCase(entityWithService.type)
-        }))
+        ...services.map(service => {
+            const alias = aliases.get(service.entity);
+
+            return {
+                name: service.entity,
+                type: alias ?? 'never',
+                required: true,
+                comment: alias ? undefined : 'no response defined or inlined'
+            };
+        })
     ];
 
-    const entitiesList = generateInterface('WEntities', entitiesInterfaces);
-    const entityReferences = generateInterface('WEntityReferences', entitiesInterfaces.map(v => ({...v, type: `${v.type}_References`})));
-    const entityMappings = generateInterface('WEntityMappings', entitiesInterfaces.map(v => ({...v, type: `${v.type}_Mappings`})));
-    const entityFilter = generateInterface('WEntityFilters', entitiesInterfaces.map(v => ({...v, type: `${v.type}_Filter`})));
+    const entitiesList = generateInterface('WEntities', entityInterfaces);
+
+    const entityListFiltered = entityInterfaces.filter(v => entities.includes(v.name));
+    const entityReferences = generateInterface('WEntityReferences', entityListFiltered.map(v => ({...v, type: `${v.type}_References`})));
+    const entityMappings = generateInterface('WEntityMappings', entityListFiltered.map(v => ({...v, type: `${v.type}_Mappings`})));
+    const entityFilter = generateInterface('WEntityFilters', entityListFiltered.map(v => ({...v, type: `${v.type}_Filter`})));
 
     return {
         source: generateStatements(
