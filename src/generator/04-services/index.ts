@@ -1,6 +1,4 @@
 import {Target} from '@enums/Target';
-import {GeneratedEntity} from '@generator/03-entities';
-import {generateMetaPropertiesObject} from '@generator/04-services/utils/generateMetaPropertiesObject';
 import {generateCountEndpoint} from './endpoints/count';
 import {generateCreateEndpoint} from './endpoints/create';
 import {generateGenericEndpoint} from './endpoints/generic';
@@ -14,7 +12,6 @@ import {logger} from '@logger';
 import {concat} from '@ts/concat';
 import {generateBlockComment} from '@ts/generateComment';
 import {generateInterface} from '@ts/generateInterface';
-import {generateObject} from '@ts/generateObject';
 import {generateBlockStatements, generateStatements} from '@ts/generateStatements';
 import {WeclappEndpointType} from '@utils/weclapp/parseEndpointPath';
 import {camelCase, pascalCase} from 'change-case';
@@ -54,8 +51,7 @@ const generators: Record<WeclappEndpointType, Record<string, ServiceFunctionGene
 export const generateServices = (
     doc: OpenAPIV3.Document,
     target: Target,
-    aliases: Map<string, string>,
-    entities: Map<string, GeneratedEntity>
+    aliases: Map<string, string>
 ): Map<string, GeneratedService> => {
     const services: Map<string, GeneratedService> = new Map();
     const grouped = groupEndpointsByEntity(doc.paths);
@@ -63,9 +59,6 @@ export const generateServices = (
     for (const [endpoint, paths] of grouped) {
         const serviceName = camelCase(`${endpoint}Service`);
         const serviceTypeName = pascalCase(`${endpoint}Service`);
-        const serviceMetaInformationName = pascalCase(`${endpoint}_Meta`);
-        const entity = aliases.get(endpoint) ?? endpoint;
-        const generatedEntity = entities.get(entity);
 
         // Service functions
         const functions: GeneratedServiceFunction[] = [];
@@ -83,23 +76,11 @@ export const generateServices = (
             }
         }
 
-        // Meta information
-        const metaInformation = generateObject({
-            properties: generatedEntity ? generateMetaPropertiesObject(generatedEntity, entities) : 'undefined'
-        });
-
-        const metaInterface = generateInterface(serviceMetaInformationName, [
-            {name: 'properties', type: `Partial<Record<keyof ${pascalCase(entity)}, WEntityPropertyMeta>>`}
-        ]);
-
         // Construct service type
-        const hasSomeEndpoint = paths.some(v => v.endpoint.type === WeclappEndpointType.ROOT);
         const types = generateStatements(
             ...functions.flatMap(v => v.interfaces?.map(v => v.source) ?? []),
             ...functions.map(v => v.type.source),
-            ...(hasSomeEndpoint ? [metaInterface] : []),
             generateInterface(serviceTypeName, [
-                ...(hasSomeEndpoint ? [{name: 'meta', type: serviceMetaInformationName, required: true}] : []),
                 ...functions.map(v => ({
                     required: true,
                     name: v.func.name,
@@ -111,11 +92,7 @@ export const generateServices = (
         // Construct service value
         const funcBody = generateBlockStatements(
             ...functions.map(v => v.func.source),
-            ...(hasSomeEndpoint ? [`const meta: ${serviceMetaInformationName} = ${metaInformation};`] : []),
-            `return {${concat([
-                ...(hasSomeEndpoint ? ['meta'] : []),
-                ...functions.map(v => v.func.name)
-            ])}};`
+            `return {${concat(functions.map(v => v.func.name))}};`
         );
 
         const func = `export const ${serviceName} = (cfg?: ServiceConfig): ${serviceTypeName} => ${funcBody};`;

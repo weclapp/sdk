@@ -1,26 +1,26 @@
 import {indent} from '@utils/indent';
-import {isObject} from '@utils/openapi/guards';
 
-export interface ObjectDefinition {
-    [key: string | number | symbol]: string | number | undefined | null | boolean | ObjectDefinition;
+export interface ObjectProperty {
+    key: string;
+    value: string | number | undefined | null | boolean | ObjectProperty[];
 }
 
-export const generateObject = (values: ObjectDefinition): string => {
+export const generateObject = (properties: ObjectProperty[]): string => {
     const body = [];
 
-    for (const [name, value] of Object.entries(values)) {
+    for (const {key, value} of properties) {
         if (value === undefined) {
             continue;
         }
 
-        if (isObject(value)) {
+        if (Array.isArray(value)) {
             const str = generateObject(value);
 
             if (str.length > 2) {
-                body.push(`${name}: ${str}`);
+                body.push(`${key}: ${str}`);
             }
         } else {
-            body.push(`${name}: ${String(value)}`);
+            body.push(`${key}: ${String(value)}`);
         }
     }
 

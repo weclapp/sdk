@@ -13,7 +13,7 @@ export const generate = (doc: OpenAPIV3.Document, target: Target): string => {
     const {schemas, aliases} = extractSchemas(doc);
     const enums = generateEnums(schemas);
     const entities = generateEntities(schemas);
-    const services = generateServices(doc, target, aliases, entities);
+    const services = generateServices(doc, target, aliases);
 
     return generateStatements(
         generateBase(target),
@@ -22,8 +22,8 @@ export const generate = (doc: OpenAPIV3.Document, target: Target): string => {
         generateBlockComment('SERVICES', generateStatements(...[...services.values()].map(v => v.source))),
         generateBlockComment('MAPS', generateMaps({
             services: [...services.values()],
-            entities: [...entities.keys()],
             enums: [...enums.keys()],
+            entities,
             aliases
         }).source)
     );

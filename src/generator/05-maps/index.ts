@@ -1,6 +1,8 @@
+import {GeneratedEntity} from '@generator/03-entities';
 import {GeneratedService} from '@generator/04-services';
+import {generateEntityPropertyMap} from '@generator/05-maps/utils/generateEntityPropertyMap';
+import {generateGroupedServiceInterfaces} from '@generator/05-maps/utils/generateGroupedServiceInterfaces';
 import {generateBlockComment} from '@ts/generateComment';
-import {generateGroupedServiceInterfaces} from './generateGroupedServiceInterfaces';
 import {generateInterface} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
 import {generateType} from '@ts/generateType';
@@ -13,7 +15,7 @@ interface GeneratedMaps {
 
 interface MapsGenerator {
     services: GeneratedService[];
-    entities: string[];
+    entities: Map<string, GeneratedEntity>;
     enums: string[];
     aliases: Map<string, string>;
 }
@@ -25,15 +27,17 @@ const arr = (list: string[]) =>
     `[\n${indent(list.join(',\n'))}\n]`;
 
 export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator): GeneratedMaps => {
+    const entitiesKeys = [...entities.keys()];
+
     const enumsArray = `export const wEnums = ${obj(enums)};`;
-    const entityNames = `export const wEntityNames: WEntity[] = ${arr(entities.map(v => `'${v}'`))};`;
+    const entityNames = `export const wEntityNames: WEntity[] = ${arr(entitiesKeys.map(v => `'${v}'`))};`;
     const serviceNames = `export const wServiceNames: WService[] = ${arr(services.map(v => `'${v.entity}'`))};`;
 
     const serviceValues = `export const wServiceFactories = ${obj(services.map(v => `${v.entity}: ${v.serviceName}`))};`;
     const serviceInstanceValues = `export const wServices = ${obj(services.map(v => `${v.entity}: ${v.serviceName}()`))};`;
 
     const entityInterfaces = [
-        ...entities.map(entity => ({
+        ...entitiesKeys.map(entity => ({
             name: entity,
             type: pascalCase(entity),
             required: true
@@ -52,7 +56,7 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
 
     const entitiesList = generateInterface('WEntities', entityInterfaces);
 
-    const entityListFiltered = entityInterfaces.filter(v => entities.includes(v.name));
+    const entityListFiltered = entityInterfaces.filter(v => entitiesKeys.includes(v.name));
     const entityReferences = generateInterface('WEntityReferences', entityListFiltered.map(v => ({...v, type: `${v.type}_References`})));
     const entityMappings = generateInterface('WEntityMappings', entityListFiltered.map(v => ({...v, type: `${v.type}_Mappings`})));
     const entityFilter = generateInterface('WEntityFilters', entityListFiltered.map(v => ({...v, type: `${v.type}_Filter`})));
@@ -65,6 +69,7 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
             entityNames,
             serviceNames,
             enumsArray,
+            generateEntityPropertyMap(entities),
 
             /* Map of entity to references / mappings and filters*/
             entityReferences,
