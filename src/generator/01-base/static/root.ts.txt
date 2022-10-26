@@ -59,7 +59,7 @@ export const raw = async (
     const interceptRequest = cfg.interceptors?.request ?? (v => v);
     const interceptResponse = cfg.interceptors?.response ?? (v => v);
 
-    let host = cfg.host;
+    let host = cfg.host?.replace(/^https?:\/\//, '');
     if (!host && typeof location !== 'undefined') {
         host = location.host;
     }
