@@ -1,7 +1,7 @@
 import {generateInterface, generateInterfaceType, InterfaceProperty} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
 import {generateString} from '@ts/generateString';
-import {convertToTypeScriptType} from '@utils/openapi/convertToTypeScriptType';
+import {convertToTypeScriptType, getRefName} from '@utils/openapi/convertToTypeScriptType';
 import {
     isArraySchemaObject,
     isEnumSchemaObject,
@@ -75,11 +75,14 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
                 });
 
                 properties.set(name, {
-                    entity: meta.entity,
                     service: meta.service,
-                    ...(isArraySchemaObject(property) && {
+                    ...(isReferenceObject(property) ? {
+                        entity: getRefName(property)
+                    } : {
                         format: property.format,
-                        type: property.type
+                        type: property.type,
+                        entity: isArraySchemaObject(property) && isReferenceObject(property.items) ?
+                            getRefName(property.items) : meta.entity
                     })
                 });
             }

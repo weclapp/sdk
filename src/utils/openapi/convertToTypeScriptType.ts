@@ -77,12 +77,16 @@ export const createObjectType = (value: Record<string, Type | undefined>, requir
 
 export type AnyType = ArrayType | ObjectType | RawType | ReferenceType | TupleType;
 
+export const getRefName = (obj: OpenAPIV3.ReferenceObject) => {
+ return obj.$ref.replace(/.*\//, '');
+};
+
 export const convertToTypeScriptType = (
     schema: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject,
     property?: string
 ): AnyType => {
     if (isReferenceObject(schema)) {
-        return createReferenceType(schema.$ref.replace(/.*\//, ''));
+        return createReferenceType(getRefName(schema));
     } else {
         switch (schema.type) {
             case 'integer':
