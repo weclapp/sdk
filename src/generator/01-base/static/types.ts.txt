@@ -114,13 +114,14 @@ export type UpdateQuery = {
 }
 
 // Entity meta types
-export type WEntityPropertyMeta = { service?: string; entity?: string; } & (
+export type WEntityPropertyMeta = { service?: WService; entity?: string; } & (
     { type: 'integer'; format: 'int32' | 'int64' | 'duration' | 'date' | 'date-time'; } |
     { type: 'number'; format: 'double'; } |
     { type: 'boolean'; format?: 'boolean'; } |
     { type: 'string'; format?: 'decimal' | 'html'; } |
     { type: 'array'; } |
     { type: 'object'; } |
+    { type: 'reference'; entity: string; } |
     { type?: never; format?: never; }
 );
 

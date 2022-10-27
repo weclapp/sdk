@@ -77,6 +77,7 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
                 properties.set(name, {
                     service: meta.service,
                     ...(isReferenceObject(property) ? {
+                        type: 'reference',
                         entity: getRefName(property)
                     } : {
                         format: property.format,
