@@ -54,12 +54,12 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
         })
     ];
 
-    const entitiesList = generateInterface('WEntities', entityInterfaces);
+    const createMappingType = (type: string, prefix: string) => type !== 'never' ? `${type}_${prefix}` : type;
 
-    const entityListFiltered = entityInterfaces.filter(v => entitiesKeys.includes(v.name));
-    const entityReferences = generateInterface('WEntityReferences', entityListFiltered.map(v => ({...v, type: `${v.type}_References`})));
-    const entityMappings = generateInterface('WEntityMappings', entityListFiltered.map(v => ({...v, type: `${v.type}_Mappings`})));
-    const entityFilter = generateInterface('WEntityFilters', entityListFiltered.map(v => ({...v, type: `${v.type}_Filter`})));
+    const entitiesList = generateInterface('WEntities', entityInterfaces);
+    const entityReferences = generateInterface('WEntityReferences', entityInterfaces.map(v => ({...v, type: createMappingType(v.type, 'References')})));
+    const entityMappings = generateInterface('WEntityMappings', entityInterfaces.map(v => ({...v, type: createMappingType(v.type, 'Mappings')})));
+    const entityFilter = generateInterface('WEntityFilters', entityInterfaces.map(v => ({...v, type: createMappingType(v.type, 'Filter')})));
 
     return {
         source: generateStatements(
