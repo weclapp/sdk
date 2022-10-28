@@ -1,8 +1,8 @@
 /* eslint-disable no-use-before-define */
 import {concat} from '@ts/concat';
+import {loosePascalCase} from '@utils/case';
 import {indent} from '@utils/indent';
 import {isReferenceObject} from '@utils/openapi/guards';
-import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
 interface Type {
@@ -36,7 +36,7 @@ export interface ObjectType extends Type {
 
 export const createReferenceType = (value: string): ReferenceType => ({
     type: 'reference',
-    toString: () => pascalCase(value)
+    toString: () => loosePascalCase(value)
 });
 
 export const createRawType = (value: string): RawType => ({
