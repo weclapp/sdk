@@ -1,24 +1,12 @@
+import {GeneratedEnum} from '@generator/02-enums';
+import {extractPropertyMetaData, PropertyMetaData} from '@generator/03-entities/utils/extractPropertyMetaData';
 import {generateInterface, generateInterfaceType, InterfaceProperty} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
 import {generateString} from '@ts/generateString';
-import {convertToTypeScriptType, getRefName} from '@utils/openapi/convertToTypeScriptType';
-import {
-    isArraySchemaObject,
-    isEnumSchemaObject,
-    isNonArraySchemaObject,
-    isObjectSchemaObject,
-    isReferenceObject,
-    isRelatedEntitySchema
-} from '@utils/openapi/guards';
+import {convertToTypeScriptType} from '@utils/openapi/convertToTypeScriptType';
+import {isEnumSchemaObject, isNonArraySchemaObject, isObjectSchemaObject, isReferenceObject, isRelatedEntitySchema} from '@utils/openapi/guards';
 import {camelCase, pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
-
-export interface PropertyMetaData {
-    type?: string;
-    format?: string;
-    service?: string;
-    entity?: string;
-}
 
 export interface GeneratedEntity {
     properties: Map<string, PropertyMetaData>;
@@ -26,7 +14,10 @@ export interface GeneratedEntity {
     source: string;
 }
 
-export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): Map<string, GeneratedEntity> => {
+export const generateEntities = (
+    schemas: Map<string, OpenAPIV3.SchemaObject>,
+    enums: Map<string, GeneratedEnum>
+): Map<string, GeneratedEntity> => {
     const entities: Map<string, GeneratedEntity> = new Map();
 
     for (const [schemaName, schema] of schemas) {
@@ -74,18 +65,7 @@ export const generateEntities = (schemas: Map<string, OpenAPIV3.SchemaObject>): 
                     readonly: !isReferenceObject(property) && property.readOnly
                 });
 
-                properties.set(name, {
-                    service: meta.service,
-                    ...(isReferenceObject(property) ? {
-                        type: 'reference',
-                        entity: getRefName(property)
-                    } : {
-                        format: property.format,
-                        type: property.type,
-                        entity: isArraySchemaObject(property) && isReferenceObject(property.items) ?
-                            getRefName(property.items) : meta.entity
-                    })
-                });
+                properties.set(name, extractPropertyMetaData(enums, meta, property));
             }
         };
 
