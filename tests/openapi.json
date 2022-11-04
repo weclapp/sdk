@@ -4778,6 +4778,40 @@
                 ]
             }
         },
+        "/attendance/currentAttendance": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/attendance"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "currentAttendance response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "attendance"
+                ]
+            }
+        },
         "/attendance/id/{id}": {
             "delete": {
                 "description": "delete a attendance",
@@ -7721,6 +7755,44 @@
                 "tags": [
                     "cashAccount"
                 ]
+            },
+            "post": {
+                "description": "create a cashAccount",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/cashAccount"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/cashAccount"
+                                }
+                            }
+                        },
+                        "description": "cashAccount create response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "cashAccount"
+                ]
             }
         },
         "/cashAccount/count": {
@@ -7783,6 +7855,54 @@
                             }
                         },
                         "description": "get by id"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "cashAccount"
+                ]
+            },
+            "put": {
+                "description": "update cashAccount",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/cashAccount"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/cashAccount"
+                                }
+                            }
+                        },
+                        "description": "cashAccount update response"
                     },
                     "default": {
                         "content": {
@@ -7960,6 +8080,37 @@
             }
         },
         "/cashAccountSheet/id/{id}": {
+            "delete": {
+                "description": "delete a cashAccountSheet",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "cashAccountSheet delete response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "cashAccountSheet"
+                ]
+            },
             "get": {
                 "description": "query cashAccountSheet",
                 "parameters": [
@@ -18280,6 +18431,51 @@
                 ]
             }
         },
+        "/notification/markAllAsRead": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {},
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/countResult"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "markAllAsRead response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "notification"
+                ]
+            }
+        },
         "/openItem": {
             "get": {
                 "description": "query openItem",
@@ -21802,6 +21998,284 @@
                 },
                 "tags": [
                     "personDepartment"
+                ]
+            }
+        },
+        "/personRole": {
+            "get": {
+                "description": "query personRole",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "page",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "pageSize",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "serializeNulls",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "sort",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "properties",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "includeReferencedEntities",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "items": {
+                                                "$ref": "#/components/schemas/customValue"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "personRole response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "personRole"
+                ]
+            },
+            "post": {
+                "description": "create a personRole",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/customValue"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/customValue"
+                                }
+                            }
+                        },
+                        "description": "personRole create response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "personRole"
+                ]
+            }
+        },
+        "/personRole/count": {
+            "get": {
+                "description": "count personRole",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "format": "int64",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "count"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "personRole"
+                ]
+            }
+        },
+        "/personRole/id/{id}": {
+            "delete": {
+                "description": "delete a personRole",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "personRole delete response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "personRole"
+                ]
+            },
+            "get": {
+                "description": "query personRole",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/customValue"
+                                }
+                            }
+                        },
+                        "description": "get by id"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "personRole"
+                ]
+            },
+            "put": {
+                "description": "update personRole",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/customValue"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/customValue"
+                                }
+                            }
+                        },
+                        "description": "personRole update response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "personRole"
                 ]
             }
         },
@@ -27135,6 +27609,12 @@
                                             "advancePaymentStatus": {
                                                 "$ref": "#/components/schemas/advancePaymentStatus"
                                             },
+                                            "availability": {
+                                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType"
+                                            },
+                                            "availabilityForAllWarehouses": {
+                                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType"
+                                            },
                                             "cashAccountId": {
                                                 "type": "string",
                                                 "x-weclapp": {
@@ -27523,6 +28003,12 @@
                                         "properties": {
                                             "advancePaymentStatus": {
                                                 "$ref": "#/components/schemas/advancePaymentStatus"
+                                            },
+                                            "availability": {
+                                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType"
+                                            },
+                                            "availabilityForAllWarehouses": {
+                                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType"
                                             },
                                             "cashAccountId": {
                                                 "type": "string",
@@ -28196,6 +28682,12 @@
                                             "articleNumber": {
                                                 "type": "string"
                                             },
+                                            "availability": {
+                                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType"
+                                            },
+                                            "availabilityForAllWarehouses": {
+                                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType"
+                                            },
                                             "createdDate": {
                                                 "format": "date-time",
                                                 "type": "integer"
@@ -28323,7 +28815,11 @@
                                                 "items": {
                                                     "$ref": "#/components/schemas/onlyId"
                                                 },
-                                                "type": "array"
+                                                "type": "array",
+                                                "x-weclapp": {
+                                                    "entity": "task",
+                                                    "service": "task"
+                                                }
                                             },
                                             "taxId": {
                                                 "type": "string",
@@ -34376,6 +34872,206 @@
                 ]
             }
         },
+        "/system/createDemoTestSystem": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "label": {
+                                        "type": "string"
+                                    },
+                                    "preset": {
+                                        "enum": [
+                                            "NONE",
+                                            "PROD_SYSTEM",
+                                            "TEMPLATE_SYSTEM"
+                                        ],
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "label",
+                                    "preset"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "createDemoTestSystem response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "system"
+                ]
+            }
+        },
+        "/system/demoTestSystemInfo": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/demoTestSystemInfo"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "demoTestSystemInfo response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "system"
+                ]
+            }
+        },
+        "/system/info": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/systemInfo"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "info response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "system"
+                ]
+            }
+        },
+        "/system/intercomSettings": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "intercomSettings response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "system"
+                ]
+            }
+        },
+        "/system/otherTenants": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "items": {
+                                                "$ref": "#/components/schemas/otherTenant"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "otherTenants response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "system"
+                ]
+            }
+        },
         "/task": {
             "get": {
                 "description": "query task",
@@ -36221,6 +36917,116 @@
                             }
                         },
                         "description": "ticket update response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "ticket"
+                ]
+            }
+        },
+        "/ticket/id/{id}/createPublicPage": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {},
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/ticket"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "createPublicPage response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "ticket"
+                ]
+            }
+        },
+        "/ticket/id/{id}/disablePublicPage": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {},
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/ticket"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "disablePublicPage response"
                     },
                     "default": {
                         "content": {
@@ -42152,8 +42958,12 @@
                                     "service": "personDepartment"
                                 }
                             },
-                            "personRole": {
-                                "type": "string"
+                            "personRoleId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "customValue",
+                                    "service": "personRole"
+                                }
                             },
                             "phone": {
                                 "type": "string"
@@ -42813,7 +43623,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "warehouseLevel",
+                                    "service": "warehouseLevel"
+                                }
                             },
                             "expenseAccountId": {
                                 "type": "string",
@@ -45165,6 +45979,19 @@
                     },
                     {
                         "properties": {
+                            "accountId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "ledgerAccount",
+                                    "service": "ledgerAccount"
+                                }
+                            },
+                            "active": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
                             "currencyId": {
                                 "type": "string",
                                 "x-weclapp": {
@@ -45184,6 +46011,14 @@
                                 "type": "string",
                                 "x-weclapp": {
                                     "required": true
+                                }
+                            },
+                            "treasurerId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "user",
+                                    "required": true,
+                                    "service": "user"
                                 }
                             }
                         },
@@ -45233,6 +46068,9 @@
                             },
                             "closingBalance": {
                                 "format": "decimal",
+                                "type": "string"
+                            },
+                            "closingExplanation": {
                                 "type": "string"
                             },
                             "openingBalance": {
@@ -45326,7 +46164,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "user",
+                                    "service": "user"
+                                }
                             },
                             "solution": {
                                 "type": "boolean",
@@ -45734,7 +46576,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "customValue",
+                                    "service": "contractType"
+                                }
                             },
                             "unlimited": {
                                 "type": "boolean",
@@ -45994,6 +46840,15 @@
                         "type": "object"
                     }
                 ]
+            },
+            "countResult": {
+                "properties": {
+                    "count": {
+                        "format": "int32",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
             },
             "crmCallLogForApp": {
                 "allOf": [
@@ -46767,12 +47622,38 @@
                 ],
                 "type": "string"
             },
+            "demoTestSystemInfo": {
+                "properties": {
+                    "createPossible": {
+                        "type": "boolean"
+                    },
+                    "creationInProgress": {
+                        "type": "boolean"
+                    },
+                    "demoInstanceUrl": {
+                        "type": "string"
+                    },
+                    "mainInstanceUrl": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "desiredInvoiceStatusType": {
                 "enum": [
                     "BOOKED",
                     "DOCUMENT_CREATED",
                     "NEW",
                     "OPEN_ITEM_CREATED"
+                ],
+                "type": "string"
+            },
+            "dispositionInfoAvailabilityType": {
+                "enum": [
+                    "COMPLETELY_AVAILABLE",
+                    "NOTHING_AVAILABLE",
+                    "NOT_CHECKED",
+                    "PARTIALLY_AVAILABLE"
                 ],
                 "type": "string"
             },
@@ -47950,7 +48831,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "purchaseOrder",
+                                    "service": "purchaseOrder"
+                                }
                             },
                             "relatedShipmentId": {
                                 "type": "string",
@@ -48551,6 +49436,12 @@
                             "description": {
                                 "type": "string"
                             },
+                            "entityId": {
+                                "type": "string"
+                            },
+                            "entityName": {
+                                "type": "string"
+                            },
                             "priority": {
                                 "$ref": "#/components/schemas/notificationPriority",
                                 "x-weclapp": {
@@ -48851,9 +49742,13 @@
                             },
                             "topics": {
                                 "items": {
-                                    "$ref": "#/components/schemas/entity"
+                                    "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "customValue",
+                                    "service": "opportunityTopic"
+                                }
                             },
                             "winLossDescription": {
                                 "type": "string"
@@ -48882,6 +49777,14 @@
                     "ORDER_ENTRY_IN_PROGRESS"
                 ],
                 "type": "string"
+            },
+            "otherTenant": {
+                "properties": {
+                    "baseUrl": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
             },
             "pMRequirementItemPriority": {
                 "enum": [
@@ -48937,7 +49840,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "party",
+                                    "service": "party"
+                                }
                             },
                             "currencyId": {
                                 "type": "string",
@@ -50086,7 +50993,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "timeRecord",
+                                    "service": "timeRecord"
+                                }
                             },
                             "title": {
                                 "type": "string"
@@ -50377,6 +51288,12 @@
                             "assignedPickingUserUsername": {
                                 "type": "string"
                             },
+                            "availability": {
+                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType"
+                            },
+                            "availabilityForAllWarehouses": {
+                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType"
+                            },
                             "pickingInstructions": {
                                 "type": "string"
                             },
@@ -50467,6 +51384,18 @@
                             "actualWithdrawalQuantity": {
                                 "format": "decimal",
                                 "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "availability": {
+                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "availabilityForAllWarehouses": {
+                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType",
                                 "x-weclapp": {
                                     "required": true
                                 }
@@ -51013,6 +51942,9 @@
                     },
                     {
                         "properties": {
+                            "bookingText": {
+                                "type": "string"
+                            },
                             "costCenterId": {
                                 "type": "string",
                                 "x-weclapp": {
@@ -51078,7 +52010,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "purchaseOrder",
+                                    "service": "purchaseOrder"
+                                }
                             },
                             "recordAddress": {
                                 "$ref": "#/components/schemas/recordAddress"
@@ -51796,6 +52732,9 @@
                             "opportunityNumber": {
                                 "type": "string"
                             },
+                            "publicLink": {
+                                "type": "string"
+                            },
                             "quotationDate": {
                                 "format": "date-time",
                                 "type": "integer"
@@ -52410,7 +53349,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "salesOrder",
+                                    "service": "salesOrder"
+                                }
                             },
                             "shippingDate": {
                                 "format": "date-time",
@@ -52475,6 +53418,9 @@
             },
             "salesInvoiceItemRelationship": {
                 "properties": {
+                    "performanceRecordItemId": {
+                        "type": "string"
+                    },
                     "quantity": {
                         "format": "decimal",
                         "type": "string",
@@ -52517,6 +53463,12 @@
                         "properties": {
                             "advancePaymentStatus": {
                                 "$ref": "#/components/schemas/advancePaymentStatus"
+                            },
+                            "availability": {
+                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType"
+                            },
+                            "availabilityForAllWarehouses": {
+                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType"
                             },
                             "cashAccountId": {
                                 "type": "string",
@@ -52670,6 +53622,18 @@
                     },
                     {
                         "properties": {
+                            "availability": {
+                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "availabilityForAllWarehouses": {
+                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
                             "ecommerceOrderItemId": {
                                 "type": "string"
                             },
@@ -52698,7 +53662,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "task",
+                                    "service": "task"
+                                }
                             },
                             "withdrawalBatchNumber": {
                                 "type": "string"
@@ -53126,6 +54094,12 @@
                             "assignedPickingUserUsername": {
                                 "type": "string"
                             },
+                            "availability": {
+                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType"
+                            },
+                            "availabilityForAllWarehouses": {
+                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType"
+                            },
                             "customerPurchaseOrderNumber": {
                                 "type": "string"
                             },
@@ -53209,7 +54183,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "purchaseOrder",
+                                    "service": "purchaseOrder"
+                                }
                             },
                             "recipientCustomerNumber": {
                                 "type": "string"
@@ -53322,6 +54300,18 @@
                         "properties": {
                             "addPageBreakBefore": {
                                 "type": "boolean"
+                            },
+                            "availability": {
+                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "availabilityForAllWarehouses": {
+                                "$ref": "#/components/schemas/dispositionInfoAvailabilityType",
+                                "x-weclapp": {
+                                    "required": true
+                                }
                             },
                             "freeTextItem": {
                                 "type": "boolean"
@@ -53702,7 +54692,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "shelf",
+                                    "service": "shelf"
+                                }
                             },
                             "shortIdentifier": {
                                 "type": "string",
@@ -53947,6 +54941,33 @@
                     }
                 ]
             },
+            "systemInfo": {
+                "properties": {
+                    "customerNumber": {
+                        "type": "string"
+                    },
+                    "dynamicLogo": {
+                        "type": "string"
+                    },
+                    "ebot7Id": {
+                        "type": "string"
+                    },
+                    "globalMessage": {
+                        "type": "string"
+                    },
+                    "testSystem": {
+                        "type": "boolean"
+                    },
+                    "trialDays": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "weclappVersion": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "task": {
                 "allOf": [
                     {
@@ -54081,7 +55102,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "user",
+                                    "service": "user"
+                                }
                             }
                         },
                         "type": "object"
@@ -54457,6 +55482,9 @@
                             "mobilePhoneNumber": {
                                 "type": "string"
                             },
+                            "note": {
+                                "type": "string"
+                            },
                             "partyId": {
                                 "type": "string",
                                 "x-weclapp": {
@@ -54473,6 +55501,13 @@
                                     "entity": "project",
                                     "service": "project"
                                 }
+                            },
+                            "publicPageExpirationDate": {
+                                "format": "timestamp",
+                                "type": "integer"
+                            },
+                            "publicPageUuid": {
+                                "type": "string"
                             },
                             "resolvedYourIssue": {
                                 "type": "boolean"
@@ -54504,7 +55539,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "task",
+                                    "service": "task"
+                                }
                             },
                             "ticketCategoryId": {
                                 "type": "string",
@@ -54688,6 +55727,23 @@
                                     "required": true
                                 }
                             },
+                            "createdById": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "user",
+                                    "service": "user"
+                                }
+                            },
+                            "customers": {
+                                "items": {
+                                    "$ref": "#/components/schemas/onlyId"
+                                },
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "party",
+                                    "service": "party"
+                                }
+                            },
                             "positionNumber": {
                                 "format": "int32",
                                 "type": "integer",
@@ -54705,7 +55761,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "ticketCategory",
+                                    "service": "ticketCategory"
+                                }
                             },
                             "visibility": {
                                 "$ref": "#/components/schemas/ticketFaqVisibility"
@@ -54821,13 +55881,21 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "ticketCategory",
+                                    "service": "ticketCategory"
+                                }
                             },
                             "customers": {
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "party",
+                                    "service": "party"
+                                }
                             },
                             "degreeOfPerformance": {
                                 "format": "int32",
@@ -54862,7 +55930,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "customValue",
+                                    "service": "ticketType"
+                                }
                             },
                             "visible": {
                                 "type": "boolean",
@@ -55424,7 +56496,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "variantArticleAttribute",
+                                    "service": "variantArticleAttribute"
+                                }
                             },
                             "positionNumber": {
                                 "format": "int32",

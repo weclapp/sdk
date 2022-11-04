@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "declaration": true,
         "strict": true,
         "noImplicitAny": true,
         "esModuleInterop": true,
