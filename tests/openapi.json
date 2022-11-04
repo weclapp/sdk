@@ -55503,7 +55503,7 @@
                                 }
                             },
                             "publicPageExpirationDate": {
-                                "format": "timestamp",
+                                "format": "date-time",
                                 "type": "integer"
                             },
                             "publicPageUuid": {
