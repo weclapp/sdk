@@ -1,7 +1,7 @@
 import {GeneratedEntity} from '@generator/03-entities';
 import {GeneratedService} from '@generator/04-services';
 import {generateEntityPropertyMap} from '@generator/05-maps/utils/generateEntityPropertyMap';
-import {generateGroupedServiceInterfaces} from '@generator/05-maps/utils/generateGroupedServiceInterfaces';
+import {generateGroupedServices} from '@generator/05-maps/utils/generateGroupedServices';
 import {generateBlockComment} from '@ts/generateComment';
 import {generateInterface} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
@@ -102,7 +102,7 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
             generateType('WEnum', 'keyof WEnums'),
 
             /* All functions grouped by service supporting it */
-            ...generateGroupedServiceInterfaces(services)
+            ...generateGroupedServices(services)
         )
     };
 };
