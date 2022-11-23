@@ -1,5 +1,5 @@
 import {isArraySchemaObject, isReferenceObject, isResponseObject} from '@utils/openapi/guards';
-import {parseEndpointPath, WeclappEndpointType} from '@utils/weclapp/parseEndpointPath';
+import {parseEndpointPath} from '@utils/weclapp/parseEndpointPath';
 import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
@@ -7,6 +7,9 @@ interface ExtractSchemasResult {
     schemas: Map<string, OpenAPIV3.SchemaObject>;
     aliases: Map<string, string>;
 }
+
+const parseReferencedEntity = (obj: OpenAPIV3.ReferenceObject): string =>
+    pascalCase(obj.$ref.replace(/.*\//, ''));
 
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 export const extractSchemas = (doc: OpenAPIV3.Document): ExtractSchemasResult => {
@@ -26,8 +29,7 @@ export const extractSchemas = (doc: OpenAPIV3.Document): ExtractSchemasResult =>
     for (const [path, methods] of Object.entries(doc.paths)) {
         const parsed = parseEndpointPath(path);
 
-        // We only want to add missing types for the root endpoint
-        if (parsed?.type !== WeclappEndpointType.ROOT || schemas.has(parsed.entity)) {
+        if (!parsed || schemas.has(parsed.entity)) {
             continue;
         }
 
@@ -42,14 +44,17 @@ export const extractSchemas = (doc: OpenAPIV3.Document): ExtractSchemasResult =>
                 }
 
                 const itemsSchema = responseSchema?.properties?.result;
-                if (!isArraySchemaObject(itemsSchema)) {
+                if (isReferenceObject(itemsSchema)) {
+                    aliases.set(parsed.entity, parseReferencedEntity(itemsSchema));
                     continue;
                 }
 
-                const {items} = itemsSchema;
-                if (isReferenceObject(items)) {
-                    const entity = items.$ref.replace(/.*\//, '');
-                    aliases.set(parsed.entity, pascalCase(entity));
+                if (isArraySchemaObject(itemsSchema)) {
+                    const {items} = itemsSchema;
+
+                    if (isReferenceObject(items)) {
+                        aliases.set(parsed.entity, parseReferencedEntity(items));
+                    }
                 }
             }
         }

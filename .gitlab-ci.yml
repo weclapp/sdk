@@ -14,7 +14,7 @@ workflow:
   - npm config set //gitlab.internal.weclapp.com/api/v4/projects/$CI_PROJECT_ID/packages/npm/:_authToken $CI_JOB_TOKEN
 
 .node:image:
-  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-16-alpine
+  image: $CI_REGISTRY/weclapp_ops/base_images/node:latest-18-alpine
 
 .npm:defaults:
   tags:

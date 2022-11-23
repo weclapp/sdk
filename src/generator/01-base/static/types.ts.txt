@@ -1,4 +1,3 @@
-// Utils
 export type DeepPartial<T> = T extends object ? {
     [P in keyof T]?: DeepPartial<T[P]>;
 } : T;
@@ -113,6 +112,19 @@ export type GenericQuery<P, B> = {
 export type UpdateQuery = {
     ignoreMissingProperties?: boolean;
 }
+
+// Entity meta types
+export type WEntityPropertyMeta = (
+    { type: 'string'; format?: 'decimal' | 'html'; entity?: WEntity; service?: WService; } |
+    { type: 'integer'; format: 'int32' | 'int64' | 'duration' | 'date' | 'date-time'; } |
+    { type: 'array'; format: 'reference'; entity: WEntity; service?: WService; } |
+    { type: 'array'; format: 'reference'; enum: WEnum; } |
+    { type: 'array'; format: 'string'; } |
+    { type: 'reference'; entity: WEntity; } |
+    { type: 'reference'; enum: WEnum; } |
+    { type: 'boolean'; } |
+    { type: 'object'; }
+);
 
 // Utils
 const equality: string[] = ['EQ', 'NE'];

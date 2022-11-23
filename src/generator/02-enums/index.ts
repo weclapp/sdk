@@ -1,6 +1,6 @@
 import {generateEnum} from '@ts/generateEnum';
+import {loosePascalCase} from '@utils/case';
 import {isEnumSchemaObject} from '@utils/openapi/guards';
-import {pascalCase} from 'change-case';
 import {OpenAPIV3} from 'openapi-types';
 
 export interface GeneratedEnum {
@@ -13,7 +13,7 @@ export const generateEnums = (schemas: Map<string, OpenAPIV3.SchemaObject>): Map
 
     for (const [propName, schema] of schemas) {
         if (isEnumSchemaObject(schema)) {
-            const name = pascalCase(propName);
+            const name = loosePascalCase(propName);
 
             if (!enums.has(name)) {
                 enums.set(name, {

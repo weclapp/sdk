@@ -1,13 +1,13 @@
 import {Target} from '@enums/Target';
-import {generateCountEndpoint} from '@generator/04-services/endpoints/count';
-import {generateCreateEndpoint} from '@generator/04-services/endpoints/create';
-import {generateGenericEndpoint} from '@generator/04-services/endpoints/generic';
-import {generateRemoveEndpoint} from '@generator/04-services/endpoints/remove';
-import {generateSomeEndpoint} from '@generator/04-services/endpoints/some';
-import {generateUniqueEndpoint} from '@generator/04-services/endpoints/unique';
-import {generateUpdateEndpoint} from '@generator/04-services/endpoints/update';
-import {GeneratedServiceFunction, ServiceFunctionGenerator} from '@generator/04-services/types';
-import {groupEndpointsByEntity} from '@generator/04-services/utils/groupEndpointsByEntity';
+import {generateCountEndpoint} from './endpoints/count';
+import {generateCreateEndpoint} from './endpoints/create';
+import {generateGenericEndpoint} from './endpoints/generic';
+import {generateRemoveEndpoint} from './endpoints/remove';
+import {generateSomeEndpoint} from './endpoints/some';
+import {generateUniqueEndpoint} from './endpoints/unique';
+import {generateUpdateEndpoint} from './endpoints/update';
+import {GeneratedServiceFunction, ServiceFunctionGenerator} from './types';
+import {groupEndpointsByEntity} from './utils/groupEndpointsByEntity';
 import {logger} from '@logger';
 import {concat} from '@ts/concat';
 import {generateBlockComment} from '@ts/generateComment';
@@ -48,15 +48,20 @@ const generators: Record<WeclappEndpointType, Record<string, ServiceFunctionGene
     }
 };
 
-export const generateServices = (doc: OpenAPIV3.Document, target: Target, aliases: Map<string, string>): Map<string, GeneratedService> => {
+export const generateServices = (
+    doc: OpenAPIV3.Document,
+    target: Target,
+    aliases: Map<string, string>
+): Map<string, GeneratedService> => {
     const services: Map<string, GeneratedService> = new Map();
     const grouped = groupEndpointsByEntity(doc.paths);
 
-    for (const [entity, paths] of grouped) {
-        const serviceName = camelCase(`${entity}Service`);
-        const serviceTypeName = pascalCase(`${entity}Service`);
-        const functions: GeneratedServiceFunction[] = [];
+    for (const [endpoint, paths] of grouped) {
+        const serviceName = camelCase(`${endpoint}Service`);
+        const serviceTypeName = pascalCase(`${endpoint}Service`);
 
+        // Service functions
+        const functions: GeneratedServiceFunction[] = [];
         for (const {path, endpoint} of paths) {
             const resolver = generators[endpoint.type];
 
@@ -71,6 +76,7 @@ export const generateServices = (doc: OpenAPIV3.Document, target: Target, aliase
             }
         }
 
+        // Construct service type
         const types = generateStatements(
             ...functions.flatMap(v => v.interfaces?.map(v => v.source) ?? []),
             ...functions.map(v => v.type.source),
@@ -83,14 +89,15 @@ export const generateServices = (doc: OpenAPIV3.Document, target: Target, aliase
             ])
         );
 
+        // Construct service value
         const funcBody = generateBlockStatements(
             ...functions.map(v => v.func.source),
             `return {${concat(functions.map(v => v.func.name))}};`
         );
 
         const func = `export const ${serviceName} = (cfg?: ServiceConfig): ${serviceTypeName} => ${funcBody};`;
-        const source = generateBlockComment(`${pascalCase(entity)} service`, generateStatements(types, func));
-        services.set(entity, {entity, serviceName, serviceTypeName, source, functions});
+        const source = generateBlockComment(`${pascalCase(endpoint)} service`, generateStatements(types, func));
+        services.set(endpoint, {entity: endpoint, serviceName, serviceTypeName, source, functions});
     }
 
     return services;
