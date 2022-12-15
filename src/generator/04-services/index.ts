@@ -26,22 +26,32 @@ export interface GeneratedService {
 }
 
 const generators: Record<WeclappEndpointType, Record<string, ServiceFunctionGenerator>> = {
+
+    /* /article/count */
     [WeclappEndpointType.COUNT]: {
         get: generateCountEndpoint
     },
+
+    /* /article */
     [WeclappEndpointType.ROOT]: {
         get: generateSomeEndpoint,
         post: generateCreateEndpoint
     },
+
+    /* /article/:id */
     [WeclappEndpointType.ENTITY]: {
         get: generateUniqueEndpoint,
         delete: generateRemoveEndpoint,
         put: generateUpdateEndpoint
     },
+
+    /* /article/:id/method */
     [WeclappEndpointType.GENERIC_ENTITY]: {
         get: generateGenericEndpoint('ById'),
         post: generateGenericEndpoint('ById')
     },
+
+    /* /article/method */
     [WeclappEndpointType.GENERIC_ROOT]: {
         get: generateGenericEndpoint(),
         post: generateGenericEndpoint()

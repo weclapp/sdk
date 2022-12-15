@@ -19,7 +19,7 @@ const wrapBody = (type: AnyType, target: Target): AnyType => {
 };
 
 export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerator => ({target, method, path, endpoint}): GeneratedServiceFunction => {
-    const functionName = generateGenericFunctionName(endpoint.path, suffix, method === 'get' ? 'get' : undefined);
+    const functionName = generateGenericFunctionName(endpoint.path, suffix, method);
     const entity = pascalCase(endpoint.entity);
     const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
     const entityQuery = `${interfaceName}_Query`;
