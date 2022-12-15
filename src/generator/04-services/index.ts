@@ -27,15 +27,15 @@ export interface GeneratedService {
 
 const generators: Record<WeclappEndpointType, Record<string, ServiceFunctionGenerator>> = {
 
-    /* /article/count */
-    [WeclappEndpointType.COUNT]: {
-        get: generateCountEndpoint
-    },
-
     /* /article */
     [WeclappEndpointType.ROOT]: {
         get: generateSomeEndpoint,
         post: generateCreateEndpoint
+    },
+
+    /* /article/count */
+    [WeclappEndpointType.COUNT]: {
+        get: generateCountEndpoint
     },
 
     /* /article/:id */

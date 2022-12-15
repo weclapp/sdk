@@ -34,40 +34,36 @@
     "cli:watch": "cross-env NODE_ENV=development rollup -c rollup.config.js --watch",
     "sdk:build": "./bin/cli.js tests/openapi.json --target node",
     "lint": "eslint {src,tests}/**/*.ts",
-    "lint:fix": "npm run lint -- --fix",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "lint:fix": "npm run lint -- --fix"
   },
   "repository": {
     "type": "git",
     "url": "git@git.internal.weclapp.com:weclapp/weclapp-api/sdk-generator.git"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.36.2",
-    "@typescript-eslint/parser": "^5.36.2",
-    "eslint": "^8.23.0",
+    "@typescript-eslint/eslint-plugin": "^5.46.1",
+    "@typescript-eslint/parser": "^5.46.1",
     "rollup-plugin-string": "^3.0.0",
-    "vitest": "^0.23.1"
+    "eslint": "^8.29.0"
   },
   "dependencies": {
-    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-json": "^5.0.2",
     "@types/fs-extra": "^9.0.13",
-    "@types/node": "^18.7.15",
+    "@types/node": "^18.11.15",
     "@types/node-fetch": "^2.6.2",
-    "@types/yargs": "^17.0.12",
+    "@types/yargs": "^17.0.15",
     "chalk": "^4.1.2",
     "change-case": "^4.1.2",
     "cross-env": "^7.0.3",
-    "dotenv": "^16.0.2",
-    "fs-extra": "^10.1.0",
+    "dotenv": "^16.0.3",
+    "fs-extra": "^11.1.0",
     "indent-string": "^4.0.0",
-    "openapi-types": "^12.0.2",
+    "openapi-types": "^12.1.0",
     "rollup": "^2.79.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-ts": "^3.0.2",
-    "typescript": "^4.8.2",
-    "yargs": "^17.5.1"
+    "typescript": "^4.9.4",
+    "yargs": "^17.6.2"
   },
   "peerDependencies": {
     "node-fetch": "^2.6.7",
