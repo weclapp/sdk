@@ -116,10 +116,11 @@ export type UpdateQuery = {
 // Entity meta types
 export type WEntityPropertyMeta = (
     { type: 'string'; format?: 'decimal' | 'html'; entity?: WEntity; service?: WService; } |
-    { type: 'integer'; format: 'int32' | 'int64' | 'duration' | 'date' | 'date-time'; } |
+    { type: 'integer'; format: 'int32' | 'int64' | 'duration' | 'date' | 'timestamp'; } |
     { type: 'array'; format: 'reference'; entity: WEntity; service?: WService; } |
     { type: 'array'; format: 'reference'; enum: WEnum; } |
     { type: 'array'; format: 'string'; } |
+    { type: 'number'; format: 'double'; } |
     { type: 'reference'; entity: WEntity; } |
     { type: 'reference'; enum: WEnum; } |
     { type: 'boolean'; } |

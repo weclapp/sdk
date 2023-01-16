@@ -2110,7 +2110,7 @@
                                                 "type": "array"
                                             },
                                             "createdDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "fromAddress": {
@@ -2120,14 +2120,14 @@
                                                 "type": "string"
                                             },
                                             "lastModifiedDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "messageIdentifier": {
                                                 "type": "string"
                                             },
                                             "receivedDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "replyToAddress": {
@@ -3650,7 +3650,7 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/successResponse"
                                         }
                                     },
                                     "type": "object"
@@ -4363,7 +4363,7 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/successResponse"
                                         }
                                     },
                                     "type": "object"
@@ -6578,7 +6578,7 @@
                             "schema": {
                                 "properties": {
                                     "firstScheduledDeliveryDate": {
-                                        "format": "date-time",
+                                        "format": "timestamp",
                                         "type": "integer"
                                     },
                                     "fixReleasedQuantity": {
@@ -7578,7 +7578,7 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/successResponse"
                                         }
                                     },
                                     "type": "object"
@@ -10114,7 +10114,7 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/successResponse"
                                         }
                                     },
                                     "type": "object"
@@ -13816,7 +13816,7 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/successResponse"
                                         }
                                     },
                                     "type": "object"
@@ -17130,7 +17130,7 @@
                                                     }
                                                 },
                                                 "confirmedDate": {
-                                                    "format": "date-time",
+                                                    "format": "timestamp",
                                                     "type": "integer"
                                                 },
                                                 "confirmedQuantity": {
@@ -17138,11 +17138,11 @@
                                                     "type": "string"
                                                 },
                                                 "createdDate": {
-                                                    "format": "date-time",
+                                                    "format": "timestamp",
                                                     "type": "integer"
                                                 },
                                                 "expirationDate": {
-                                                    "format": "date-time",
+                                                    "format": "timestamp",
                                                     "type": "integer"
                                                 },
                                                 "id": {
@@ -17152,7 +17152,7 @@
                                                     "type": "string"
                                                 },
                                                 "lastModifiedDate": {
-                                                    "format": "date-time",
+                                                    "format": "timestamp",
                                                     "type": "integer"
                                                 },
                                                 "levelId": {
@@ -17671,7 +17671,7 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/successResponse"
                                         }
                                     },
                                     "type": "object"
@@ -20315,7 +20315,7 @@
                             "schema": {
                                 "properties": {
                                     "datePaid": {
-                                        "format": "date-time",
+                                        "format": "timestamp",
                                         "type": "integer"
                                     }
                                 },
@@ -21604,7 +21604,7 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/successResponse"
                                         }
                                     },
                                     "type": "object"
@@ -23215,7 +23215,7 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/successResponse"
                                         }
                                     },
                                     "type": "object"
@@ -23296,7 +23296,7 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/successResponse"
                                         }
                                     },
                                     "type": "object"
@@ -24859,11 +24859,11 @@
                                                     "type": "string"
                                                 },
                                                 "bookedDate": {
-                                                    "format": "date-time",
+                                                    "format": "timestamp",
                                                     "type": "integer"
                                                 },
                                                 "confirmedDate": {
-                                                    "format": "date-time",
+                                                    "format": "timestamp",
                                                     "type": "integer"
                                                 },
                                                 "confirmedQuantity": {
@@ -29233,11 +29233,11 @@
                                                 "type": "array"
                                             },
                                             "createdDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "currencyConversionDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "currencyConversionRate": {
@@ -29345,7 +29345,7 @@
                                                 "type": "boolean"
                                             },
                                             "lastModifiedDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "netAmount": {
@@ -29366,8 +29366,11 @@
                                             "nonStandardTaxName": {
                                                 "type": "string"
                                             },
+                                            "onlyServices": {
+                                                "type": "boolean"
+                                            },
                                             "orderDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "orderItems": {
@@ -29396,16 +29399,27 @@
                                                 "type": "string"
                                             },
                                             "plannedDeliveryDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
+                                                "type": "integer"
+                                            },
+                                            "plannedProjectEndDate": {
+                                                "format": "timestamp",
+                                                "type": "integer"
+                                            },
+                                            "plannedProjectStartDate": {
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "plannedShippingDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "pricingDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
+                                            },
+                                            "projectGoals": {
+                                                "type": "string"
                                             },
                                             "projectMembers": {
                                                 "items": {
@@ -29477,12 +29491,15 @@
                                                 "type": "boolean"
                                             },
                                             "servicePeriodFrom": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "servicePeriodTo": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
+                                            },
+                                            "servicesFinished": {
+                                                "type": "boolean"
                                             },
                                             "shipmentMethodId": {
                                                 "type": "string",
@@ -29628,11 +29645,11 @@
                                                 "type": "array"
                                             },
                                             "createdDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "currencyConversionDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "currencyConversionRate": {
@@ -29740,7 +29757,7 @@
                                                 "type": "boolean"
                                             },
                                             "lastModifiedDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "netAmount": {
@@ -29761,8 +29778,11 @@
                                             "nonStandardTaxName": {
                                                 "type": "string"
                                             },
+                                            "onlyServices": {
+                                                "type": "boolean"
+                                            },
                                             "orderDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "orderItems": {
@@ -29791,16 +29811,27 @@
                                                 "type": "string"
                                             },
                                             "plannedDeliveryDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
+                                                "type": "integer"
+                                            },
+                                            "plannedProjectEndDate": {
+                                                "format": "timestamp",
+                                                "type": "integer"
+                                            },
+                                            "plannedProjectStartDate": {
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "plannedShippingDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "pricingDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
+                                            },
+                                            "projectGoals": {
+                                                "type": "string"
                                             },
                                             "projectMembers": {
                                                 "items": {
@@ -29872,12 +29903,15 @@
                                                 "type": "boolean"
                                             },
                                             "servicePeriodFrom": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "servicePeriodTo": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
+                                            },
+                                            "servicesFinished": {
+                                                "type": "boolean"
                                             },
                                             "shipmentMethodId": {
                                                 "type": "string",
@@ -30286,8 +30320,14 @@
                                             "availabilityForAllWarehouses": {
                                                 "$ref": "#/components/schemas/dispositionInfoAvailabilityType"
                                             },
+                                            "commissionSalesPartners": {
+                                                "items": {
+                                                    "$ref": "#/components/schemas/commissionSalesPartner"
+                                                },
+                                                "type": "array"
+                                            },
                                             "createdDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "customAttributes": {
@@ -30335,7 +30375,7 @@
                                                 "$ref": "#/components/schemas/invoicingType"
                                             },
                                             "lastModifiedDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "manualQuantity": {
@@ -30370,7 +30410,7 @@
                                                 "type": "string"
                                             },
                                             "plannedShippingDate": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "plannedWorkingTimePerUnit": {
@@ -30395,11 +30435,11 @@
                                                 "type": "boolean"
                                             },
                                             "servicePeriodFrom": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "servicePeriodTo": {
-                                                "format": "date-time",
+                                                "format": "timestamp",
                                                 "type": "integer"
                                             },
                                             "shipped": {
@@ -33587,7 +33627,7 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/successResponse"
                                         }
                                     },
                                     "type": "object"
@@ -34012,11 +34052,11 @@
                                                     "type": "string"
                                                 },
                                                 "bookedDate": {
-                                                    "format": "date-time",
+                                                    "format": "timestamp",
                                                     "type": "integer"
                                                 },
                                                 "confirmedDate": {
-                                                    "format": "date-time",
+                                                    "format": "timestamp",
                                                     "type": "integer"
                                                 },
                                                 "confirmedQuantity": {
@@ -36544,7 +36584,7 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/successResponse"
                                         }
                                     },
                                     "type": "object"
@@ -36608,7 +36648,7 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/successResponse"
                                         }
                                     },
                                     "type": "object"
@@ -36616,6 +36656,65 @@
                             }
                         },
                         "description": "createDemoTestSystem response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "system"
+                ]
+            }
+        },
+        "/system/createSupportTicket": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "additionalComment": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "subject": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "description",
+                                    "subject"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/successResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "createSupportTicket response"
                     },
                     "default": {
                         "content": {
@@ -38078,6 +38177,118 @@
                 ]
             }
         },
+        "/tax/configurePurchaseTaxes": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "countryCode": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "countryCode"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/successResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "configurePurchaseTaxes response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "tax"
+                ]
+            }
+        },
+        "/tax/configureSalesTaxes": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "countryCode": {
+                                        "type": "string"
+                                    },
+                                    "personsThirdCountryFreeTax": {
+                                        "type": "boolean"
+                                    },
+                                    "taxEuPersonsRecipientCountry": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": [
+                                    "countryCode",
+                                    "personsThirdCountryFreeTax",
+                                    "taxEuPersonsRecipientCountry"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/successResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "configureSalesTaxes response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "tax"
+                ]
+            }
+        },
         "/tax/count": {
             "get": {
                 "description": "count tax",
@@ -38098,6 +38309,110 @@
                             }
                         },
                         "description": "count"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "tax"
+                ]
+            }
+        },
+        "/tax/findPurchaseTax": {
+            "get": {
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "recipientCountryCode",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "dispatchCountryCode",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "taxRateType",
+                        "required": false,
+                        "schema": {
+                            "enum": [
+                                "REDUCED",
+                                "SLIGHTLY_REDUCED",
+                                "STANDARD",
+                                "SUPER_REDUCED",
+                                "ZERO"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "partyType",
+                        "required": false,
+                        "schema": {
+                            "enum": [
+                                "ORGANIZATION",
+                                "PERSON"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "debtorCreditorCodeId",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "productCodeId",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "date",
+                        "required": false,
+                        "schema": {
+                            "format": "timestamp",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/tax"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "findPurchaseTax response"
                     },
                     "default": {
                         "content": {
@@ -38163,10 +38478,34 @@
                     },
                     {
                         "in": "query",
+                        "name": "debtorCreditorCodeId",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "productCodeId",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "validVatId",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "in": "query",
                         "name": "date",
                         "required": false,
                         "schema": {
-                            "format": "date-time",
+                            "format": "timestamp",
                             "type": "integer"
                         }
                     }
@@ -38319,6 +38658,348 @@
                 },
                 "tags": [
                     "tax"
+                ]
+            }
+        },
+        "/tax/resetSystemTaxes": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "countryCode": {
+                                        "type": "string"
+                                    },
+                                    "initAllStores": {
+                                        "type": "boolean"
+                                    },
+                                    "personsThirdCountryFreeTax": {
+                                        "type": "boolean"
+                                    },
+                                    "taxRecipientCountry": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": [
+                                    "countryCode",
+                                    "initAllStores",
+                                    "personsThirdCountryFreeTax",
+                                    "taxRecipientCountry"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/successResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "resetSystemTaxes response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "tax"
+                ]
+            }
+        },
+        "/taxDeterminationRule": {
+            "get": {
+                "description": "query taxDeterminationRule",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "page",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "pageSize",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "serializeNulls",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "sort",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "properties",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "includeReferencedEntities",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "items": {
+                                                "$ref": "#/components/schemas/taxDeterminationRule"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "taxDeterminationRule response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "taxDeterminationRule"
+                ]
+            },
+            "post": {
+                "description": "create a taxDeterminationRule",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/taxDeterminationRule"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/taxDeterminationRule"
+                                }
+                            }
+                        },
+                        "description": "taxDeterminationRule create response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "taxDeterminationRule"
+                ]
+            }
+        },
+        "/taxDeterminationRule/count": {
+            "get": {
+                "description": "count taxDeterminationRule",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "format": "int64",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "count"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "taxDeterminationRule"
+                ]
+            }
+        },
+        "/taxDeterminationRule/id/{id}": {
+            "delete": {
+                "description": "delete a taxDeterminationRule",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "taxDeterminationRule delete response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "taxDeterminationRule"
+                ]
+            },
+            "get": {
+                "description": "query taxDeterminationRule",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/taxDeterminationRule"
+                                }
+                            }
+                        },
+                        "description": "get by id"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "taxDeterminationRule"
+                ]
+            },
+            "put": {
+                "description": "update taxDeterminationRule",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/taxDeterminationRule"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/taxDeterminationRule"
+                                }
+                            }
+                        },
+                        "description": "taxDeterminationRule update response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "taxDeterminationRule"
                 ]
             }
         },
@@ -42647,6 +43328,284 @@
                 ]
             }
         },
+        "/userRole": {
+            "get": {
+                "description": "query userRole",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "page",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "pageSize",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "serializeNulls",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "sort",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "properties",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "includeReferencedEntities",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "items": {
+                                                "$ref": "#/components/schemas/userRole"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "userRole response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "userRole"
+                ]
+            },
+            "post": {
+                "description": "create a userRole",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/userRole"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/userRole"
+                                }
+                            }
+                        },
+                        "description": "userRole create response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "userRole"
+                ]
+            }
+        },
+        "/userRole/count": {
+            "get": {
+                "description": "count userRole",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "format": "int64",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "count"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "userRole"
+                ]
+            }
+        },
+        "/userRole/id/{id}": {
+            "delete": {
+                "description": "delete a userRole",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "userRole delete response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "userRole"
+                ]
+            },
+            "get": {
+                "description": "query userRole",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/userRole"
+                                }
+                            }
+                        },
+                        "description": "get by id"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "userRole"
+                ]
+            },
+            "put": {
+                "description": "update userRole",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/userRole"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/userRole"
+                                }
+                            }
+                        },
+                        "description": "userRole update response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "userRole"
+                ]
+            }
+        },
         "/variantArticle": {
             "get": {
                 "description": "query variantArticle",
@@ -44079,7 +45038,7 @@
                                         "type": "string"
                                     },
                                     "batchNumberExpirationDate": {
-                                        "format": "date-time",
+                                        "format": "timestamp",
                                         "type": "integer"
                                     },
                                     "customAttributes": {
@@ -44096,7 +45055,7 @@
                                                     "type": "boolean"
                                                 },
                                                 "dateValue": {
-                                                    "format": "date-time",
+                                                    "format": "timestamp",
                                                     "type": "integer"
                                                 },
                                                 "entityId": {
@@ -44164,7 +45123,7 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/successResponse"
                                         }
                                     },
                                     "type": "object"
@@ -44216,7 +45175,7 @@
                                                     "type": "boolean"
                                                 },
                                                 "dateValue": {
-                                                    "format": "date-time",
+                                                    "format": "timestamp",
                                                     "type": "integer"
                                                 },
                                                 "entityId": {
@@ -44284,7 +45243,7 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/successResponse"
                                         }
                                     },
                                     "type": "object"
@@ -44336,7 +45295,7 @@
                                                     "type": "boolean"
                                                 },
                                                 "dateValue": {
-                                                    "format": "date-time",
+                                                    "format": "timestamp",
                                                     "type": "integer"
                                                 },
                                                 "entityId": {
@@ -44408,7 +45367,7 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/successResponse"
                                         }
                                     },
                                     "type": "object"
@@ -45107,7 +46066,7 @@
                     {
                         "properties": {
                             "createdDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "readOnly": true,
                                 "type": "integer",
                                 "x-weclapp": {
@@ -45115,7 +46074,7 @@
                                 }
                             },
                             "lastModifiedDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "readOnly": true,
                                 "type": "integer",
                                 "x-weclapp": {
@@ -45165,7 +46124,7 @@
                                 "type": "array"
                             },
                             "birthDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "company": {
@@ -45294,7 +46253,7 @@
                     {
                         "properties": {
                             "accountingImportDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "conversionRate": {
@@ -45302,7 +46261,7 @@
                                 "type": "string"
                             },
                             "conversionRateDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "currencyId": {
@@ -45338,7 +46297,7 @@
                                 }
                             },
                             "transactionDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -45351,7 +46310,7 @@
                                 "type": "array"
                             },
                             "transactionEstablishDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "transactionNumber": {
@@ -45438,7 +46397,7 @@
             "activityFeedEntry": {
                 "properties": {
                     "createDate": {
-                        "format": "date-time",
+                        "format": "timestamp",
                         "type": "integer"
                     },
                     "entityId": {
@@ -45692,7 +46651,7 @@
                                 "type": "string"
                             },
                             "receivedDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "replyToAddress": {
@@ -45906,7 +46865,7 @@
                                 "$ref": "#/components/schemas/invoicingType"
                             },
                             "launchDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "longText": {
@@ -46019,11 +46978,11 @@
                                 "type": "string"
                             },
                             "sellByDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "sellFromDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "serialNumberRequired": {
@@ -46052,7 +47011,7 @@
                                 "type": "array"
                             },
                             "supportUntilDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "systemCode": {
@@ -46140,7 +47099,7 @@
                                 }
                             },
                             "endDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "positionNumber": {
@@ -46161,7 +47120,7 @@
                                 "$ref": "#/components/schemas/distributionChannel"
                             },
                             "startDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             }
                         },
@@ -46411,7 +47370,7 @@
                                 "type": "string"
                             },
                             "endDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "lastModifiedByUserId": {
@@ -46456,7 +47415,7 @@
                                 "type": "array"
                             },
                             "startDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             }
                         },
@@ -46521,11 +47480,11 @@
                     {
                         "properties": {
                             "endTime": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "startTime": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -46677,7 +47636,7 @@
                                 }
                             },
                             "lastDownload": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "primary": {
@@ -46746,6 +47705,10 @@
                             },
                             "fixedPurchaseQuantity": {
                                 "format": "decimal",
+                                "type": "string"
+                            },
+                            "internalNote": {
+                                "format": "html",
                                 "type": "string"
                             },
                             "manufacturerPartNumber": {
@@ -46846,11 +47809,11 @@
                                 "type": "string"
                             },
                             "servicePeriodFrom": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "servicePeriodTo": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "shippingCostItems": {
@@ -47060,7 +48023,7 @@
                     {
                         "properties": {
                             "currencyConversionDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "currencyConversionRate": {
@@ -47146,6 +48109,12 @@
                             "commission": {
                                 "type": "string"
                             },
+                            "commissionSalesPartners": {
+                                "items": {
+                                    "$ref": "#/components/schemas/commissionSalesPartner"
+                                },
+                                "type": "array"
+                            },
                             "customerId": {
                                 "type": "string",
                                 "x-weclapp": {
@@ -47163,7 +48132,7 @@
                                 "type": "boolean"
                             },
                             "pricingDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "responsibleUserId": {
@@ -47180,11 +48149,11 @@
                                 "$ref": "#/components/schemas/distributionChannel"
                             },
                             "servicePeriodFrom": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "servicePeriodTo": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "shipmentMethodId": {
@@ -47215,15 +48184,21 @@
                     },
                     {
                         "properties": {
+                            "commissionSalesPartners": {
+                                "items": {
+                                    "$ref": "#/components/schemas/commissionSalesPartner"
+                                },
+                                "type": "array"
+                            },
                             "manualUnitCost": {
                                 "type": "boolean"
                             },
                             "servicePeriodFrom": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "servicePeriodTo": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "unitCost": {
@@ -47288,11 +48263,11 @@
                                 "$ref": "#/components/schemas/recordAddress"
                             },
                             "plannedDeliveryDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "plannedShippingDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "recordAddress": {
@@ -47446,7 +48421,7 @@
                                 }
                             },
                             "expirationDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             }
                         },
@@ -47584,7 +48559,7 @@
                                 }
                             },
                             "endDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -47612,7 +48587,7 @@
                                 }
                             },
                             "orderDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -47691,7 +48666,7 @@
                                 }
                             },
                             "startDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -47775,7 +48750,7 @@
                         }
                     },
                     "statusDate": {
-                        "format": "date-time",
+                        "format": "timestamp",
                         "type": "integer",
                         "x-weclapp": {
                             "required": true
@@ -48001,7 +48976,7 @@
                                 "type": "string"
                             },
                             "endDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -48036,7 +49011,7 @@
                                 "$ref": "#/components/schemas/followupBusyState"
                             },
                             "startDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -48141,7 +49116,7 @@
                     {
                         "properties": {
                             "campaignEndDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "campaignName": {
@@ -48154,7 +49129,7 @@
                                 "type": "string"
                             },
                             "campaignStartDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "campaignType": {
@@ -48337,7 +49312,7 @@
                                 "type": "string"
                             },
                             "openingDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "sheetNumber": {
@@ -48397,7 +49372,7 @@
                                 "type": "string"
                             },
                             "lastEditDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "parentCommentId": {
@@ -48611,7 +49586,7 @@
                                 }
                             },
                             "cancellationDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "cancellationPeriodQuantity": {
@@ -48627,8 +49602,14 @@
                             "commission": {
                                 "type": "string"
                             },
+                            "commissionSalesPartners": {
+                                "items": {
+                                    "$ref": "#/components/schemas/commissionSalesPartner"
+                                },
+                                "type": "array"
+                            },
                             "contractDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "contractItems": {
@@ -48680,7 +49661,7 @@
                                 }
                             },
                             "endDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "extensionQuantity": {
@@ -48711,14 +49692,14 @@
                                 "$ref": "#/components/schemas/contractUnitType"
                             },
                             "latestPossibleTerminationDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "name": {
                                 "type": "string"
                             },
                             "nextContractBillingDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "nonStandardInputTaxId": {
@@ -48746,7 +49727,7 @@
                                 }
                             },
                             "pricingDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -48769,7 +49750,7 @@
                                 "$ref": "#/components/schemas/emailAddresses"
                             },
                             "reminderDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "reminderSendType": {
@@ -48801,7 +49782,7 @@
                                 "$ref": "#/components/schemas/emailAddresses"
                             },
                             "startDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "template": {
@@ -48942,6 +49923,12 @@
                                     "service": "contractBillingGroup"
                                 }
                             },
+                            "commissionSalesPartners": {
+                                "items": {
+                                    "$ref": "#/components/schemas/commissionSalesPartner"
+                                },
+                                "type": "array"
+                            },
                             "costTypeId": {
                                 "type": "string",
                                 "x-weclapp": {
@@ -48962,19 +49949,19 @@
                                 }
                             },
                             "nextContractBillingDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "previousContractBillingDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "servicePeriodFromDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "servicePeriodToDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "type": {
@@ -49153,11 +50140,11 @@
                                 "type": "string"
                             },
                             "dateFrom": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "dateTo": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "description": {
@@ -49255,7 +50242,7 @@
                                 "type": "string"
                             },
                             "endDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "eventCategoryId": {
@@ -49284,7 +50271,7 @@
                                 }
                             },
                             "startDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "subject": {
@@ -49344,7 +50331,7 @@
                         "type": "boolean"
                     },
                     "dateValue": {
-                        "format": "date-time",
+                        "format": "timestamp",
                         "type": "integer"
                     },
                     "entityId": {
@@ -49419,7 +50406,7 @@
                                 }
                             },
                             "defaultDateValue": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "defaultNumberValue": {
@@ -50861,11 +51848,11 @@
                                 }
                             },
                             "validFrom": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "validTo": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             }
                         },
@@ -50944,7 +51931,7 @@
                                 "$ref": "#/components/schemas/groupwareContactAddress"
                             },
                             "birthDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "description": {
@@ -51091,7 +52078,7 @@
                                 }
                             },
                             "confirmedDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "confirmedQuantity": {
@@ -51099,7 +52086,7 @@
                                 "type": "string"
                             },
                             "expirationDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "incomingGoodsItemId": {
@@ -51651,7 +52638,7 @@
                                 "type": "string"
                             },
                             "effectiveDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -51990,11 +52977,11 @@
                                 "type": "string"
                             },
                             "expectedDeliveryDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "expectedSignatureDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "hotLead": {
@@ -52010,7 +52997,7 @@
                                 }
                             },
                             "nextCallDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "opportunityNumber": {
@@ -52058,12 +53045,12 @@
                                 "type": "string"
                             },
                             "startDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "topics": {
                                 "items": {
-                                    "$ref": "#/components/schemas/onlyId"
+                                    "$ref": "#/components/schemas/entity"
                                 },
                                 "type": "array",
                                 "x-weclapp": {
@@ -52263,6 +53250,12 @@
                                 }
                             },
                             "customerDeliveryBlock": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "customerFormerSalesPartner": {
                                 "type": "boolean",
                                 "x-weclapp": {
                                     "required": true
@@ -52607,6 +53600,10 @@
                                     "service": "shippingCarrier"
                                 }
                             },
+                            "supplierMinimumPurchaseOrderAmount": {
+                                "format": "decimal",
+                                "type": "string"
+                            },
                             "supplierNonStandardTaxId": {
                                 "type": "string",
                                 "x-weclapp": {
@@ -52821,7 +53818,7 @@
                                 }
                             },
                             "date": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -52994,7 +53991,7 @@
                     {
                         "properties": {
                             "paymentRunDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -53063,7 +54060,7 @@
                                 }
                             },
                             "conversionRateDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -53156,7 +54153,7 @@
                                 }
                             },
                             "customerSignatureDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "description": {
@@ -53178,6 +54175,10 @@
                             },
                             "orderNumberAtCustomer": {
                                 "type": "string"
+                            },
+                            "performanceRecordDate": {
+                                "format": "timestamp",
+                                "type": "integer"
                             },
                             "performanceRecordItems": {
                                 "items": {
@@ -53225,11 +54226,11 @@
                                 }
                             },
                             "servicePeriodFrom": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "servicePeriodTo": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "serviceProviderId": {
@@ -53240,7 +54241,7 @@
                                 }
                             },
                             "serviceProviderSignatureDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "status": {
@@ -53292,6 +54293,9 @@
                             "groupName": {
                                 "type": "string"
                             },
+                            "invoicingType": {
+                                "$ref": "#/components/schemas/invoicingType"
+                            },
                             "note": {
                                 "type": "string"
                             },
@@ -53310,11 +54314,11 @@
                                 }
                             },
                             "servicePeriodFrom": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "servicePeriodTo": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "taskId": {
@@ -53354,7 +54358,7 @@
                         }
                     },
                     "statusDate": {
-                        "format": "date-time",
+                        "format": "timestamp",
                         "type": "integer",
                         "x-weclapp": {
                             "required": true
@@ -53417,11 +54421,11 @@
                                 }
                             },
                             "validFrom": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "validTo": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             }
                         },
@@ -53508,10 +54512,7 @@
                         "properties": {
                             "fixSurcharge": {
                                 "format": "decimal",
-                                "type": "string",
-                                "x-weclapp": {
-                                    "required": true
-                                }
+                                "type": "string"
                             },
                             "fromScale": {
                                 "format": "decimal",
@@ -53527,12 +54528,17 @@
                                     "required": true
                                 }
                             },
+                            "margin": {
+                                "format": "decimal",
+                                "type": "string"
+                            },
                             "percentSurcharge": {
                                 "format": "decimal",
-                                "type": "string",
-                                "x-weclapp": {
-                                    "required": true
-                                }
+                                "type": "string"
+                            },
+                            "profit": {
+                                "format": "decimal",
+                                "type": "string"
                             },
                             "salesChannel": {
                                 "$ref": "#/components/schemas/distributionChannel",
@@ -53578,7 +54584,7 @@
                     {
                         "properties": {
                             "actualEndDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "actualQuantity": {
@@ -53589,7 +54595,7 @@
                                 }
                             },
                             "actualStartDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "allWithdrawalsConfirmed": {
@@ -53617,7 +54623,7 @@
                                 }
                             },
                             "assignedPickingUserUpdateDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "assignedPickingUserUsername": {
@@ -53657,7 +54663,7 @@
                                 "type": "array"
                             },
                             "targetEndDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -53671,7 +54677,7 @@
                                 }
                             },
                             "targetStartDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -53713,7 +54719,7 @@
                     {
                         "properties": {
                             "actualWithdrawalDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "actualWithdrawalQuantity": {
@@ -53742,7 +54748,7 @@
                                 "type": "array"
                             },
                             "targetWithdrawalDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -53777,7 +54783,7 @@
                         }
                     },
                     "statusDate": {
-                        "format": "date-time",
+                        "format": "timestamp",
                         "type": "integer",
                         "x-weclapp": {
                             "required": true
@@ -53841,7 +54847,7 @@
                                 }
                             },
                             "targetEndDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -53855,7 +54861,7 @@
                                 }
                             },
                             "targetStartDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -53942,11 +54948,11 @@
                                 }
                             },
                             "validFrom": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "validTo": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             }
                         },
@@ -54031,11 +55037,11 @@
                                 }
                             },
                             "validFrom": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "validTo": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             }
                         },
@@ -54092,14 +55098,14 @@
                                 }
                             },
                             "projectEndDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "projectNumber": {
                                 "type": "string"
                             },
                             "projectStartDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "status": {
@@ -54185,7 +55191,7 @@
                                 "type": "integer"
                             },
                             "endDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "hourlyRate": {
@@ -54227,7 +55233,7 @@
                                 "type": "string"
                             },
                             "startDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "status": {
@@ -54300,7 +55306,7 @@
                                 "$ref": "#/components/schemas/recordAddress"
                             },
                             "dueDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "internalInvoiceNumber": {
@@ -54313,7 +55319,7 @@
                                 "$ref": "#/components/schemas/recordAddress"
                             },
                             "invoiceDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -54329,7 +55335,7 @@
                                 }
                             },
                             "pricingDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -54466,7 +55472,7 @@
                         }
                     },
                     "statusDate": {
-                        "format": "date-time",
+                        "format": "timestamp",
                         "type": "integer",
                         "x-weclapp": {
                             "required": true
@@ -54520,7 +55526,7 @@
                                 "$ref": "#/components/schemas/recordAddress"
                             },
                             "orderDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -54533,7 +55539,7 @@
                                 "type": "string"
                             },
                             "plannedDeliveryDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "purchaseOrderItems": {
@@ -54639,11 +55645,11 @@
                                 }
                             },
                             "plannedDeliveryDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "plannedShippingDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "receivedQuantity": {
@@ -54677,7 +55683,7 @@
                     {
                         "properties": {
                             "confirmationDeadline": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -54690,7 +55696,7 @@
                                 "$ref": "#/components/schemas/recordAddress"
                             },
                             "plannedDeliveryDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "purchaseOrderRequestItems": {
@@ -54814,15 +55820,15 @@
                     {
                         "properties": {
                             "endDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "offerDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "plannedDeliveryDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "purchaseOrderRequestOfferItems": {
@@ -54835,15 +55841,15 @@
                                 "$ref": "#/components/schemas/emailAddresses"
                             },
                             "replyDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "requestDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "startDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "status": {
@@ -54867,11 +55873,11 @@
                                 "type": "string"
                             },
                             "validFrom": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "validTo": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             }
                         },
@@ -54957,7 +55963,7 @@
                         }
                     },
                     "statusDate": {
-                        "format": "date-time",
+                        "format": "timestamp",
                         "type": "integer",
                         "x-weclapp": {
                             "required": true
@@ -55013,7 +56019,7 @@
                         }
                     },
                     "statusDate": {
-                        "format": "date-time",
+                        "format": "timestamp",
                         "type": "integer",
                         "x-weclapp": {
                             "required": true
@@ -55122,7 +56128,7 @@
                                 "type": "string"
                             },
                             "quotationDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "quotationItems": {
@@ -55154,7 +56160,7 @@
                                 "$ref": "#/components/schemas/emailAddresses"
                             },
                             "requestDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "salesOrderEmailAddresses": {
@@ -55199,11 +56205,11 @@
                                 }
                             },
                             "validFrom": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "validTo": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "warehouseId": {
@@ -55254,7 +56260,7 @@
                         }
                     },
                     "statusDate": {
-                        "format": "date-time",
+                        "format": "timestamp",
                         "type": "integer",
                         "x-weclapp": {
                             "required": true
@@ -55416,7 +56422,7 @@
                     {
                         "properties": {
                             "endsOn": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "eventInterval": {
@@ -55510,14 +56516,14 @@
                     {
                         "properties": {
                             "orderDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
                                 }
                             },
                             "plannedDeliveryDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -55649,7 +56655,7 @@
                     {
                         "properties": {
                             "cancellationDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "cancellationNumber": {
@@ -55658,12 +56664,6 @@
                             "collectiveInvoicePositionPrintType": {
                                 "$ref": "#/components/schemas/collectiveInvoicePositionPrintType"
                             },
-                            "commissionSalesPartners": {
-                                "items": {
-                                    "$ref": "#/components/schemas/commissionSalesPartner"
-                                },
-                                "type": "array"
-                            },
                             "customerHabitualExporterLetterOfIntentId": {
                                 "type": "string"
                             },
@@ -55671,15 +56671,15 @@
                                 "$ref": "#/components/schemas/recordAddress"
                             },
                             "deliveryDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "dueDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "invoiceDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -55742,7 +56742,7 @@
                                 }
                             },
                             "shippingDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "status": {
@@ -55838,7 +56838,7 @@
                         }
                     },
                     "statusDate": {
-                        "format": "date-time",
+                        "format": "timestamp",
                         "type": "integer",
                         "x-weclapp": {
                             "required": true
@@ -55898,12 +56898,6 @@
                                     "service": "cashAccount"
                                 }
                             },
-                            "commissionSalesPartners": {
-                                "items": {
-                                    "$ref": "#/components/schemas/commissionSalesPartner"
-                                },
-                                "type": "array"
-                            },
                             "customerHabitualExporterLetterOfIntentId": {
                                 "type": "string"
                             },
@@ -55940,8 +56934,14 @@
                                     "required": true
                                 }
                             },
+                            "onlyServices": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
                             "orderDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -55967,6 +56967,17 @@
                                 "x-weclapp": {
                                     "required": true
                                 }
+                            },
+                            "plannedProjectEndDate": {
+                                "format": "timestamp",
+                                "type": "integer"
+                            },
+                            "plannedProjectStartDate": {
+                                "format": "timestamp",
+                                "type": "integer"
+                            },
+                            "projectGoals": {
+                                "type": "string"
                             },
                             "projectMembers": {
                                 "items": {
@@ -55995,6 +57006,12 @@
                             },
                             "salesOrderPaymentType": {
                                 "$ref": "#/components/schemas/salesOrderPaymentType",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "servicesFinished": {
+                                "type": "boolean",
                                 "x-weclapp": {
                                     "required": true
                                 }
@@ -56066,7 +57083,7 @@
                                 }
                             },
                             "plannedShippingDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "shipped": {
@@ -56132,7 +57149,7 @@
                         }
                     },
                     "statusDate": {
-                        "format": "date-time",
+                        "format": "timestamp",
                         "type": "integer",
                         "x-weclapp": {
                             "required": true
@@ -56320,7 +57337,7 @@
                                 }
                             },
                             "cancellationDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "description": {
@@ -56342,7 +57359,7 @@
                                 "$ref": "#/components/schemas/sepaDirectDebitRuntime"
                             },
                             "signatureDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "type": {
@@ -56509,7 +57526,7 @@
                                 }
                             },
                             "assignedPickingUserUpdateDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "assignedPickingUserUsername": {
@@ -56539,7 +57556,7 @@
                                 "type": "string"
                             },
                             "deliveryDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "destinationWarehouseId": {
@@ -56665,7 +57682,7 @@
                                 "type": "string"
                             },
                             "shippingDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "shippingLabelsCount": {
@@ -56879,7 +57896,7 @@
                         }
                     },
                     "statusDate": {
-                        "format": "date-time",
+                        "format": "timestamp",
                         "type": "integer",
                         "x-weclapp": {
                             "required": true
@@ -57007,7 +58024,7 @@
                                 "type": "string"
                             },
                             "effectiveDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -57229,6 +58246,14 @@
                     "STANDARD"
                 ],
                 "type": "string"
+            },
+            "successResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
             },
             "supplier": {
                 "allOf": [
@@ -57457,11 +58482,11 @@
                                 }
                             },
                             "dateFrom": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "dateTo": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "description": {
@@ -57475,7 +58500,7 @@
                                 "type": "array"
                             },
                             "lastReminderDateForOverdue": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "orderItemId": {
@@ -57655,6 +58680,9 @@
                                     "required": true
                                 }
                             },
+                            "taxKey": {
+                                "$ref": "#/components/schemas/taxKey"
+                            },
                             "taxType": {
                                 "$ref": "#/components/schemas/taxType",
                                 "x-weclapp": {
@@ -57664,6 +58692,72 @@
                             "taxValue": {
                                 "format": "decimal",
                                 "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "taxDeterminationRule": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/abstractEntity"
+                    },
+                    {
+                        "properties": {
+                            "accountingCodeId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "customValue",
+                                    "service": "articleAccountingCode"
+                                }
+                            },
+                            "customerDebtorAccountingCodeId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "customValue",
+                                    "service": "personalAccountingCode"
+                                }
+                            },
+                            "dispatchCountryCode": {
+                                "type": "string"
+                            },
+                            "endDate": {
+                                "format": "timestamp",
+                                "type": "integer"
+                            },
+                            "partyType": {
+                                "$ref": "#/components/schemas/partyType"
+                            },
+                            "recipientCountryCode": {
+                                "type": "string"
+                            },
+                            "sales": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "startDate": {
+                                "format": "timestamp",
+                                "type": "integer"
+                            },
+                            "taxId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "tax",
+                                    "required": true,
+                                    "service": "tax"
+                                }
+                            },
+                            "taxRateType": {
+                                "$ref": "#/components/schemas/taxRateType"
+                            },
+                            "validVatId": {
+                                "type": "boolean",
                                 "x-weclapp": {
                                     "required": true
                                 }
@@ -57731,6 +58825,782 @@
                 },
                 "type": "object"
             },
+            "taxKey": {
+                "enum": [
+                    "AD_ADD_STANDARD",
+                    "AD_ADD_TAX_FREE_THIRD",
+                    "AD_ADD_ZERO",
+                    "AD_IN_STANDARD",
+                    "AD_IN_TAX_FREE_THIRD",
+                    "AD_IN_ZERO",
+                    "AL_ADD_REDUCED",
+                    "AL_ADD_STANDARD",
+                    "AL_ADD_TAX_FREE_THIRD",
+                    "AL_ADD_ZERO",
+                    "AL_IN_REDUCED",
+                    "AL_IN_STANDARD",
+                    "AL_IN_TAX_FREE_THIRD",
+                    "AL_IN_ZERO",
+                    "AR_ADD_REDUCED",
+                    "AR_ADD_STANDARD",
+                    "AR_ADD_TAX_FREE_THIRD",
+                    "AR_ADD_ZERO",
+                    "AR_IN_REDUCED",
+                    "AR_IN_STANDARD",
+                    "AR_IN_TAX_FREE_THIRD",
+                    "AR_IN_ZERO",
+                    "AT_ADD_REDUCED",
+                    "AT_ADD_REDUCED_SLIGHT",
+                    "AT_ADD_STANDARD",
+                    "AT_ADD_TAX_FREE_EU",
+                    "AT_ADD_TAX_FREE_EU_SERVICES",
+                    "AT_ADD_TAX_FREE_THIRD",
+                    "AT_ADD_ZERO",
+                    "AT_IN_REDUCED",
+                    "AT_IN_REDUCED_SLIGHT",
+                    "AT_IN_REV_REDUCED_EU",
+                    "AT_IN_REV_REDUCED_EU_SERVICE",
+                    "AT_IN_REV_REDUCED_SLIGHT_EU",
+                    "AT_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "AT_IN_REV_STANDARD_EU",
+                    "AT_IN_REV_STANDARD_EU_SERVICE",
+                    "AT_IN_STANDARD",
+                    "AT_IN_TAX_FREE_THIRD",
+                    "AT_IN_ZERO",
+                    "AU_ADD_STANDARD",
+                    "AU_ADD_TAX_FREE_THIRD",
+                    "AU_ADD_ZERO",
+                    "AU_IN_STANDARD",
+                    "AU_IN_TAX_FREE_THIRD",
+                    "AU_IN_ZERO",
+                    "BA_ADD_STANDARD",
+                    "BA_ADD_TAX_FREE_THIRD",
+                    "BA_ADD_ZERO",
+                    "BA_IN_STANDARD",
+                    "BA_IN_TAX_FREE_THIRD",
+                    "BA_IN_ZERO",
+                    "BE_ADD_REDUCED",
+                    "BE_ADD_REDUCED_SLIGHT",
+                    "BE_ADD_STANDARD",
+                    "BE_ADD_TAX_FREE_EU",
+                    "BE_ADD_TAX_FREE_EU_SERVICES",
+                    "BE_ADD_TAX_FREE_THIRD",
+                    "BE_ADD_ZERO",
+                    "BE_IN_REDUCED",
+                    "BE_IN_REDUCED_SLIGHT",
+                    "BE_IN_REV_REDUCED_EU",
+                    "BE_IN_REV_REDUCED_EU_SERVICE",
+                    "BE_IN_REV_REDUCED_SLIGHT_EU",
+                    "BE_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "BE_IN_REV_STANDARD_EU",
+                    "BE_IN_REV_STANDARD_EU_SERVICE",
+                    "BE_IN_STANDARD",
+                    "BE_IN_TAX_FREE_THIRD",
+                    "BE_IN_ZERO",
+                    "BG_ADD_REDUCED",
+                    "BG_ADD_STANDARD",
+                    "BG_ADD_TAX_FREE_EU",
+                    "BG_ADD_TAX_FREE_EU_SERVICES",
+                    "BG_ADD_TAX_FREE_THIRD",
+                    "BG_ADD_ZERO",
+                    "BG_IN_REDUCED",
+                    "BG_IN_REV_REDUCED_EU",
+                    "BG_IN_REV_REDUCED_EU_SERVICE",
+                    "BG_IN_REV_STANDARD_EU",
+                    "BG_IN_REV_STANDARD_EU_SERVICE",
+                    "BG_IN_STANDARD",
+                    "BG_IN_TAX_FREE_THIRD",
+                    "BG_IN_ZERO",
+                    "BO_ADD_REDUCED",
+                    "BO_ADD_STANDARD",
+                    "BO_ADD_TAX_FREE_THIRD",
+                    "BO_ADD_ZERO",
+                    "BO_IN_REDUCED",
+                    "BO_IN_STANDARD",
+                    "BO_IN_TAX_FREE_THIRD",
+                    "BO_IN_ZERO",
+                    "BR_ADD_STANDARD",
+                    "BR_ADD_TAX_FREE_THIRD",
+                    "BR_ADD_ZERO",
+                    "BR_IN_STANDARD",
+                    "BR_IN_TAX_FREE_THIRD",
+                    "BR_IN_ZERO",
+                    "CA_ADD_STANDARD",
+                    "CA_ADD_TAX_FREE_THIRD",
+                    "CA_ADD_ZERO",
+                    "CA_IN_STANDARD",
+                    "CA_IN_TAX_FREE_THIRD",
+                    "CA_IN_ZERO",
+                    "CH_ADD_REDUCED",
+                    "CH_ADD_REDUCED_SLIGHT",
+                    "CH_ADD_STANDARD",
+                    "CH_ADD_TAX_FREE_THIRD",
+                    "CH_ADD_ZERO",
+                    "CH_IN_REDUCED",
+                    "CH_IN_REDUCED_SLIGHT",
+                    "CH_IN_STANDARD",
+                    "CH_IN_TAX_FREE_THIRD",
+                    "CH_IN_ZERO",
+                    "CL_ADD_STANDARD",
+                    "CL_ADD_TAX_FREE_THIRD",
+                    "CL_ADD_ZERO",
+                    "CL_IN_STANDARD",
+                    "CL_IN_TAX_FREE_THIRD",
+                    "CL_IN_ZERO",
+                    "CN_ADD_REDUCED",
+                    "CN_ADD_REDUCED_SLIGHT",
+                    "CN_ADD_REDUCED_SUPER",
+                    "CN_ADD_STANDARD",
+                    "CN_ADD_TAX_FREE_THIRD",
+                    "CN_ADD_ZERO",
+                    "CN_IN_REDUCED",
+                    "CN_IN_REDUCED_SLIGHT",
+                    "CN_IN_REDUCED_SUPER",
+                    "CN_IN_STANDARD",
+                    "CN_IN_TAX_FREE_THIRD",
+                    "CN_IN_ZERO",
+                    "CY_ADD_REDUCED",
+                    "CY_ADD_REDUCED_SLIGHT",
+                    "CY_ADD_STANDARD",
+                    "CY_ADD_TAX_FREE_EU",
+                    "CY_ADD_TAX_FREE_EU_SERVICES",
+                    "CY_ADD_TAX_FREE_THIRD",
+                    "CY_ADD_ZERO",
+                    "CY_IN_REDUCED",
+                    "CY_IN_REDUCED_SLIGHT",
+                    "CY_IN_REV_REDUCED_EU",
+                    "CY_IN_REV_REDUCED_EU_SERVICE",
+                    "CY_IN_REV_REDUCED_SLIGHT_EU",
+                    "CY_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "CY_IN_REV_STANDARD_EU",
+                    "CY_IN_REV_STANDARD_EU_SERVICE",
+                    "CY_IN_STANDARD",
+                    "CY_IN_TAX_FREE_THIRD",
+                    "CY_IN_ZERO",
+                    "CZ_ADD_REDUCED",
+                    "CZ_ADD_REDUCED_SLIGHT",
+                    "CZ_ADD_STANDARD",
+                    "CZ_ADD_TAX_FREE_EU",
+                    "CZ_ADD_TAX_FREE_EU_SERVICES",
+                    "CZ_ADD_TAX_FREE_THIRD",
+                    "CZ_ADD_ZERO",
+                    "CZ_IN_REDUCED",
+                    "CZ_IN_REDUCED_SLIGHT",
+                    "CZ_IN_REV_REDUCED_EU",
+                    "CZ_IN_REV_REDUCED_EU_SERVICE",
+                    "CZ_IN_REV_REDUCED_SLIGHT_EU",
+                    "CZ_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "CZ_IN_REV_STANDARD_EU",
+                    "CZ_IN_REV_STANDARD_EU_SERVICE",
+                    "CZ_IN_STANDARD",
+                    "CZ_IN_TAX_FREE_THIRD",
+                    "CZ_IN_ZERO",
+                    "DE_ADD_REDUCED",
+                    "DE_ADD_REDUCED_2020",
+                    "DE_ADD_STANDARD",
+                    "DE_ADD_STANDARD_2020",
+                    "DE_ADD_TAX_FREE_EU",
+                    "DE_ADD_TAX_FREE_EU_SERVICES",
+                    "DE_ADD_TAX_FREE_THIRD",
+                    "DE_ADD_ZERO",
+                    "DE_IN_IMPORT",
+                    "DE_IN_REDUCED",
+                    "DE_IN_REDUCED_2020",
+                    "DE_IN_REV_REDUCED_EU",
+                    "DE_IN_REV_REDUCED_EU_2020",
+                    "DE_IN_REV_REDUCED_EU_SERVICE",
+                    "DE_IN_REV_REDUCED_EU_SERVICE_2020",
+                    "DE_IN_REV_STANDARD_EU",
+                    "DE_IN_REV_STANDARD_EU_2020",
+                    "DE_IN_REV_STANDARD_EU_SERVICE",
+                    "DE_IN_REV_STANDARD_EU_SERVICE_2020",
+                    "DE_IN_STANDARD",
+                    "DE_IN_STANDARD_2020",
+                    "DE_IN_TAX_FREE_THIRD",
+                    "DE_IN_ZERO",
+                    "DK_ADD_STANDARD",
+                    "DK_ADD_TAX_FREE_EU",
+                    "DK_ADD_TAX_FREE_EU_SERVICES",
+                    "DK_ADD_TAX_FREE_THIRD",
+                    "DK_ADD_ZERO",
+                    "DK_IN_REV_STANDARD_EU",
+                    "DK_IN_REV_STANDARD_EU_SERVICE",
+                    "DK_IN_STANDARD",
+                    "DK_IN_TAX_FREE_THIRD",
+                    "DK_IN_ZERO",
+                    "EE_ADD_REDUCED",
+                    "EE_ADD_STANDARD",
+                    "EE_ADD_TAX_FREE_EU",
+                    "EE_ADD_TAX_FREE_EU_SERVICES",
+                    "EE_ADD_TAX_FREE_THIRD",
+                    "EE_ADD_ZERO",
+                    "EE_IN_REDUCED",
+                    "EE_IN_REV_REDUCED_EU",
+                    "EE_IN_REV_REDUCED_EU_SERVICE",
+                    "EE_IN_REV_STANDARD_EU",
+                    "EE_IN_REV_STANDARD_EU_SERVICE",
+                    "EE_IN_STANDARD",
+                    "EE_IN_TAX_FREE_THIRD",
+                    "EE_IN_ZERO",
+                    "ES_ADD_REDUCED",
+                    "ES_ADD_REDUCED_SLIGHT",
+                    "ES_ADD_STANDARD",
+                    "ES_ADD_TAX_FREE_EU",
+                    "ES_ADD_TAX_FREE_EU_SERVICES",
+                    "ES_ADD_TAX_FREE_THIRD",
+                    "ES_ADD_ZERO",
+                    "ES_IN_REDUCED",
+                    "ES_IN_REDUCED_SLIGHT",
+                    "ES_IN_REV_REDUCED_EU",
+                    "ES_IN_REV_REDUCED_EU_SERVICE",
+                    "ES_IN_REV_REDUCED_SLIGHT_EU",
+                    "ES_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "ES_IN_REV_STANDARD_EU",
+                    "ES_IN_REV_STANDARD_EU_SERVICE",
+                    "ES_IN_STANDARD",
+                    "ES_IN_TAX_FREE_THIRD",
+                    "ES_IN_ZERO",
+                    "FI_ADD_REDUCED",
+                    "FI_ADD_REDUCED_SLIGHT",
+                    "FI_ADD_STANDARD",
+                    "FI_ADD_TAX_FREE_EU",
+                    "FI_ADD_TAX_FREE_EU_SERVICES",
+                    "FI_ADD_TAX_FREE_THIRD",
+                    "FI_ADD_ZERO",
+                    "FI_IN_REDUCED",
+                    "FI_IN_REDUCED_SLIGHT",
+                    "FI_IN_REV_REDUCED_EU",
+                    "FI_IN_REV_REDUCED_EU_SERVICE",
+                    "FI_IN_REV_REDUCED_SLIGHT_EU",
+                    "FI_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "FI_IN_REV_STANDARD_EU",
+                    "FI_IN_REV_STANDARD_EU_SERVICE",
+                    "FI_IN_STANDARD",
+                    "FI_IN_TAX_FREE_THIRD",
+                    "FI_IN_ZERO",
+                    "FO_ADD_STANDARD",
+                    "FO_ADD_TAX_FREE_THIRD",
+                    "FO_ADD_ZERO",
+                    "FO_IN_STANDARD",
+                    "FO_IN_TAX_FREE_THIRD",
+                    "FO_IN_ZERO",
+                    "FR_ADD_REDUCED",
+                    "FR_ADD_REDUCED_SLIGHT",
+                    "FR_ADD_REDUCED_SUPER",
+                    "FR_ADD_STANDARD",
+                    "FR_ADD_TAX_FREE_EU",
+                    "FR_ADD_TAX_FREE_EU_SERVICES",
+                    "FR_ADD_TAX_FREE_THIRD",
+                    "FR_ADD_ZERO",
+                    "FR_IN_REDUCED",
+                    "FR_IN_REDUCED_SLIGHT",
+                    "FR_IN_REDUCED_SUPER",
+                    "FR_IN_REV_REDUCED_EU",
+                    "FR_IN_REV_REDUCED_EU_SERVICE",
+                    "FR_IN_REV_REDUCED_SLIGHT_EU",
+                    "FR_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "FR_IN_REV_REDUCED_SUPER_EU",
+                    "FR_IN_REV_REDUCED_SUPER_EU_SERVICE",
+                    "FR_IN_REV_STANDARD_EU",
+                    "FR_IN_REV_STANDARD_EU_SERVICE",
+                    "FR_IN_STANDARD",
+                    "FR_IN_TAX_FREE_THIRD",
+                    "FR_IN_ZERO",
+                    "GB_ADD_REDUCED",
+                    "GB_ADD_STANDARD",
+                    "GB_ADD_TAX_FREE_THIRD",
+                    "GB_ADD_ZERO",
+                    "GB_IN_REDUCED",
+                    "GB_IN_STANDARD",
+                    "GB_IN_TAX_FREE_THIRD",
+                    "GB_IN_ZERO",
+                    "GR_ADD_REDUCED",
+                    "GR_ADD_REDUCED_SLIGHT",
+                    "GR_ADD_STANDARD",
+                    "GR_ADD_TAX_FREE_EU",
+                    "GR_ADD_TAX_FREE_EU_SERVICES",
+                    "GR_ADD_TAX_FREE_THIRD",
+                    "GR_ADD_ZERO",
+                    "GR_IN_REDUCED",
+                    "GR_IN_REDUCED_SLIGHT",
+                    "GR_IN_REV_REDUCED_EU",
+                    "GR_IN_REV_REDUCED_EU_SERVICE",
+                    "GR_IN_REV_REDUCED_SLIGHT_EU",
+                    "GR_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "GR_IN_REV_STANDARD_EU",
+                    "GR_IN_REV_STANDARD_EU_SERVICE",
+                    "GR_IN_STANDARD",
+                    "GR_IN_TAX_FREE_THIRD",
+                    "GR_IN_ZERO",
+                    "HR_ADD_REDUCED",
+                    "HR_ADD_REDUCED_SLIGHT",
+                    "HR_ADD_STANDARD",
+                    "HR_ADD_TAX_FREE_EU",
+                    "HR_ADD_TAX_FREE_EU_SERVICES",
+                    "HR_ADD_TAX_FREE_THIRD",
+                    "HR_ADD_ZERO",
+                    "HR_IN_REDUCED",
+                    "HR_IN_REDUCED_SLIGHT",
+                    "HR_IN_REV_REDUCED_EU",
+                    "HR_IN_REV_REDUCED_EU_SERVICE",
+                    "HR_IN_REV_REDUCED_SLIGHT_EU",
+                    "HR_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "HR_IN_REV_STANDARD_EU",
+                    "HR_IN_REV_STANDARD_EU_SERVICE",
+                    "HR_IN_STANDARD",
+                    "HR_IN_TAX_FREE_THIRD",
+                    "HR_IN_ZERO",
+                    "HU_ADD_REDUCED",
+                    "HU_ADD_REDUCED_SLIGHT",
+                    "HU_ADD_STANDARD",
+                    "HU_ADD_TAX_FREE_EU",
+                    "HU_ADD_TAX_FREE_EU_SERVICES",
+                    "HU_ADD_TAX_FREE_THIRD",
+                    "HU_ADD_ZERO",
+                    "HU_IN_REDUCED",
+                    "HU_IN_REDUCED_SLIGHT",
+                    "HU_IN_REV_REDUCED_EU",
+                    "HU_IN_REV_REDUCED_EU_SERVICE",
+                    "HU_IN_REV_REDUCED_SLIGHT_EU",
+                    "HU_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "HU_IN_REV_STANDARD_EU",
+                    "HU_IN_REV_STANDARD_EU_SERVICE",
+                    "HU_IN_STANDARD",
+                    "HU_IN_TAX_FREE_THIRD",
+                    "HU_IN_ZERO",
+                    "IE_ADD_REDUCED",
+                    "IE_ADD_REDUCED_SLIGHT",
+                    "IE_ADD_REDUCED_SUPER",
+                    "IE_ADD_STANDARD",
+                    "IE_ADD_TAX_FREE_EU",
+                    "IE_ADD_TAX_FREE_THIRD",
+                    "IE_ADD_ZERO",
+                    "IE_IN_REDUCED",
+                    "IE_IN_REDUCED_SLIGHT",
+                    "IE_IN_REDUCED_SUPER",
+                    "IE_IN_REV_REDUCED_EU",
+                    "IE_IN_REV_REDUCED_EU_SERVICE",
+                    "IE_IN_REV_REDUCED_SLIGHT_EU",
+                    "IE_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "IE_IN_REV_REDUCED_SUPER_EU",
+                    "IE_IN_REV_REDUCED_SUPER_EU_SERVICE",
+                    "IE_IN_REV_STANDARD_EU",
+                    "IE_IN_REV_STANDARD_EU_SERVICE",
+                    "IE_IN_STANDARD",
+                    "IE_IN_TAX_FREE_THIRD",
+                    "IE_IN_ZERO",
+                    "IL_ADD_REDUCED",
+                    "IL_ADD_STANDARD",
+                    "IL_ADD_TAX_FREE_THIRD",
+                    "IL_ADD_ZERO",
+                    "IL_IN_REDUCED",
+                    "IL_IN_STANDARD",
+                    "IL_IN_TAX_FREE_THIRD",
+                    "IL_IN_ZERO",
+                    "IN_ADD_REDUCED",
+                    "IN_ADD_REDUCED_SUPER",
+                    "IN_ADD_STANDARD",
+                    "IN_ADD_TAX_FREE_THIRD",
+                    "IN_ADD_ZERO",
+                    "IN_IN_REDUCED",
+                    "IN_IN_REDUCED_SUPER",
+                    "IN_IN_STANDARD",
+                    "IN_IN_TAX_FREE_THIRD",
+                    "IN_IN_ZERO",
+                    "IS_ADD_REDUCED",
+                    "IS_ADD_STANDARD",
+                    "IS_ADD_TAX_FREE_THIRD",
+                    "IS_ADD_ZERO",
+                    "IS_IN_REDUCED",
+                    "IS_IN_STANDARD",
+                    "IS_IN_TAX_FREE_THIRD",
+                    "IS_IN_ZERO",
+                    "IT_ADD_REDUCED",
+                    "IT_ADD_REDUCED_SLIGHT",
+                    "IT_ADD_REDUCED_SUPER",
+                    "IT_ADD_STANDARD",
+                    "IT_ADD_TAX_FREE_EU",
+                    "IT_ADD_TAX_FREE_EU_SERVICES",
+                    "IT_ADD_TAX_FREE_LETTER_OF_INTENT",
+                    "IT_ADD_TAX_FREE_THIRD",
+                    "IT_ADD_TAX_FREE_THIRD_SERVICES",
+                    "IT_ADD_ZERO",
+                    "IT_IN_REDUCED",
+                    "IT_IN_REDUCED_SLIGHT",
+                    "IT_IN_REDUCED_SUPER",
+                    "IT_IN_REV_REDUCED_EU",
+                    "IT_IN_REV_REDUCED_EU_SERVICE",
+                    "IT_IN_REV_REDUCED_SLIGHT_EU",
+                    "IT_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "IT_IN_REV_REDUCED_SUPER_EU",
+                    "IT_IN_REV_REDUCED_SUPER_EU_SERVICE",
+                    "IT_IN_REV_STANDARD_EU",
+                    "IT_IN_REV_STANDARD_EU_SERVICE",
+                    "IT_IN_STANDARD",
+                    "IT_IN_TAX_FREE_LETTER_OF_INTENT",
+                    "IT_IN_TAX_FREE_THIRD",
+                    "IT_IN_ZERO",
+                    "JP_ADD_STANDARD",
+                    "JP_ADD_TAX_FREE_THIRD",
+                    "JP_ADD_ZERO",
+                    "JP_IN_STANDARD",
+                    "JP_IN_TAX_FREE_THIRD",
+                    "JP_IN_ZERO",
+                    "LI_ADD_REDUCED",
+                    "LI_ADD_REDUCED_SUPER",
+                    "LI_ADD_STANDARD",
+                    "LI_ADD_TAX_FREE_THIRD",
+                    "LI_ADD_ZERO",
+                    "LI_IN_REDUCED",
+                    "LI_IN_REDUCED_SUPER",
+                    "LI_IN_STANDARD",
+                    "LI_IN_TAX_FREE_THIRD",
+                    "LI_IN_ZERO",
+                    "LK_ADD_STANDARD",
+                    "LK_ADD_TAX_FREE_THIRD",
+                    "LK_ADD_ZERO",
+                    "LK_IN_STANDARD",
+                    "LK_IN_TAX_FREE_THIRD",
+                    "LK_IN_ZERO",
+                    "LT_ADD_REDUCED",
+                    "LT_ADD_REDUCED_SLIGHT",
+                    "LT_ADD_STANDARD",
+                    "LT_ADD_TAX_FREE_EU",
+                    "LT_ADD_TAX_FREE_EU_SERVICES",
+                    "LT_ADD_TAX_FREE_THIRD",
+                    "LT_ADD_ZERO",
+                    "LT_IN_REDUCED",
+                    "LT_IN_REDUCED_SLIGHT",
+                    "LT_IN_REV_REDUCED_EU",
+                    "LT_IN_REV_REDUCED_EU_SERVICE",
+                    "LT_IN_REV_REDUCED_SLIGHT_EU",
+                    "LT_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "LT_IN_REV_STANDARD_EU",
+                    "LT_IN_REV_STANDARD_EU_SERVICE",
+                    "LT_IN_STANDARD",
+                    "LT_IN_TAX_FREE_THIRD",
+                    "LT_IN_ZERO",
+                    "LU_ADD_REDUCED",
+                    "LU_ADD_REDUCED_2023",
+                    "LU_ADD_REDUCED_SLIGHT",
+                    "LU_ADD_REDUCED_SLIGHT_2023",
+                    "LU_ADD_REDUCED_SUPER",
+                    "LU_ADD_STANDARD",
+                    "LU_ADD_STANDARD_2023",
+                    "LU_ADD_TAX_FREE_EU",
+                    "LU_ADD_TAX_FREE_EU_SERVICES",
+                    "LU_ADD_TAX_FREE_THIRD",
+                    "LU_ADD_ZERO",
+                    "LU_IN_REDUCED",
+                    "LU_IN_REDUCED_2023",
+                    "LU_IN_REDUCED_SLIGHT",
+                    "LU_IN_REDUCED_SLIGHT_2023",
+                    "LU_IN_REDUCED_SUPER",
+                    "LU_IN_REV_REDUCED_EU",
+                    "LU_IN_REV_REDUCED_EU_2023",
+                    "LU_IN_REV_REDUCED_EU_SERVICE",
+                    "LU_IN_REV_REDUCED_EU_SERVICE_2023",
+                    "LU_IN_REV_REDUCED_SLIGHT_EU",
+                    "LU_IN_REV_REDUCED_SLIGHT_EU_2023",
+                    "LU_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "LU_IN_REV_REDUCED_SLIGHT_EU_SERVICE_2023",
+                    "LU_IN_REV_REDUCED_SUPER_EU",
+                    "LU_IN_REV_REDUCED_SUPER_EU_SERVICE",
+                    "LU_IN_REV_STANDARD_EU",
+                    "LU_IN_REV_STANDARD_EU_2023",
+                    "LU_IN_REV_STANDARD_EU_SERVICE",
+                    "LU_IN_REV_STANDARD_EU_SERVICE_2023",
+                    "LU_IN_STANDARD",
+                    "LU_IN_STANDARD_2023",
+                    "LU_IN_TAX_FREE_THIRD",
+                    "LU_IN_ZERO",
+                    "LV_ADD_REDUCED",
+                    "LV_ADD_REDUCED_SLIGHT",
+                    "LV_ADD_STANDARD",
+                    "LV_ADD_TAX_FREE_EU",
+                    "LV_ADD_TAX_FREE_EU_SERVICES",
+                    "LV_ADD_TAX_FREE_THIRD",
+                    "LV_ADD_ZERO",
+                    "LV_IN_REDUCED",
+                    "LV_IN_REDUCED_SLIGHT",
+                    "LV_IN_REV_REDUCED_EU",
+                    "LV_IN_REV_REDUCED_EU_SERVICE",
+                    "LV_IN_REV_REDUCED_SLIGHT_EU",
+                    "LV_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "LV_IN_REV_STANDARD_EU",
+                    "LV_IN_REV_STANDARD_EU_SERVICE",
+                    "LV_IN_STANDARD",
+                    "LV_IN_TAX_FREE_THIRD",
+                    "LV_IN_ZERO",
+                    "MA_ADD_STANDARD",
+                    "MA_ADD_TAX_FREE_THIRD",
+                    "MA_ADD_ZERO",
+                    "MA_IN_STANDARD",
+                    "MA_IN_TAX_FREE_THIRD",
+                    "MA_IN_ZERO",
+                    "ME_ADD_REDUCED",
+                    "ME_ADD_STANDARD",
+                    "ME_ADD_TAX_FREE_THIRD",
+                    "ME_ADD_ZERO",
+                    "ME_IN_REDUCED",
+                    "ME_IN_STANDARD",
+                    "ME_IN_TAX_FREE_THIRD",
+                    "ME_IN_ZERO",
+                    "MK_ADD_REDUCED",
+                    "MK_ADD_STANDARD",
+                    "MK_ADD_TAX_FREE_THIRD",
+                    "MK_ADD_ZERO",
+                    "MK_IN_REDUCED",
+                    "MK_IN_STANDARD",
+                    "MK_IN_TAX_FREE_THIRD",
+                    "MK_IN_ZERO",
+                    "MT_ADD_REDUCED",
+                    "MT_ADD_REDUCED_SLIGHT",
+                    "MT_ADD_STANDARD",
+                    "MT_ADD_TAX_FREE_EU",
+                    "MT_ADD_TAX_FREE_EU_SERVICES",
+                    "MT_ADD_TAX_FREE_THIRD",
+                    "MT_ADD_ZERO",
+                    "MT_IN_REDUCED",
+                    "MT_IN_REDUCED_SLIGHT",
+                    "MT_IN_REV_REDUCED_EU",
+                    "MT_IN_REV_REDUCED_EU_SERVICE",
+                    "MT_IN_REV_REDUCED_SLIGHT_EU",
+                    "MT_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "MT_IN_REV_STANDARD_EU",
+                    "MT_IN_REV_STANDARD_EU_SERVICE",
+                    "MT_IN_STANDARD",
+                    "MT_IN_TAX_FREE_THIRD",
+                    "MT_IN_ZERO",
+                    "MX_ADD_STANDARD",
+                    "MX_ADD_TAX_FREE_THIRD",
+                    "MX_ADD_ZERO",
+                    "MX_IN_STANDARD",
+                    "MX_IN_TAX_FREE_THIRD",
+                    "MX_IN_ZERO",
+                    "NL_ADD_REDUCED",
+                    "NL_ADD_STANDARD",
+                    "NL_ADD_TAX_FREE_EU",
+                    "NL_ADD_TAX_FREE_EU_SERVICES",
+                    "NL_ADD_TAX_FREE_THIRD",
+                    "NL_ADD_ZERO",
+                    "NL_IN_REDUCED",
+                    "NL_IN_REV_REDUCED_EU",
+                    "NL_IN_REV_REDUCED_EU_SERVICE",
+                    "NL_IN_REV_STANDARD_EU",
+                    "NL_IN_REV_STANDARD_EU_SERVICE",
+                    "NL_IN_STANDARD",
+                    "NL_IN_TAX_FREE_THIRD",
+                    "NL_IN_ZERO",
+                    "NO_ADD_REDUCED",
+                    "NO_ADD_REDUCED_SUPER",
+                    "NO_ADD_STANDARD",
+                    "NO_ADD_TAX_FREE_THIRD",
+                    "NO_ADD_ZERO",
+                    "NO_IN_REDUCED",
+                    "NO_IN_REDUCED_SUPER",
+                    "NO_IN_STANDARD",
+                    "NO_IN_TAX_FREE_THIRD",
+                    "NO_IN_ZERO",
+                    "NZ_ADD_STANDARD",
+                    "NZ_ADD_TAX_FREE_THIRD",
+                    "NZ_ADD_ZERO",
+                    "NZ_IN_STANDARD",
+                    "NZ_IN_TAX_FREE_THIRD",
+                    "NZ_IN_ZERO",
+                    "PL_ADD_REDUCED",
+                    "PL_ADD_REDUCED_SUPER",
+                    "PL_ADD_STANDARD",
+                    "PL_ADD_TAX_FREE_EU",
+                    "PL_ADD_TAX_FREE_EU_SERVICES",
+                    "PL_ADD_TAX_FREE_THIRD",
+                    "PL_ADD_ZERO",
+                    "PL_IN_REDUCED",
+                    "PL_IN_REDUCED_SUPER",
+                    "PL_IN_REV_REDUCED_EU",
+                    "PL_IN_REV_REDUCED_EU_SERVICE",
+                    "PL_IN_REV_REDUCED_SUPER_EU",
+                    "PL_IN_REV_REDUCED_SUPER_EU_SERVICE",
+                    "PL_IN_REV_STANDARD_EU",
+                    "PL_IN_REV_STANDARD_EU_SERVICE",
+                    "PL_IN_STANDARD",
+                    "PL_IN_TAX_FREE_THIRD",
+                    "PL_IN_ZERO",
+                    "PT_ADD_REDUCED",
+                    "PT_ADD_REDUCED_SLIGHT",
+                    "PT_ADD_STANDARD",
+                    "PT_ADD_TAX_FREE_EU",
+                    "PT_ADD_TAX_FREE_EU_SERVICES",
+                    "PT_ADD_TAX_FREE_THIRD",
+                    "PT_ADD_ZERO",
+                    "PT_IN_REDUCED",
+                    "PT_IN_REDUCED_SLIGHT",
+                    "PT_IN_REV_REDUCED_EU",
+                    "PT_IN_REV_REDUCED_EU_SERVICE",
+                    "PT_IN_REV_REDUCED_SLIGHT_EU",
+                    "PT_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "PT_IN_REV_STANDARD_EU",
+                    "PT_IN_REV_STANDARD_EU_SERVICE",
+                    "PT_IN_STANDARD",
+                    "PT_IN_TAX_FREE_THIRD",
+                    "PT_IN_ZERO",
+                    "RO_ADD_REDUCED",
+                    "RO_ADD_REDUCED_SLIGHT",
+                    "RO_ADD_STANDARD",
+                    "RO_ADD_TAX_FREE_EU",
+                    "RO_ADD_TAX_FREE_EU_SERVICES",
+                    "RO_ADD_TAX_FREE_THIRD",
+                    "RO_ADD_ZERO",
+                    "RO_IN_REDUCED",
+                    "RO_IN_REDUCED_SLIGHT",
+                    "RO_IN_REV_REDUCED_EU",
+                    "RO_IN_REV_REDUCED_EU_SERVICE",
+                    "RO_IN_REV_REDUCED_SLIGHT_EU",
+                    "RO_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "RO_IN_REV_STANDARD_EU",
+                    "RO_IN_REV_STANDARD_EU_SERVICE",
+                    "RO_IN_STANDARD",
+                    "RO_IN_TAX_FREE_THIRD",
+                    "RO_IN_ZERO",
+                    "RS_ADD_REDUCED",
+                    "RS_ADD_STANDARD",
+                    "RS_ADD_TAX_FREE_THIRD",
+                    "RS_ADD_ZERO",
+                    "RS_IN_REDUCED",
+                    "RS_IN_STANDARD",
+                    "RS_IN_TAX_FREE_THIRD",
+                    "RS_IN_ZERO",
+                    "RU_ADD_REDUCED",
+                    "RU_ADD_STANDARD",
+                    "RU_ADD_TAX_FREE_THIRD",
+                    "RU_ADD_ZERO",
+                    "RU_IN_REDUCED",
+                    "RU_IN_STANDARD",
+                    "RU_IN_TAX_FREE_THIRD",
+                    "RU_IN_ZERO",
+                    "SE_ADD_REDUCED",
+                    "SE_ADD_REDUCED_SLIGHT",
+                    "SE_ADD_STANDARD",
+                    "SE_ADD_TAX_FREE_EU",
+                    "SE_ADD_TAX_FREE_EU_SERVICES",
+                    "SE_ADD_TAX_FREE_THIRD",
+                    "SE_ADD_ZERO",
+                    "SE_IN_REDUCED",
+                    "SE_IN_REDUCED_SLIGHT",
+                    "SE_IN_REV_REDUCED_EU",
+                    "SE_IN_REV_REDUCED_EU_SERVICE",
+                    "SE_IN_REV_REDUCED_SLIGHT_EU",
+                    "SE_IN_REV_REDUCED_SLIGHT_EU_SERVICE",
+                    "SE_IN_REV_STANDARD_EU",
+                    "SE_IN_REV_STANDARD_EU_SERVICE",
+                    "SE_IN_STANDARD",
+                    "SE_IN_TAX_FREE_THIRD",
+                    "SE_IN_ZERO",
+                    "SG_ADD_STANDARD",
+                    "SG_ADD_TAX_FREE_THIRD",
+                    "SG_ADD_ZERO",
+                    "SG_IN_STANDARD",
+                    "SG_IN_TAX_FREE_THIRD",
+                    "SG_IN_ZERO",
+                    "SI_ADD_REDUCED",
+                    "SI_ADD_STANDARD",
+                    "SI_ADD_TAX_FREE_EU",
+                    "SI_ADD_TAX_FREE_EU_SERVICES",
+                    "SI_ADD_TAX_FREE_THIRD",
+                    "SI_ADD_ZERO",
+                    "SI_IN_REDUCED",
+                    "SI_IN_REV_REDUCED_EU",
+                    "SI_IN_REV_REDUCED_EU_SERVICE",
+                    "SI_IN_REV_STANDARD_EU",
+                    "SI_IN_REV_STANDARD_EU_SERVICE",
+                    "SI_IN_STANDARD",
+                    "SI_IN_TAX_FREE_THIRD",
+                    "SI_IN_ZERO",
+                    "SK_ADD_REDUCED",
+                    "SK_ADD_STANDARD",
+                    "SK_ADD_TAX_FREE_EU",
+                    "SK_ADD_TAX_FREE_EU_SERVICES",
+                    "SK_ADD_TAX_FREE_THIRD",
+                    "SK_ADD_ZERO",
+                    "SK_IN_REDUCED",
+                    "SK_IN_REV_REDUCED_EU",
+                    "SK_IN_REV_REDUCED_EU_SERVICE",
+                    "SK_IN_REV_STANDARD_EU",
+                    "SK_IN_REV_STANDARD_EU_SERVICE",
+                    "SK_IN_STANDARD",
+                    "SK_IN_TAX_FREE_THIRD",
+                    "SK_IN_ZERO",
+                    "TH_ADD_STANDARD",
+                    "TH_ADD_TAX_FREE_THIRD",
+                    "TH_ADD_ZERO",
+                    "TH_IN_STANDARD",
+                    "TH_IN_TAX_FREE_THIRD",
+                    "TH_IN_ZERO",
+                    "TR_ADD_REDUCED",
+                    "TR_ADD_REDUCED_SUPER",
+                    "TR_ADD_STANDARD",
+                    "TR_ADD_TAX_FREE_THIRD",
+                    "TR_ADD_ZERO",
+                    "TR_IN_REDUCED",
+                    "TR_IN_REDUCED_SUPER",
+                    "TR_IN_STANDARD",
+                    "TR_IN_TAX_FREE_THIRD",
+                    "TR_IN_ZERO",
+                    "TW_ADD_STANDARD",
+                    "TW_ADD_TAX_FREE_THIRD",
+                    "TW_ADD_ZERO",
+                    "TW_IN_STANDARD",
+                    "TW_IN_TAX_FREE_THIRD",
+                    "TW_IN_ZERO",
+                    "UA_ADD_REDUCED",
+                    "UA_ADD_STANDARD",
+                    "UA_ADD_TAX_FREE_THIRD",
+                    "UA_ADD_ZERO",
+                    "UA_IN_REDUCED",
+                    "UA_IN_STANDARD",
+                    "UA_IN_TAX_FREE_THIRD",
+                    "UA_IN_ZERO",
+                    "VE_ADD_STANDARD",
+                    "VE_ADD_TAX_FREE_THIRD",
+                    "VE_ADD_ZERO",
+                    "VE_IN_STANDARD",
+                    "VE_IN_TAX_FREE_THIRD",
+                    "VE_IN_ZERO",
+                    "XI_ADD_REDUCED",
+                    "XI_ADD_STANDARD",
+                    "XI_ADD_TAX_FREE_EU",
+                    "XI_ADD_TAX_FREE_EU_SERVICES",
+                    "XI_ADD_TAX_FREE_THIRD",
+                    "XI_ADD_ZERO",
+                    "XI_IN_REDUCED",
+                    "XI_IN_REV_REDUCED_EU",
+                    "XI_IN_REV_REDUCED_EU_SERVICE",
+                    "XI_IN_REV_STANDARD_EU",
+                    "XI_IN_REV_STANDARD_EU_SERVICE",
+                    "XI_IN_STANDARD",
+                    "XI_IN_TAX_FREE_THIRD",
+                    "XI_IN_ZERO",
+                    "XK_ADD_REDUCED",
+                    "XK_ADD_STANDARD",
+                    "XK_ADD_TAX_FREE_THIRD",
+                    "XK_ADD_ZERO",
+                    "XK_IN_REDUCED",
+                    "XK_IN_STANDARD",
+                    "XK_IN_TAX_FREE_THIRD",
+                    "XK_IN_ZERO",
+                    "ZA_ADD_REDUCED",
+                    "ZA_ADD_REDUCED_SUPER",
+                    "ZA_ADD_STANDARD",
+                    "ZA_ADD_TAX_FREE_THIRD",
+                    "ZA_ADD_ZERO",
+                    "ZA_IN_REDUCED",
+                    "ZA_IN_REDUCED_SUPER",
+                    "ZA_IN_STANDARD",
+                    "ZA_IN_TAX_FREE_THIRD",
+                    "ZA_IN_ZERO"
+                ],
+                "type": "string"
+            },
             "taxRateType": {
                 "enum": [
                     "REDUCED",
@@ -57780,11 +59650,11 @@
                                 "type": "string"
                             },
                             "validFrom": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "validTo": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             }
                         },
@@ -57901,7 +59771,7 @@
                                 "type": "array"
                             },
                             "finishedDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "firstName": {
@@ -57943,7 +59813,7 @@
                                 }
                             },
                             "publicPageExpirationDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "publicPageUuid": {
@@ -57963,7 +59833,7 @@
                                 "type": "string"
                             },
                             "solutionDueDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "subject": {
@@ -58021,7 +59891,7 @@
                                 "type": "string"
                             },
                             "ticketRatingDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "ticketServiceLevelAgreementId": {
@@ -58266,11 +60136,7 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array",
-                                "x-weclapp": {
-                                    "entity": "party",
-                                    "service": "party"
-                                }
+                                "type": "array"
                             },
                             "positionNumber": {
                                 "format": "int32",
@@ -58688,7 +60554,7 @@
                                 }
                             },
                             "startDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -58801,7 +60667,7 @@
                     {
                         "properties": {
                             "birthDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "email": {
@@ -58834,11 +60700,50 @@
                                     "required": true
                                 }
                             },
+                            "userRoles": {
+                                "items": {
+                                    "$ref": "#/components/schemas/onlyId"
+                                },
+                                "type": "array"
+                            },
                             "username": {
                                 "type": "string",
                                 "x-weclapp": {
                                     "required": true
                                 }
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "userRole": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/abstractEntity"
+                    },
+                    {
+                        "properties": {
+                            "includedUserRoles": {
+                                "items": {
+                                    "$ref": "#/components/schemas/onlyId"
+                                },
+                                "type": "array",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "name": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "permissions": {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
                             }
                         },
                         "type": "object"
@@ -59293,7 +61198,7 @@
                                 }
                             },
                             "postingDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer",
                                 "x-weclapp": {
                                     "required": true
@@ -59407,7 +61312,7 @@
                                 }
                             },
                             "deactivatedDate": {
-                                "format": "date-time",
+                                "format": "timestamp",
                                 "type": "integer"
                             },
                             "entityName": {
@@ -59479,11 +61384,11 @@
                         "type": "string"
                     },
                     "bookedDate": {
-                        "format": "date-time",
+                        "format": "timestamp",
                         "type": "integer"
                     },
                     "confirmedDate": {
-                        "format": "date-time",
+                        "format": "timestamp",
                         "type": "integer"
                     },
                     "confirmedQuantity": {

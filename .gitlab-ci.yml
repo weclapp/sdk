@@ -51,9 +51,15 @@ generate:
       - sdk
   variables:
     NODE_ENV: development
+  parallel:
+    matrix:
+      - TARGET: node
+      - TARGET: node.rx
+      - TARGET: browser
+      - TARGET: browser.rx
   script:
     - chmod +x ./bin/cli.js
-    - ./bin/cli.js tests/openapi.json
+    - ./bin/cli.js tests/openapi.json --target $TARGET
 
 publish:
   tags:
