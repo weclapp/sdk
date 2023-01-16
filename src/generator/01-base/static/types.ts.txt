@@ -120,6 +120,7 @@ export type WEntityPropertyMeta = (
     { type: 'array'; format: 'reference'; entity: WEntity; service?: WService; } |
     { type: 'array'; format: 'reference'; enum: WEnum; } |
     { type: 'array'; format: 'string'; } |
+    { type: 'number'; format: 'double'; } |
     { type: 'reference'; entity: WEntity; } |
     { type: 'reference'; enum: WEnum; } |
     { type: 'boolean'; } |
