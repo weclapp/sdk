@@ -1,11 +1,12 @@
 import {Target} from '@enums/Target';
-import {rm} from 'fs-extra';
+import {currentDirname} from '@utils/currentDirname';
 import {resolve} from 'path';
+import {rmdir} from 'fs/promises';
 import {rollup, RollupOptions} from 'rollup';
 import terser from '@rollup/plugin-terser';
 import ts from 'rollup-plugin-ts';
 
-const tsconfig = resolve(__dirname, '../tsconfig.lib.json');
+const tsconfig = resolve(currentDirname(), './tsconfig.lib.json');
 const resolveGlobals = (...globals: string[]) => Object.fromEntries(globals.map(v => [v, '*']));
 
 const generateOutput = (config: Record<string, unknown>) => ({
@@ -32,7 +33,7 @@ export const bundle = async (workingDirectory: string, target: Target) => {
     ];
 
     // Remove build dir
-    await rm(dist(), {recursive: true, force: true});
+    await rmdir(dist()).catch(() => void 0);
 
     const bundles: Record<Target, () => RollupOptions> = {
         [Target.BROWSER_PROMISES]: () => ({

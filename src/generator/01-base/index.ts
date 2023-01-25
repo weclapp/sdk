@@ -1,15 +1,12 @@
-import {isNodeTarget, isRXTarget, resolveBinaryType, Target} from '@enums/Target';
+import {isRXTarget, resolveBinaryType, Target} from '@enums/Target';
 import {generateImport} from '@ts/generateImport';
 import {generateStatements} from '@ts/generateStatements';
 import root from './static/root.ts.txt';
 import types from './static/types.ts.txt';
 
+
 const resolveImports = (target: Target): string => {
     const imports: string[] = [];
-
-    if (isNodeTarget(target)) {
-        imports.push(generateImport({src: 'node-fetch', imports: ['Request', 'Response', 'BodyInit'], default: 'fetch'}));
-    }
 
     if (isRXTarget(target)) {
         imports.push(generateImport({src: 'rxjs', imports: ['defer', 'Observable']}));
