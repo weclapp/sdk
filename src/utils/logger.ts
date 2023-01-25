@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import {pluralize} from '@utils/pluralize';
-import chalk, {Chalk} from 'chalk';
+import chalk, {ChalkInstance} from 'chalk';
 
 export const logger = new class {
     public active = true;
@@ -62,7 +62,7 @@ export const logger = new class {
     }
 
     public printSummary(): void {
-        const format = (v: number, name: string, fail: Chalk, ok: Chalk): string => {
+        const format = (v: number, name: string, fail: ChalkInstance, ok: ChalkInstance): string => {
             const color = v ? fail : ok;
             return v === 0 ? `${color('zero')} ${pluralize(name)}` :
                 v === 1 ? `${color('one')} ${name}` : `${color(v)} ${pluralize(name)}`;

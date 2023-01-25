@@ -1,14 +1,15 @@
 import {bundle} from '@/src/bundle';
 import {generate} from '@generator/generate';
 import {logger} from '@logger';
+import {currentDirname} from '@utils/currentDirname';
 import {hash} from '@utils/hash';
 import {writeSourceFile} from '@utils/writeSourceFile';
-import {copy, mkdirp, rm, stat, writeFile} from 'fs-extra';
+import {cp, mkdir, rm, stat, writeFile} from 'fs/promises';
 import {dirname, resolve} from 'path';
 import pkg from '../package.json';
 import {cli} from './cli';
 
-const workingDirectory = resolve(__dirname, '../sdk');
+const workingDirectory = resolve(currentDirname(), './sdk');
 const folders = ['docs', 'main', 'node', 'raw', 'rx', 'utils'];
 
 void (async () => {
@@ -17,12 +18,12 @@ void (async () => {
 
     // Resolve cache dir and key
     const cacheKey = hash([pkg.version, JSON.stringify(doc), target]).slice(-8);
-    const cacheDir = resolve(__dirname, '../', '.tmp', cacheKey);
+    const cacheDir = resolve(currentDirname(), '.tmp', cacheKey);
 
     const dist = (...paths: string[]) => resolve(workingDirectory, ...paths);
     const tmp = async (...paths: string[]): Promise<string> => {
         const fullPath = resolve(cacheDir, ...paths);
-        await mkdirp(dirname(fullPath)).catch(() => null);
+        await mkdir(dirname(fullPath), {recursive: true}).catch(() => null);
         return fullPath;
     };
 
@@ -54,7 +55,7 @@ void (async () => {
         await Promise.all(folders.map(async dir => rm(dist(dir), {recursive: true}).catch(() => 0)));
     }
 
-    await copy(cacheDir, workingDirectory);
+    await cp(cacheDir, workingDirectory, {recursive: true});
 
     logger.successLn(`Cleanup done, Bye.`);
     logger.printSummary();

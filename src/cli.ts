@@ -1,8 +1,7 @@
 import {Target} from '@enums/Target';
 import {logger} from '@logger';
 import {config} from 'dotenv';
-import {readFile, stat} from 'fs-extra';
-import fetch from 'node-fetch';
+import {readFile, stat} from 'fs/promises';
 import {OpenAPIV3} from 'openapi-types';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
@@ -64,8 +63,8 @@ export const cli = async (): Promise<CLIResult> => {
     if (argv.fromEnv) {
         config();
     }
-    const {WECLAPP_API_KEY, WECLAPP_BACKEND_URL} = process.env;
 
+    const {WECLAPP_API_KEY, WECLAPP_BACKEND_URL} = process.env;
     const {
         includeHidden,
         target = Target.BROWSER_PROMISES,

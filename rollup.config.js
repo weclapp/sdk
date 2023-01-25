@@ -1,7 +1,7 @@
 import ts from 'rollup-plugin-ts';
 import json from '@rollup/plugin-json';
 import {string} from 'rollup-plugin-string';
-import pkg from './package.json';
+import pkg from './package.json' assert {type: 'json'};
 
 export default [
     {
@@ -10,11 +10,11 @@ export default [
         external: [
             ...Object.keys(pkg.dependencies),
             ...Object.keys(pkg.peerDependencies),
-            'path', 'crypto', 'yargs/helpers'
+            'path', 'crypto', 'yargs/helpers', 'fs/promises', 'url'
         ],
         output: {
             file: 'lib/cli.js',
-            format: 'cjs'
+            format: 'es'
         }
     }
 ];
