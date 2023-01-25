@@ -43,11 +43,12 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@typescript-eslint/parser": "^5.46.1",
-    "rollup-plugin-string": "^3.0.0",
-    "eslint": "^8.29.0"
+    "eslint": "^8.29.0",
+    "rollup-plugin-string": "^3.0.0"
   },
   "dependencies": {
     "@rollup/plugin-json": "^5.0.2",
+    "@rollup/plugin-terser": "^0.4.0",
     "@types/fs-extra": "^9.0.13",
     "@types/node": "^18.11.15",
     "@types/node-fetch": "^2.6.2",
@@ -60,7 +61,6 @@
     "indent-string": "^4.0.0",
     "openapi-types": "^12.1.0",
     "rollup": "^2.79.0",
-    "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-ts": "^3.0.2",
     "typescript": "^4.9.4",
     "yargs": "^17.6.2"

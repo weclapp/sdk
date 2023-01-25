@@ -2,7 +2,7 @@ import {Target} from '@enums/Target';
 import {rm} from 'fs-extra';
 import {resolve} from 'path';
 import {rollup, RollupOptions} from 'rollup';
-import {terser} from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import ts from 'rollup-plugin-ts';
 
 const tsconfig = resolve(__dirname, '../tsconfig.lib.json');

@@ -1,4 +1,4 @@
-export type RequestPayloadMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE'  | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'PATCH';
+export type RequestPayloadMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'PATCH';
 
 export interface RequestPayload {
     method?: RequestPayloadMethod;
@@ -79,7 +79,7 @@ export const raw = async (
         headers: {
             'Accept': 'application/json',
             ...(cfg.key && {'AuthenticationToken': cfg.key}),
-            ...(!isBinaryData && {'Content-Type': 'application/json'} )
+            ...(!isBinaryData && {'Content-Type': 'application/json'})
         }
     });
 
@@ -89,12 +89,12 @@ export const raw = async (
     }
 
     res = await interceptResponse(res) ?? res;
-    const data = !payload.forceBlob && res.headers?.get('content-type')?.includes('application/json') ?
+    const data = (!payload.forceBlob || !res.ok) && res.headers?.get('content-type')?.includes('application/json') ?
         await res.json() : await res.blob();
 
     // Check if response was successful
     if (!res.ok) {
-        throw data;
+        return Promise.reject(data);
     }
 
     return payload.unwrap ? data.result : data;
