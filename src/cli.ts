@@ -1,4 +1,5 @@
 import {Target} from '@enums/Target';
+import {GeneratorOptions} from '@generator/generate';
 import {logger} from '@logger';
 import {config} from 'dotenv';
 import {readFile, stat} from 'fs/promises';
@@ -11,6 +12,7 @@ interface Args {
     key?: string;
     cache?: boolean;
     includeHidden?: boolean;
+    generateUnique?: boolean;
     fromEnv?: boolean;
     target?: Target;
     _: (string | number)[];
@@ -18,8 +20,8 @@ interface Args {
 
 interface CLIResult {
     cache: boolean;
-    target: Target;
     content: OpenAPIV3.Document;
+    options: GeneratorOptions;
 }
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -48,6 +50,10 @@ export const cli = async (): Promise<CLIResult> => {
             describe: 'Include internal endpoints',
             type: 'boolean'
         })
+        .option('generate-unique', {
+            describe: 'Generate .unique functions',
+            type: 'boolean'
+        })
         .option('e', {
             alias: 'from-env',
             describe: 'Use env variables WECLAPP_BACKEND_URL and WECLAPP_API_KEY as credentials',
@@ -58,16 +64,20 @@ export const cli = async (): Promise<CLIResult> => {
             describe: 'Define targets, example: -t browser',
             type: 'string'
         })
-        .epilog('Copyright 2021 weclapp') as {argv: Args};
+        .epilog(`Copyright ${new Date().getFullYear()} weclapp GmbH`) as {argv: Args};
 
     if (argv.fromEnv) {
         config();
     }
 
     const {WECLAPP_API_KEY, WECLAPP_BACKEND_URL} = process.env;
+    const options: GeneratorOptions = {
+        generateUnique: argv.generateUnique ?? false,
+        target: argv.target ?? Target.BROWSER_PROMISES
+    };
+
     const {
         includeHidden,
-        target = Target.BROWSER_PROMISES,
         cache = false,
         key = WECLAPP_API_KEY as string,
         _: [src = WECLAPP_BACKEND_URL as string]
@@ -77,15 +87,15 @@ export const cli = async (): Promise<CLIResult> => {
         return Promise.reject('Expected string as command');
     }
 
-    if (!Object.values(Target).includes(target)) {
-        logger.errorLn(`Unknown target: ${target}. Possible values are ${Object.values(Target).join(', ')}`);
+    if (!Object.values(Target).includes(options.target)) {
+        logger.errorLn(`Unknown target: ${options.target}. Possible values are ${Object.values(Target).join(', ')}`);
         return Promise.reject();
     }
 
     if (await stat(src).catch(() => false)) {
         logger.infoLn(`Source is a file`);
         const content = JSON.parse(await readFile(src, 'utf-8'));
-        return {cache, target, content};
+        return {cache, content, options};
     }
 
     const url = new URL(src.startsWith('http') ? src : `https://${src}`);
@@ -106,5 +116,5 @@ export const cli = async (): Promise<CLIResult> => {
         logger.infoLn(`Use remote file: ${url.toString()}`);
     }
 
-    return {cache, target, content};
+    return {cache, content, options};
 };

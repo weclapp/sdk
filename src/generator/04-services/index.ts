@@ -1,4 +1,12 @@
-import {Target} from '@enums/Target';
+import {GeneratorOptions} from '@generator/generate';
+import {logger} from '@logger';
+import {concat} from '@ts/concat';
+import {generateBlockComment} from '@ts/generateComment';
+import {generateInterface} from '@ts/generateInterface';
+import {generateBlockStatements, generateStatements} from '@ts/generateStatements';
+import {WeclappEndpointType} from '@utils/weclapp/parseEndpointPath';
+import {camelCase, pascalCase} from 'change-case';
+import {OpenAPIV3} from 'openapi-types';
 import {generateCountEndpoint} from './endpoints/count';
 import {generateCreateEndpoint} from './endpoints/create';
 import {generateGenericEndpoint} from './endpoints/generic';
@@ -8,14 +16,6 @@ import {generateUniqueEndpoint} from './endpoints/unique';
 import {generateUpdateEndpoint} from './endpoints/update';
 import {GeneratedServiceFunction, ServiceFunctionGenerator} from './types';
 import {groupEndpointsByEntity} from './utils/groupEndpointsByEntity';
-import {logger} from '@logger';
-import {concat} from '@ts/concat';
-import {generateBlockComment} from '@ts/generateComment';
-import {generateInterface} from '@ts/generateInterface';
-import {generateBlockStatements, generateStatements} from '@ts/generateStatements';
-import {WeclappEndpointType} from '@utils/weclapp/parseEndpointPath';
-import {camelCase, pascalCase} from 'change-case';
-import {OpenAPIV3} from 'openapi-types';
 
 export interface GeneratedService {
     entity: string;
@@ -58,11 +58,7 @@ const generators: Record<WeclappEndpointType, Record<string, ServiceFunctionGene
     }
 };
 
-export const generateServices = (
-    doc: OpenAPIV3.Document,
-    target: Target,
-    aliases: Map<string, string>
-): Map<string, GeneratedService> => {
+export const generateServices = (doc: OpenAPIV3.Document, aliases: Map<string, string>, options: GeneratorOptions): Map<string, GeneratedService> => {
     const services: Map<string, GeneratedService> = new Map();
     const grouped = groupEndpointsByEntity(doc.paths);
 
@@ -76,8 +72,14 @@ export const generateServices = (
             const resolver = generators[endpoint.type];
 
             for (const [method, config] of Object.entries(path)) {
+
+                if (method === 'get' && endpoint.type === WeclappEndpointType.ENTITY && !options.generateUnique) {
+                    continue;
+                }
+
                 if (resolver[method]) {
                     const path = config as OpenAPIV3.OperationObject;
+                    const target = options.target;
 
                     functions.push(resolver[method]({endpoint, method, target, path, aliases}));
                 } else {
