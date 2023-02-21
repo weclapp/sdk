@@ -14,10 +14,10 @@ const folders = ['docs', 'main', 'node', 'raw', 'rx', 'utils'];
 
 void (async () => {
     const start = process.hrtime.bigint();
-    const {content: doc, cache: useCache, target} = await cli();
+    const {content: doc, cache: useCache, options} = await cli();
 
     // Resolve cache dir and key
-    const cacheKey = hash([pkg.version, JSON.stringify(doc), target]).slice(-8);
+    const cacheKey = hash([pkg.version, JSON.stringify(doc), options.target]).slice(-8);
     const cacheDir = resolve(currentDirname(), '.tmp', cacheKey);
 
     const dist = (...paths: string[]) => resolve(workingDirectory, ...paths);
@@ -37,14 +37,15 @@ void (async () => {
 
         // Store swagger.json file
         await writeFile(await tmp('openapi.json'), JSON.stringify(doc, null, 2));
-        logger.infoLn(`Generate (target: ${target})`);
+        logger.infoLn(`Generate (target: ${options.target})`);
 
         // Generate SDKs
-        await writeSourceFile(await tmp('src', `${target}.ts`), generate(doc, target));
+        const sdk = generate(doc, options);
+        await writeSourceFile(await tmp('src', `${options.target}.ts`), sdk);
 
         // Bundle
         logger.infoLn('Bundle (this may take some time)...');
-        await bundle(cacheDir, target);
+        await bundle(cacheDir, options.target);
 
         // Print job summary
         const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
