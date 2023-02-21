@@ -12,7 +12,7 @@ interface Args {
     key?: string;
     cache?: boolean;
     includeHidden?: boolean;
-    'generate-unique'?: boolean;
+    generateUnique?: boolean;
     fromEnv?: boolean;
     target?: Target;
     _: (string | number)[];
@@ -72,7 +72,7 @@ export const cli = async (): Promise<CLIResult> => {
 
     const {WECLAPP_API_KEY, WECLAPP_BACKEND_URL} = process.env;
     const options: GeneratorOptions = {
-        generateUnique: argv['generate-unique'] ?? false,
+        generateUnique: argv.generateUnique ?? false,
         target: argv.target ?? Target.BROWSER_PROMISES
     };
 

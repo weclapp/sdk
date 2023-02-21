@@ -17,7 +17,7 @@ void (async () => {
     const {content: doc, cache: useCache, options} = await cli();
 
     // Resolve cache dir and key
-    const cacheKey = hash([pkg.version, JSON.stringify(doc), options.target]).slice(-8);
+    const cacheKey = hash([pkg.version, JSON.stringify(doc), JSON.stringify(options)]).slice(-8);
     const cacheDir = resolve(currentDirname(), '.tmp', cacheKey);
 
     const dist = (...paths: string[]) => resolve(workingDirectory, ...paths);
