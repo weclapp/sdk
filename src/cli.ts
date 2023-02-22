@@ -11,7 +11,7 @@ import {version} from '../package.json';
 interface Args {
     key?: string;
     cache?: boolean;
-    includeHidden?: boolean;
+    query?: string;
     generateUnique?: boolean;
     fromEnv?: boolean;
     target?: Target;
@@ -45,10 +45,10 @@ export const cli = async (): Promise<CLIResult> => {
             describe: 'If the generated SDK should cached',
             type: 'boolean'
         })
-        .option('x', {
-            alias: 'include-hidden',
-            describe: 'Include internal endpoints',
-            type: 'boolean'
+        .option('q', {
+            alias: 'query',
+            describe: 'Extra query params when fetching the openapi.json from a server',
+            type: 'string'
         })
         .option('generate-unique', {
             describe: 'Generate .unique functions',
@@ -77,7 +77,7 @@ export const cli = async (): Promise<CLIResult> => {
     };
 
     const {
-        includeHidden,
+        query,
         cache = false,
         key = WECLAPP_API_KEY as string,
         _: [src = WECLAPP_BACKEND_URL as string]
@@ -101,8 +101,11 @@ export const cli = async (): Promise<CLIResult> => {
     const url = new URL(src.startsWith('http') ? src : `https://${src}`);
     url.pathname = '/webapp/api/v1/meta/openapi.json';
 
-    if (includeHidden) {
-        url.searchParams.set('includeHidden', 'true');
+    if (query?.length) {
+        for (const param of query.split(',')) {
+            const [name, value] = param.split('=');
+            url.searchParams.set(name, value);
+        }
     }
 
     const content = await fetch(url.toString(), {
