@@ -1,5 +1,6 @@
 import {GeneratedEntity} from '@generator/03-entities';
 import {GeneratedService} from '@generator/04-services';
+import {generateCustomValueUtilities} from '@generator/05-maps/utils/generateCustomValueUtilities';
 import {generateEntityPropertyMap} from '@generator/05-maps/utils/generateEntityPropertyMap';
 import {generateGroupedServices} from '@generator/05-maps/utils/generateGroupedServices';
 import {generateBlockComment} from '@ts/generateComment';
@@ -100,6 +101,9 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
             generateType('WEntity', 'keyof WEntities'),
             generateType('WEnums', 'typeof wEnums'),
             generateType('WEnum', 'keyof WEnums'),
+
+            /* Utilities. */
+            generateCustomValueUtilities(entities, services),
 
             /* All functions grouped by service supporting it */
             ...generateGroupedServices(services)

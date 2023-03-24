@@ -27,6 +27,7 @@ export const generateUpdateEndpoint: ServiceFunctionGenerator = ({target, path, 
     });
 
     return {
+        entity,
         name: functionName,
         type: {name: interfaceName, source: interfaceSource},
         func: {name: functionName, source: functionSource}

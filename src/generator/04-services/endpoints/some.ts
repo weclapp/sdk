@@ -54,6 +54,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({aliases, target,
     });
 
     return {
+        entity,
         name: functionName,
         type: {name: interfaceName, source: interfaceSource},
         func: {name: functionName, source: functionSource},

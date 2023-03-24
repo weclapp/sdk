@@ -47,6 +47,7 @@ export const generateGenericEndpoint = (suffix?: string): ServiceFunctionGenerat
     });
 
     return {
+        entity,
         name: functionName,
         type: {name: interfaceName, source: interfaceSource},
         func: {name: functionName, source: functionSource},

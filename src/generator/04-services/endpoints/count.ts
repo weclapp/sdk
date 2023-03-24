@@ -36,6 +36,7 @@ export const generateCountEndpoint: ServiceFunctionGenerator = ({aliases, path, 
     });
 
     return {
+        entity,
         name: functionName,
         type: {name: interfaceName, source: interfaceSource},
         func: {name: functionName, source: functionSource},
