@@ -40,7 +40,7 @@ export const generateGroupedServices = (services: GeneratedService[]) => {
     for (const [name] of descriptors) {
         const constant = camelCase(`wServiceWith_${name}_Names`);
         const service = pascalCase(`WServiceWith_${name}`);
-        const guard = `(service: string): service is ${service} =>\n${indent(`${constant}.includes(service as ${service});`)}`;
+        const guard = `(service: string | undefined): service is ${service} =>\n${indent(`${constant}.includes(service as ${service});`)}`;
         typeGuards.push(`export const is${service} = ${guard}`);
     }
 
