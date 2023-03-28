@@ -25,6 +25,7 @@ export const generateRemoveEndpoint: ServiceFunctionGenerator = ({target, endpoi
     });
 
     return {
+        entity,
         name: functionName,
         type: {name: interfaceName, source: interfaceSource},
         func: {name: functionName, source: functionSource}

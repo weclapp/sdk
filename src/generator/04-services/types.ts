@@ -8,6 +8,7 @@ export interface Export {
 }
 
 export interface GeneratedServiceFunction {
+    entity: string;
     name: string;
     type: Export;
     func: Export;
