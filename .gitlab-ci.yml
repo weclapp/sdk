@@ -40,7 +40,7 @@ build:
   script:
     - npm run cli:build
 
-generate:
+generate:targets:
   extends: .npm:defaults
   stage: generate
   dependencies:
@@ -60,6 +60,26 @@ generate:
   script:
     - chmod +x ./bin/cli.js
     - ./bin/cli.js tests/openapi.json --target $TARGET
+
+generate:variants:
+  extends: .npm:defaults
+  stage: generate
+  dependencies:
+    - build
+  artifacts:
+    expire_in: 4 weeks
+    paths:
+      - sdk
+  variables:
+    NODE_ENV: development
+  parallel:
+    matrix:
+      - FLAGS: --deprecated --target browser
+      - FLAGS: --generate-unique --target browser
+      - FLAGS: --deprecated --generate-unique --target browser
+  script:
+    - chmod +x ./bin/cli.js
+    - ./bin/cli.js tests/openapi.json $FLAGS
 
 publish:
   tags:

@@ -24,7 +24,7 @@ export const generate = (
 ): string => {
     const {schemas, aliases} = extractSchemas(doc);
     const enums = generateEnums(schemas);
-    const entities = generateEntities(schemas, enums, options);
+    const entities = generateEntities(schemas, enums);
     const services = generateServices(doc, aliases, options);
 
     return generateStatements(
