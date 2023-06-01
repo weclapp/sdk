@@ -1,5 +1,6 @@
 import {GeneratedEnum} from '@generator/02-enums';
 import {extractPropertyMetaData, PropertyMetaData} from '@generator/03-entities/utils/extractPropertyMetaData';
+import {isEntityPropertyDeprecated} from '@generator/03-entities/utils/isEntityPropertyDeprecated';
 import {generateInterface, generateInterfaceType, InterfaceProperty} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
 import {generateString} from '@ts/generateString';
@@ -82,19 +83,10 @@ export const generateEntities = (
         processProperties(schema.properties);
         const source = generateStatements(
             generateInterface(
-                entity, entityInterface.map(property => {
-                    let deprecated = false;
-
-                    if (property.name.endsWith('Name')) {
-                        const rawName = property.name.slice(0, -4);
-                        deprecated =
-                            filterInterface.some(v => v.name === rawName) &&
-                            entityInterface.some(v => v.name.endsWith('Id') && v.name.slice(0, -2) === rawName);
-                    }
-
-
-                    return deprecated ? {...property, comment: `@deprecated`} : property;
-                }), extend
+                entity,
+                // Right now we can't remove them as some services still depend on them
+                entityInterface.map(property => isEntityPropertyDeprecated(entityInterface, property) ? {...property, comment: `@deprecated`} : property),
+                extend
             ),
             generateInterface(`${entity}_References`, referenceInterface, extend ? [`${extend}_References`] : undefined),
             generateInterface(`${entity}_Mappings`, referenceMappingsInterface, extend ? [`${extend}_Mappings`] : undefined),

@@ -14,6 +14,8 @@ export interface GeneratorOptions {
     generateUnique: boolean;
     /* Build target */
     target: Target;
+    /* Generate deprecated functions */
+    deprecated: boolean;
 }
 
 export const generate = (
@@ -22,7 +24,7 @@ export const generate = (
 ): string => {
     const {schemas, aliases} = extractSchemas(doc);
     const enums = generateEnums(schemas);
-    const entities = generateEntities(schemas, enums);
+    const entities = generateEntities(schemas, enums, options);
     const services = generateServices(doc, aliases, options);
 
     return generateStatements(
@@ -33,6 +35,7 @@ export const generate = (
         generateBlockComment('MAPS', generateMaps({
             services: [...services.values()],
             enums: [...enums.keys()],
+            options,
             entities,
             aliases
         }).source)

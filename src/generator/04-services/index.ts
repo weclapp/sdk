@@ -86,14 +86,20 @@ export const generateServices = (doc: OpenAPIV3.Document, aliases: Map<string, s
                     const path = config as OpenAPIV3.OperationObject;
                     const target = options.target;
 
-                    functions.push({
-                        ...resolver[method]({endpoint, method, target, path, aliases}),
-                        path
-                    });
+                    if (!path.deprecated || options.deprecated) {
+                        functions.push({
+                            ...resolver[method]({endpoint, method, target, path, aliases}),
+                            path
+                        });
+                    }
                 } else {
                     logger.errorLn(`Failed to generate a function for ${method.toUpperCase()}:${endpoint.type} ${endpoint.path}`);
                 }
             }
+        }
+
+        if (!functions.length) {
+            continue;
         }
 
         // Construct service type
