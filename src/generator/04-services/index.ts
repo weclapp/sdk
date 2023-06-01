@@ -17,12 +17,17 @@ import {generateUpdateEndpoint} from './endpoints/update';
 import {GeneratedServiceFunction, ServiceFunctionGenerator} from './types';
 import {groupEndpointsByEntity} from './utils/groupEndpointsByEntity';
 
+export interface ExtendedGeneratedServiceFunction extends GeneratedServiceFunction {
+    path: OpenAPIV3.OperationObject;
+}
+
 export interface GeneratedService {
     entity: string;
     serviceName: string;
     serviceTypeName: string;
     source: string;
-    functions: GeneratedServiceFunction[];
+    deprecated: boolean;
+    functions: ExtendedGeneratedServiceFunction[];
 }
 
 const generators: Record<WeclappEndpointType, Record<string, ServiceFunctionGenerator>> = {
@@ -67,7 +72,7 @@ export const generateServices = (doc: OpenAPIV3.Document, aliases: Map<string, s
         const serviceTypeName = pascalCase(`${endpoint}Service`);
 
         // Service functions
-        const functions: GeneratedServiceFunction[] = [];
+        const functions: ExtendedGeneratedServiceFunction[] = [];
         for (const {path, endpoint} of paths) {
             const resolver = generators[endpoint.type];
 
@@ -81,7 +86,10 @@ export const generateServices = (doc: OpenAPIV3.Document, aliases: Map<string, s
                     const path = config as OpenAPIV3.OperationObject;
                     const target = options.target;
 
-                    functions.push(resolver[method]({endpoint, method, target, path, aliases}));
+                    functions.push({
+                        ...resolver[method]({endpoint, method, target, path, aliases}),
+                        path
+                    });
                 } else {
                     logger.errorLn(`Failed to generate a function for ${method.toUpperCase()}:${endpoint.type} ${endpoint.path}`);
                 }
@@ -95,6 +103,7 @@ export const generateServices = (doc: OpenAPIV3.Document, aliases: Map<string, s
             generateInterface(serviceTypeName, [
                 ...functions.map(v => ({
                     required: true,
+                    comment: v.path.deprecated ? '@deprecated' : undefined,
                     name: v.func.name,
                     type: v.type.name
                 }))
@@ -109,7 +118,8 @@ export const generateServices = (doc: OpenAPIV3.Document, aliases: Map<string, s
 
         const func = `export const ${serviceName} = (cfg?: ServiceConfig): ${serviceTypeName} => ${funcBody};`;
         const source = generateBlockComment(`${pascalCase(endpoint)} service`, generateStatements(types, func));
-        services.set(endpoint, {entity: endpoint, serviceName, serviceTypeName, source, functions});
+        const deprecated = functions.every(v => v.path.deprecated);
+        services.set(endpoint, {entity: endpoint, deprecated, serviceName, serviceTypeName, source, functions});
     }
 
     return services;

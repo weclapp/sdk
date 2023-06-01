@@ -37,6 +37,7 @@
     "paths": {
         "/_app_crmCallCategory": {
             "get": {
+                "deprecated": true,
                 "description": "query _app_crmCallCategory",
                 "parameters": [
                     {
@@ -119,6 +120,7 @@
                 ]
             },
             "post": {
+                "deprecated": true,
                 "description": "create a _app_crmCallCategory",
                 "requestBody": {
                     "content": {
@@ -159,6 +161,7 @@
         },
         "/_app_crmCallCategory/count": {
             "get": {
+                "deprecated": true,
                 "description": "count _app_crmCallCategory",
                 "parameters": [],
                 "responses": {
@@ -196,6 +199,7 @@
         },
         "/_app_crmCallCategory/id/{id}": {
             "delete": {
+                "deprecated": true,
                 "description": "delete a _app_crmCallCategory",
                 "parameters": [
                     {
@@ -227,6 +231,7 @@
                 ]
             },
             "get": {
+                "deprecated": true,
                 "description": "query _app_crmCallCategory",
                 "parameters": [
                     {
@@ -265,6 +270,7 @@
                 ]
             },
             "put": {
+                "deprecated": true,
                 "description": "update _app_crmCallCategory",
                 "parameters": [
                     {
@@ -315,6 +321,7 @@
         },
         "/_app_crmCallLog": {
             "get": {
+                "deprecated": true,
                 "description": "query _app_crmCallLog",
                 "parameters": [
                     {
@@ -397,6 +404,7 @@
                 ]
             },
             "post": {
+                "deprecated": true,
                 "description": "create a _app_crmCallLog",
                 "requestBody": {
                     "content": {
@@ -437,6 +445,7 @@
         },
         "/_app_crmCallLog/count": {
             "get": {
+                "deprecated": true,
                 "description": "count _app_crmCallLog",
                 "parameters": [],
                 "responses": {
@@ -474,6 +483,7 @@
         },
         "/_app_crmCallLog/id/{id}": {
             "get": {
+                "deprecated": true,
                 "description": "query _app_crmCallLog",
                 "parameters": [
                     {
@@ -514,6 +524,7 @@
         },
         "/_app_crmEventCategory": {
             "get": {
+                "deprecated": true,
                 "description": "query _app_crmEventCategory",
                 "parameters": [
                     {
@@ -596,6 +607,7 @@
                 ]
             },
             "post": {
+                "deprecated": true,
                 "description": "create a _app_crmEventCategory",
                 "requestBody": {
                     "content": {
@@ -636,6 +648,7 @@
         },
         "/_app_crmEventCategory/count": {
             "get": {
+                "deprecated": true,
                 "description": "count _app_crmEventCategory",
                 "parameters": [],
                 "responses": {
@@ -673,6 +686,7 @@
         },
         "/_app_crmEventCategory/id/{id}": {
             "delete": {
+                "deprecated": true,
                 "description": "delete a _app_crmEventCategory",
                 "parameters": [
                     {
@@ -704,6 +718,7 @@
                 ]
             },
             "get": {
+                "deprecated": true,
                 "description": "query _app_crmEventCategory",
                 "parameters": [
                     {
@@ -742,6 +757,7 @@
                 ]
             },
             "put": {
+                "deprecated": true,
                 "description": "update _app_crmEventCategory",
                 "parameters": [
                     {
@@ -9714,6 +9730,7 @@
         },
         "/contact": {
             "get": {
+                "deprecated": true,
                 "description": "query contact",
                 "parameters": [
                     {
@@ -9796,6 +9813,7 @@
                 ]
             },
             "post": {
+                "deprecated": true,
                 "description": "create a contact",
                 "requestBody": {
                     "content": {
@@ -9836,6 +9854,7 @@
         },
         "/contact/count": {
             "get": {
+                "deprecated": true,
                 "description": "count contact",
                 "parameters": [],
                 "responses": {
@@ -9873,6 +9892,7 @@
         },
         "/contact/id/{id}": {
             "delete": {
+                "deprecated": true,
                 "description": "delete a contact",
                 "parameters": [
                     {
@@ -9904,6 +9924,7 @@
                 ]
             },
             "get": {
+                "deprecated": true,
                 "description": "query contact",
                 "parameters": [
                     {
@@ -9942,6 +9963,7 @@
                 ]
             },
             "put": {
+                "deprecated": true,
                 "description": "update contact",
                 "parameters": [
                     {
@@ -9992,6 +10014,7 @@
         },
         "/contact/id/{id}/downloadImage": {
             "get": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "path",
@@ -10068,6 +10091,7 @@
         },
         "/contact/id/{id}/uploadImage": {
             "post": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "path",
@@ -10400,6 +10424,133 @@
                             }
                         },
                         "description": "contract update response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "contract"
+                ]
+            }
+        },
+        "/contract/id/{id}/createContractDocument": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {},
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            },
+                            "application/pdf": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            },
+                            "image/jpeg": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            },
+                            "image/png": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "createContractDocument response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "contract"
+                ]
+            }
+        },
+        "/contract/id/{id}/downloadLatestContractDocumentPdf": {
+            "get": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            },
+                            "application/pdf": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            },
+                            "image/jpeg": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            },
+                            "image/png": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "downloadLatestContractDocumentPdf response"
                     },
                     "default": {
                         "content": {
@@ -11494,6 +11645,44 @@
                 "tags": [
                     "costCenter"
                 ]
+            },
+            "post": {
+                "description": "create a costCenter",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/costCenter"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/costCenter"
+                                }
+                            }
+                        },
+                        "description": "costCenter create response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "costCenter"
+                ]
             }
         },
         "/costCenter/count": {
@@ -11534,6 +11723,37 @@
             }
         },
         "/costCenter/id/{id}": {
+            "delete": {
+                "description": "delete a costCenter",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "costCenter delete response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "costCenter"
+                ]
+            },
             "get": {
                 "description": "query costCenter",
                 "parameters": [
@@ -11556,6 +11776,54 @@
                             }
                         },
                         "description": "get by id"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "costCenter"
+                ]
+            },
+            "put": {
+                "description": "update costCenter",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/costCenter"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/costCenter"
+                                }
+                            }
+                        },
+                        "description": "costCenter update response"
                     },
                     "default": {
                         "content": {
@@ -13372,6 +13640,7 @@
         },
         "/customer": {
             "get": {
+                "deprecated": true,
                 "description": "query customer",
                 "parameters": [
                     {
@@ -13454,6 +13723,7 @@
                 ]
             },
             "post": {
+                "deprecated": true,
                 "description": "create a customer",
                 "requestBody": {
                     "content": {
@@ -13494,6 +13764,7 @@
         },
         "/customer/count": {
             "get": {
+                "deprecated": true,
                 "description": "count customer",
                 "parameters": [],
                 "responses": {
@@ -13531,6 +13802,7 @@
         },
         "/customer/id/{id}": {
             "delete": {
+                "deprecated": true,
                 "description": "delete a customer",
                 "parameters": [
                     {
@@ -13562,6 +13834,7 @@
                 ]
             },
             "get": {
+                "deprecated": true,
                 "description": "query customer",
                 "parameters": [
                     {
@@ -13600,6 +13873,7 @@
                 ]
             },
             "put": {
+                "deprecated": true,
                 "description": "update customer",
                 "parameters": [
                     {
@@ -13650,6 +13924,7 @@
         },
         "/customer/id/{id}/downloadImage": {
             "get": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "path",
@@ -13726,6 +14001,7 @@
         },
         "/customer/id/{id}/operationalFigures": {
             "get": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "path",
@@ -13770,6 +14046,7 @@
         },
         "/customer/id/{id}/uploadImage": {
             "post": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "path",
@@ -15053,6 +15330,66 @@
                 ]
             }
         },
+        "/document/copy": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "entityId": {
+                                        "type": "string"
+                                    },
+                                    "entityName": {
+                                        "type": "string"
+                                    },
+                                    "sourceDocumentId": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "entityId",
+                                    "entityName",
+                                    "sourceDocumentId"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/document"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "copy response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "document"
+                ]
+            }
+        },
         "/document/count": {
             "get": {
                 "description": "count document",
@@ -15209,6 +15546,71 @@
                             }
                         },
                         "description": "document update response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "document"
+                ]
+            }
+        },
+        "/document/id/{id}/copy": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "comment": {
+                                        "type": "string"
+                                    },
+                                    "sourceDocumentId": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "sourceDocumentId"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/document"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "copy response"
                     },
                     "default": {
                         "content": {
@@ -17227,6 +17629,7 @@
         },
         "/lead": {
             "get": {
+                "deprecated": true,
                 "description": "query lead",
                 "parameters": [
                     {
@@ -17309,6 +17712,7 @@
                 ]
             },
             "post": {
+                "deprecated": true,
                 "description": "create a lead",
                 "requestBody": {
                     "content": {
@@ -17349,6 +17753,7 @@
         },
         "/lead/count": {
             "get": {
+                "deprecated": true,
                 "description": "count lead",
                 "parameters": [],
                 "responses": {
@@ -17386,6 +17791,7 @@
         },
         "/lead/id/{id}": {
             "delete": {
+                "deprecated": true,
                 "description": "delete a lead",
                 "parameters": [
                     {
@@ -17417,6 +17823,7 @@
                 ]
             },
             "get": {
+                "deprecated": true,
                 "description": "query lead",
                 "parameters": [
                     {
@@ -17455,6 +17862,7 @@
                 ]
             },
             "put": {
+                "deprecated": true,
                 "description": "update lead",
                 "parameters": [
                     {
@@ -17505,6 +17913,7 @@
         },
         "/lead/id/{id}/convertLeadToCustomer": {
             "get": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "path",
@@ -17549,6 +17958,7 @@
         },
         "/lead/id/{id}/downloadImage": {
             "get": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "path",
@@ -17625,6 +18035,7 @@
         },
         "/lead/id/{id}/uploadImage": {
             "post": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "path",
@@ -20071,292 +20482,6 @@
                 },
                 "tags": [
                     "notification"
-                ]
-            }
-        },
-        "/openItem": {
-            "get": {
-                "description": "query openItem",
-                "parameters": [
-                    {
-                        "in": "query",
-                        "name": "page",
-                        "schema": {
-                            "format": "int32",
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "in": "query",
-                        "name": "pageSize",
-                        "schema": {
-                            "format": "int32",
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "in": "query",
-                        "name": "serializeNulls",
-                        "schema": {
-                            "type": "boolean"
-                        }
-                    },
-                    {
-                        "in": "query",
-                        "name": "sort",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "in": "query",
-                        "name": "properties",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "in": "query",
-                        "name": "includeReferencedEntities",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "result": {
-                                            "items": {
-                                                "$ref": "#/components/schemas/openItem"
-                                            },
-                                            "type": "array"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "openItem response"
-                    },
-                    "default": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/apiProblem"
-                                }
-                            }
-                        },
-                        "description": "error response"
-                    }
-                },
-                "tags": [
-                    "openItem"
-                ]
-            }
-        },
-        "/openItem/count": {
-            "get": {
-                "description": "count openItem",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "result": {
-                                            "format": "int64",
-                                            "type": "integer"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "count"
-                    },
-                    "default": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/apiProblem"
-                                }
-                            }
-                        },
-                        "description": "error response"
-                    }
-                },
-                "tags": [
-                    "openItem"
-                ]
-            }
-        },
-        "/openItem/id/{id}": {
-            "get": {
-                "description": "query openItem",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/openItem"
-                                }
-                            }
-                        },
-                        "description": "get by id"
-                    },
-                    "default": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/apiProblem"
-                                }
-                            }
-                        },
-                        "description": "error response"
-                    }
-                },
-                "tags": [
-                    "openItem"
-                ]
-            }
-        },
-        "/openItem/id/{id}/createPaymentApplication": {
-            "post": {
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "moneyTransactionId": {
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [
-                                    "moneyTransactionId"
-                                ],
-                                "type": "object"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "result": {
-                                            "$ref": "#/components/schemas/openItem"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "createPaymentApplication response"
-                    },
-                    "default": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/apiProblem"
-                                }
-                            }
-                        },
-                        "description": "error response"
-                    }
-                },
-                "tags": [
-                    "openItem"
-                ]
-            }
-        },
-        "/openItem/id/{id}/markAsPaid": {
-            "post": {
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "datePaid": {
-                                        "format": "timestamp",
-                                        "type": "integer"
-                                    }
-                                },
-                                "required": [
-                                    "datePaid"
-                                ],
-                                "type": "object"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "result": {
-                                            "$ref": "#/components/schemas/openItem"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "markAsPaid response"
-                    },
-                    "default": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/apiProblem"
-                                }
-                            }
-                        },
-                        "description": "error response"
-                    }
-                },
-                "tags": [
-                    "openItem"
                 ]
             }
         },
@@ -26132,6 +26257,157 @@
                 ]
             }
         },
+        "/propertyTranslation/readPropertyTranslations": {
+            "get": {
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "entityName",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "entityId",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "locale",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "propertyNames",
+                        "required": false,
+                        "schema": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "items": {
+                                                "$ref": "#/components/schemas/propertyTranslation"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "readPropertyTranslations response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "propertyTranslation"
+                ]
+            }
+        },
+        "/propertyTranslation/updatePropertyTranslations": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "entityId": {
+                                        "type": "string"
+                                    },
+                                    "entityName": {
+                                        "type": "string"
+                                    },
+                                    "propertyTranslations": {
+                                        "items": {
+                                            "properties": {
+                                                "propertyName": {
+                                                    "type": "string"
+                                                },
+                                                "values": {
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/propertyTranslationValue"
+                                                    },
+                                                    "type": "array"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "type": "array"
+                                    }
+                                },
+                                "required": [
+                                    "entityId",
+                                    "entityName",
+                                    "propertyTranslations"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "items": {
+                                                "$ref": "#/components/schemas/propertyTranslation"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "updatePropertyTranslations response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "propertyTranslation"
+                ]
+            }
+        },
         "/purchaseInvoice": {
             "get": {
                 "description": "query purchaseInvoice",
@@ -26407,6 +26683,292 @@
                 },
                 "tags": [
                     "purchaseInvoice"
+                ]
+            }
+        },
+        "/purchaseOpenItem": {
+            "get": {
+                "description": "query purchaseOpenItem",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "page",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "pageSize",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "serializeNulls",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "sort",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "properties",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "includeReferencedEntities",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "items": {
+                                                "$ref": "#/components/schemas/purchaseOpenItem"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "purchaseOpenItem response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "purchaseOpenItem"
+                ]
+            }
+        },
+        "/purchaseOpenItem/count": {
+            "get": {
+                "description": "count purchaseOpenItem",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "format": "int64",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "count"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "purchaseOpenItem"
+                ]
+            }
+        },
+        "/purchaseOpenItem/id/{id}": {
+            "get": {
+                "description": "query purchaseOpenItem",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/purchaseOpenItem"
+                                }
+                            }
+                        },
+                        "description": "get by id"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "purchaseOpenItem"
+                ]
+            }
+        },
+        "/purchaseOpenItem/id/{id}/createPaymentApplication": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "moneyTransactionId": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "moneyTransactionId"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/purchaseOpenItem"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "createPaymentApplication response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "purchaseOpenItem"
+                ]
+            }
+        },
+        "/purchaseOpenItem/id/{id}/markAsPaid": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "datePaid": {
+                                        "format": "timestamp",
+                                        "type": "integer"
+                                    }
+                                },
+                                "required": [
+                                    "datePaid"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/purchaseOpenItem"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "markAsPaid response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "purchaseOpenItem"
                 ]
             }
         },
@@ -26688,6 +27250,75 @@
                 ]
             }
         },
+        "/purchaseOrder/id/{id}/createDropshippingDeliveryNotePdf": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {},
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            },
+                            "application/pdf": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            },
+                            "image/jpeg": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            },
+                            "image/png": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "createDropshippingDeliveryNotePdf response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "purchaseOrder"
+                ]
+            }
+        },
         "/purchaseOrder/id/{id}/createIncomingGoods": {
             "post": {
                 "parameters": [
@@ -26766,7 +27397,12 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "properties": {},
+                                "properties": {
+                                    "invoiceDate": {
+                                        "format": "timestamp",
+                                        "type": "integer"
+                                    }
+                                },
                                 "type": "object"
                             }
                         }
@@ -26843,6 +27479,122 @@
                             }
                         },
                         "description": "createSupplierReturn response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "purchaseOrder"
+                ]
+            }
+        },
+        "/purchaseOrder/id/{id}/downloadLatestDropshippingDeliveryNotePdf": {
+            "get": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            },
+                            "application/pdf": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            },
+                            "image/jpeg": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            },
+                            "image/png": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "downloadLatestDropshippingDeliveryNotePdf response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "purchaseOrder"
+                ]
+            }
+        },
+        "/purchaseOrder/id/{id}/downloadLatestPurchaseOrderPdf": {
+            "get": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            },
+                            "application/pdf": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            },
+                            "image/jpeg": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            },
+                            "image/png": {
+                                "schema": {
+                                    "format": "binary",
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "downloadLatestPurchaseOrderPdf response"
                     },
                     "default": {
                         "content": {
@@ -27285,6 +28037,9 @@
                                     "offerItemToUpdateSupplierInformation": {
                                         "items": {
                                             "properties": {
+                                                "createOrUpdateArticleSupplySource": {
+                                                    "type": "boolean"
+                                                },
                                                 "offerItemId": {
                                                     "format": "int32",
                                                     "type": "integer"
@@ -27298,6 +28053,9 @@
                                                     "type": "integer"
                                                 },
                                                 "updateInformation": {
+                                                    "type": "boolean"
+                                                },
+                                                "updatePurchasePrice": {
                                                     "type": "boolean"
                                                 }
                                             },
@@ -27674,6 +28432,65 @@
                 ]
             }
         },
+        "/quotation/id/{id}/accept": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "acceptQuotationItems": {
+                                        "items": {
+                                            "properties": {
+                                                "quantity": {
+                                                    "format": "decimal",
+                                                    "type": "string"
+                                                },
+                                                "quotationItemId": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "type": "array"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "accept response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "quotation"
+                ]
+            }
+        },
         "/quotation/id/{id}/createNewVersion": {
             "post": {
                 "parameters": [
@@ -27839,6 +28656,65 @@
                             }
                         },
                         "description": "downloadLatestQuotationPdf response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "quotation"
+                ]
+            }
+        },
+        "/quotation/id/{id}/inquire": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "taskId": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/quotation"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "inquire response"
                     },
                     "default": {
                         "content": {
@@ -29073,6 +29949,292 @@
                 ]
             }
         },
+        "/salesOpenItem": {
+            "get": {
+                "description": "query salesOpenItem",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "page",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "pageSize",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "serializeNulls",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "sort",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "properties",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "includeReferencedEntities",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "items": {
+                                                "$ref": "#/components/schemas/salesOpenItem"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "salesOpenItem response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "salesOpenItem"
+                ]
+            }
+        },
+        "/salesOpenItem/count": {
+            "get": {
+                "description": "count salesOpenItem",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "format": "int64",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "count"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "salesOpenItem"
+                ]
+            }
+        },
+        "/salesOpenItem/id/{id}": {
+            "get": {
+                "description": "query salesOpenItem",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/salesOpenItem"
+                                }
+                            }
+                        },
+                        "description": "get by id"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "salesOpenItem"
+                ]
+            }
+        },
+        "/salesOpenItem/id/{id}/createPaymentApplication": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "moneyTransactionId": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "moneyTransactionId"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/salesOpenItem"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "createPaymentApplication response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "salesOpenItem"
+                ]
+            }
+        },
+        "/salesOpenItem/id/{id}/markAsPaid": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "datePaid": {
+                                        "format": "timestamp",
+                                        "type": "integer"
+                                    }
+                                },
+                                "required": [
+                                    "datePaid"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/salesOpenItem"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "markAsPaid response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "salesOpenItem"
+                ]
+            }
+        },
         "/salesOrder": {
             "get": {
                 "description": "query salesOrder",
@@ -30022,58 +31184,6 @@
                 ]
             }
         },
-        "/salesOrder/cancelSalesOrderByOrderNumber": {
-            "post": {
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "orderNumber": {
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [
-                                    "orderNumber"
-                                ],
-                                "type": "object"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "result": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        },
-                        "description": "cancelSalesOrderByOrderNumber response"
-                    },
-                    "default": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/apiProblem"
-                                }
-                            }
-                        },
-                        "description": "error response"
-                    }
-                },
-                "tags": [
-                    "salesOrder"
-                ]
-            }
-        },
         "/salesOrder/count": {
             "get": {
                 "description": "count salesOrder",
@@ -30971,6 +32081,9 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
+                                    "multiplePurchaseOrders": {
+                                        "type": "boolean"
+                                    },
                                     "supplierId": {
                                         "type": "string"
                                     },
@@ -30978,9 +32091,6 @@
                                         "type": "string"
                                     }
                                 },
-                                "required": [
-                                    "supplierId"
-                                ],
                                 "type": "object"
                             }
                         }
@@ -30994,7 +32104,10 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "$ref": "#/components/schemas/purchaseOrder"
+                                            "items": {
+                                                "$ref": "#/components/schemas/purchaseOrder"
+                                            },
+                                            "type": "array"
                                         }
                                     },
                                     "type": "object"
@@ -36184,6 +37297,7 @@
         },
         "/supplier": {
             "get": {
+                "deprecated": true,
                 "description": "query supplier",
                 "parameters": [
                     {
@@ -36266,6 +37380,7 @@
                 ]
             },
             "post": {
+                "deprecated": true,
                 "description": "create a supplier",
                 "requestBody": {
                     "content": {
@@ -36306,6 +37421,7 @@
         },
         "/supplier/count": {
             "get": {
+                "deprecated": true,
                 "description": "count supplier",
                 "parameters": [],
                 "responses": {
@@ -36343,6 +37459,7 @@
         },
         "/supplier/id/{id}": {
             "delete": {
+                "deprecated": true,
                 "description": "delete a supplier",
                 "parameters": [
                     {
@@ -36374,6 +37491,7 @@
                 ]
             },
             "get": {
+                "deprecated": true,
                 "description": "query supplier",
                 "parameters": [
                     {
@@ -36412,6 +37530,7 @@
                 ]
             },
             "put": {
+                "deprecated": true,
                 "description": "update supplier",
                 "parameters": [
                     {
@@ -36462,6 +37581,7 @@
         },
         "/supplier/id/{id}/downloadImage": {
             "get": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "path",
@@ -36538,6 +37658,7 @@
         },
         "/supplier/id/{id}/uploadImage": {
             "post": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "path",
@@ -37427,6 +38548,61 @@
                 ]
             }
         },
+        "/task/id/{id}/createPerformanceRecord": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {},
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/performanceRecord"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "createPerformanceRecord response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "task"
+                ]
+            }
+        },
         "/task/id/{id}/moveTask": {
             "post": {
                 "parameters": [
@@ -37496,6 +38672,284 @@
                 },
                 "tags": [
                     "task"
+                ]
+            }
+        },
+        "/taskTemplate": {
+            "get": {
+                "description": "query taskTemplate",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "page",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "pageSize",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "serializeNulls",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "sort",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "properties",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "includeReferencedEntities",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "items": {
+                                                "$ref": "#/components/schemas/taskTemplate"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "taskTemplate response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "taskTemplate"
+                ]
+            },
+            "post": {
+                "description": "create a taskTemplate",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/taskTemplate"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/taskTemplate"
+                                }
+                            }
+                        },
+                        "description": "taskTemplate create response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "taskTemplate"
+                ]
+            }
+        },
+        "/taskTemplate/count": {
+            "get": {
+                "description": "count taskTemplate",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "format": "int64",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "count"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "taskTemplate"
+                ]
+            }
+        },
+        "/taskTemplate/id/{id}": {
+            "delete": {
+                "description": "delete a taskTemplate",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "taskTemplate delete response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "taskTemplate"
+                ]
+            },
+            "get": {
+                "description": "query taskTemplate",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/taskTemplate"
+                                }
+                            }
+                        },
+                        "description": "get by id"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "taskTemplate"
+                ]
+            },
+            "put": {
+                "description": "update taskTemplate",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/taskTemplate"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/taskTemplate"
+                                }
+                            }
+                        },
+                        "description": "taskTemplate update response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "taskTemplate"
                 ]
             }
         },
@@ -39576,6 +41030,61 @@
                             }
                         },
                         "description": "ticket update response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "ticket"
+                ]
+            }
+        },
+        "/ticket/id/{id}/createPerformanceRecord": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {},
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/performanceRecord"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "createPerformanceRecord response"
                     },
                     "default": {
                         "content": {
@@ -42401,6 +43910,284 @@
                 ]
             }
         },
+        "/translation": {
+            "get": {
+                "description": "query translation",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "page",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "pageSize",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "serializeNulls",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "sort",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "properties",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "includeReferencedEntities",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "items": {
+                                                "$ref": "#/components/schemas/translation"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "translation response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "translation"
+                ]
+            },
+            "post": {
+                "description": "create a translation",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/translation"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/translation"
+                                }
+                            }
+                        },
+                        "description": "translation create response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "translation"
+                ]
+            }
+        },
+        "/translation/count": {
+            "get": {
+                "description": "count translation",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "format": "int64",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "count"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "translation"
+                ]
+            }
+        },
+        "/translation/id/{id}": {
+            "delete": {
+                "description": "delete a translation",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "translation delete response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "translation"
+                ]
+            },
+            "get": {
+                "description": "query translation",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/translation"
+                                }
+                            }
+                        },
+                        "description": "get by id"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "translation"
+                ]
+            },
+            "put": {
+                "description": "update translation",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/translation"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/translation"
+                                }
+                            }
+                        },
+                        "description": "translation update response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "translation"
+                ]
+            }
+        },
         "/unit": {
             "get": {
                 "description": "query unit",
@@ -45161,6 +46948,9 @@
                                     "batchNumber": {
                                         "type": "string"
                                     },
+                                    "costCenterId": {
+                                        "type": "string"
+                                    },
                                     "customAttributes": {
                                         "items": {
                                             "properties": {
@@ -46350,6 +48140,7 @@
                                 }
                             },
                             "currencyId": {
+                                "deprecated": true,
                                 "type": "string",
                                 "x-weclapp": {
                                     "entity": "currency",
@@ -46357,6 +48148,7 @@
                                 }
                             },
                             "currencyName": {
+                                "deprecated": true,
                                 "type": "string"
                             },
                             "debitCredit": {
@@ -46706,6 +48498,7 @@
                                 }
                             },
                             "accountNumber": {
+                                "deprecated": true,
                                 "type": "string"
                             },
                             "accountingCodeId": {
@@ -46821,6 +48614,12 @@
                             "catalogCode": {
                                 "type": "string"
                             },
+                            "contractBillingCycle": {
+                                "$ref": "#/components/schemas/contractChargeInterval"
+                            },
+                            "contractBillingMode": {
+                                "$ref": "#/components/schemas/contractChargeIntervalType"
+                            },
                             "countryOfOriginCode": {
                                 "type": "string"
                             },
@@ -46828,6 +48627,7 @@
                                 "type": "string"
                             },
                             "customsTariffNumber": {
+                                "deprecated": true,
                                 "type": "string"
                             },
                             "customsTariffNumberId": {
@@ -46835,6 +48635,12 @@
                                 "x-weclapp": {
                                     "entity": "customValue",
                                     "service": "customsTariffNumber"
+                                }
+                            },
+                            "defaultPriceCalculationType": {
+                                "$ref": "#/components/schemas/calculationType",
+                                "x-weclapp": {
+                                    "required": true
                                 }
                             },
                             "defaultWarehouseLevels": {
@@ -46847,6 +48653,12 @@
                                     "service": "warehouseLevel"
                                 }
                             },
+                            "defineIndividualTaskTemplates": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
                             "expenseAccountId": {
                                 "type": "string",
                                 "x-weclapp": {
@@ -46855,6 +48667,7 @@
                                 }
                             },
                             "expenseAccountNumber": {
+                                "deprecated": true,
                                 "type": "string"
                             },
                             "expirationDays": {
@@ -46884,6 +48697,7 @@
                                 }
                             },
                             "manufacturerName": {
+                                "deprecated": true,
                                 "type": "string"
                             },
                             "marginCalculationPriceType": {
@@ -46933,6 +48747,7 @@
                                 }
                             },
                             "purchaseCostCenterNumber": {
+                                "deprecated": true,
                                 "type": "string"
                             },
                             "quantityConversions": {
@@ -46949,6 +48764,7 @@
                                 }
                             },
                             "ratingName": {
+                                "deprecated": true,
                                 "type": "string"
                             },
                             "recordItemGroupName": {
@@ -46975,6 +48791,7 @@
                                 }
                             },
                             "salesCostCenterNumber": {
+                                "deprecated": true,
                                 "type": "string"
                             },
                             "sellByDate": {
@@ -47254,6 +49071,10 @@
                         "format": "decimal",
                         "type": "string"
                     },
+                    "stockQuantityWithoutOrderToDate": {
+                        "format": "decimal",
+                        "type": "string"
+                    },
                     "stockValuationPrice": {
                         "format": "decimal",
                         "type": "string"
@@ -47314,6 +49135,7 @@
                             },
                             "distributionChannel": {
                                 "$ref": "#/components/schemas/distributionChannel",
+                                "deprecated": true,
                                 "x-weclapp": {
                                     "required": true
                                 }
@@ -47435,6 +49257,12 @@
                                     "$ref": "#/components/schemas/articlePriceWithoutSalesChannel"
                                 },
                                 "type": "array"
+                            },
+                            "dropshippingPossible": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
                             },
                             "procurementLeadDays": {
                                 "format": "int32",
@@ -48778,6 +50606,7 @@
             },
             "bookingType": {
                 "enum": [
+                    "CARRY_FORWARD",
                     "IMPERSONAL",
                     "INCOMING_CREDIT_NOTE",
                     "INCOMING_INVOICE",
@@ -48863,6 +50692,15 @@
                     "AUTOMATIC_REMINDER",
                     "DATE_REMINDER",
                     "NO_REMINDER"
+                ],
+                "type": "string"
+            },
+            "calculationType": {
+                "enum": [
+                    "MARGIN_CALCULATION",
+                    "PURCHASE",
+                    "RECOMMENDED_RETAIL_PRICE",
+                    "SALES"
                 ],
                 "type": "string"
             },
@@ -49052,6 +50890,7 @@
                                 "type": "string",
                                 "x-weclapp": {
                                     "entity": "calendarEvent",
+                                    "required": true,
                                     "service": "calendarEvent"
                                 }
                             },
@@ -49608,6 +51447,12 @@
                                 },
                                 "type": "array"
                             },
+                            "contractCostItems": {
+                                "items": {
+                                    "$ref": "#/components/schemas/contractCostItem"
+                                },
+                                "type": "array"
+                            },
                             "contractDate": {
                                 "format": "timestamp",
                                 "type": "integer"
@@ -49908,6 +51753,116 @@
                     "REVENUE"
                 ],
                 "type": "string"
+            },
+            "contractCostItem": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/abstractEntity"
+                    },
+                    {
+                        "properties": {
+                            "articleId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "article",
+                                    "service": "article"
+                                }
+                            },
+                            "description": {
+                                "format": "html",
+                                "type": "string"
+                            },
+                            "descriptionFixed": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "discountPercentage": {
+                                "format": "decimal",
+                                "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "interval": {
+                                "$ref": "#/components/schemas/contractChargeInterval",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "intervalType": {
+                                "$ref": "#/components/schemas/contractChargeIntervalType",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "manualUnitPrice": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "netAmount": {
+                                "format": "decimal",
+                                "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "netAmountInCompanyCurrency": {
+                                "format": "decimal",
+                                "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "note": {
+                                "type": "string"
+                            },
+                            "quantity": {
+                                "format": "decimal",
+                                "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "servicePeriodFrom": {
+                                "format": "timestamp",
+                                "type": "integer"
+                            },
+                            "servicePeriodTo": {
+                                "format": "timestamp",
+                                "type": "integer"
+                            },
+                            "title": {
+                                "type": "string"
+                            },
+                            "unitId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "unit",
+                                    "service": "unit"
+                                }
+                            },
+                            "unitPrice": {
+                                "format": "decimal",
+                                "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "unitPriceInCompanyCurrency": {
+                                "format": "decimal",
+                                "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
             },
             "contractItem": {
                 "allOf": [
@@ -50389,7 +52344,7 @@
                             },
                             "attributeLabels": {
                                 "items": {
-                                    "$ref": "#/components/schemas/customAttributeDefinitionLabel"
+                                    "$ref": "#/components/schemas/customAttributeDefinitionTranslation"
                                 },
                                 "type": "array"
                             },
@@ -50424,6 +52379,12 @@
                             },
                             "groupName": {
                                 "type": "string"
+                            },
+                            "label": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
                             },
                             "legacyEntities": {
                                 "items": {
@@ -50478,20 +52439,6 @@
                     }
                 ]
             },
-            "customAttributeDefinitionLabel": {
-                "properties": {
-                    "labelText": {
-                        "type": "string"
-                    },
-                    "locale": {
-                        "type": "string",
-                        "x-weclapp": {
-                            "required": true
-                        }
-                    }
-                },
-                "type": "object"
-            },
             "customAttributeDefinitionListValue": {
                 "allOf": [
                     {
@@ -50522,6 +52469,17 @@
                         "type": "object"
                     }
                 ]
+            },
+            "customAttributeDefinitionTranslation": {
+                "properties": {
+                    "labelText": {
+                        "type": "string"
+                    },
+                    "locale": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
             },
             "customAttributeEntityType": {
                 "enum": [
@@ -51776,6 +53734,7 @@
                     "GOOGLEV3",
                     "ITSCOPE",
                     "JIRA",
+                    "KAUFLAND",
                     "MAGENTO",
                     "MAGENTO2",
                     "MAILCHIMP",
@@ -51784,7 +53743,7 @@
                     "MOLLIE_STAGING",
                     "NAMIRIAL_2C_SOLUTION",
                     "OPEN_ID_CONNECT",
-                    "REAL",
+                    "PRESTA",
                     "SENDINBLUE",
                     "SHIPCLOUD",
                     "SHOPIFY",
@@ -52181,6 +54140,13 @@
                                 "x-weclapp": {
                                     "entity": "shipment",
                                     "service": "shipment"
+                                }
+                            },
+                            "responsibleUserId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "user",
+                                    "service": "user"
                                 }
                             },
                             "returnAddress": {
@@ -52647,6 +54613,9 @@
                             "externalRecordNumber": {
                                 "type": "string"
                             },
+                            "origin": {
+                                "$ref": "#/components/schemas/moneyTransactionSource"
+                            },
                             "partyId": {
                                 "type": "string",
                                 "x-weclapp": {
@@ -52729,7 +54698,9 @@
                     "MOLLIE",
                     "MT940_KAPOTT",
                     "MT940_PROVIDE",
+                    "PAYMENT_RUN",
                     "PAYPAL",
+                    "POS",
                     "STRIPE"
                 ],
                 "type": "string"
@@ -52836,7 +54807,6 @@
                     "EBAY",
                     "FACEBOOK",
                     "GOOGLE_DRIVE",
-                    "GOOGLE_PLUS",
                     "INSTAGRAM",
                     "LINKEDIN",
                     "OTHER",
@@ -52898,6 +54868,10 @@
                                     "required": true
                                 }
                             },
+                            "clearanceDate": {
+                                "format": "timestamp",
+                                "type": "integer"
+                            },
                             "cleared": {
                                 "type": "boolean",
                                 "x-weclapp": {
@@ -52921,13 +54895,6 @@
                                     "$ref": "#/components/schemas/paymentApplication"
                                 },
                                 "type": "array"
-                            },
-                            "salesInvoiceId": {
-                                "type": "string",
-                                "x-weclapp": {
-                                    "entity": "salesInvoice",
-                                    "service": "salesInvoice"
-                                }
                             }
                         },
                         "type": "object"
@@ -53273,6 +55240,10 @@
                                     "required": true
                                 }
                             },
+                            "customerInternalNote": {
+                                "format": "html",
+                                "type": "string"
+                            },
                             "customerLossDescription": {
                                 "type": "string"
                             },
@@ -53386,6 +55357,12 @@
                             },
                             "dunningEmailAddressesId": {
                                 "type": "string"
+                            },
+                            "enableDropshippingInNewSupplySources": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
                             },
                             "eoriNumber": {
                                 "type": "string"
@@ -53599,6 +55576,10 @@
                                     "entity": "shippingCarrier",
                                     "service": "shippingCarrier"
                                 }
+                            },
+                            "supplierInternalNote": {
+                                "format": "html",
+                                "type": "string"
                             },
                             "supplierMinimumPurchaseOrderAmount": {
                                 "format": "decimal",
@@ -54069,12 +56050,6 @@
                             "moneyTransaction": {
                                 "$ref": "#/components/schemas/moneyTransaction"
                             },
-                            "openItem": {
-                                "$ref": "#/components/schemas/openItem",
-                                "x-weclapp": {
-                                    "required": true
-                                }
-                            },
                             "partyBankAccountId": {
                                 "type": "string"
                             },
@@ -54088,6 +56063,14 @@
                                 "$ref": "#/components/schemas/paymentRunPaymentType",
                                 "x-weclapp": {
                                     "required": true
+                                }
+                            },
+                            "purchaseOpenItemId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "purchaseOpenItem",
+                                    "required": true,
+                                    "service": "purchaseOpenItem"
                                 }
                             },
                             "purpose": {
@@ -54440,6 +56423,9 @@
                             "type": "string"
                         },
                         "type": "array"
+                    },
+                    "systemAdministrator": {
+                        "type": "boolean"
                     }
                 },
                 "type": "object"
@@ -54555,7 +56541,6 @@
                 "enum": [
                     "ADDITIONAL_ABS",
                     "ADDITION_PERCENT",
-                    "REBATE_PERCENT",
                     "REDUCTION_ABS",
                     "REDUCTION_PERCENT"
                 ],
@@ -55122,6 +57107,12 @@
                                     "$ref": "#/components/schemas/projectTeamMember"
                                 },
                                 "type": "array"
+                            },
+                            "template": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
                             }
                         },
                         "type": "object"
@@ -55281,6 +57272,31 @@
                         "type": "object"
                     }
                 ]
+            },
+            "propertyTranslation": {
+                "properties": {
+                    "propertyName": {
+                        "type": "string"
+                    },
+                    "values": {
+                        "items": {
+                            "$ref": "#/components/schemas/propertyTranslationValue"
+                        },
+                        "type": "array"
+                    }
+                },
+                "type": "object"
+            },
+            "propertyTranslationValue": {
+                "properties": {
+                    "locale": {
+                        "type": "string"
+                    },
+                    "text": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
             },
             "purchaseInvoice": {
                 "allOf": [
@@ -55506,6 +57522,25 @@
                 ],
                 "type": "string"
             },
+            "purchaseOpenItem": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/openItem"
+                    },
+                    {
+                        "properties": {
+                            "purchaseInvoiceId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "purchaseInvoice",
+                                    "service": "purchaseInvoice"
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
             "purchaseOrder": {
                 "allOf": [
                     {
@@ -55514,6 +57549,9 @@
                     {
                         "properties": {
                             "commission": {
+                                "type": "string"
+                            },
+                            "confirmationNumber": {
                                 "type": "string"
                             },
                             "deliveryAddress": {
@@ -55797,6 +57835,9 @@
                                     "required": true
                                 }
                             },
+                            "freeTextItem": {
+                                "type": "boolean"
+                            },
                             "priceScaleType": {
                                 "$ref": "#/components/schemas/priceScaleType"
                             },
@@ -55935,6 +57976,12 @@
                             },
                             "supplierArticleNumber": {
                                 "type": "string"
+                            },
+                            "useSupplierArticleNumber": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
                             }
                         },
                         "type": "object"
@@ -56408,7 +58455,6 @@
                 "enum": [
                     "ADDITION_ABSOLUTE",
                     "ADDITION_PERCENT",
-                    "REBATE_PERCENT",
                     "REDUCTION_ABSOLUTE",
                     "REDUCTION_PERCENT"
                 ],
@@ -56503,7 +58549,6 @@
             "reductionAdditionType": {
                 "enum": [
                     "ADDITION_PERCENT",
-                    "REBATE_PERCENT",
                     "REDUCTION_PERCENT"
                 ],
                 "type": "string"
@@ -56703,6 +58748,13 @@
                                     "required": true
                                 }
                             },
+                            "precedingSalesInvoiceId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "salesInvoice",
+                                    "service": "salesInvoice"
+                                }
+                            },
                             "recordAddress": {
                                 "$ref": "#/components/schemas/recordAddress"
                             },
@@ -56796,6 +58848,12 @@
                                     "$ref": "#/components/schemas/salesInvoiceItemRelationship"
                                 },
                                 "type": "array"
+                            },
+                            "serialNumbers": {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
                             }
                         },
                         "type": "object"
@@ -56871,9 +58929,29 @@
                     "FINAL_INVOICE",
                     "PART_PAYMENT_INVOICE",
                     "PREPAYMENT_INVOICE",
+                    "RETAIL_INVOICE",
                     "STANDARD_INVOICE"
                 ],
                 "type": "string"
+            },
+            "salesOpenItem": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/openItem"
+                    },
+                    {
+                        "properties": {
+                            "salesInvoiceId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "salesInvoice",
+                                    "service": "salesInvoice"
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
             },
             "salesOrder": {
                 "allOf": [
@@ -57454,20 +59532,6 @@
                                     "required": true
                                 }
                             },
-                            "fieldWeight": {
-                                "format": "decimal",
-                                "type": "string",
-                                "x-weclapp": {
-                                    "required": true
-                                }
-                            },
-                            "grossWeight": {
-                                "format": "decimal",
-                                "type": "string",
-                                "x-weclapp": {
-                                    "required": true
-                                }
-                            },
                             "shortIdentifier": {
                                 "type": "string",
                                 "x-weclapp": {
@@ -57485,13 +59549,6 @@
                                     "$ref": "#/components/schemas/storagePlace"
                                 },
                                 "type": "array",
-                                "x-weclapp": {
-                                    "required": true
-                                }
-                            },
-                            "trayWeight": {
-                                "format": "decimal",
-                                "type": "string",
                                 "x-weclapp": {
                                     "required": true
                                 }
@@ -57642,6 +59699,13 @@
                             },
                             "recordEmailAddresses": {
                                 "$ref": "#/components/schemas/emailAddresses"
+                            },
+                            "responsibleUserId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "user",
+                                    "service": "user"
+                                }
                             },
                             "salesInvoiceEmailAddresses": {
                                 "$ref": "#/components/schemas/emailAddresses"
@@ -58229,12 +60293,12 @@
                     "ASSEMBLY",
                     "BLOCKED",
                     "BUFFER",
-                    "CLARIFICATION",
                     "CONSOLIDATION",
                     "INBOUND",
                     "PICKING",
                     "STOCK",
-                    "UNIVERSAL"
+                    "UNIVERSAL",
+                    "UNIVERSAL_WITHOUT_PICKING"
                 ],
                 "type": "string"
             },
@@ -58466,6 +60530,9 @@
                                 },
                                 "type": "array"
                             },
+                            "billableStatus": {
+                                "type": "boolean"
+                            },
                             "creatorUserId": {
                                 "type": "string",
                                 "x-weclapp": {
@@ -58499,6 +60566,9 @@
                                 },
                                 "type": "array"
                             },
+                            "invoicingStatus": {
+                                "$ref": "#/components/schemas/billableInvoiceStatus"
+                            },
                             "lastReminderDateForOverdue": {
                                 "format": "timestamp",
                                 "type": "integer"
@@ -58512,6 +60582,9 @@
                                     "entity": "task",
                                     "service": "task"
                                 }
+                            },
+                            "performanceRecordedStatus": {
+                                "$ref": "#/components/schemas/performanceRecordedStatus"
                             },
                             "plannedEffort": {
                                 "format": "int64",
@@ -58620,6 +60693,124 @@
                 ],
                 "type": "string"
             },
+            "taskTemplate": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/abstractEntityWithCustomAttributes"
+                    },
+                    {
+                        "properties": {
+                            "articleId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "article",
+                                    "service": "article"
+                                }
+                            },
+                            "assignees": {
+                                "items": {
+                                    "$ref": "#/components/schemas/taskTemplateAssignee"
+                                },
+                                "type": "array"
+                            },
+                            "creatorUserId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "user",
+                                    "required": true,
+                                    "service": "user"
+                                }
+                            },
+                            "description": {
+                                "format": "html",
+                                "type": "string"
+                            },
+                            "entityReferences": {
+                                "items": {
+                                    "$ref": "#/components/schemas/entityReference"
+                                },
+                                "type": "array"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "parentTaskTemplateId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "taskTemplate",
+                                    "service": "taskTemplate"
+                                }
+                            },
+                            "plannedEffort": {
+                                "format": "int64",
+                                "type": "integer"
+                            },
+                            "positionNumber": {
+                                "format": "int32",
+                                "type": "integer"
+                            },
+                            "subject": {
+                                "type": "string"
+                            },
+                            "taskPriority": {
+                                "$ref": "#/components/schemas/taskPriority",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "taskTopics": {
+                                "items": {
+                                    "$ref": "#/components/schemas/entity"
+                                },
+                                "type": "array"
+                            },
+                            "taskTypes": {
+                                "items": {
+                                    "$ref": "#/components/schemas/entity"
+                                },
+                                "type": "array"
+                            },
+                            "taskVisibilityType": {
+                                "$ref": "#/components/schemas/taskVisibilityType",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "watchers": {
+                                "items": {
+                                    "$ref": "#/components/schemas/onlyId"
+                                },
+                                "type": "array"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "taskTemplateAssignee": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/abstractEntity"
+                    },
+                    {
+                        "properties": {
+                            "plannedEffort": {
+                                "format": "int64",
+                                "type": "integer"
+                            },
+                            "userId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "user",
+                                    "required": true,
+                                    "service": "user"
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
             "taskVisibilityType": {
                 "enum": [
                     "ORGANIZATION",
@@ -58673,6 +60864,13 @@
                             },
                             "defaultNominalAccountNumber": {
                                 "type": "string"
+                            },
+                            "depositAccountId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "ledgerAccount",
+                                    "service": "ledgerAccount"
+                                }
                             },
                             "name": {
                                 "type": "string",
@@ -59640,6 +61838,10 @@
                                 },
                                 "type": "array"
                             },
+                            "datevTermOfPaymentNumber": {
+                                "format": "int32",
+                                "type": "integer"
+                            },
                             "description": {
                                 "type": "string"
                             },
@@ -59698,16 +61900,6 @@
                     },
                     {
                         "properties": {
-                            "articleId": {
-                                "type": "string",
-                                "x-weclapp": {
-                                    "entity": "article",
-                                    "service": "article"
-                                }
-                            },
-                            "articleNumber": {
-                                "type": "string"
-                            },
                             "assignedUserId": {
                                 "type": "string",
                                 "x-weclapp": {
@@ -59715,14 +61907,14 @@
                                     "service": "user"
                                 }
                             },
-                            "assignedUserUsername": {
-                                "type": "string"
-                            },
                             "billable": {
                                 "type": "boolean",
                                 "x-weclapp": {
                                     "required": true
                                 }
+                            },
+                            "billableStatus": {
+                                "type": "boolean"
                             },
                             "ccEmailAddresses": {
                                 "type": "string"
@@ -59740,16 +61932,6 @@
                                     "entity": "contract",
                                     "service": "contract"
                                 }
-                            },
-                            "customerId": {
-                                "type": "string",
-                                "x-weclapp": {
-                                    "entity": "party",
-                                    "service": "party"
-                                }
-                            },
-                            "customerNumber": {
-                                "type": "string"
                             },
                             "description": {
                                 "format": "html",
@@ -59777,8 +61959,25 @@
                             "firstName": {
                                 "type": "string"
                             },
+                            "followUpDate": {
+                                "format": "timestamp",
+                                "type": "integer"
+                            },
+                            "invoicingStatus": {
+                                "$ref": "#/components/schemas/billableInvoiceStatus"
+                            },
+                            "language": {
+                                "type": "string"
+                            },
                             "lastName": {
                                 "type": "string"
+                            },
+                            "legacyArticleId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "article",
+                                    "service": "article"
+                                }
                             },
                             "legacyTimeAndMaterialTicket": {
                                 "type": "boolean",
@@ -59802,15 +62001,11 @@
                                     "service": "party"
                                 }
                             },
+                            "performanceRecordedStatus": {
+                                "$ref": "#/components/schemas/performanceRecordedStatus"
+                            },
                             "phoneNumber": {
                                 "type": "string"
-                            },
-                            "projectId": {
-                                "type": "string",
-                                "x-weclapp": {
-                                    "entity": "project",
-                                    "service": "project"
-                                }
                             },
                             "publicPageExpirationDate": {
                                 "format": "timestamp",
@@ -59829,7 +62024,7 @@
                                     "service": "user"
                                 }
                             },
-                            "responsibleUserUsername": {
+                            "room": {
                                 "type": "string"
                             },
                             "solutionDueDate": {
@@ -59845,16 +62040,6 @@
                                 },
                                 "type": "array"
                             },
-                            "tasks": {
-                                "items": {
-                                    "$ref": "#/components/schemas/onlyId"
-                                },
-                                "type": "array",
-                                "x-weclapp": {
-                                    "entity": "task",
-                                    "service": "task"
-                                }
-                            },
                             "ticketCategoryId": {
                                 "type": "string",
                                 "x-weclapp": {
@@ -59869,9 +62054,6 @@
                                     "required": true,
                                     "service": "ticketChannel"
                                 }
-                            },
-                            "ticketChannelName": {
-                                "type": "string"
                             },
                             "ticketNumber": {
                                 "type": "string"
@@ -59909,18 +62091,12 @@
                                     "service": "ticketStatus"
                                 }
                             },
-                            "ticketStatusName": {
-                                "type": "string"
-                            },
                             "ticketTypeId": {
                                 "type": "string",
                                 "x-weclapp": {
                                     "entity": "customValue",
                                     "service": "ticketType"
                                 }
-                            },
-                            "ticketTypeName": {
-                                "type": "string"
                             }
                         },
                         "type": "object"
@@ -60039,6 +62215,24 @@
                                 "x-weclapp": {
                                     "entity": "user",
                                     "service": "user"
+                                }
+                            },
+                            "pseudoCategory": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "published": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "visibleInCustomerPortal": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
                                 }
                             }
                         },
@@ -60601,7 +62795,7 @@
                     "bookingWithoutTaskAllowed": {
                         "type": "boolean"
                     },
-                    "markAsBillableOnCreate": {
+                    "markAsBillCompletelyOnCreate": {
                         "type": "boolean"
                     },
                     "overbookingOnProjectAllowed": {
@@ -60638,6 +62832,51 @@
                 ],
                 "type": "string"
             },
+            "translation": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/abstractEntity"
+                    },
+                    {
+                        "properties": {
+                            "key": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "values": {
+                                "items": {
+                                    "$ref": "#/components/schemas/translationValue"
+                                },
+                                "type": "array"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "translationValue": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/abstractEntity"
+                    },
+                    {
+                        "properties": {
+                            "locale": {
+                                "type": "string"
+                            },
+                            "text": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
             "unit": {
                 "allOf": [
                     {
@@ -60645,6 +62884,10 @@
                     },
                     {
                         "properties": {
+                            "defaultUnitHourAmount": {
+                                "format": "decimal",
+                                "type": "string"
+                            },
                             "description": {
                                 "type": "string"
                             },
@@ -60797,6 +63040,7 @@
             },
             "validationErrorType": {
                 "enum": [
+                    "/webapp/view/api/errors.html#!/validation/authorization",
                     "/webapp/view/api/errors.html#!/validation/consistency",
                     "/webapp/view/api/errors.html#!/validation/digits",
                     "/webapp/view/api/errors.html#!/validation/duplicate",
@@ -61183,6 +63427,13 @@
                                 "x-weclapp": {
                                     "entity": "batchNumber",
                                     "service": "batchNumber"
+                                }
+                            },
+                            "costCenterId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "costCenter",
+                                    "service": "costCenter"
                                 }
                             },
                             "incomingGoodsItemId": {

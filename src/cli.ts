@@ -54,6 +54,11 @@ export const cli = async (): Promise<CLIResult> => {
             describe: 'Generate .unique functions',
             type: 'boolean'
         })
+        .option('d', {
+            alias: 'deprecated',
+            describe: 'Include deprecated functions and services',
+            type: 'boolean'
+        })
         .option('e', {
             alias: 'from-env',
             describe: 'Use env variables WECLAPP_BACKEND_URL and WECLAPP_API_KEY as credentials',
