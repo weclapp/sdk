@@ -1,6 +1,6 @@
 import {GeneratorOptions} from '@generator/generate';
 import {logger} from '@logger';
-import {concat} from '@ts/concat';
+import {concat} from '@utils/concat';
 import {generateBlockComment} from '@ts/generateComment';
 import {generateInterface} from '@ts/generateInterface';
 import {generateBlockStatements, generateStatements} from '@ts/generateStatements';

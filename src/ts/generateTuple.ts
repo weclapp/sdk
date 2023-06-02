@@ -1,4 +1,4 @@
-import {concat} from '@ts/concat';
+import {concat} from '@utils/concat';
 import {generateString} from '@ts/generateString';
 import {generateType} from '@ts/generateType';
 
