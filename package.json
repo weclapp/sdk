@@ -37,6 +37,7 @@
     "lint": "eslint {src,tests}/**/*.ts",
     "lint:fix": "npm run lint -- --fix",
     "ci:test": "npm run lint:fix && npm run cli:build && npm run sdk:build"
+    "release": "standard-version"
   },
   "repository": {
     "type": "git",
@@ -46,7 +47,8 @@
     "@typescript-eslint/eslint-plugin": "^5.59.9",
     "@typescript-eslint/parser": "^5.59.9",
     "eslint": "^8.42.0",
-    "rollup-plugin-string": "^3.0.0"
+    "rollup-plugin-string": "^3.0.0",
+    "standard-version": "^9.5.0"
   },
   "dependencies": {
     "@rollup/plugin-json": "^6.0.0",
