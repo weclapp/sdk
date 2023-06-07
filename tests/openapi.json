@@ -4404,6 +4404,284 @@
                 ]
             }
         },
+        "/articleItemGroup": {
+            "get": {
+                "description": "query articleItemGroup",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "page",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "pageSize",
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "serializeNulls",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "sort",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "properties",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "includeReferencedEntities",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "items": {
+                                                "$ref": "#/components/schemas/articleItemGroup"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "articleItemGroup response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "articleItemGroup"
+                ]
+            },
+            "post": {
+                "description": "create a articleItemGroup",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/articleItemGroup"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/articleItemGroup"
+                                }
+                            }
+                        },
+                        "description": "articleItemGroup create response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "articleItemGroup"
+                ]
+            }
+        },
+        "/articleItemGroup/count": {
+            "get": {
+                "description": "count articleItemGroup",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "format": "int64",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "count"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "articleItemGroup"
+                ]
+            }
+        },
+        "/articleItemGroup/id/{id}": {
+            "delete": {
+                "description": "delete a articleItemGroup",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "articleItemGroup delete response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "articleItemGroup"
+                ]
+            },
+            "get": {
+                "description": "query articleItemGroup",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/articleItemGroup"
+                                }
+                            }
+                        },
+                        "description": "get by id"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "articleItemGroup"
+                ]
+            },
+            "put": {
+                "description": "update articleItemGroup",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/articleItemGroup"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/articleItemGroup"
+                                }
+                            }
+                        },
+                        "description": "articleItemGroup update response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "articleItemGroup"
+                ]
+            }
+        },
         "/articlePrice": {
             "get": {
                 "description": "query articlePrice",
@@ -19719,6 +19997,7 @@
         },
         "/meta/swagger.json": {
             "get": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "query",
@@ -24971,9 +25250,6 @@
                                     "removeUnconfirmed": {
                                         "type": "boolean"
                                     },
-                                    "updateShipQuantity": {
-                                        "type": "boolean"
-                                    },
                                     "useReservedSerialNumbersFromOtherShipments": {
                                         "type": "boolean"
                                     },
@@ -25033,7 +25309,6 @@
                                 },
                                 "required": [
                                     "removeUnconfirmed",
-                                    "updateShipQuantity",
                                     "withdrawals"
                                 ],
                                 "type": "object"
@@ -31394,6 +31669,7 @@
         },
         "/salesOrder/id/{id}/addItem": {
             "post": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "path",
@@ -31487,6 +31763,9 @@
                                             "lastModifiedDate": {
                                                 "format": "timestamp",
                                                 "type": "integer"
+                                            },
+                                            "manualPlannedWorkingTimePerUnit": {
+                                                "type": "boolean"
                                             },
                                             "manualQuantity": {
                                                 "type": "boolean"
@@ -33980,6 +34259,7 @@
         },
         "/settings/baseSettings": {
             "get": {
+                "deprecated": true,
                 "responses": {
                     "200": {
                         "content": {
@@ -34014,6 +34294,7 @@
         },
         "/settings/configurableMandatoryFields": {
             "get": {
+                "deprecated": true,
                 "responses": {
                     "200": {
                         "content": {
@@ -34098,6 +34379,7 @@
         },
         "/settings/salesSettings": {
             "get": {
+                "deprecated": true,
                 "responses": {
                     "200": {
                         "content": {
@@ -41256,8 +41538,127 @@
                 ]
             }
         },
+        "/ticket/id/{id}/linkSalesOrder": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "salesOrderId": {
+                                        "format": "int32",
+                                        "type": "integer"
+                                    }
+                                },
+                                "required": [
+                                    "salesOrderId"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/ticket"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "linkSalesOrder response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "ticket"
+                ]
+            }
+        },
+        "/ticket/id/{id}/unlinkSalesOrder": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {},
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/ticket"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "unlinkSalesOrder response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "ticket"
+                ]
+            }
+        },
         "/ticket/stateStatistic": {
             "get": {
+                "deprecated": true,
                 "responses": {
                     "200": {
                         "content": {
@@ -41295,6 +41696,7 @@
         },
         "/ticket/ticketingUsers": {
             "get": {
+                "deprecated": true,
                 "responses": {
                     "200": {
                         "content": {
@@ -48498,7 +48900,6 @@
                                 }
                             },
                             "accountNumber": {
-                                "deprecated": true,
                                 "type": "string"
                             },
                             "accountingCodeId": {
@@ -48623,11 +49024,16 @@
                             "countryOfOriginCode": {
                                 "type": "string"
                             },
+                            "customerArticleNumbers": {
+                                "items": {
+                                    "$ref": "#/components/schemas/customerSpecificArticleAttributes"
+                                },
+                                "type": "array"
+                            },
                             "customsDescription": {
                                 "type": "string"
                             },
                             "customsTariffNumber": {
-                                "deprecated": true,
                                 "type": "string"
                             },
                             "customsTariffNumberId": {
@@ -48667,7 +49073,6 @@
                                 }
                             },
                             "expenseAccountNumber": {
-                                "deprecated": true,
                                 "type": "string"
                             },
                             "expirationDays": {
@@ -48697,7 +49102,6 @@
                                 }
                             },
                             "manufacturerName": {
-                                "deprecated": true,
                                 "type": "string"
                             },
                             "marginCalculationPriceType": {
@@ -48747,7 +49151,6 @@
                                 }
                             },
                             "purchaseCostCenterNumber": {
-                                "deprecated": true,
                                 "type": "string"
                             },
                             "quantityConversions": {
@@ -48764,7 +49167,6 @@
                                 }
                             },
                             "ratingName": {
-                                "deprecated": true,
                                 "type": "string"
                             },
                             "recordItemGroupName": {
@@ -48791,7 +49193,6 @@
                                 }
                             },
                             "salesCostCenterNumber": {
-                                "deprecated": true,
                                 "type": "string"
                             },
                             "sellByDate": {
@@ -49106,6 +49507,63 @@
                             },
                             "mainImage": {
                                 "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "articleItemGroup": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/abstractEntity"
+                    },
+                    {
+                        "properties": {
+                            "items": {
+                                "items": {
+                                    "$ref": "#/components/schemas/articleItemGroupItem"
+                                },
+                                "type": "array"
+                            },
+                            "name": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "articleItemGroupItem": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/abstractEntity"
+                    },
+                    {
+                        "properties": {
+                            "articleId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "article",
+                                    "service": "article"
+                                }
+                            },
+                            "positionNumber": {
+                                "format": "int32",
+                                "type": "integer",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "quantity": {
+                                "format": "decimal",
+                                "type": "string",
                                 "x-weclapp": {
                                     "required": true
                                 }
@@ -50052,6 +50510,9 @@
                             "invoicingType": {
                                 "$ref": "#/components/schemas/invoicingType"
                             },
+                            "manualPlannedWorkingTimePerUnit": {
+                                "type": "boolean"
+                            },
                             "plannedWorkingTimePerUnit": {
                                 "format": "decimal",
                                 "type": "string"
@@ -50610,9 +51071,11 @@
                     "IMPERSONAL",
                     "INCOMING_CREDIT_NOTE",
                     "INCOMING_INVOICE",
+                    "INCOMING_MANUAL_ENTRY",
                     "INCOMING_PAYMENT",
                     "OUTGOING_CREDIT_NOTE",
                     "OUTGOING_INVOICE",
+                    "OUTGOING_MANUAL_ENTRY",
                     "OUTGOING_PAYMENT"
                 ],
                 "type": "string"
@@ -52912,6 +53375,32 @@
                 ],
                 "type": "string"
             },
+            "customerSpecificArticleAttributes": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/abstractEntity"
+                    },
+                    {
+                        "properties": {
+                            "customerArticleNumber": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "customerId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "party",
+                                    "required": true,
+                                    "service": "party"
+                                }
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
             "debitCreditIndicator": {
                 "enum": [
                     "CREDIT",
@@ -54905,12 +55394,16 @@
                 "enum": [
                     "CREDITOR",
                     "CREDITOR_INVERTED",
+                    "CREDITOR_PARTY",
                     "CREDIT_NOTE_CREDITOR",
                     "CREDIT_NOTE_CREDITOR_INVERTED",
                     "CREDIT_NOTE_DEBITOR",
                     "CREDIT_NOTE_DEBITOR_INVERTED",
                     "DEBTOR",
-                    "DEBTOR_INVERTED"
+                    "DEBTOR_INVERTED",
+                    "DEBTOR_PARTY",
+                    "DEBTOR_RETURN_DEBIT",
+                    "DEBTOR_RETURN_DEBIT_FEE"
                 ],
                 "type": "string"
             },
@@ -57443,6 +57936,14 @@
                                 },
                                 "type": "array"
                             },
+                            "servicePeriodFromDate": {
+                                "format": "timestamp",
+                                "type": "integer"
+                            },
+                            "servicePeriodToDate": {
+                                "format": "timestamp",
+                                "type": "integer"
+                            },
                             "supplierArticleId": {
                                 "type": "string",
                                 "x-weclapp": {
@@ -57588,6 +58089,13 @@
                             },
                             "purchaseOrderNumber": {
                                 "type": "string"
+                            },
+                            "purchaseOrderRequestId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "purchaseOrderRequest",
+                                    "service": "purchaseOrderRequest"
+                                }
                             },
                             "purchaseOrderType": {
                                 "$ref": "#/components/schemas/supplierOrderType"
@@ -58205,6 +58713,9 @@
                             },
                             "recordEmailAddresses": {
                                 "$ref": "#/components/schemas/emailAddresses"
+                            },
+                            "rejectionReason": {
+                                "type": "string"
                             },
                             "requestDate": {
                                 "format": "timestamp",
@@ -62027,6 +62538,13 @@
                             "room": {
                                 "type": "string"
                             },
+                            "salesOrderId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "salesOrder",
+                                    "service": "salesOrder"
+                                }
+                            },
                             "solutionDueDate": {
                                 "format": "timestamp",
                                 "type": "integer"
@@ -62747,6 +63265,13 @@
                                     "service": "salesOrder"
                                 }
                             },
+                            "salesOrderTicketId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "ticket",
+                                    "service": "ticket"
+                                }
+                            },
                             "startDate": {
                                 "format": "timestamp",
                                 "type": "integer",
@@ -62824,6 +63349,7 @@
                     "IMPORT_SALES_TAX",
                     "MONETARY_TRAFFIC",
                     "PAYMENT_TOLERANCE",
+                    "RETURN_DEBIT_FEE",
                     "REVERSE_CHARGE_TAX",
                     "REVERSE_CHARGE_TAX_CONTRA",
                     "TAX",
