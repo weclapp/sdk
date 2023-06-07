@@ -1,6 +1,5 @@
 import {GeneratedEnum} from '@generator/02-enums';
 import {extractPropertyMetaData, PropertyMetaData} from '@generator/03-entities/utils/extractPropertyMetaData';
-import {isEntityPropertyDeprecated} from '@generator/03-entities/utils/isEntityPropertyDeprecated';
 import {generateInterface, generateInterfaceType, InterfaceProperty} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
 import {generateString} from '@ts/generateString';
@@ -58,7 +57,10 @@ export const generateEntities = (
                 }
 
                 const type = convertToTypeScriptType(property, name).toString();
-                const comment = isNonArraySchemaObject(property) && property.format ? `format: ${property.format}` : undefined;
+                const comment = isNonArraySchemaObject(property) ?
+                    property.deprecated ? '@deprecated will be removed.' :
+                        property.format ? `format: ${property.format}` :
+                            undefined : undefined;
 
                 entityInterface.push({
                     name, type, comment,
@@ -82,12 +84,7 @@ export const generateEntities = (
 
         processProperties(schema.properties);
         const source = generateStatements(
-            generateInterface(
-                entity,
-                // Right now we can't remove them as some services still depend on them
-                entityInterface.map(property => isEntityPropertyDeprecated(entityInterface, property) ? {...property, comment: `@deprecated`} : property),
-                extend
-            ),
+            generateInterface(entity, entityInterface, extend),
             generateInterface(`${entity}_References`, referenceInterface, extend ? [`${extend}_References`] : undefined),
             generateInterface(`${entity}_Mappings`, referenceMappingsInterface, extend ? [`${extend}_Mappings`] : undefined),
             generateInterfaceType(`${entity}_Filter`, filterInterface, extend ? [entity, `${extend}_Filter`] : undefined)
