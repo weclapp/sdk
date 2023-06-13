@@ -9,7 +9,7 @@
   },
   "files": [
     "bin",
-    "lib",
+    "dist",
     "tsconfig.lib.json"
   ],
   "publishConfig": {
