@@ -69,7 +69,7 @@ export const cli = async (): Promise<CLIResult> => {
             alias: 'target',
             describe: 'Specify the target platform',
             type: 'string',
-            choices: ['browser', 'browser-rx', 'node', 'node-rx']
+            choices: ['browser', 'browser.rx', 'node', 'node.rx']
         })
         .option('d', {
             alias: 'deprecated',

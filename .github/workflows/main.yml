@@ -1,0 +1,31 @@
+name: Main
+
+on: ["push", "pull_request"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [node, node.rx, browser, browser.rx]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run cli:build
+        env:
+          NODE_ENV: production
+
+      - name: Generate
+        run: |
+          chmod +x ./bin/cli.js
+          ./bin/cli.js test/openapi.json --target ${{ matrix.target }}

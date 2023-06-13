@@ -50,7 +50,7 @@ Check out the [docs](docs) for how the generated SDK looks like and how to use i
 | `--key` / `-k`      | API Key in case of using a remote.                                            | `string`                                     |
 | `--cache` / `-c`    | Extra query params when fetching the openapi.json from a server.              | `boolean`                                    |
 | `--from-env` / `-e` | Use env variables `WECLAPP_BACKEND_URL` and `WECLAPP_API_KEY` as credentials. | `boolean`                                    |
-| `--target` / `-t`   | Specify the target platform.                                                  | `browser`, `browser-rx`, `node` or `node-rx` |
+| `--target` / `-t`   | Specify the target platform.                                                  | `browser`, `browser.rx`, `node` or `node.rx` |
 | `--generate-unique` | Generate additional `.unique` functions.                                      | `boolean`                                    |
 
 ### Contributing
