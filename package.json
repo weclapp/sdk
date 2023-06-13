@@ -5,7 +5,7 @@
   "author": "weclapp",
   "sideEffects": false,
   "bin": {
-    "sdk-generator": "./bin/cli.js"
+    "build-weclapp-sdk": "./bin/cli.js"
   },
   "files": [
     "bin",

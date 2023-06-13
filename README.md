@@ -18,7 +18,7 @@ $ npm install --save-dev @weclapp/sdk
 And build the sdk via:
 
 ```sh
-$ npx sdk-generator company.weclapp.com --key [your api key]
+$ npx build-weclapp-sdk company.weclapp.com --key [your api key]
 ```
 
 It is recommended to add the build script to the [postinstall](https://docs.npmjs.com/cli/v9/using-npm/scripts#life-cycle-operation-order)-script in your package.json.
@@ -28,7 +28,7 @@ This way, every time someone installs or updates dependencies, the SDK is genera
 {
    // in your package.json
    "scripts": {
-      "sdk:generate": "sdk-generator company.weclapp.com --key [your api key] --cache --target browser",
+      "sdk:generate": "build-weclapp-sdk company.weclapp.com --key [your api key] --cache --target browser",
       "postinstall": "npm runsdk:generate",
    }
 }
@@ -36,7 +36,18 @@ This way, every time someone installs or updates dependencies, the SDK is genera
 
 After that, you can import the sdk via `@weclapp/sdk`.
 Check out the [docs](docs) for how the generated SDK looks like and how to use it!
-You can run `npx sdk-generator --help` for more options :)
+
+### Available flags
+
+| Flag                | Description                                                                   | Value                                        |
+|---------------------|-------------------------------------------------------------------------------|----------------------------------------------|
+| `-h` / `--help`     | Show help.                                                                    | `boolean`                                    |
+| `-v` / `--version`  | Show version of SDK.                                                          | `boolean`                                    |
+| `-k` / `--key`      | API Key in case of using a remote.                                            | `string`                                     |
+| `-c` / `--cache`    | Extra query params when fetching the openapi.json from a server.              | `boolean`                                    |
+| `-e` / `--from-env` | Use env variables `WECLAPP_BACKEND_URL` and `WECLAPP_API_KEY` as credentials. | `boolean`                                    |
+| `-t` / `--target`   | Specify the target platform.                                                  | `browser`, `browser-rx`, `node` or `node-rx` |
+| `--generate-unique` | Generate additional `.unique` functions.                                      | `boolean`                                    |
 
 ### Development
 
@@ -45,17 +56,5 @@ To work on the SDK generator you need to do the following:
 1. Run `npm run cli:watch`.
 2. Run `npm run sdk:build` to build the SDK from env. You might want to check out [.tmp](.tmp) for the locally built SDK.
 
-During development the SDK will be built into the [sdk](./sdk) folder, in production the root folder will be used.
-The SDK is first generated into ./.sdk and then cached and moved to the corresponding target directory.
-
-### Publishing
-
-Publishing is restricted to project maintainers.
-
-1. Switch to master branch
-2. To make a new version use script `npm run release` in local terminal
-   1. For patch `npm run release -- --release-as patch`
-   2. For minor `npm run release -- --release-as minor`
-   3. For major `npm run release -- --release-as major`
-3. The new tag is generated, [CHANGELOG.md](CHANGELOG.md) updated and changes committed
-4. Push to master (don't forget to push tag as well, e.g `git push --follow-tags origin master`)
+During development, the SDK will first be generated into the [.tmp](./.tmp) directory and then bundled and stored in the [sdk](./sdk) folder.
+In production the root folder will be used.
