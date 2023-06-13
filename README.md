@@ -1,13 +1,17 @@
 <br/>
 
 <div align="center">
-    <h1>weclapp sdk generator</h1>
+    <h3>weclapp sdk generator</h3>
 </div>
+
+<br/>
 
 ### Getting started
 
-This is an SDK generator, it will take an [`openapi.json`](https://swagger.io/specification/) from [weclapp](https://weclapp.com/) and build services and types according to the entities defined in it. 
+This is an SDK generator, it will take an [`openapi.json`](https://swagger.io/specification/) from [weclapp](https://weclapp.com/) and build services and types according to the entities defined in it.
 What's being generated depends on the weclapp version you're using.
+
+The SDK generator requires the current or LTS version of nodejs, as well as npm v9 or v8.
 
 You can install the generator via the package manager of your choice:
 
@@ -26,11 +30,11 @@ This way, every time someone installs or updates dependencies, the SDK is genera
 
 ```json5
 {
-   // in your package.json
-   "scripts": {
-      "sdk:generate": "build-weclapp-sdk company.weclapp.com --key [your api key] --cache --target browser",
-      "postinstall": "npm runsdk:generate",
-   }
+  // in your package.json
+  "scripts": {
+    "sdk:generate": "build-weclapp-sdk company.weclapp.com --key [your api key] --cache --target browser",
+    "postinstall": "npm run sdk:generate",
+  }
 }
 ```
 
@@ -39,22 +43,16 @@ Check out the [docs](docs) for how the generated SDK looks like and how to use i
 
 ### Available flags
 
-| Flag                | Description                                                                   | Value                                        |
+| Flag                | Description                                                                   | Value / Type                                 |
 |---------------------|-------------------------------------------------------------------------------|----------------------------------------------|
-| `-h` / `--help`     | Show help.                                                                    | `boolean`                                    |
-| `-v` / `--version`  | Show version of SDK.                                                          | `boolean`                                    |
-| `-k` / `--key`      | API Key in case of using a remote.                                            | `string`                                     |
-| `-c` / `--cache`    | Extra query params when fetching the openapi.json from a server.              | `boolean`                                    |
-| `-e` / `--from-env` | Use env variables `WECLAPP_BACKEND_URL` and `WECLAPP_API_KEY` as credentials. | `boolean`                                    |
-| `-t` / `--target`   | Specify the target platform.                                                  | `browser`, `browser-rx`, `node` or `node-rx` |
+| `--help` / `-h`     | Show help.                                                                    | `boolean`                                    |
+| `--version` / `-v`  | Show version of SDK.                                                          | `boolean`                                    |
+| `--key` / `-k`      | API Key in case of using a remote.                                            | `string`                                     |
+| `--cache` / `-c`    | Extra query params when fetching the openapi.json from a server.              | `boolean`                                    |
+| `--from-env` / `-e` | Use env variables `WECLAPP_BACKEND_URL` and `WECLAPP_API_KEY` as credentials. | `boolean`                                    |
+| `--target` / `-t`   | Specify the target platform.                                                  | `browser`, `browser-rx`, `node` or `node-rx` |
 | `--generate-unique` | Generate additional `.unique` functions.                                      | `boolean`                                    |
 
-### Development
+### Contributing
 
-To work on the SDK generator you need to do the following:
-
-1. Run `npm run cli:watch`.
-2. Run `npm run sdk:build` to build the SDK from env. You might want to check out [.tmp](.tmp) for the locally built SDK.
-
-During development, the SDK will first be generated into the [.tmp](./.tmp) directory and then bundled and stored in the [sdk](./sdk) folder.
-In production the root folder will be used.
+Check out the [contributing guidelines](.github/CONTRIBUTING.md).

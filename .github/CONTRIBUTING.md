@@ -1,3 +1,17 @@
+### Development
+
+To work on the SDK generator you need to do the following:
+
+1. Clone this repo using git, you need to have nodejs installed.
+2. Run `npm install` in the cloned directory.
+3. Run `npm run cli:watch`.
+4. Run `npm run sdk:build` to build the SDK from env. You might want to check out [.tmp](.tmp) for the locally built SDK.
+
+During development, the SDK will first be generated into the [.tmp](./.tmp) directory and then bundled and stored in the [sdk](./sdk) folder.
+In production the root folder will be used.
+
+As of v1.9.0 this repository uses [conventional commit messages](https://conventionalcommits.org).
+
 ### Publishing
 
 1. Switch to master branch

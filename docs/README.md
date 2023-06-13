@@ -40,7 +40,7 @@ interface ServiceConfig {
 }
 ```
 
-There are two ways to use each service:
+There are three ways of accessing a service through the SDK:
 
 #### Using a Global Config
 
@@ -90,8 +90,8 @@ where `RequestPayload` looks like this:
 
 ```ts
 interface RequestPayload {
-    method?: RequestPayloadMethod; // Request method
-    query?: Record<string, any>; // Query parameters
+    method?: RequestPayloadMethod; // Optional request method, default is GET
+    query?: Record<string, any>; // Optional query parameters
     body?: any; // Optional body
 
     // In case the response body is an object with a result-prop the value will be extracted
@@ -105,7 +105,9 @@ interface RequestPayload {
 
 ## Generated types and utilities
 
-The generator generates various utilities that can be used to integrate it in a generic way into your app:
+The generator generates various utilities that can be used to integrate it in a generic way into your app.
+
+### Exported constants
 
 | Constant                    | Description                                                                                                            |
 |-----------------------------|------------------------------------------------------------------------------------------------------------------------|
@@ -116,24 +118,17 @@ The generator generates various utilities that can be used to integrate it in a 
 | `wServices`                 | Object with all services where the name is the key and the value the service (that is using the global config).        |
 | `wEntityProperties`         | Object with all entity names as key and properties including the type and format as value.                             |
 
+### Exported types
 
-| Type                    | Description                                                                                                 |
-|-------------------------|-------------------------------------------------------------------------------------------------------------|
-| `WServiceWith[method]`  | A tuple of strings with the names of the services that contain this function. Example: `WServiceWithSome`.  |
-| `WServicesWith[method]` | An interface with the service-name as key and corresponding service as value. Example: `WServicesWithSome`. |
-| `WCustomValueService`   | Tuple of services (strings) that work with `CustomValue`.                                                   |
-| `WEnums`                | Type of `wEnums`.                                                                                           |
-| `WEnum`                 | All keys of `WEnums`.                                                                                       |
-| `WEntities`             | Interface will all entities from weclapp with their name as key and type as value                           |
-| `WEntity`               | All keys of `WEntities`.                                                                                    |
-| `WServiceFactories`     | Type of `wServiceFactories`.                                                                                |
-| `WServices`             | Type of `wServices`.                                                                                        |
-| `WEntityProperties`     | Generalized type of `wEntityProperties`.                                                                    |
-
-
-### Type guards
-
-The package contains several type-guards to check whether if a string corresponds to a service.
-These type-guards include `isWServiceWithSome`, `isWServiceWithCreate`, `isWServiceWithCount`, `isWServiceWithRemove`, `isWServiceWithUpdate` and `isWServiceWithUnique` if `--generate-unique` is provided when building the SDK.
-
-Additionally, there is a `isWCustomValueService` that checks whether the string passed corresponds to a service that works with `CustomValue`.
+| Type                    | Description                                                                                                 | Type guards available?                | 
+|-------------------------|-------------------------------------------------------------------------------------------------------------|---------------------------------------|
+| `WServiceWith[method]`  | A tuple of strings with the names of the services that contain this function. Example: `WServiceWithSome`.  | Yes, for example `isWServiceWithSome` |
+| `WServicesWith[method]` | An interface with the service-name as key and corresponding service as value. Example: `WServicesWithSome`. |                                       |
+| `WCustomValueService`   | Tuple of services (strings) that work with `CustomValue`.                                                   | Yes: `isWCustomValueService`          |
+| `WEnums`                | Type of `wEnums`.                                                                                           |                                       |
+| `WEnum`                 | All keys of `WEnums`.                                                                                       |                                       |
+| `WEntities`             | Interface will all entities from weclapp with their name as key and type as value                           |                                       |
+| `WEntity`               | All keys of `WEntities`.                                                                                    |                                       |
+| `WServiceFactories`     | Type of `wServiceFactories`.                                                                                |                                       |
+| `WServices`             | Type of `wServices`.                                                                                        |                                       |
+| `WEntityProperties`     | Generalized type of `wEntityProperties`.                                                                    |                                       |
