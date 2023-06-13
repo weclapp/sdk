@@ -1,5 +1,3 @@
-import {memoize} from '@utils/memoize';
-
 /**
  * ROOT           => /article
  * COUNT          => /article/count
@@ -30,7 +28,7 @@ export interface WeclappSpecialEndpoint {
 
 export type WeclappEndpoint = WeclappNormalEndpoint | WeclappSpecialEndpoint;
 
-export const parseEndpointPath = memoize((path: string): WeclappNormalEndpoint | WeclappSpecialEndpoint | undefined => {
+export const parseEndpointPath = (path: string): WeclappNormalEndpoint | WeclappSpecialEndpoint | undefined => {
     const [, entity, ...rest] = path.split('/');
 
     if (!entity) {
@@ -50,4 +48,4 @@ export const parseEndpointPath = memoize((path: string): WeclappNormalEndpoint |
     }
 
     return undefined;
-});
+};

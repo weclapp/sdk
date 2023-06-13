@@ -3,7 +3,8 @@ import {GeneratedService} from '@generator/04-services';
 import {generateCustomValueUtilities} from '@generator/05-maps/utils/generateCustomValueUtilities';
 import {generateEntityPropertyMap} from '@generator/05-maps/utils/generateEntityPropertyMap';
 import {generateGroupedServices} from '@generator/05-maps/utils/generateGroupedServices';
-import {generateBlockComment} from '@ts/generateComment';
+import {GeneratorOptions} from '@generator/generate';
+import {generateBlockComment, generateInlineComment} from '@ts/generateComment';
 import {generateInterface} from '@ts/generateInterface';
 import {generateStatements} from '@ts/generateStatements';
 import {generateType} from '@ts/generateType';
@@ -19,6 +20,7 @@ interface MapsGenerator {
     entities: Map<string, GeneratedEntity>;
     enums: string[];
     aliases: Map<string, string>;
+    options: GeneratorOptions;
 }
 
 const obj = (list: string[]) =>
@@ -27,7 +29,7 @@ const obj = (list: string[]) =>
 const arr = (list: string[]) =>
     `[\n${indent(list.join(',\n'))}\n]`;
 
-export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator): GeneratedMaps => {
+export const generateMaps = ({services, entities, aliases, enums, options}: MapsGenerator): GeneratedMaps => {
     const entitiesKeys = [...entities.keys()];
 
     const enumsArray = `export const wEnums = ${obj(enums)};`;
@@ -35,7 +37,10 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
     const serviceNames = `export const wServiceNames: WService[] = ${arr(services.map(v => `'${v.entity}'`))};`;
 
     const serviceValues = `export const wServiceFactories = ${obj(services.map(v => `${v.entity}: ${v.serviceName}`))};`;
-    const serviceInstanceValues = `export const wServices = ${obj(services.map(v => `${v.entity}: ${v.serviceName}()`))};`;
+    const serviceInstanceValues = `export const wServices = ${obj(services.map(v => {
+        const src = `${v.entity}: ${v.serviceName}()`;
+        return v.deprecated ? generateInlineComment('@deprecated') + `\n${src}` : src;
+    }))};`;
 
     const entityInterfaces = [
         ...entitiesKeys.map(entity => ({
@@ -70,7 +75,7 @@ export const generateMaps = ({services, entities, aliases, enums}: MapsGenerator
             entityNames,
             serviceNames,
             enumsArray,
-            generateEntityPropertyMap(entities),
+            generateEntityPropertyMap(entities, services, options),
 
             /* Map of entity to references / mappings and filters*/
             entityReferences,

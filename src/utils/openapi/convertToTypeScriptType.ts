@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import {concat} from '@ts/concat';
+import {concat} from '@utils/concat';
 import {loosePascalCase} from '@utils/case';
 import {indent} from '@utils/indent';
 import {isReferenceObject} from '@utils/openapi/guards';

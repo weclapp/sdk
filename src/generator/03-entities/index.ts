@@ -57,7 +57,10 @@ export const generateEntities = (
                 }
 
                 const type = convertToTypeScriptType(property, name).toString();
-                const comment = isNonArraySchemaObject(property) && property.format ? `format: ${property.format}` : undefined;
+                const comment = isNonArraySchemaObject(property) ?
+                    property.deprecated ? '@deprecated will be removed.' :
+                        property.format ? `format: ${property.format}` :
+                            undefined : undefined;
 
                 entityInterface.push({
                     name, type, comment,
@@ -81,21 +84,7 @@ export const generateEntities = (
 
         processProperties(schema.properties);
         const source = generateStatements(
-            generateInterface(
-                entity, entityInterface.map(property => {
-                    let deprecated = false;
-
-                    if (property.name.endsWith('Name')) {
-                        const rawName = property.name.slice(0, -4);
-                        deprecated =
-                            filterInterface.some(v => v.name === rawName) &&
-                            entityInterface.some(v => v.name.endsWith('Id') && v.name.slice(0, -2) === rawName);
-                    }
-
-
-                    return deprecated ? {...property, comment: `@deprecated`} : property;
-                }), extend
-            ),
+            generateInterface(entity, entityInterface, extend),
             generateInterface(`${entity}_References`, referenceInterface, extend ? [`${extend}_References`] : undefined),
             generateInterface(`${entity}_Mappings`, referenceMappingsInterface, extend ? [`${extend}_Mappings`] : undefined),
             generateInterfaceType(`${entity}_Filter`, filterInterface, extend ? [entity, `${extend}_Filter`] : undefined)

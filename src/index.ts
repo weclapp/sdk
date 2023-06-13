@@ -3,11 +3,11 @@ import {generate} from '@generator/generate';
 import {logger} from '@logger';
 import {currentDirname} from '@utils/currentDirname';
 import {hash} from '@utils/hash';
-import {writeSourceFile} from '@utils/writeSourceFile';
 import {cp, mkdir, rm, stat, writeFile} from 'fs/promises';
 import {dirname, resolve} from 'path';
 import pkg from '../package.json';
 import {cli} from './cli';
+import prettyMs from 'pretty-ms';
 
 const workingDirectory = resolve(currentDirname(), './sdk');
 const folders = ['docs', 'main', 'node', 'raw', 'rx', 'utils'];
@@ -37,28 +37,26 @@ void (async () => {
 
         // Store swagger.json file
         await writeFile(await tmp('openapi.json'), JSON.stringify(doc, null, 2));
-        logger.infoLn(`Generate (target: ${options.target})`);
+        logger.infoLn(`Generate sdk (target: ${options.target})`);
 
         // Generate SDKs
         const sdk = generate(doc, options);
-        await writeSourceFile(await tmp('src', `${options.target}.ts`), sdk);
+        await writeFile(await tmp('src', `${options.target}.ts`), sdk.trim() + '\n');
 
         // Bundle
-        logger.infoLn('Bundle (this may take some time)...');
+        logger.infoLn('Bundle... (this may take some time)');
         await bundle(cacheDir, options.target);
-
-        // Print job summary
-        const duration = Math.floor(Number((process.hrtime.bigint() - start) / 1_000_000n));
-        logger.blankLn();
-        logger.successLn(`SDK generated in ${duration}ms.`);
 
         // Remove old SDK
         await Promise.all(folders.map(async dir => rm(dist(dir), {recursive: true}).catch(() => 0)));
     }
 
+    // Copy bundled SDK
     await cp(cacheDir, workingDirectory, {recursive: true});
 
-    logger.successLn(`Cleanup done, Bye.`);
+    // Print job summary
+    const duration = (process.hrtime.bigint() - start) / 1_000_000n;
+    logger.successLn(`SDK built in ${prettyMs(Number(duration))}`);
     logger.printSummary();
 })().catch((error: unknown) => {
     logger.errorLn(`Fatal error:`);

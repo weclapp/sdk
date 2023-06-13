@@ -13,6 +13,7 @@ interface Args {
     cache?: boolean;
     query?: string;
     generateUnique?: boolean;
+    deprecated?: boolean;
     fromEnv?: boolean;
     target?: Target;
     _: (string | number)[];
@@ -54,6 +55,11 @@ export const cli = async (): Promise<CLIResult> => {
             describe: 'Generate .unique functions',
             type: 'boolean'
         })
+        .option('d', {
+            alias: 'deprecated',
+            describe: 'Include deprecated functions and services',
+            type: 'boolean'
+        })
         .option('e', {
             alias: 'from-env',
             describe: 'Use env variables WECLAPP_BACKEND_URL and WECLAPP_API_KEY as credentials',
@@ -64,6 +70,11 @@ export const cli = async (): Promise<CLIResult> => {
             describe: 'Define targets, example: -t browser',
             type: 'string'
         })
+        .option('d', {
+            alias: 'deprecated',
+            describe: 'Include deprecated functions and services',
+            type: 'boolean'
+        })
         .epilog(`Copyright ${new Date().getFullYear()} weclapp GmbH`) as {argv: Args};
 
     if (argv.fromEnv) {
@@ -71,17 +82,20 @@ export const cli = async (): Promise<CLIResult> => {
     }
 
     const {WECLAPP_API_KEY, WECLAPP_BACKEND_URL} = process.env;
-    const options: GeneratorOptions = {
-        generateUnique: argv.generateUnique ?? false,
-        target: argv.target ?? Target.BROWSER_PROMISES
-    };
 
     const {
         query,
         cache = false,
+        deprecated = false,
         key = WECLAPP_API_KEY as string,
         _: [src = WECLAPP_BACKEND_URL as string]
     } = argv;
+
+    const options: GeneratorOptions = {
+        deprecated,
+        generateUnique: argv.generateUnique ?? false,
+        target: argv.target ?? Target.BROWSER_PROMISES
+    };
 
     if (typeof src === 'number') {
         return Promise.reject('Expected string as command');

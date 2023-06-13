@@ -14,6 +14,8 @@ export interface GeneratorOptions {
     generateUnique: boolean;
     /* Build target */
     target: Target;
+    /* Generate deprecated functions */
+    deprecated: boolean;
 }
 
 export const generate = (
@@ -33,6 +35,7 @@ export const generate = (
         generateBlockComment('MAPS', generateMaps({
             services: [...services.values()],
             enums: [...enums.keys()],
+            options,
             entities,
             aliases
         }).source)
