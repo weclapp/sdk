@@ -13,7 +13,7 @@ export default [
             'path', 'crypto', 'yargs/helpers', 'fs/promises', 'url'
         ],
         output: {
-            file: 'lib/cli.js',
+            file: 'dist/cli.js',
             format: 'es'
         }
     }

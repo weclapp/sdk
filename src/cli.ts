@@ -28,17 +28,17 @@ interface CLIResult {
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 export const cli = async (): Promise<CLIResult> => {
     const {argv} = yargs(hideBin(process.argv))
-        .scriptName('sdk-generator')
+        .scriptName('build-weclapp-sdk')
         .usage('Usage: $0 <source> [flags]')
         .version(version)
-        .example('$0 swagger.json', 'Generate the SDK based on the openapi / swagger file')
-        .example('$0 xxx.weclapp.com --key ...', 'Generate the SDK based on the openapi / swagger file from the given weclapp instance using the API-Key')
+        .example('$0 openapi.json', 'Generate the SDK based on a local openapi file')
+        .example('$0 xxx.weclapp.com --key ...', 'Generate the SDK based on the openapi file from the given weclapp instance')
         .help('h')
         .alias('v', 'version')
         .alias('h', 'help')
         .option('k', {
             alias: 'key',
-            describe: 'API Key in case of an URL source',
+            describe: 'API Key (only needed when not using a local file)',
             type: 'string'
         })
         .option('c', {
@@ -67,8 +67,9 @@ export const cli = async (): Promise<CLIResult> => {
         })
         .option('t', {
             alias: 'target',
-            describe: 'Define targets, example: -t browser',
-            type: 'string'
+            describe: 'Specify the target platform',
+            type: 'string',
+            choices: ['browser', 'browser.rx', 'node', 'node.rx']
         })
         .option('d', {
             alias: 'deprecated',

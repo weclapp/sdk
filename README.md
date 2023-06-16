@@ -1,44 +1,58 @@
 <br/>
-<br/>
 
 <div align="center">
-    <img src="/uploads/1dedf37d0e1e105f9e94ea97e04ca096/logo.svg" alt="Logo" width="350"/>
+    <h3>weclapp sdk generator</h3>
 </div>
 
 <br/>
 
-<div align="center">
-    <h3>SDK Generator</h3>
-</div>
+### Getting started
 
-## Quick start
+This is an SDK generator, it will take an [`openapi.json`](https://swagger.io/specification/) from [weclapp](https://weclapp.com/) and build services and types according to the entities defined in it.
+What's being generated depends on the weclapp version you're using.
 
-The following README is about the CLI.
+The SDK generator requires the current or LTS version of nodejs, as well as npm v9 or v8.
 
-1. Copy the [.env.example](.env.example) to [.env](.env) and configure it accordingly. Make sure to set NODE_ENV to `development`.
-2. Run `npm run cli:watch`.
-3. Run `npm run sdk:build` to build the SDK from env. You might want to check out [.tmp](.tmp) for the locally built SDK.
+You can install the generator via the package manager of your choice:
 
-> During development the SDK will be build into the [sdk](./sdk) folder, in production the root folder will be used.
+```sh
+$ npm install --save-dev @weclapp/sdk
+```
 
-> The SDK is first generated into ./.sdk and then cached and moved to the corresponding target directory.
-> The package version and content of the swagger.json is used as cache key.
+And build the sdk via:
 
-## Documentation
+```sh
+$ npx build-weclapp-sdk company.weclapp.com --key [your api key]
+```
 
-Please refer to the [docs](docs) for how the generated SDK looks like.
+It is recommended to add the build script to the [postinstall](https://docs.npmjs.com/cli/v9/using-npm/scripts#life-cycle-operation-order)-script in your package.json.
+This way, every time someone installs or updates dependencies, the SDK is generated:
 
-## Publishing
+```json5
+{
+  // in your package.json
+  "scripts": {
+    "sdk:generate": "build-weclapp-sdk company.weclapp.com --key [your api key] --cache --target browser",
+    "postinstall": "npm run sdk:generate",
+  }
+}
+```
 
-Publishing is restricted to project maintainers. To publish component-library to our package registry we need to do the
-following steps:
+After that, you can import the sdk via `@weclapp/sdk`.
+Check out the [docs](docs) for how the generated SDK looks like and how to use it!
 
-1. Switch to master branch
-2. To make a new version use script `npm run release` in local terminal
-    1. For patch `npm version patch`
-    2. For minor `npm version minor`
-    3. For major `npm version major`
-3. The new tag is generated, [CHANGELOG.md](CHANGELOG.md) updated and changes committed
-4. Push to master (don't forget to push tag as well, e.g `git push --follow-tags origin master`)
+### Available flags
 
-Gitlab CI pipeline will automatically publish package to registry with new version number.
+| Flag                | Description                                                                   | Value / Type                                 |
+|---------------------|-------------------------------------------------------------------------------|----------------------------------------------|
+| `--help` / `-h`     | Show help.                                                                    | `boolean`                                    |
+| `--version` / `-v`  | Show version of SDK.                                                          | `boolean`                                    |
+| `--key` / `-k`      | API Key in case of using a remote.                                            | `string`                                     |
+| `--cache` / `-c`    | Extra query params when fetching the openapi.json from a server.              | `boolean`                                    |
+| `--from-env` / `-e` | Use env variables `WECLAPP_BACKEND_URL` and `WECLAPP_API_KEY` as credentials. | `boolean`                                    |
+| `--target` / `-t`   | Specify the target platform.                                                  | `browser`, `browser.rx`, `node` or `node.rx` |
+| `--generate-unique` | Generate additional `.unique` functions.                                      | `boolean`                                    |
+
+### Contributing
+
+Check out the [contributing guidelines](.github/CONTRIBUTING.md).

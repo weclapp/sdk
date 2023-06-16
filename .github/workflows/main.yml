@@ -1,0 +1,73 @@
+name: Main
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [node, node.rx, browser, browser.rx]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run cli:build
+        env:
+          NODE_ENV: production
+
+      - name: Generate
+        run: |
+          chmod +x ./bin/cli.js
+          ./bin/cli.js test/openapi.json --target ${{ matrix.target }}
+
+      - name: Upload dist files
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: dist
+
+  publish:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    steps:
+      - name: Download dist files
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: dist
+
+      - name: Publish
+        run: npm publish
+
+  publish_snapshot:
+    runs-on: ubuntu-latest
+    if: |
+      github.ref_name == 'master' &&
+      !startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    steps:
+      - name: Download dist files
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: dist
+
+      - name: Publish snapshot
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          LATEST_TAG_RAW=$(echo "$LATEST_TAG" | sed 's/v//')
+          COMMITS_SINCE_LAST_TAG=$(git rev-list "$LATEST_TAG"..HEAD --count)
+          VERSION="$LATEST_TAG_RAW-dev.$COMMITS_SINCE_LAST_TAG"
+          npm version "$VERSION" --git-tag-version=false
+          npm publish

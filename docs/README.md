@@ -1,11 +1,3 @@
-## Exported utilities
-
-| Interface         | Description                                                     |
-|-------------------|-----------------------------------------------------------------|
-| `WeclappEntity`   | A tuple with all entities in camelCase.                         |
-| `WeclappServices` | A map from `WeclappEntity` to its corresponding service.        |
-| `weclappService`  | An object with `WeclappEntity` as key and the service as value. |
-
 ## Usage
 
 This SDK is split into services. Each service is responsible for a _single_ entity (e.g. `Party`). Every service contains all functions available for this
@@ -13,6 +5,8 @@ entity, this may include functions such as `update`, `delete`, `some` and many m
 
 To initialize a service a `ServiceConfig` is needed, you can specify a global config in case you don't want to pass the config every time to the service you
 want to use manually.
+
+Check out [generated types and utilities](#generated-types-and-utilities) for more possibilities!
 
 ### The Service Configuration
 
@@ -46,12 +40,12 @@ interface ServiceConfig {
 }
 ```
 
-There are two ways to use each service:
+There are three ways of accessing a service through the SDK:
 
 #### Using a Global Config
 
 ```ts
-import {setGlobalConfig, partyService} from '@weclapp/sdk';
+import { setGlobalConfig, partyService } from '@weclapp/sdk';
 
 setGlobalConfig({
     key: 'mykey',
@@ -66,7 +60,7 @@ console.log(`Total amount of parties: ${await party.count()}`)
 #### Using a Config per Service
 
 ```ts
-import {partyService} from '@weclapp/sdk';
+import { partyService } from '@weclapp/sdk';
 
 const party = partyService({
     key: 'mykey',
@@ -83,7 +77,7 @@ console.log(`Total amount of parties: ${await party.count()}`)
 The raw function can be used if none of the provided function suits your needs:
 
 ```ts
-import {raw} from '@weclapp/sdk';
+import { raw } from '@weclapp/sdk';
 
 const result = await raw(
     cfg: ServiceConfig | undefined = globalConfig,
@@ -94,11 +88,10 @@ const result = await raw(
 
 where `RequestPayload` looks like this:
 
-
 ```ts
 interface RequestPayload {
-    method?: RequestPayloadMethod; // Request method
-    query?: Record<string, any>; // Query parameters
+    method?: RequestPayloadMethod; // Optional request method, default is GET
+    query?: Record<string, any>; // Optional query parameters
     body?: any; // Optional body
 
     // In case the response body is an object with a result-prop the value will be extracted
@@ -109,3 +102,33 @@ interface RequestPayload {
     forceBlob?: boolean;
 }
 ```
+
+## Generated types and utilities
+
+The generator generates various utilities that can be used to integrate it in a generic way into your app.
+
+### Exported constants
+
+| Constant                    | Description                                                                                                            |
+|-----------------------------|------------------------------------------------------------------------------------------------------------------------|
+| `wServiceWith[method]Names` | An array of services (strings) that have this function. Example: `wServiceWithUpdateNames`.                            |
+| `wCustomValueServiceNames`  | An array of services (strings) that work with `CustomValue`.                                                           |
+| `wEnums`                    | Object with the name of the enum as key and the corresponding enum as value.                                           |
+| `wServiceFactories`         | Object with all services where the name is the key and the value a function taking a config and returning the service. |
+| `wServices`                 | Object with all services where the name is the key and the value the service (that is using the global config).        |
+| `wEntityProperties`         | Object with all entity names as key and properties including the type and format as value.                             |
+
+### Exported types
+
+| Type                    | Description                                                                                                 | Type guards available?                | 
+|-------------------------|-------------------------------------------------------------------------------------------------------------|---------------------------------------|
+| `WServiceWith[method]`  | A tuple of strings with the names of the services that contain this function. Example: `WServiceWithSome`.  | Yes, for example `isWServiceWithSome` |
+| `WServicesWith[method]` | An interface with the service-name as key and corresponding service as value. Example: `WServicesWithSome`. |                                       |
+| `WCustomValueService`   | Tuple of services (strings) that work with `CustomValue`.                                                   | Yes: `isWCustomValueService`          |
+| `WEnums`                | Type of `wEnums`.                                                                                           |                                       |
+| `WEnum`                 | All keys of `WEnums`.                                                                                       |                                       |
+| `WEntities`             | Interface will all entities from weclapp with their name as key and type as value                           |                                       |
+| `WEntity`               | All keys of `WEntities`.                                                                                    |                                       |
+| `WServiceFactories`     | Type of `wServiceFactories`.                                                                                |                                       |
+| `WServices`             | Type of `wServices`.                                                                                        |                                       |
+| `WEntityProperties`     | Generalized type of `wEntityProperties`.                                                                    |                                       |
