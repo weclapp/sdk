@@ -1,12 +1,17 @@
 {
   "name": "@weclapp/sdk",
-  "version": "^1.8.0",
+  "version": "1.8.0",
   "description": "SDK generator based on a weclapp api swagger file",
   "author": "weclapp",
   "sideEffects": false,
   "bugs": "https://github.com/weclapp/sdk/issues",
   "homepage": "https://github.com/weclapp/sdk#readme",
   "repository": "git+https://github.com/weclapp/sdk.git",
+  "keywords": [
+    "sdk",
+    "generator",
+    "weclapp"
+  ],
   "bin": {
     "build-weclapp-sdk": "./bin/cli.js"
   },
