@@ -5,7 +5,6 @@ import {currentDirname} from '@utils/currentDirname';
 import {hash} from '@utils/hash';
 import {cp, mkdir, rm, stat, writeFile} from 'fs/promises';
 import {dirname, resolve} from 'path';
-import pkg from '../package.json';
 import {cli} from './cli';
 import prettyMs from 'pretty-ms';
 
@@ -14,10 +13,12 @@ const folders = ['docs', 'main', 'node', 'raw', 'rx', 'utils'];
 
 void (async () => {
     const start = process.hrtime.bigint();
+
+    const {default: {version}} = await import('../package.json', {assert: {type: 'json'}});
     const {content: doc, cache: useCache, options} = await cli();
 
     // Resolve cache dir and key
-    const cacheKey = hash([pkg.version, JSON.stringify(doc), JSON.stringify(options)]).slice(-8);
+    const cacheKey = hash([version, JSON.stringify(doc), JSON.stringify(options)]).slice(-8);
     const cacheDir = resolve(currentDirname(), '.tmp', cacheKey);
 
     const dist = (...paths: string[]) => resolve(workingDirectory, ...paths);

@@ -10,7 +10,8 @@ export default [
         external: [
             ...Object.keys(pkg.dependencies),
             ...Object.keys(pkg.peerDependencies),
-            'path', 'crypto', 'yargs/helpers', 'fs/promises', 'url'
+            'path', 'crypto', 'yargs/helpers', 'fs/promises', 'url',
+            '../package.json'
         ],
         output: {
             file: 'dist/cli.js',

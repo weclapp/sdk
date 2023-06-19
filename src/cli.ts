@@ -6,7 +6,6 @@ import {readFile, stat} from 'fs/promises';
 import {OpenAPIV3} from 'openapi-types';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
-import {version} from '../package.json';
 
 interface Args {
     key?: string;
@@ -27,6 +26,8 @@ interface CLIResult {
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 export const cli = async (): Promise<CLIResult> => {
+    const {default: {version}} = await import('../package.json', {assert: {type: 'json'}});
+
     const {argv} = yargs(hideBin(process.argv))
         .scriptName('build-weclapp-sdk')
         .usage('Usage: $0 <source> [flags]')
@@ -108,7 +109,7 @@ export const cli = async (): Promise<CLIResult> => {
     }
 
     if (await stat(src).catch(() => false)) {
-        logger.infoLn(`Source is a file`);
+        logger.infoLn(`Source is a file.`);
         const content = JSON.parse(await readFile(src, 'utf-8'));
         return {cache, content, options};
     }
