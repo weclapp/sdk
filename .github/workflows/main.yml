@@ -4,6 +4,7 @@ on: push
 
 jobs:
   build:
+    name: Build CLI and SDK
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -37,6 +38,7 @@ jobs:
           path: dist
 
   publish:
+    name: Publish stable release
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     needs: build
@@ -62,6 +64,7 @@ jobs:
         run: npm publish --access public
 
   publish_snapshot:
+    name: Publish snapshot version
     runs-on: ubuntu-latest
     if: |
       github.ref_name == 'master' &&
