@@ -12,9 +12,6 @@
     "dist",
     "tsconfig.lib.json"
   ],
-  "publishConfig": {
-    "@weclapp:registry": "https://gitlab.internal.weclapp.com/api/v4/projects/145/packages/npm/"
-  },
   "engines": {
     "node": "^18 || ^20",
     "npm": "^9 || ^8"
