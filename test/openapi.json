@@ -2335,6 +2335,13 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "in": "query",
+                        "name": "additionalProperties",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -2343,6 +2350,44 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "additionalProperties": {
+                                            "properties": {
+                                                "currentSalesPrice": {
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/priceData"
+                                                    },
+                                                    "type": "array"
+                                                },
+                                                "pickableStockQuantity": {
+                                                    "items": {
+                                                        "items": {
+                                                            "$ref": "#/components/schemas/warehouseQuantity"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    "type": "array"
+                                                },
+                                                "reservedStockQuantity": {
+                                                    "items": {
+                                                        "items": {
+                                                            "$ref": "#/components/schemas/warehouseQuantity"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    "type": "array"
+                                                },
+                                                "totalStockQuantity": {
+                                                    "items": {
+                                                        "items": {
+                                                            "$ref": "#/components/schemas/warehouseQuantity"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    "type": "array"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
                                         "result": {
                                             "items": {
                                                 "$ref": "#/components/schemas/article"
@@ -3552,6 +3597,7 @@
         },
         "/article/id/{id}/extraInfoForApp": {
             "get": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "path",
@@ -26961,6 +27007,68 @@
                 ]
             }
         },
+        "/purchaseInvoice/id/{id}/createCreditNote": {
+            "post": {
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "itemIds": {
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/components/schemas/purchaseInvoice"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "createCreditNote response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "purchaseInvoice"
+                ]
+            }
+        },
         "/purchaseOpenItem": {
             "get": {
                 "description": "query purchaseOpenItem",
@@ -27676,6 +27784,24 @@
                                     "invoiceDate": {
                                         "format": "timestamp",
                                         "type": "integer"
+                                    },
+                                    "invoiceType": {
+                                        "enum": [
+                                            "ADVANCE_PAYMENT_INVOICE",
+                                            "CREDIT_NOTE",
+                                            "FINAL_INVOICE",
+                                            "PART_PAYMENT_INVOICE",
+                                            "PREPAYMENT_INVOICE",
+                                            "STANDARD_INVOICE"
+                                        ],
+                                        "type": "string"
+                                    },
+                                    "isGross": {
+                                        "type": "boolean"
+                                    },
+                                    "paymentAmount": {
+                                        "format": "decimal",
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -34339,6 +34465,11 @@
                         "required": false,
                         "schema": {
                             "items": {
+                                "enum": [
+                                    "view",
+                                    "accounting",
+                                    "humanResources"
+                                ],
                                 "type": "string"
                             },
                             "type": "array"
@@ -34352,7 +34483,17 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "properties": {
+                                                "accounting": {
+                                                    "$ref": "#/components/schemas/accountingSettings"
+                                                },
+                                                "humanResources": {
+                                                    "$ref": "#/components/schemas/humanResourcesSettings"
+                                                },
+                                                "view": {
+                                                    "$ref": "#/components/schemas/viewSettings"
+                                                }
+                                            }
                                         }
                                     },
                                     "type": "object"
@@ -34420,13 +34561,19 @@
                             "schema": {
                                 "properties": {
                                     "settings": {
-                                        "type": "object"
+                                        "properties": {
+                                            "accounting": {
+                                                "$ref": "#/components/schemas/accountingSettings"
+                                            },
+                                            "humanResources": {
+                                                "$ref": "#/components/schemas/humanResourcesSettings"
+                                            },
+                                            "view": {
+                                                "$ref": "#/components/schemas/viewSettings"
+                                            }
+                                        }
                                     }
-                                },
-                                "required": [
-                                    "settings"
-                                ],
-                                "type": "object"
+                                }
                             }
                         }
                     },
@@ -34439,7 +34586,17 @@
                                 "schema": {
                                     "properties": {
                                         "result": {
-                                            "type": "object"
+                                            "properties": {
+                                                "accounting": {
+                                                    "$ref": "#/components/schemas/accountingSettings"
+                                                },
+                                                "humanResources": {
+                                                    "$ref": "#/components/schemas/humanResourcesSettings"
+                                                },
+                                                "view": {
+                                                    "$ref": "#/components/schemas/viewSettings"
+                                                }
+                                            }
                                         }
                                     },
                                     "type": "object"
@@ -35281,6 +35438,7 @@
         },
         "/shipment/id/{id}/getLevelForSerialNumber": {
             "post": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "path",
@@ -38237,6 +38395,57 @@
                 ]
             }
         },
+        "/system/log": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "logMessages": {
+                                        "items": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "object"
+                                                },
+                                                "severity": {
+                                                    "$ref": "#/components/schemas/logMessageSeverity"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "type": "array"
+                                    }
+                                },
+                                "required": [
+                                    "logMessages"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "log response"
+                    },
+                    "default": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/apiProblem"
+                                }
+                            }
+                        },
+                        "description": "error response"
+                    }
+                },
+                "tags": [
+                    "system"
+                ]
+            }
+        },
         "/system/otherTenants": {
             "get": {
                 "responses": {
@@ -41064,6 +41273,13 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "in": "query",
+                        "name": "additionalProperties",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -41072,6 +41288,35 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "additionalProperties": {
+                                            "properties": {
+                                                "assignmentTime": {
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/ticketDuration"
+                                                    },
+                                                    "type": "array"
+                                                },
+                                                "processTime": {
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/ticketDuration"
+                                                    },
+                                                    "type": "array"
+                                                },
+                                                "resolutionTime": {
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/ticketDuration"
+                                                    },
+                                                    "type": "array"
+                                                },
+                                                "responseTime": {
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/ticketDuration"
+                                                    },
+                                                    "type": "array"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
                                         "result": {
                                             "items": {
                                                 "$ref": "#/components/schemas/ticket"
@@ -41141,6 +41386,7 @@
         },
         "/ticket/configuration": {
             "get": {
+                "deprecated": true,
                 "responses": {
                     "200": {
                         "content": {
@@ -41496,6 +41742,7 @@
         },
         "/ticket/id/{id}/extraInfoForApp": {
             "get": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "path",
@@ -45443,6 +45690,7 @@
         },
         "/user/id/{id}/userImageThumbnailScaled": {
             "get": {
+                "deprecated": true,
                 "parameters": [
                     {
                         "in": "path",
@@ -48437,6 +48685,79 @@
                     }
                 ]
             },
+            "accountingAdminSettings": {
+                "properties": {
+                    "displayCustomerAccountingBalance": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "accountingGeneralSettings": {
+                "properties": {
+                    "accountingStartDate": {
+                        "format": "timestamp",
+                        "type": "integer"
+                    },
+                    "allowBookingWithoutPersonalAccount": {
+                        "type": "boolean"
+                    },
+                    "allowManualOpenItemClearance": {
+                        "type": "boolean"
+                    },
+                    "allowOpenItemPaymentCreation": {
+                        "type": "boolean"
+                    },
+                    "autoCreateNewFinancialYear": {
+                        "type": "boolean"
+                    },
+                    "autoUpdateCreditorAccountDescription": {
+                        "type": "boolean"
+                    },
+                    "autoUpdateDebtorAccountDescription": {
+                        "type": "boolean"
+                    },
+                    "defaultBookingTextForPurchaseInvoices": {
+                        "type": "string"
+                    },
+                    "defaultBookingTextForSalesInvoices": {
+                        "type": "string"
+                    },
+                    "enableAutomaticBooking": {
+                        "type": "boolean"
+                    },
+                    "openItemDueDateBasedOnInvoiceDate": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "accountingSettings": {
+                "properties": {
+                    "admin": {
+                        "$ref": "#/components/schemas/accountingAdminSettings"
+                    },
+                    "datev": {
+                        "$ref": "#/components/schemas/datevSettings"
+                    },
+                    "dunningRun": {
+                        "$ref": "#/components/schemas/dunningRunSettings"
+                    },
+                    "general": {
+                        "$ref": "#/components/schemas/accountingGeneralSettings"
+                    },
+                    "paymentRun": {
+                        "$ref": "#/components/schemas/paymentRunSettings"
+                    },
+                    "paymentTolerance": {
+                        "$ref": "#/components/schemas/paymentToleranceSettings"
+                    },
+                    "sepaDirectDebitMandate": {
+                        "$ref": "#/components/schemas/sepaDirectDebitMandateSettings"
+                    }
+                },
+                "type": "object"
+            },
             "accountingTransaction": {
                 "allOf": [
                     {
@@ -49787,6 +50108,24 @@
                     }
                 ]
             },
+            "autoCreateDunningRunSettings": {
+                "properties": {
+                    "autoProcessStartDate": {
+                        "format": "timestamp",
+                        "type": "integer"
+                    },
+                    "autoSentDunningRunItemsViaEmail": {
+                        "type": "boolean"
+                    },
+                    "baossUserId": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
             "balanceSheetItem": {
                 "enum": [
                     "ABSCHREIBUNGEN_GWG_ACCOUNTS",
@@ -50712,6 +51051,38 @@
                             "expirationDate": {
                                 "format": "timestamp",
                                 "type": "integer"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "batchSerialNumber": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/abstractEntity"
+                    },
+                    {
+                        "properties": {
+                            "batchNumber": {
+                                "type": "string"
+                            },
+                            "expirationDate": {
+                                "format": "timestamp",
+                                "type": "integer"
+                            },
+                            "quantity": {
+                                "format": "decimal",
+                                "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "serialNumbers": {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
                             }
                         },
                         "type": "object"
@@ -53401,6 +53772,63 @@
                     }
                 ]
             },
+            "datevRecordInformation2Value": {
+                "enum": [
+                    "DUE_DATE",
+                    "EMPTY",
+                    "TERM_OF_PAYMENT_FOREIGN_REFERENCE"
+                ],
+                "type": "string"
+            },
+            "datevSettings": {
+                "properties": {
+                    "consultantNumber": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "impersonalAccountNumberLength": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "kne": {
+                        "type": "boolean",
+                        "x-weclapp": {
+                            "required": true
+                        }
+                    },
+                    "recordInformation2ValueForExport": {
+                        "$ref": "#/components/schemas/datevRecordInformation2Value"
+                    },
+                    "shareInvoiceDocuments": {
+                        "type": "boolean",
+                        "x-weclapp": {
+                            "required": true
+                        }
+                    },
+                    "tenantNumber": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "useDatevConnectOnline": {
+                        "type": "boolean"
+                    },
+                    "version": {
+                        "$ref": "#/components/schemas/datevVersion",
+                        "x-weclapp": {
+                            "required": true
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "datevVersion": {
+                "enum": [
+                    "V5",
+                    "V7",
+                    "V_141"
+                ],
+                "type": "string"
+            },
             "debitCreditIndicator": {
                 "enum": [
                     "CREDIT",
@@ -53431,6 +53859,13 @@
                     "DOCUMENT_CREATED",
                     "NEW",
                     "OPEN_ITEM_CREATED"
+                ],
+                "type": "string"
+            },
+            "directDebitPainVersion": {
+                "enum": [
+                    "SEPA00800101",
+                    "SEPA00800102"
                 ],
                 "type": "string"
             },
@@ -54106,6 +54541,67 @@
                     }
                 ]
             },
+            "dunningRunSettings": {
+                "properties": {
+                    "attachOriginDocument": {
+                        "type": "boolean"
+                    },
+                    "autoCreateDunningRun": {
+                        "$ref": "#/components/schemas/autoCreateDunningRunSettings"
+                    },
+                    "calculateDueDateFromRunDate": {
+                        "type": "boolean"
+                    },
+                    "considerUnassignedCreditNotes": {
+                        "type": "boolean"
+                    },
+                    "considerUnassignedPayments": {
+                        "type": "boolean"
+                    },
+                    "defaultInterestEnabled": {
+                        "type": "boolean"
+                    },
+                    "distributionChannel": {
+                        "$ref": "#/components/schemas/distributionChannel"
+                    },
+                    "doNotUpdateDueDateAndLevel": {
+                        "type": "boolean"
+                    },
+                    "dunningLevelFilterId": {
+                        "type": "string"
+                    },
+                    "feeInPercent": {
+                        "type": "boolean"
+                    },
+                    "ignoreDunningBlockSettings": {
+                        "type": "boolean"
+                    },
+                    "includeMaxLevelItems": {
+                        "type": "boolean"
+                    },
+                    "includePrepaymentInvoice": {
+                        "type": "boolean"
+                    },
+                    "minAmount": {
+                        "format": "decimal",
+                        "type": "string"
+                    },
+                    "oneDocumentPerLevel": {
+                        "type": "boolean"
+                    },
+                    "paymentMethodTypes": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "waitingPeriod": {
+                        "format": "int32",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
             "ecommerceOrder": {
                 "properties": {
                     "ecommerceId": {
@@ -54501,6 +54997,14 @@
                 },
                 "type": "object"
             },
+            "humanResourcesSettings": {
+                "properties": {
+                    "enableEmployeeTimeTracking": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
             "incomingBooking": {
                 "allOf": [
                     {
@@ -54755,11 +55259,7 @@
                     "AUSTRIAN_POST_STANDARD",
                     "CARGO_INTERNATIONAL_EXPRESS",
                     "CARGO_INTERNATIONAL_STANDARD",
-                    "DACHSER",
                     "DEUTSCHE_POST_STANDARD",
-                    "DEUTSCHE_POST_WARENPOST",
-                    "DEUTSCHE_POST_WARENPOST_SIGNATURE",
-                    "DEUTSCHE_POST_WARENPOST_UNTRACKED",
                     "DHL_EUROPAKET",
                     "DHL_EUROPAKET_EV",
                     "DHL_EXPRESS_ONE_DAY",
@@ -54768,7 +55268,6 @@
                     "DHL_PAKET_EV",
                     "DHL_PAKET_INTERNATIONAL_EV",
                     "DHL_RETURNS",
-                    "DHL_SAME_DAY",
                     "DHL_STANDARD",
                     "DHL_WARENPOST",
                     "DHL_WARENPOST_EV",
@@ -54777,7 +55276,6 @@
                     "DPD_EXPRESS_ONE_DAY_EARLY",
                     "DPD_RETURNS",
                     "DPD_STANDARD",
-                    "EKOL",
                     "FEDEX_EXPRESS_ONE_DAY_EARLY",
                     "FEDEX_INTERNATIONAL_ECONOMY",
                     "FEDEX_INTERNATIONAL_PRIORITY",
@@ -54790,12 +55288,7 @@
                     "HERMES_RETURNS",
                     "HERMES_STANDARD",
                     "ILOXX_STANDARD",
-                    "LIEFERY_EXPRESS_ONE_DAY",
-                    "MGH",
                     "PARCEL_ONE",
-                    "SEVEN_SENDERS",
-                    "SITTNAK",
-                    "SWISS_POST",
                     "TNT_ONE_DAY",
                     "TNT_ONE_DAY_EARLY",
                     "UPS_EXPEDITED",
@@ -54803,8 +55296,7 @@
                     "UPS_EXPRESS_ONE_DAY",
                     "UPS_EXPRESS_ONE_DAY_EARLY",
                     "UPS_RETURNS",
-                    "UPS_STANDARD",
-                    "ZWECKFORM"
+                    "UPS_STANDARD"
                 ],
                 "type": "string"
             },
@@ -54993,6 +55485,26 @@
                     "CARRY_FORWARD_ACCOUNT",
                     "IMPERSONAL_ACCOUNT",
                     "PERSONAL_ACCOUNT"
+                ],
+                "type": "string"
+            },
+            "licenseWithCount": {
+                "properties": {
+                    "count": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "license": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "logMessageSeverity": {
+                "enum": [
+                    "ERROR",
+                    "INFO",
+                    "WARNING"
                 ],
                 "type": "string"
             },
@@ -55394,14 +55906,18 @@
                 "enum": [
                     "CREDITOR",
                     "CREDITOR_INVERTED",
-                    "CREDITOR_PARTY",
                     "CREDIT_NOTE_CREDITOR",
                     "CREDIT_NOTE_CREDITOR_INVERTED",
                     "CREDIT_NOTE_DEBITOR",
                     "CREDIT_NOTE_DEBITOR_INVERTED",
                     "DEBTOR",
+                    "DEBTOR_INCOMING_PAYMENT",
+                    "DEBTOR_INCOMING_PAYMENT_INVERTED",
                     "DEBTOR_INVERTED",
+                    "DEBTOR_OUTGOING_PAYMENT",
+                    "DEBTOR_OUTGOING_PAYMENT_INVERTED",
                     "DEBTOR_PARTY",
+                    "DEBTOR_PARTY_INVERTED",
                     "DEBTOR_RETURN_DEBIT",
                     "DEBTOR_RETURN_DEBIT_FEE"
                 ],
@@ -55510,7 +56026,7 @@
                             },
                             "topics": {
                                 "items": {
-                                    "$ref": "#/components/schemas/entity"
+                                    "$ref": "#/components/schemas/onlyId"
                                 },
                                 "type": "array",
                                 "x-weclapp": {
@@ -56580,6 +57096,21 @@
                     }
                 ]
             },
+            "paymentRunMode": {
+                "enum": [
+                    "CHECK_DISCOUNT",
+                    "SHOW_ON_LAST_DISCOUNT_DAY"
+                ],
+                "type": "string"
+            },
+            "paymentRunPainVersion": {
+                "enum": [
+                    "SEPA00100102",
+                    "SEPA00100103",
+                    "SEPA00100109"
+                ],
+                "type": "string"
+            },
             "paymentRunPaymentType": {
                 "enum": [
                     "NONE",
@@ -56588,6 +57119,39 @@
                     "SWIFT"
                 ],
                 "type": "string"
+            },
+            "paymentRunSettings": {
+                "properties": {
+                    "combinedBankTransfer": {
+                        "type": "boolean"
+                    },
+                    "defaultBankAccountId": {
+                        "type": "string"
+                    },
+                    "defaultCreditNoteDebtorText": {
+                        "type": "string"
+                    },
+                    "defaultCreditorText": {
+                        "type": "string"
+                    },
+                    "mode": {
+                        "$ref": "#/components/schemas/paymentRunMode"
+                    },
+                    "painVersion": {
+                        "$ref": "#/components/schemas/paymentRunPainVersion"
+                    },
+                    "paymentMethodTypes": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "toleranceDays": {
+                        "format": "int32",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
             },
             "paymentStatus": {
                 "enum": [
@@ -56599,6 +57163,30 @@
                     "UNKNOWN"
                 ],
                 "type": "string"
+            },
+            "paymentToleranceInPercentSettings": {
+                "properties": {
+                    "creditor": {
+                        "format": "decimal",
+                        "type": "string"
+                    },
+                    "debtor": {
+                        "format": "decimal",
+                        "type": "string"
+                    },
+                    "enabled": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "paymentToleranceSettings": {
+                "properties": {
+                    "inPercent": {
+                        "$ref": "#/components/schemas/paymentToleranceInPercentSettings"
+                    }
+                },
+                "type": "object"
             },
             "paymentType": {
                 "enum": [
@@ -56797,8 +57385,11 @@
                                 "format": "timestamp",
                                 "type": "integer"
                             },
-                            "taskId": {
-                                "type": "string",
+                            "tasks": {
+                                "items": {
+                                    "$ref": "#/components/schemas/onlyId"
+                                },
+                                "type": "array",
                                 "x-weclapp": {
                                     "entity": "task",
                                     "service": "task"
@@ -57038,6 +57629,65 @@
                     "REDUCTION_PERCENT"
                 ],
                 "type": "string"
+            },
+            "priceData": {
+                "properties": {
+                    "articleUnitPrice": {
+                        "format": "decimal",
+                        "type": "string"
+                    },
+                    "currencyId": {
+                        "type": "string",
+                        "x-weclapp": {
+                            "entity": "currency",
+                            "service": "currency"
+                        }
+                    },
+                    "endDate": {
+                        "format": "timestamp",
+                        "type": "integer"
+                    },
+                    "quantity": {
+                        "format": "decimal",
+                        "type": "string"
+                    },
+                    "reductionAdditionItems": {
+                        "items": {
+                            "$ref": "#/components/schemas/priceDataReductionAdditionItem"
+                        },
+                        "type": "array"
+                    },
+                    "startDate": {
+                        "format": "timestamp",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "priceDataReductionAdditionItem": {
+                "properties": {
+                    "position": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "source": {
+                        "$ref": "#/components/schemas/recordItemReductionAdditionSource"
+                    },
+                    "specialPriceReduction": {
+                        "type": "boolean"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "$ref": "#/components/schemas/recordItemReductionAdditionType"
+                    },
+                    "value": {
+                        "format": "decimal",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
             },
             "priceScaleType": {
                 "enum": [
@@ -57811,6 +58461,12 @@
                             "costCenterNumber": {
                                 "type": "string"
                             },
+                            "creditResetsOrderState": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
                             "deliveryAddress": {
                                 "$ref": "#/components/schemas/recordAddress"
                             },
@@ -57841,6 +58497,13 @@
                                 "$ref": "#/components/schemas/paymentStatus",
                                 "x-weclapp": {
                                     "required": true
+                                }
+                            },
+                            "precedingPurchaseInvoiceId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "entity": "purchaseInvoice",
+                                    "service": "purchaseInvoice"
                                 }
                             },
                             "pricingDate": {
@@ -57957,28 +58620,35 @@
                 ]
             },
             "purchaseInvoiceItemRelationship": {
-                "properties": {
-                    "purchaseInvoiceItemId": {
-                        "type": "string",
-                        "x-weclapp": {
-                            "required": true
-                        }
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/abstractEntity"
                     },
-                    "quantity": {
-                        "format": "decimal",
-                        "type": "string",
-                        "x-weclapp": {
-                            "required": true
-                        }
-                    },
-                    "shipmentItemId": {
-                        "type": "string"
-                    },
-                    "supplierOrderItemId": {
-                        "type": "string"
+                    {
+                        "properties": {
+                            "purchaseInvoiceItemId": {
+                                "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "quantity": {
+                                "format": "decimal",
+                                "type": "string",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
+                            "shipmentItemId": {
+                                "type": "string"
+                            },
+                            "supplierOrderItemId": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
                     }
-                },
-                "type": "object"
+                ]
             },
             "purchaseInvoiceStatusHistory": {
                 "properties": {
@@ -58018,7 +58688,11 @@
             },
             "purchaseInvoiceType": {
                 "enum": [
+                    "ADVANCE_PAYMENT_INVOICE",
                     "CREDIT_NOTE",
+                    "FINAL_INVOICE",
+                    "PART_PAYMENT_INVOICE",
+                    "PREPAYMENT_INVOICE",
                     "STANDARD_INVOICE"
                 ],
                 "type": "string"
@@ -58049,6 +58723,9 @@
                     },
                     {
                         "properties": {
+                            "advancePaymentStatus": {
+                                "$ref": "#/components/schemas/advancePaymentStatus"
+                            },
                             "commission": {
                                 "type": "string"
                             },
@@ -58173,6 +58850,12 @@
                     },
                     {
                         "properties": {
+                            "batchSerialNumbers": {
+                                "items": {
+                                    "$ref": "#/components/schemas/batchSerialNumber"
+                                },
+                                "type": "array"
+                            },
                             "blanketPurchaseOrderId": {
                                 "type": "string"
                             },
@@ -59959,6 +60642,33 @@
                     }
                 ]
             },
+            "sepaDirectDebitMandateSettings": {
+                "properties": {
+                    "combinedBankTransferDirectDebit": {
+                        "type": "boolean"
+                    },
+                    "defaultMandateReference": {
+                        "type": "string"
+                    },
+                    "directDebitIncludeDiscount": {
+                        "type": "boolean"
+                    },
+                    "directDebitMinimumWorkingDays": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "directDebitPainVersion": {
+                        "$ref": "#/components/schemas/directDebitPainVersion"
+                    },
+                    "directDebitStandardText": {
+                        "type": "string"
+                    },
+                    "paymentMethodTypeIdForDirectDebit": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "sepaDirectDebitRuntime": {
                 "enum": [
                     "ONE_OFF_MANDATE",
@@ -60966,17 +61676,47 @@
             },
             "systemInfo": {
                 "properties": {
+                    "createSupportTicket": {
+                        "type": "boolean"
+                    },
                     "customerNumber": {
                         "type": "string"
                     },
                     "dynamicLogo": {
                         "type": "string"
                     },
-                    "ebot7Id": {
-                        "type": "string"
+                    "expiringLicenses": {
+                        "items": {
+                            "$ref": "#/components/schemas/licenseWithCount"
+                        },
+                        "type": "array"
                     },
                     "globalMessage": {
                         "type": "string"
+                    },
+                    "globalSearch": {
+                        "type": "boolean"
+                    },
+                    "initialized": {
+                        "type": "boolean"
+                    },
+                    "intercom": {
+                        "type": "boolean"
+                    },
+                    "label": {
+                        "type": "string"
+                    },
+                    "licensingMode": {
+                        "$ref": "#/components/schemas/tenantLicensingMode"
+                    },
+                    "linkToCertifiedPartners": {
+                        "type": "boolean"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/tenantStatus"
+                    },
+                    "supportChat": {
+                        "type": "boolean"
                     },
                     "testSystem": {
                         "type": "boolean"
@@ -62336,6 +63076,23 @@
                 ],
                 "type": "string"
             },
+            "tenantLicensingMode": {
+                "enum": [
+                    "CONTRACTS_IN_OTHER_BAOSS",
+                    "ON_PREMISE",
+                    "STANDALONE",
+                    "STANDALONE_WITH_LICENSES"
+                ],
+                "type": "string"
+            },
+            "tenantStatus": {
+                "enum": [
+                    "ACTIVE",
+                    "ACTIVE_LOCKED",
+                    "INACTIVE"
+                ],
+                "type": "string"
+            },
             "termOfPayment": {
                 "allOf": [
                     {
@@ -62794,6 +63551,15 @@
                 },
                 "type": "object"
             },
+            "ticketDuration": {
+                "properties": {
+                    "durationSeconds": {
+                        "format": "int64",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
             "ticketExtraInformation": {
                 "properties": {
                     "assignmentTime": {
@@ -62848,7 +63614,11 @@
                                 "items": {
                                     "$ref": "#/components/schemas/onlyId"
                                 },
-                                "type": "array"
+                                "type": "array",
+                                "x-weclapp": {
+                                    "entity": "party",
+                                    "service": "party"
+                                }
                             },
                             "positionNumber": {
                                 "format": "int32",
@@ -63237,6 +64007,12 @@
                                     "service": "placeOfService"
                                 }
                             },
+                            "printOnPerformanceRecord": {
+                                "type": "boolean",
+                                "x-weclapp": {
+                                    "required": true
+                                }
+                            },
                             "projectId": {
                                 "type": "string",
                                 "x-weclapp": {
@@ -63348,6 +64124,7 @@
                     "DUNNING_FEE",
                     "IMPORT_SALES_TAX",
                     "MONETARY_TRAFFIC",
+                    "OPEN_ITEM",
                     "PAYMENT_TOLERANCE",
                     "RETURN_DEBIT_FEE",
                     "REVERSE_CHARGE_TAX",
@@ -63402,6 +64179,17 @@
                         "type": "object"
                     }
                 ]
+            },
+            "uiNumberFormat": {
+                "enum": [
+                    "FORMAT_0_5",
+                    "FORMAT_1_5",
+                    "FORMAT_2_5",
+                    "FORMAT_3_5",
+                    "FORMAT_4_5",
+                    "FORMAT_5_5"
+                ],
+                "type": "string"
             },
             "unit": {
                 "allOf": [
@@ -63728,6 +64516,47 @@
                     }
                 ]
             },
+            "viewSettings": {
+                "properties": {
+                    "addFirstWorkflowActionToWorkflowButton": {
+                        "type": "boolean"
+                    },
+                    "allowToGenerateAndDisableConfirmationOfArrival": {
+                        "type": "boolean"
+                    },
+                    "allowToGenerateAndDisablePublicLink": {
+                        "type": "boolean"
+                    },
+                    "alwaysDisplayTab": {
+                        "type": "boolean"
+                    },
+                    "currencyNumberFormat": {
+                        "$ref": "#/components/schemas/uiNumberFormat"
+                    },
+                    "exportTablesWithLinks": {
+                        "type": "boolean"
+                    },
+                    "hidePerformanceHeavyEvaluationsOnDetailPages": {
+                        "type": "boolean"
+                    },
+                    "includeUsersInBirthDayWidget": {
+                        "type": "boolean"
+                    },
+                    "quantityNumberFormat": {
+                        "$ref": "#/components/schemas/uiNumberFormat"
+                    },
+                    "showDatesWithCalendarWeek": {
+                        "type": "boolean"
+                    },
+                    "validateGermanZipcodes": {
+                        "type": "boolean"
+                    },
+                    "warnUserUnsavedChanges": {
+                        "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
             "warehouse": {
                 "allOf": [
                     {
@@ -63857,6 +64686,22 @@
                         "type": "object"
                     }
                 ]
+            },
+            "warehouseQuantity": {
+                "properties": {
+                    "quantity": {
+                        "format": "decimal",
+                        "type": "string"
+                    },
+                    "warehouseId": {
+                        "type": "string",
+                        "x-weclapp": {
+                            "entity": "warehouse",
+                            "service": "warehouse"
+                        }
+                    }
+                },
+                "type": "object"
             },
             "warehouseStock": {
                 "allOf": [
