@@ -1,18 +1,40 @@
 import {resolveResponseType} from '@enums/Target';
 import {GeneratedServiceFunction, ServiceFunctionGenerator} from '@generator/04-services/types';
+import {resolveBodyType} from '@generator/04-services/utils/generateResponseBodyType';
 import {generateArrowFunction} from '@ts/generateArrowFunction';
 import {generateArrowFunctionType} from '@ts/generateArrowFunctionType';
 import {generateInterfaceFromObject} from '@ts/generateInterface';
-import {generateString} from '@ts/generateString';
+import {generateString, generateStrings} from '@ts/generateString';
+import {concat} from '@utils/concat';
 import {convertParametersToSchema} from '@utils/openapi/convertParametersToSchema';
 import {convertToTypeScriptType, createObjectType} from '@utils/openapi/convertToTypeScriptType';
+import {isObjectSchemaObject, isResponseObject} from '@utils/openapi/guards';
 import {pascalCase} from 'change-case';
+import {OpenAPIV3} from 'openapi-types';
 
 const functionName = 'some';
 const excludedParameters = [
     'page', 'pageSize', 'sort',
     'serializeNulls', 'properties', 'includeReferencedEntities'
 ];
+
+const resolveAdditionalProperties = (path: OpenAPIV3.OperationObject) => {
+    const body = resolveBodyType(path);
+
+    if (isResponseObject(body)) {
+        const schema = body?.content?.['application/json']?.schema;
+
+        if (isObjectSchemaObject(schema)) {
+            const obj = schema?.properties?.additionalProperties;
+
+            if (isObjectSchemaObject(obj)) {
+                return obj;
+            }
+        }
+    }
+
+    return undefined;
+};
 
 export const generateSomeEndpoint: ServiceFunctionGenerator = ({aliases, target, path, endpoint}): GeneratedServiceFunction => {
 
@@ -25,8 +47,12 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({aliases, target,
     const entityReferences = `${entity}_References`;
     const entityParameters = `${service}_Parameters`;
     const parameterSchema = convertParametersToSchema(path.parameters);
+    const additionalProperties = resolveAdditionalProperties(path);
 
-    // We already cover page, pageSize and sort
+    const additionalPropertyNames = generateStrings(Object.keys(additionalProperties?.properties ?? {}));
+    const additionalPropertyNamesType = additionalPropertyNames.length ? `(${concat(additionalPropertyNames, ' | ')})[]` : '[]';
+
+    // We already cover some properties
     parameterSchema.properties = Object.fromEntries(
         Object.entries(parameterSchema.properties ?? {})
             .filter(v => !excludedParameters.includes(v[0]))
@@ -36,14 +62,16 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({aliases, target,
         params: convertToTypeScriptType(parameterSchema)
     });
 
+    const properties = additionalProperties ? convertToTypeScriptType(additionalProperties).toString() : '{}';
+
     const interfaceSource = generateArrowFunctionType({
         type: interfaceName,
         generics: [
             `S extends (QuerySelect<${entity}> | undefined) = undefined`,
             `I extends (QuerySelect<${entityMappings}> | undefined) = undefined`
         ],
-        params: [`query${parameters.isFullyOptional() ? '?' : ''}: SomeQuery<${entity}, ${entityFilter}, I, S> & ${entityParameters}`],
-        returns: `${resolveResponseType(target)}<SomeQueryReturn<${entity}, ${entityReferences}, ${entityMappings}, I, S>>`
+        params: [`query${parameters.isFullyOptional() ? '?' : ''}: SomeQuery<${entity}, ${entityFilter}, I, S, ${additionalPropertyNamesType}> & ${entityParameters}`],
+        returns: `${resolveResponseType(target)}<SomeQueryReturn<${entity}, ${entityReferences}, ${entityMappings}, I, S, ${properties}>>`
     });
 
     const functionSource = generateArrowFunction({
