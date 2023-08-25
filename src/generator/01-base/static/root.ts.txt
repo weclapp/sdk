@@ -116,10 +116,11 @@ const _count = (
 const _some = (
     cfg: ServiceConfig | undefined,
     endpoint: string,
-    query?: SomeQuery<any, any, any, any> & {params?: Record<any, any>}
+    query?: SomeQuery<any, any, any, any, any> & {params?: Record<any, any>}
 ) => wrapResponse(() => raw(cfg, endpoint, {
         query: {
             serializeNulls: query?.serializeNulls,
+            additionalProperties: query?.properties?.join(','),
             properties: query?.select ? flattenSelect(query.select).join(',') : undefined,
             includeReferencedEntities: query?.include ? Object.keys(query.include).join(',') : undefined,
             ...flattenOrFilter(query?.or),
@@ -128,7 +129,11 @@ const _some = (
             ...query?.params,
             ...query?.pagination
         }
-    }).then(data => ({entities: data.result, references: data.referencedEntities ?? {}}))
+    }).then(data => ({
+        entities: data.result,
+        references: data.referencedEntities ?? {},
+        properties: data.additionalProperties ?? {}
+    }))
 );
 
 const _remove = (

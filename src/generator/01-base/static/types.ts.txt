@@ -78,10 +78,12 @@ export type SomeQuery<
     E, // Entity
     F, // Entity filter
     I extends (QuerySelect<any> | undefined), // Select for referenced entities
-    S extends (QuerySelect<any> | undefined) // Select for entity properties
+    S extends (QuerySelect<any> | undefined), // Select for entity properties
+    P extends string[] // Select for additional properties
 > = {
     serializeNulls?: boolean;
     include?: I;
+    properties?: P
     filter?: QueryFilter<F> & CustomAttributeFilter;
     select?: S;
     or?: (QueryFilter<F> & CustomAttributeFilter)[];
@@ -98,10 +100,12 @@ export type SomeQueryReturn<
     R, // Map of referenced-entity names to the type
     M, // Map of referenced-entity-id names to their entity name
     I extends (QuerySelect<any> | undefined), // Select for referenced entities
-    S extends (QuerySelect<any> | undefined) // Select for entity properties
+    S extends (QuerySelect<any> | undefined), // Select for entity properties
+    P // Additional properties
 > = {
     entities: (S extends QuerySelect<E> ? Select<E, S> : E)[];
     references: I extends QuerySelect<R> ? Partial<MapKeys<Select<R, I>, M & Record<any, any>>> : {};
+    properties: P
 };
 
 export type GenericQuery<P, B> = {
