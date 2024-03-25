@@ -138,9 +138,11 @@ const _some = (
 
 const _remove = (
     cfg: ServiceConfig | undefined,
-    endpoint: string
+    endpoint: string,
+    {dryRun = false}: RemoveQuery = {}
 ) => wrapResponse(() => raw(cfg, endpoint, {
-    method: 'DELETE'
+    method: 'DELETE',
+    query: {dryRun}
 }).then(() => undefined));
 
 const _create = (
@@ -156,11 +158,11 @@ const _update = (
     cfg: ServiceConfig | undefined,
     endpoint: string,
     data: any,
-    {ignoreMissingProperties = true}: UpdateQuery = {}
+    {ignoreMissingProperties = true, dryRun = false}: UpdateQuery = {}
 ) => wrapResponse(() => raw(cfg, endpoint, {
     method: 'PUT',
     body: data,
-    query: {ignoreMissingProperties}
+    query: {ignoreMissingProperties, dryRun}
 }));
 
 const _unique = (
