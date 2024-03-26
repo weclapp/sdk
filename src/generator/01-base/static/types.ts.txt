@@ -115,6 +115,11 @@ export type GenericQuery<P, B> = {
 
 export type UpdateQuery = {
     ignoreMissingProperties?: boolean;
+    dryRun?: boolean;
+}
+
+export type RemoveQuery = {
+    dryRun?: boolean;
 }
 
 // Entity meta types
