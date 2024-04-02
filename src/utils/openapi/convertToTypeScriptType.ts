@@ -46,7 +46,7 @@ export const createRawType = (value: string): RawType => ({
 
 export const createArrayType = (value: Type): ArrayType => ({
     type: 'array',
-    toString: () => `${value.toString()}[]`
+    toString: () => `(${value.toString()})[]`
 });
 
 export const createTupleType = (value: (Type | string)[]): TupleType => ({
