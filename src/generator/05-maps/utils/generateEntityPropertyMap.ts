@@ -35,7 +35,7 @@ const generatePropertyDescriptors = (
     key: property,
     value: Object.entries(meta).map(([key, value]) => ({
         key,
-        value: value ? generateString(value as string) : undefined
+        value: value !== undefined ? typeof value === 'number' ? value : generateString(value as string) : undefined
     }))
 }));
 

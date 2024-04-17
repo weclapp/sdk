@@ -7,6 +7,8 @@ import {OpenAPIV3} from 'openapi-types';
 export interface PropertyMetaData {
     type?: string;
     format?: string;
+    maxLength?: number;
+    pattern?: string;
     service?: string;
     entity?: string;
     enum?: string;
@@ -40,8 +42,10 @@ export const extractPropertyMetaData = (
         return result;
     }
 
-    result.format = prop.format;
     result.type = prop.type;
+    result.format = prop.format;
+    result.maxLength = prop.maxLength;
+    result.pattern = prop.pattern;
 
     if (isArraySchemaObject(prop)) {
         if (isReferenceObject(prop.items)) {
