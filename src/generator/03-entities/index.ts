@@ -47,13 +47,21 @@ export const generateEntities = (
                 const meta = isRelatedEntitySchema(property) ? property['x-weclapp'] : {};
 
                 if (meta.entity) {
-                    const type = `${pascalCase(meta.entity)}[]`;
-                    referenceInterface.push({name, type, required: true});
-                    filterInterface.push({name: meta.entity, type, required: true});
+                  const type = `${pascalCase(meta.entity)}[]`;
+                  if (schemas.has(meta.entity)) {
+                    referenceInterface.push({ name, type, required: true });
+                    filterInterface.push({ name: meta.entity, type, required: true });
+                  }
                 }
-
+        
                 if (meta.service) {
-                    referenceMappingsInterface.push({name, type: generateString(meta.service), required: true});
+                  if (schemas.has(meta.service)) {
+                    referenceMappingsInterface.push({
+                      name,
+                      type: generateString(meta.service),
+                      required: true,
+                    });
+                  }
                 }
 
                 const type = convertToTypeScriptType(property, name).toString();
