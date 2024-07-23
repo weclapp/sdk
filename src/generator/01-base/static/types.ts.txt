@@ -4,7 +4,7 @@ export type DeepPartial<T> = T extends object ? {
 
 // Filter properties
 export type EqualityOperators = 'EQ' | 'NE';
-export type ComparisonOperators = 'LT' | 'GT' | 'LE' | 'GE' | 'LIKE' | 'ILIKE' | 'NOT_LIKE' | 'NOT_ILIKE';
+export type ComparisonOperators = 'LT' | 'GT' | 'LE' | 'GE' | 'LIKE' | 'ILIKE' | 'NOT_LIKE' | 'NOT_ILIKE' | 'IEQ' | 'NOT_IEQ';
 export type ArrayOperators = 'IN' | 'NOT_IN';
 export type Operator = EqualityOperators | ComparisonOperators | ArrayOperators;
 
@@ -36,7 +36,38 @@ export type CustomAttributeFilter = {
     [K in number]: string | number | boolean |
     {id: string;} |
     {entityName: string; entityId: string;};
-}
+};
+
+// New filter language
+
+export type ComparisonOperatorsNew = 'EQ' | 'NE' | 'LT' | 'GT' | 'LE' | 'GE' | 'LIKE';
+export type ArrayOperatorsNew = 'IN';
+export type NullOperator = 'NULL';
+export type OperatorNew = ComparisonOperatorsNew | ArrayOperatorsNew | NullOperator;
+
+// Maybe we need more in the future, hence the type.
+export type ModifierFunction = 'lower';
+
+export type ExcludeLowerAndNull<T> = 
+  | ( { [K in ComparisonOperatorsNew]?: T; } & { [K in ArrayOperatorsNew]?: T[]; } & { [K in NullOperator]?: never; } & { [K in ModifierFunction]?: boolean; })
+  | ( { [K in ComparisonOperatorsNew]?: T; } & { [K in ArrayOperatorsNew]?: T[]; } & { [K in NullOperator]?: boolean; } & { [K in ModifierFunction]?: never; });
+
+export type MapOperatorsNew<T> = T extends string ? ExcludeLowerAndNull<T> : 
+  ({ [K in ComparisonOperatorsNew]?: T; } & { [K in ArrayOperatorsNew]?: T[]; } & { [K in NullOperator]?: boolean; });
+    
+
+export type SingleFilterExpr<T> =  {
+[P in keyof T]?:
+        T[P] extends Array<infer U> | undefined ?
+            U extends Record<any, any> ? SingleFilterExpr<U> | {NOT?: SingleFilterExpr<U>} : MapOperatorsNew<U> :
+                T[P] extends Record<any, any> | undefined ? SingleFilterExpr<T[P]> | {NOT?: SingleFilterExpr<T[P]>} : MapOperatorsNew<T[P]>;
+};
+
+export type QueryFilterNew<T> = SingleFilterExpr<T> & {
+OR?: QueryFilterNew<T>[];
+AND?: QueryFilterNew<T>[];
+NOT?: SingleFilterExpr<T> | QueryFilterNew<T>
+};
 
 export type QuerySelect<T> = {
     [P in keyof T]?:
@@ -66,6 +97,7 @@ export type MapKeys<T, S extends Record<keyof T, string>> = {
 // Endpoint configurations
 export type CountQuery<F> = {
     filter?: QueryFilter<F>;
+    where?: QueryFilterNew<F> & CustomAttributeFilter;
     or?: (QueryFilter<F> & CustomAttributeFilter)[];
 };
 
@@ -85,6 +117,7 @@ export type SomeQuery<
     include?: I;
     properties?: P
     filter?: QueryFilter<F> & CustomAttributeFilter;
+    where?: QueryFilterNew<F> & CustomAttributeFilter;
     select?: S;
     or?: (QueryFilter<F> & CustomAttributeFilter)[];
     sort?: Sort<E>[];
@@ -137,7 +170,7 @@ export type WEntityPropertyMeta = (
 );
 
 // Utils
-const equality: string[] = ['EQ', 'NE'];
+const equality: string[] = ['EQ', 'NE', 'IEQ', 'NOT_IEQ'];
 const simple: string[] = [...equality, 'LT', 'GT', 'LE', 'GE', 'LIKE', 'NOT_LIKE', 'ILIKE', 'NOT_ILIKE'];
 const array: string[] = ['IN', 'NOT_IN'];
 const filterMap: Record<Operator, string> = {
@@ -152,7 +185,24 @@ const filterMap: Record<Operator, string> = {
     ILIKE: 'ilike',
     NOT_ILIKE: 'notilike',
     IN: 'in',
-    NOT_IN: 'notin'
+    NOT_IN: 'notin',
+    IEQ: 'ieq',
+    NOT_IEQ: 'notieq',
+};
+
+
+const comparisonOperatorsList: ComparisonOperatorsNew[] = ['EQ', 'NE', 'LT', 'GT', 'LE', 'GE', 'LIKE'];
+
+const filterMapNew: Record<OperatorNew, string> = {
+  EQ: '=', 
+  NE: '!=',
+  LT: '<',
+  GT: '>',
+  LE: '<=',
+  GE: '>=',
+  LIKE: '~',
+  IN: 'in',
+  NULL: 'null'
 };
 
 const flattenCustomAttributes = (obj: CustomAttributeFilter = {}): [string, string][] => {
@@ -202,6 +252,109 @@ const flatten = (obj: QueryFilter<any> = {}): [string, string][] => {
     }
 
     return entries;
+};
+
+
+const findAllModifierFunctions = (obj: Record<string, any>, types: ModifierFunction[]) => {
+    const result: Record<string, any> = {};
+    for (const key in obj) {
+        if (types.includes(key as ModifierFunction)) {
+            result[key] = obj[key];
+        }
+    }
+    return Object.entries(result);
+}
+
+const possibleModifierFunctions: ModifierFunction[] = ['lower'];
+
+const flattenWhere = (obj: QueryFilterNew<any> = {}, nestedPaths: string[]): string[] => {
+  const entries: string[] = [];
+  for (const [prop, propValue] of Object.entries(obj)) {
+  const setModifiers = findAllModifierFunctions(propValue ?? {}, possibleModifierFunctions).filter(modifier => modifier[1]);
+    if (prop === 'OR') {
+      const flattedOr: string[][] = [];
+      for (let i = 0; i < (obj.OR?.length ?? 0); i++) {
+        flattedOr.push(flattenWhere(obj.OR?.[i], nestedPaths));
+      }
+      entries.push(
+        `(${flattedOr
+          .map((x) => {
+            const joined = x.join(" and ");
+
+            if (x.length > 1) {
+              return `(${joined})`;
+            } else {
+              return joined;
+            }
+          })
+          .join(" or ")})`
+      );
+    }
+    else if (prop === 'AND') {
+      const flattedAnd: string[][] = [];
+      for (let i = 0; i < (obj.AND?.length ?? 0); i++) {
+        flattedAnd.push(flattenWhere(obj.AND?.[i], nestedPaths));
+      }
+       entries.push(
+        `(${flattedAnd
+          .map((x) => {
+            const joined = x.join(" and ");
+
+            if (x.length > 1) {
+              return `(${joined})`;
+            } else {
+              return joined;
+            }
+          })
+          .join(" and ")})`
+      );
+    }
+     else if (prop === 'NOT') {
+      const flattedNot = flattenWhere(obj.NOT, nestedPaths);
+      entries.push(
+        `not ${flattedNot.length > 1 ? '(' : ''}${flattedNot.join(' and ')}${flattedNot.length > 1 ? ')' : ''}`
+      );
+    } else {
+      for (const [filter, value] of Object.entries(propValue as object)) {
+        if (comparisonOperatorsList.includes((filter as ComparisonOperatorsNew))) {
+          entries.push(
+            `${setModifiers.reduce(
+                    (acc, [first]) => `${first}(${acc})`,
+                    nestedPaths.some(path => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
+                  )} ${filterMapNew[filter as OperatorNew]} ${typeof value === 'string' ? setModifiers.reduce(
+                    (acc, [first]) => `${first}(${acc})`,
+                    JSON.stringify(value)
+                  ) : value}`
+          );
+        } else if ((filter as OperatorNew) === 'NULL') {
+          entries.push(
+            `${!value ? 'not ' : ''}${nestedPaths.some(path => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')} ${filterMapNew[filter as OperatorNew]}`
+          );
+        } else if ((filter as OperatorNew) === 'IN') {
+          entries.push(
+            `${setModifiers.reduce(
+                    (acc, [first]) => `${first}(${acc})`,
+                    nestedPaths.some(path => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
+                  )} ${filterMapNew[filter as OperatorNew]} [${value.map((v: string | number) => typeof v === 'string' ? setModifiers.reduce(
+                    (acc, [first]) => `${first}(${acc})`,
+                    JSON.stringify(v)
+                  ) : v)}]`
+          );
+        } 
+         else if (!possibleModifierFunctions.includes(filter as ModifierFunction)) {
+          entries.push(...flattenWhere(propValue as QueryFilterNew<any>, [...nestedPaths, prop]));
+          break;
+        }
+     }
+    }
+  }
+
+  return entries;
+};
+
+const assembleFilterParam = (obj: QueryFilterNew<any> = {}): Record<string, string> => {
+    const flattedFilter = flattenWhere(obj, []);
+    return flattedFilter.length ? { filter: flattedFilter.join(' and ') }: {}
 };
 
 const flattenFilter = (obj: QueryFilter<any> = {}): Record<string, string> => {
