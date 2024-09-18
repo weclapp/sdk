@@ -28,6 +28,9 @@ interface ServiceConfig {
     // If you want that some and count requests are bundled into multi requests.
     multiRequest?: boolean;
 
+    // If you want that the ignoreMissingProperties parameter to be set for each post request.
+    ignoreMissingProperties?: boolean;
+
     // Optional request/response interceptors.
     interceptors?: {
 
