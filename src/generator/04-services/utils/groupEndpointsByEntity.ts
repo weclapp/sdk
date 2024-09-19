@@ -9,6 +9,11 @@ export interface ParsedEndpoint {
 
 export type GroupedEndpoints = Map<string, ParsedEndpoint[]>;
 
+const isMultiPartUploadPath = (path: string) => {
+    const [, entity, ...rest] = path.split('/');
+    return entity && rest.length === 2 && rest[1] === 'multiPartUpload';
+};
+
 export const groupEndpointsByEntity = (paths: OpenAPIV3.PathsObject): GroupedEndpoints => {
     const endpoints: GroupedEndpoints = new Map();
 
@@ -16,6 +21,10 @@ export const groupEndpointsByEntity = (paths: OpenAPIV3.PathsObject): GroupedEnd
         const endpoint = parseEndpointPath(rawPath);
 
         if (!endpoint || !path) {
+            // Todo: Should be removed if sdk supports multi part upload.
+            if (isMultiPartUploadPath(rawPath)) {
+                continue;
+            }
             logger.errorLn(`Failed to parse ${rawPath}`);
             continue;
         }
