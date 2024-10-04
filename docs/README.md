@@ -10,7 +10,7 @@ Check out [generated types and utilities](#generated-types-and-utilities) for mo
 
 ### The Service Configuration
 
-The configuration looks like the following (taken from [root.ts](/src/generator/01-base/static/root.ts.txt)):
+The configuration looks like the following (taken from [globalConfig.ts](/src/generator/01-base/static/globalConfig.ts.txt)):
 
 ```ts
 interface ServiceConfig {
@@ -24,6 +24,9 @@ interface ServiceConfig {
 
     // If you want to use https, defaults to true.
     secure?: boolean;
+
+    // If you want that some and count requests are bundled into multi requests.
+    multiRequest?: boolean;
 
     // Optional request/response interceptors.
     interceptors?: {

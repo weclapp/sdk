@@ -1,9 +1,10 @@
 import {isRXTarget, resolveBinaryType, Target} from '@enums/Target';
 import {generateImport} from '@ts/generateImport';
 import {generateStatements} from '@ts/generateStatements';
+import globalConfig from './static/globalConfig.ts.txt';
+import multiRequest from './static/multiRequest.ts.txt';
 import root from './static/root.ts.txt';
 import types from './static/types.ts.txt';
-
 
 const resolveImports = (target: Target): string => {
     const imports: string[] = [];
@@ -26,6 +27,8 @@ export const generateBase = (target: Target): string => {
         resolveImports(target),
         resolveMappings(target),
         resolveBinaryClass(target),
+        globalConfig,
+        multiRequest,
         types,
         root
     );
