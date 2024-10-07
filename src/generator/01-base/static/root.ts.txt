@@ -119,11 +119,11 @@ const _update = (
     cfg: ServiceConfigWithoutMultiRequest | undefined,
     endpoint: string,
     data: any,
-    {ignoreMissingProperties = true, dryRun = false}: UpdateQuery = {}
+    {ignoreMissingProperties, dryRun = false}: UpdateQuery = {}
 ) => wrapResponse(() => raw({...cfg, multiRequest: false}, endpoint, {
     method: 'PUT',
     body: data,
-    query: {ignoreMissingProperties, dryRun}
+    query: {ignoreMissingProperties: ignoreMissingProperties ?? cfg?.ignoreMissingProperties ?? globalConfig?.ignoreMissingProperties, dryRun}
 }));
 
 const _unique = (
