@@ -47,13 +47,16 @@ export const raw = async (
         throw new Error(`ServiceConfig missing.`);
     }
 
+
     cfg = {
         ...globalConfig, ...cfg,
         interceptors: {...globalConfig?.interceptors, ...cfg?.interceptors}
     };
 
-    const isBinaryData = payload.body instanceof resolveBinaryObject();
-    const params = new URLSearchParams(Object.entries(payload.query ?? {}).filter(v => v[1] !== undefined));
+     const isBinaryData = payload.body instanceof resolveBinaryObject();
+    const params = new URLSearchParams(Object.entries(payload.query ?? {}).filter(v => v[1] !== undefined)
+      .map(([key, value]) => [key, typeof value === "string" ? value : JSON.stringify(value)]));
+
     const protocol = (cfg.secure ?? true) ? 'https' : 'http';
 
     const interceptRequest = cfg.interceptors?.request ?? (v => v);
