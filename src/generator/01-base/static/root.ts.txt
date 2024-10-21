@@ -70,6 +70,7 @@ const _count = (
     query: {
         ...flattenFilter(query?.filter),
         ...flattenOrFilter(query?.or),
+        ...assembleFilterParam(query?.where),
         ...query?.params
     }
 }));
@@ -86,6 +87,7 @@ const _some = (
             includeReferencedEntities: query?.include ? Object.keys(query.include).join(',') : undefined,
             ...flattenOrFilter(query?.or),
             ...flattenFilter(query?.filter),
+            ...assembleFilterParam(query?.where),
             ...flattenSort(query?.sort),
             ...query?.params,
             ...query?.pagination
