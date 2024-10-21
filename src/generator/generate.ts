@@ -28,7 +28,7 @@ export const generate = (
     const services = generateServices(doc, aliases, options);
 
     return generateStatements(
-        generateBase(options.target),
+        generateBase(options.target, doc.info.version),
         generateBlockComment('ENUMS', generateStatements(...[...enums.values()].map(v => v.source))),
         generateBlockComment('ENTITIES', generateStatements(...[...entities.values()].map(v => v.source))),
         generateBlockComment('SERVICES', generateStatements(...[...services.values()].map(v => v.source))),

@@ -115,6 +115,7 @@ export const cli = async (): Promise<CLIResult> => {
     }
 
     const url = new URL(src.startsWith('http') ? src : `https://${src}`);
+    // At the moment just v1
     url.pathname = '/webapp/api/v1/meta/openapi.json';
 
     if (query?.length) {
