@@ -11,7 +11,7 @@ export type GroupedEndpoints = Map<string, ParsedEndpoint[]>;
 
 const isMultiPartUploadPath = (path: string) => {
     const [, entity, ...rest] = path.split('/');
-    return entity && rest.length === 2 && rest[1] === 'multiPartUpload';
+    return entity && rest.length === 2 && rest[1] === 'multipartUpload';
 };
 
 export const groupEndpointsByEntity = (paths: OpenAPIV3.PathsObject): GroupedEndpoints => {
