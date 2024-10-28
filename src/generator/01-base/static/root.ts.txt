@@ -30,7 +30,7 @@ export const raw = async (
         }
         data = await addRequest(`${ep}?${params}`);
     } else {
-        const request = new Request(`${protocol}://${host}/webapp/api/v1${endpoint}?${params}`, {
+        const request = new Request(`${protocol}://${host}/webapp/api/v${apiVersion}${endpoint}?${params}`, {
             ...(payload.body && {
                 body: isBinaryData ?
                     payload.body :

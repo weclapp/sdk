@@ -22,11 +22,12 @@ const resolveMappings = (target: Target) =>
 const resolveBinaryClass = (target: Target) =>
     `const resolveBinaryObject = () => ${resolveBinaryType(target)};`;
 
-export const generateBase = (target: Target): string => {
+export const generateBase = (target: Target, apiVersion: string): string => {
     return generateStatements(
         resolveImports(target),
         resolveMappings(target),
         resolveBinaryClass(target),
+        `const apiVersion = ${apiVersion}`,
         globalConfig,
         multiRequest,
         types,
