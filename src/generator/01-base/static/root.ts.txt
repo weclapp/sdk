@@ -13,8 +13,10 @@ export const raw = async (
         interceptors: {...globalConfig?.interceptors, ...cfg?.interceptors}
     };
 
-    const isBinaryData = payload.body instanceof resolveBinaryObject();
-    const params = new URLSearchParams(Object.entries(payload.query ?? {}).filter(v => v[1] !== undefined));
+     const isBinaryData = payload.body instanceof resolveBinaryObject();
+    const params = new URLSearchParams(Object.entries(payload.query ?? {}).filter(v => v[1] !== undefined)
+      .map(([key, value]) => [key, typeof value === "string" ? value : JSON.stringify(value)]));
+
     const protocol = getProtocol(localCfg);
 
     const interceptRequest = localCfg.interceptors?.request ?? (v => v);

@@ -180,17 +180,12 @@ const flatten = (obj: QueryFilter<any> = {}): [string, string][] => {
         for (const [filter, value] of Object.entries(propValue as object)) {
             if (value === undefined) continue;
 
-            if (simple.includes(filter)) {
+            if (simple.includes(filter) || array.includes(filter)) {
                 if (value === null && equality.includes(filter)) {
                     entries.push([`${prop}-${filter === 'EQ' ? 'null' : 'notnull'}`, '']);
                 } else {
                     entries.push([`${prop}-${filterMap[filter as Operator]}`, value]);
                 }
-            } else if (array.includes(filter)) {
-                entries.push([
-                    `${prop}-${filterMap[filter as Operator]}`,
-                    `[${value.map((v: string | number) => typeof v === 'string' ? `"${v}"` : v)}]`
-                ]);
             } else {
                 entries.push(
                     ...flatten(propValue as QueryFilter<any>)
