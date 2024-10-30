@@ -50,7 +50,7 @@ export const generateEntities = (
                   const type = `${pascalCase(meta.entity)}[]`;
                   if (schemas.has(meta.entity)) {
                     referenceInterface.push({ name, type, required: true });
-                    filterInterface.push({ name: meta.entity, type, required: true });
+                    filterInterface.push({ name: meta.entity === 'party' ? name.endsWith('Id') ? name.slice(0, -2) : name : meta.entity, type, required: true });
                   }
                 }
         
@@ -58,7 +58,7 @@ export const generateEntities = (
                   if (schemas.has(meta.service)) {
                     referenceMappingsInterface.push({
                       name,
-                      type: generateString(meta.service),
+                      type: meta.service === 'party' ? name.endsWith('Id') ? generateString(name.slice(0, -2)) : generateString(name) : generateString(meta.service),
                       required: true,
                     });
                   }
