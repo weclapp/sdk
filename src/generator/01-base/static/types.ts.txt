@@ -48,7 +48,7 @@ export type OperatorNew = ComparisonOperatorsNew | ArrayOperatorsNew | NullOpera
 // Maybe we need more in the future, hence the type.
 export type ModifierFunction = 'lower';
 
-export type MapOperatorsNew<T> = 
+export type MapOperatorsNew<T> =
   | ( { [K in ComparisonOperatorsNew]?: T; } & { [K in ArrayOperatorsNew]?: T[]; } & { [K in NullOperator]?: never; } & { [K in ModifierFunction]?: boolean; })
   | ( { [K in ComparisonOperatorsNew]?: T; } & { [K in ArrayOperatorsNew]?: T[]; } & { [K in NullOperator]?: boolean; } & { [K in ModifierFunction]?: never; });
 
@@ -60,9 +60,9 @@ export type SingleFilterExpr<T> =  {
 };
 
 export type QueryFilterNew<T> = SingleFilterExpr<T> & {
-OR?: QueryFilterNew<T>[];
-AND?: QueryFilterNew<T>[];
-NOT?: SingleFilterExpr<T> | QueryFilterNew<T>
+  OR?: QueryFilterNew<T>[];
+  AND?: QueryFilterNew<T>[];
+  NOT?: QueryFilterNew<T>
 };
 
 export type QuerySelect<T> = {
@@ -190,7 +190,7 @@ const filterMap: Record<Operator, string> = {
 const comparisonOperatorsList: ComparisonOperatorsNew[] = ['EQ', 'NE', 'LT', 'GT', 'LE', 'GE', 'LIKE'];
 
 const filterMapNew: Record<OperatorNew, string> = {
-  EQ: '=', 
+  EQ: '=',
   NE: '!=',
   LT: '<',
   GT: '>',
@@ -261,7 +261,7 @@ const possibleModifierFunctions: ModifierFunction[] = ['lower'];
 const flattenWhere = (obj: QueryFilterNew<any> = {}, nestedPaths: string[]): string[] => {
   const entries: string[] = [];
   for (const [prop, propValue] of Object.entries(obj)) {
-  const setModifiers = findAllModifierFunctions(propValue ?? {}, possibleModifierFunctions).filter(modifier => modifier[1]);
+    const setModifiers = findAllModifierFunctions(propValue ?? {}, possibleModifierFunctions).filter(modifier => modifier[1]);
     if (prop === 'OR') {
       const flattedOr: string[][] = [];
       for (let i = 0; i < (obj.OR?.length ?? 0); i++) {
@@ -286,7 +286,7 @@ const flattenWhere = (obj: QueryFilterNew<any> = {}, nestedPaths: string[]): str
       for (let i = 0; i < (obj.AND?.length ?? 0); i++) {
         flattedAnd.push(flattenWhere(obj.AND?.[i], nestedPaths));
       }
-       entries.push(
+      entries.push(
         `(${flattedAnd
           .map((x) => {
             const joined = x.join(" and ");
@@ -300,46 +300,45 @@ const flattenWhere = (obj: QueryFilterNew<any> = {}, nestedPaths: string[]): str
           .join(" and ")})`
       );
     }
-     else if (prop === 'NOT') {
+    else if (prop === 'NOT') {
       const flattedNot = flattenWhere(obj.NOT, nestedPaths);
       entries.push(
         `not ${flattedNot.length > 1 ? '(' : ''}${flattedNot.join(' and ')}${flattedNot.length > 1 ? ')' : ''}`
       );
-    } else {
-      for (const [filter, value] of Object.entries(propValue as object)) {
-        if (comparisonOperatorsList.includes((filter as ComparisonOperatorsNew))) {
+    } else if (propValue) {
+      for (const [operator, value] of Object.entries(propValue)) {
+        if (value === undefined) continue;
+        if (comparisonOperatorsList.includes((operator as ComparisonOperatorsNew))) {
           entries.push(
             `${setModifiers.reduce(
                     (acc, [first]) => `${first}(${acc})`,
                     nestedPaths.some(path => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
-                  )} ${filterMapNew[filter as OperatorNew]} ${typeof value === 'string' ? setModifiers.reduce(
+                  )} ${filterMapNew[operator as OperatorNew]} ${typeof value === 'string' ? setModifiers.reduce(
                     (acc, [first]) => `${first}(${acc})`,
                     JSON.stringify(value)
                   ) : value}`
           );
-        } else if ((filter as OperatorNew) === 'NULL') {
+        } else if ((operator as OperatorNew) === 'NULL') {
           entries.push(
-            `${!value ? 'not ' : ''}${nestedPaths.some(path => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')} ${filterMapNew[filter as OperatorNew]}`
+            `${!value ? 'not ' : ''}${nestedPaths.some(path => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')} ${filterMapNew[operator as OperatorNew]}`
           );
-        } else if ((filter as OperatorNew) === 'IN') {
+        } else if ((operator as OperatorNew) === 'IN') {
           entries.push(
             `${setModifiers.reduce(
                     (acc, [first]) => `${first}(${acc})`,
                     nestedPaths.some(path => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
-                  )} ${filterMapNew[filter as OperatorNew]} [${value.map((v: string | number) => typeof v === 'string' ? setModifiers.reduce(
+                  )} ${filterMapNew[operator as OperatorNew]} [${value.map((v: string | number) => typeof v === 'string' ? setModifiers.reduce(
                     (acc, [first]) => `${first}(${acc})`,
                     JSON.stringify(v)
                   ) : v)}]`
           );
-        } 
-         else if (!possibleModifierFunctions.includes(filter as ModifierFunction)) {
+        } else if (!possibleModifierFunctions.includes(operator as ModifierFunction)) {
           entries.push(...flattenWhere(propValue as QueryFilterNew<any>, [...nestedPaths, prop]));
           break;
         }
-     }
+      }
     }
   }
-
   return entries;
 };
 
