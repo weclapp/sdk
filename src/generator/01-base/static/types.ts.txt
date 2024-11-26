@@ -56,11 +56,12 @@ export type MapOperatorsNew<T> = T extends string ? ExcludeLowerAndNull<T> :
   ({ [K in ComparisonOperatorsNew]?: T; } & { [K in ArrayOperatorsNew]?: T[]; } & { [K in NullOperator]?: boolean; });
     
 
-export type SingleFilterExpr<T> =  {
-[P in keyof T]?:
-        T[P] extends Array<infer U> | undefined ?
-            U extends Record<any, any> ? SingleFilterExpr<U> | {NOT?: SingleFilterExpr<U>} : MapOperatorsNew<U> :
-                T[P] extends Record<any, any> | undefined ? SingleFilterExpr<T[P]> | {NOT?: SingleFilterExpr<T[P]>} : MapOperatorsNew<T[P]>;
+export type NonNullableValue<T> = T extends null | undefined ? never : T;
+
+export type SingleFilterExpr<T> = {
+  [P in keyof T]?: T[P] extends Array<infer U> ?
+    U extends Record<any, any> ? SingleFilterExpr<U> | { NOT?: SingleFilterExpr<U> } : MapOperatorsNew<NonNullableValue<U>> :
+    T[P] extends Record<any, any> ? SingleFilterExpr<T[P]> | { NOT?: SingleFilterExpr<T[P]> } : MapOperatorsNew<NonNullableValue<T[P]>>;
 };
 
 export type QueryFilterNew<T> = SingleFilterExpr<T> & {
