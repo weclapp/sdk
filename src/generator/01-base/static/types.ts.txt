@@ -48,13 +48,9 @@ export type OperatorNew = ComparisonOperatorsNew | ArrayOperatorsNew | NullOpera
 // Maybe we need more in the future, hence the type.
 export type ModifierFunction = 'lower';
 
-export type ExcludeLowerAndNull<T> = 
+export type MapOperatorsNew<T> = 
   | ( { [K in ComparisonOperatorsNew]?: T; } & { [K in ArrayOperatorsNew]?: T[]; } & { [K in NullOperator]?: never; } & { [K in ModifierFunction]?: boolean; })
   | ( { [K in ComparisonOperatorsNew]?: T; } & { [K in ArrayOperatorsNew]?: T[]; } & { [K in NullOperator]?: boolean; } & { [K in ModifierFunction]?: never; });
-
-export type MapOperatorsNew<T> = T extends string ? ExcludeLowerAndNull<T> : 
-  ({ [K in ComparisonOperatorsNew]?: T; } & { [K in ArrayOperatorsNew]?: T[]; } & { [K in NullOperator]?: boolean; });
-    
 
 export type SingleFilterExpr<T> =  {
 [P in keyof T]?:
