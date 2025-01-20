@@ -14,10 +14,10 @@ export interface ServiceConfig {
     // cookie-authentication (include-credentials) will be used.
     key?: string;
 
-    // Your domain, if omitted location.host will be used.
+    // Your domain, if omitted location.host will be used (browser env).
     host?: string;
 
-    // If you want to use https, defaults to true.
+    // If you want to use https, defaults to location.protocol (browser env).
     secure?: boolean;
 
     // If you want that some and count requests are bundled into multi requests.
@@ -53,10 +53,25 @@ export const getHost = (cfg: ServiceConfig) => {
     }
 
     if (!host) {
-        throw new Error('Please specify a domain');
+        throw new Error('Please specify a host');
     }
 
     return host;
 };
 
-export const getProtocol = (cfg: ServiceConfig) => (cfg.secure ?? true) ? 'https' : 'http';
+export const getProtocol = (cfg: ServiceConfig) => {
+  const protocol =
+    cfg.secure !== undefined
+      ? cfg.secure
+        ? 'https:'
+        : 'http:'
+      : typeof location !== 'undefined'
+        ? location.protocol
+        : undefined;
+
+  if (!protocol) {
+    throw new Error('Please specify a protocol (secure)');
+  }
+
+  return protocol;
+};
