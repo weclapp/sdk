@@ -61,15 +61,15 @@ const readNextResponse = (bytes: Uint8Array) => {
 
 const fetchMultiRequest = async (requests: string[]) => {
     const cfg = getGlobalConfig();
-    
+
     if (!cfg) {
         throw new Error(`ServiceConfig missing.`);
     }
 
     const host = getHost(cfg);
     const protocol = getProtocol(cfg);
-    
-    return await fetch(`${protocol}://${host}/webapp/api/v2/batch/query`, {
+
+    return await fetch(`${protocol}//${host}/webapp/api/v2/batch/query`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ const rejectTasks = (tasks: BatchRequestTask[], error: unknown) => {
     for (const task of tasks) {
         if (!task.settled) {
             task.reject(error);
-        } 
+        }
     }
 };
 
@@ -100,7 +100,7 @@ const processStream = (
         let bytes = new Uint8Array(remainingBytes.length + chunk.length);
         bytes.set(remainingBytes);
         bytes.set(chunk, remainingBytes.length);
-  
+
         while (bytes.length) {
             const result = readNextResponse(bytes);
             if (!result) {
