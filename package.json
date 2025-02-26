@@ -21,8 +21,8 @@
     "tsconfig.lib.json"
   ],
   "engines": {
-    "node": "^20",
-    "npm": "^10"
+    "node": ">=20",
+    "npm": ">=10"
   },
   "types": "./sdk/dist/index.d.ts",
   "main": "./sdk/dist/index.cjs",
