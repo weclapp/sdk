@@ -7,7 +7,7 @@
         "ecmaVersion": 2018,
         "sourceType": "module",
         "parser": "@typescript-eslint/parser",
-        "project": "./tsconfig.json"
+        "project": "./tsconfig.node.json"
     },
     "extends": [
         "eslint:recommended",
@@ -22,7 +22,6 @@
         "comma-dangle": "error",
 		"linebreak-style": ["error", "unix"],
 		"object-curly-spacing": ["error", "never"],
-		"@typescript-eslint/semi": ["error"],
 		"semi-spacing": ["error", {"before": false, "after": true}],
 		"space-infix-ops": "error",
 		"operator-linebreak": ["error", "after"],

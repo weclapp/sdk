@@ -7,53 +7,58 @@ import {cp, mkdir, rm, stat, writeFile} from 'fs/promises';
 import {dirname, resolve} from 'path';
 import {cli} from './cli';
 import prettyMs from 'pretty-ms';
+import pkg from '../package.json' with {type: 'json'};
 
-const workingDirectory = resolve(currentDirname(), './sdk');
-const folders = ['docs', 'main', 'node', 'raw', 'rx', 'utils'];
+const workingDir = resolve(currentDirname(), './sdk');
+const cacheDir = resolve(currentDirname(), './.cache');
 
 void (async () => {
     const start = process.hrtime.bigint();
 
-    const {default: {version}} = await import('../package.json', {assert: {type: 'json'}});
     const {content: doc, cache: useCache, options} = await cli();
 
-    // Resolve cache dir and key
-    const cacheKey = hash([version, JSON.stringify(doc), JSON.stringify(options)]).slice(-8);
-    const cacheDir = resolve(currentDirname(), '.tmp', cacheKey);
-
-    const dist = (...paths: string[]) => resolve(workingDirectory, ...paths);
-    const tmp = async (...paths: string[]): Promise<string> => {
-        const fullPath = resolve(cacheDir, ...paths);
-        await mkdir(dirname(fullPath), {recursive: true}).catch(() => null);
+    const workingDirPath = async (...paths: string[]): Promise<string> => {
+        const fullPath = resolve(workingDir, ...paths);
+        await mkdir(dirname(fullPath), {recursive: true});
         return fullPath;
     };
+
+    // Resolve cache dir and key
+    const cacheKey = hash([pkg.version, JSON.stringify(doc), JSON.stringify(options)]).slice(-8);
+    const cachedSdkDir = resolve(cacheDir, cacheKey);
+
+    // Remove old SDK
+    await rm(workingDir, {recursive: true, force: true});
 
     if (useCache) {
         logger.infoLn(`Cache ID: ${cacheKey}`);
     }
 
-    if (useCache && await stat(cacheDir).catch(() => false)) {
-        logger.successLn(`Cache match! (${cacheDir})`);
+    if (useCache && await stat(cachedSdkDir).catch(() => false)) {
+        // Copy cached SDK to working dir
+        logger.successLn(`Cache match! (${cachedSdkDir})`);
+        await cp(cachedSdkDir, workingDir, {recursive: true});
     } else {
-
-        // Store swagger.json file
-        await writeFile(await tmp('openapi.json'), JSON.stringify(doc, null, 2));
+        // Write swagger.json file
+        await writeFile(await workingDirPath('openapi.json'), JSON.stringify(doc, null, 2));
         logger.infoLn(`Generate sdk (target: ${options.target})`);
 
-        // Generate SDKs
+        // Generate and write SDK
         const sdk = generate(doc, options);
-        await writeFile(await tmp('src', `${options.target}.ts`), sdk.trim() + '\n');
+        await writeFile(await workingDirPath('src', 'index.ts'), sdk.trim() + '\n');
 
-        // Bundle
+        // Bundle and write SDK
         logger.infoLn('Bundle... (this may take some time)');
-        await bundle(cacheDir, options.target);
+        await bundle(workingDir, options.target);
 
-        // Remove old SDK
-        await Promise.all(folders.map(async dir => rm(dist(dir), {recursive: true}).catch(() => 0)));
+        if (useCache) {
+            // Copy SDK to cache
+            logger.successLn(`Caching SDK: (${cachedSdkDir})`);
+            await mkdir(cachedSdkDir, {recursive: true});
+            await cp(workingDir, cachedSdkDir, {recursive: true});
+        }
     }
 
-    // Copy bundled SDK
-    await cp(cacheDir, workingDirectory, {recursive: true});
 
     // Print job summary
     const duration = (process.hrtime.bigint() - start) / 1_000_000n;
