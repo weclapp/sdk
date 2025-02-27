@@ -2,6 +2,7 @@
 /.env
 /.test
 /.tmp
+/.cache
 /coverage
 /node_modules
 /sdk

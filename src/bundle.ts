@@ -1,15 +1,14 @@
 import {Target} from '@enums/Target';
 import {currentDirname} from '@utils/currentDirname';
 import {resolve} from 'path';
-import {rmdir} from 'fs/promises';
-import {rollup, RollupOptions} from 'rollup';
+import {OutputOptions, rollup, RollupOptions} from 'rollup';
 import terser from '@rollup/plugin-terser';
-import ts from 'rollup-plugin-ts';
+import ts from '@rollup/plugin-typescript';
 
-const tsconfig = resolve(currentDirname(), './tsconfig.lib.json');
+const tsconfig = resolve(currentDirname(), './tsconfig.sdk.json');
 const resolveGlobals = (...globals: string[]) => Object.fromEntries(globals.map(v => [v, '*']));
 
-const generateOutput = (config: Record<string, unknown>) => ({
+const generateOutput = (config: OutputOptions): OutputOptions => ({
     sourcemap: true,
     banner: `/* weclapp sdk */`,
     ...config
@@ -32,36 +31,22 @@ export const bundle = async (workingDirectory: string, target: Target) => {
         })
     ];
 
-    // Remove build dir
-    await rmdir(dist()).catch(() => void 0);
-
     const bundles: Record<Target, () => RollupOptions> = {
         [Target.BROWSER_PROMISES]: () => ({
-            input: src('browser.ts'),
+            input: src('index.ts'),
+            plugins: [ts({tsconfig, declarationDir: dist()}), terser()],
             output: [
-                generateOutput({
-                    file: dist('index.cjs'),
-                    name: 'Weclapp',
-                    format: 'umd'
-                }),
                 generateOutput({
                     file: dist('index.js'),
                     format: 'es'
                 })
-            ],
-            plugins: [ts({tsconfig}), terser()]
+            ]
         }),
         [Target.BROWSER_RX]: () => ({
+            input: src('index.ts'),
+            plugins: [ts({tsconfig, declarationDir: dist()}), terser()],
             external: ['rxjs'],
-            input: src('browser.rx.ts'),
-            plugins: [ts({tsconfig}), terser()],
             output: [
-                generateOutput({
-                    file: dist('index.cjs'),
-                    name: 'Weclapp',
-                    format: 'umd',
-                    globals: resolveGlobals('rxjs')
-                }),
                 generateOutput({
                     file: dist('index.js'),
                     format: 'es',
@@ -70,16 +55,16 @@ export const bundle = async (workingDirectory: string, target: Target) => {
             ]
         }),
         [Target.NODE_PROMISES]: () => ({
-            input: src('node.ts'),
-            output: generateNodeOutput(),
+            input: src('index.ts'),
+            plugins: [ts({tsconfig, declarationDir: dist()}), terser()],
             external: ['node-fetch', 'url'],
-            plugins: [ts({tsconfig})]
+            output: generateNodeOutput()
         }),
         [Target.NODE_RX]: () => ({
-            input: src('node.rx.ts'),
-            output: generateNodeOutput(),
+            input: src('index.ts'),
+            plugins: [ts({tsconfig, declarationDir: dist()}), terser()],
             external: ['node-fetch', 'url', 'rxjs'],
-            plugins: [ts({tsconfig})]
+            output: generateNodeOutput()
         })
     };
 
