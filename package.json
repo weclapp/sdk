@@ -46,18 +46,19 @@
     "cli:node:cache": "./bin/cli.js test/openapi.json --target node  --cache",
     "cli:node.rx": "./bin/cli.js test/openapi.json --target node.rx",
     "cli:node.rx:cache": "./bin/cli.js test/openapi.json --target node.rx  --cache",
-    "lint": "eslint src/**/*.ts",
+    "prettier": "prettier . --check",
+    "prettier:fix": "prettier . --write",
+    "lint": "eslint ./src --cache",
     "lint:fix": "npm run lint -- --fix",
-    "ci": "npm run lint && npm run build && npm run cli:browser",
+    "ci": "npm run prettier && npm run lint && npm run build && npm run cli:browser",
     "release": "standard-version"
   },
   "devDependencies": {
     "@rollup/pluginutils": "5.1.4",
-    "@typescript-eslint/eslint-plugin": "8.25.0",
-    "@typescript-eslint/parser": "8.25.0",
-    "eslint": "^8.46.0",
-    "rollup-plugin-string": "^3.0.0",
-    "standard-version": "^9.5.0"
+    "eslint": "9.20.1",
+    "prettier": "3.3.3",
+    "standard-version": "^9.5.0",
+    "typescript-eslint": "8.24.1"
   },
   "dependencies": {
     "@rollup/plugin-terser": "0.4.4",

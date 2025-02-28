@@ -1,4 +1,4 @@
-import indentString from 'indent-string';
+import indentString from "indent-string";
 
 /**
  * Indents each line of the given string
@@ -6,5 +6,5 @@ import indentString from 'indent-string';
  * @param level Indentation level
  */
 export const indent = (s: string, level = 1): string => {
-    return indentString(s, 4 * level);
+  return indentString(s, 4 * level);
 };

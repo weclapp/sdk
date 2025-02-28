@@ -33,7 +33,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        target: [ node, node.rx, browser, browser.rx ]
+        target: [node, node.rx, browser, browser.rx]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
