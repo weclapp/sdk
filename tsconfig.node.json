@@ -1,30 +1,26 @@
 {
-    "compilerOptions": {
-        "strict": true,
-        "noImplicitAny": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "resolveJsonModule": true,
-        "moduleResolution": "node",
-        "module": "ESNext",
-        "target": "ESNext",
-        "sourceMap": false,
-        "allowSyntheticDefaultImports": true,
-        "baseUrl": ".",
-        "paths": {
-            "@logger": ["src/utils/logger.ts"],
-            "@generator/*": ["src/generator/*"],
-            "@enums/*": ["src/enums/*"],
-            "@utils/*": ["src/utils/*"],
-            "@ts/*": ["src/ts/*"],
-            "@/*": ["./*"],
-            "@sdk/*": ["sdk/*"],
-            "@tests/*": ["tests/*"]
-        }
-    },
-    "include": [
-        "src/**/*.ts",
-        "tests/**/*.ts",
-        "rollup.config.ts"
-    ]
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "module": "ESNext",
+    "target": "ESNext",
+    "sourceMap": false,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@logger": ["src/utils/logger.ts"],
+      "@generator/*": ["src/generator/*"],
+      "@enums/*": ["src/enums/*"],
+      "@utils/*": ["src/utils/*"],
+      "@ts/*": ["src/ts/*"],
+      "@/*": ["./*"],
+      "@sdk/*": ["sdk/*"],
+      "@tests/*": ["tests/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts", "rollup.config.ts"]
 }

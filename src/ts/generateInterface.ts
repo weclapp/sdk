@@ -1,55 +1,59 @@
-import {generateInlineComment} from '@ts/generateComment';
-import {generateType} from '@ts/generateType';
-import {arrayify} from '@utils/arrayify';
-import {indent} from '@utils/indent';
-import {ObjectType} from '@utils/openapi/convertToTypeScriptType';
+import { generateInlineComment } from "@ts/generateComment";
+import { generateType } from "@ts/generateType";
+import { arrayify } from "@utils/arrayify";
+import { indent } from "@utils/indent";
+import { ObjectType } from "@utils/openapi/convertToTypeScriptType";
 
 export interface InterfaceProperty {
-    name: string;
-    type?: string;
-    required?: boolean;
-    readonly?: boolean;
-    comment?: string;
+  name: string;
+  type?: string;
+  required?: boolean;
+  readonly?: boolean;
+  comment?: string;
 }
 
 const generateInterfaceProperties = (entries: InterfaceProperty[]): string => {
-    const properties = entries
-        .filter(v => v.type !== undefined)
-        .filter((value, index, array) => array.findIndex(v => v.name === value.name) === index)
-        .map(({name, type, required, readonly, comment}) => {
-            const cmd = comment ? `${generateInlineComment(comment)}\n` : '';
-            const req = required ? '' : '?';
-            const rol = readonly ? 'readonly ' : '';
-            return `${cmd + rol + name + req}: ${type as string};`;
-        })
-        .join('\n');
+  const properties = entries
+    .filter((v) => v.type !== undefined)
+    .filter(
+      (value, index, array) =>
+        array.findIndex((v) => v.name === value.name) === index,
+    )
+    .map(({ name, type, required, readonly, comment }) => {
+      const cmd = comment ? `${generateInlineComment(comment)}\n` : "";
+      const req = required ? "" : "?";
+      const rol = readonly ? "readonly " : "";
+      return `${cmd + rol + name + req}: ${type as string};`;
+    })
+    .join("\n");
 
-    return properties.length ? `{\n${indent(properties)}\n}` : `{}`;
+  return properties.length ? `{\n${indent(properties)}\n}` : `{}`;
 };
 
 export const generateInterfaceFromObject = (
-    name: string,
-    obj: ObjectType,
-    propagateOptionalProperties?: boolean
-): string => `export interface ${name} ${obj.toString(propagateOptionalProperties)}`;
+  name: string,
+  obj: ObjectType,
+  propagateOptionalProperties?: boolean,
+): string =>
+  `export interface ${name} ${obj.toString(propagateOptionalProperties)}`;
 
 export const generateInterface = (
-    name: string,
-    entries: InterfaceProperty[],
-    extend?: string | string[]
+  name: string,
+  entries: InterfaceProperty[],
+  extend?: string | string[],
 ): string => {
-    const signature = `${name} ${extend ? `extends ${arrayify(extend).join(', ')}` : ''}`.trim();
-    const body = generateInterfaceProperties(entries);
-    return `export interface ${signature} ${body}`;
+  const signature =
+    `${name} ${extend ? `extends ${arrayify(extend).join(", ")}` : ""}`.trim();
+  const body = generateInterfaceProperties(entries);
+  return `export interface ${signature} ${body}`;
 };
 
 export const generateInterfaceType = (
-    name: string,
-    entries: InterfaceProperty[],
-    extend?: string | string[]
+  name: string,
+  entries: InterfaceProperty[],
+  extend?: string | string[],
 ): string => {
-    const body = generateInterfaceProperties(entries);
-    const bases = extend ? arrayify(extend).join(' & ') : undefined;
-    return generateType(name, `${bases ? `${bases} & ` : ''}${body}`);
+  const body = generateInterfaceProperties(entries);
+  const bases = extend ? arrayify(extend).join(" & ") : undefined;
+  return generateType(name, `${bases ? `${bases} & ` : ""}${body}`);
 };
-

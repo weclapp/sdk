@@ -1,16 +1,14 @@
 {
-    "compilerOptions": {
-        "baseUrl": ".",
-        "declaration": true,
-        "esModuleInterop": true,
-        "module": "ESNext",
-        "moduleResolution": "node",
-        "noImplicitAny": true,
-        "sourceMap": true,
-        "strict": true,
-        "target": "ES2022"
-    },
-    "include": [
-        "sdk/**/*.ts"
-    ]
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "ES2022"
+  },
+  "include": ["sdk/**/*.ts"]
 }

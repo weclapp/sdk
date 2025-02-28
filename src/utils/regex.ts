@@ -5,5 +5,5 @@
  * @param g Optional group to extract
  */
 export const match = (content: string, r: RegExp, g = 0): string | null => {
-    return r.exec(content)?.[g] ?? null;
+  return r.exec(content)?.[g] ?? null;
 };

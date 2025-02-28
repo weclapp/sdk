@@ -31,10 +31,10 @@ This way, every time someone installs or updates dependencies, the SDK is genera
 ```json5
 {
   // in your package.json
-  "scripts": {
+  scripts: {
     "sdk:generate": "build-weclapp-sdk company.weclapp.com --key [your api key] --cache --target browser",
-    "postinstall": "npm run sdk:generate",
-  }
+    postinstall: "npm run sdk:generate",
+  },
 }
 ```
 
@@ -44,7 +44,7 @@ Check out the [docs](docs) for how the generated SDK looks like and how to use i
 ### Available flags
 
 | Flag                | Description                                                                   | Value / Type                                 |
-|---------------------|-------------------------------------------------------------------------------|----------------------------------------------|
+| ------------------- | ----------------------------------------------------------------------------- | -------------------------------------------- |
 | `--help` / `-h`     | Show help.                                                                    | `boolean`                                    |
 | `--version` / `-v`  | Show version of SDK.                                                          | `boolean`                                    |
 | `--key` / `-k`      | API Key in case of using a remote.                                            | `string`                                     |
