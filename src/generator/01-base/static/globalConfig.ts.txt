@@ -40,6 +40,10 @@ export interface ServiceConfig {
     };
 }
 
+export interface RequestOptions {
+    signal?: AbortSignal;
+}
+
 type ServiceConfigWithoutMultiRequest = Omit<ServiceConfig, 'multiRequest'>;
 
 let globalConfig: ServiceConfig | undefined;

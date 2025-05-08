@@ -26,6 +26,7 @@ export const generateUpdateEndpoint: ServiceFunctionGenerator = ({
       "id: string",
       `data: DeepPartial<${generateRequestBodyType(path).toString()}>`,
       "options?: UpdateQuery",
+      "requestOptions?: RequestOptions"
     ],
     returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`,
   });
@@ -33,8 +34,8 @@ export const generateUpdateEndpoint: ServiceFunctionGenerator = ({
   const functionSource = generateArrowFunction({
     name: functionName,
     signature: interfaceName,
-    returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, { id: "${id}" })}\`, data, options)`,
-    params: ["id", "data", "options"],
+    returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, { id: "${id}" })}\`, data, options, requestOptions)`,
+    params: ["id", "data", "options", "requestOptions?: RequestOptions"],
   });
 
   return {
