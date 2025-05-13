@@ -81,11 +81,6 @@ export const cli = async (): Promise<CLIResult> => {
       type: "string",
       choices: ["browser", "browser.rx", "node", "node.rx"],
     })
-    .option("d", {
-      alias: "deprecated",
-      describe: "Include deprecated functions and services",
-      type: "boolean",
-    })
     .epilog(`Copyright ${new Date().getFullYear()} weclapp GmbH`) as {
     argv: Args;
   };
