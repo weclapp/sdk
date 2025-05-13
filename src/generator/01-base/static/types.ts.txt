@@ -90,34 +90,9 @@ export type MapKeys<T, S extends Record<keyof T, string>> = {
     [K in keyof T as S[K]]: T[K];
 };
 
-// Endpoint configurations
-export type CountQuery<F> = {
-    filter?: QueryFilter<F>;
-    where?: QueryFilterNew<F> & CustomAttributeFilter;
-    or?: (QueryFilter<F> & CustomAttributeFilter)[];
-};
-
 export type Pagination = {
     page: number;
     pageSize: number;
-};
-
-export type SomeQuery<
-    E, // Entity
-    F, // Entity filter
-    I extends (QuerySelect<any> | undefined), // Select for referenced entities
-    S extends (QuerySelect<any> | undefined), // Select for entity properties
-    P extends string[] // Select for additional properties
-> = {
-    serializeNulls?: boolean;
-    include?: I;
-    properties?: P
-    filter?: QueryFilter<F> & CustomAttributeFilter;
-    where?: QueryFilterNew<F> & CustomAttributeFilter;
-    select?: S;
-    or?: (QueryFilter<F> & CustomAttributeFilter)[];
-    sort?: Sort<E>[];
-    pagination?: Pagination;
 };
 
 export type UniqueQuery = {
@@ -345,32 +320,6 @@ const flattenWhere = (obj: QueryFilterNew<any> = {}, nestedPaths: string[]): str
 const assembleFilterParam = (obj: QueryFilterNew<any> = {}): Record<string, string> => {
     const flattedFilter = flattenWhere(obj, []);
     return flattedFilter.length ? { filter: flattedFilter.join(' and ') }: {}
-};
-
-const flattenFilter = (obj: QueryFilter<any> = {}): Record<string, string> => {
-    const filter: [string, any][] = [], customAttributes: [string, any][] = [];
-
-    Object.entries(obj).forEach(value => {
-        (value[0].match(/^\d+$/) ? customAttributes : filter).push(value);
-    });
-
-    return Object.fromEntries([
-        ...flatten(Object.fromEntries(filter)),
-        ...flattenCustomAttributes(Object.fromEntries(customAttributes) as CustomAttributeFilter)
-    ]);
-};
-
-const flattenOrFilter = (obj: QueryFilter<any>[] = []): Record<string, string> => {
-    const entries: [string, any][] = [];
-
-    for (let i = 0; i < obj.length; i++) {
-        entries.push(
-            ...flatten(obj[i])
-                .map(v => [`or${i || ''}-${v[0]}`, v[1]]) as [string, string][]
-        );
-    }
-
-    return Object.fromEntries(entries);
 };
 
 const flattenSelect = (obj: Select<any, any> = {}): string[] => {

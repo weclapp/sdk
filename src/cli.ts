@@ -16,6 +16,7 @@ interface Args {
   deprecated?: boolean;
   fromEnv?: boolean;
   target?: Target;
+  generateFilter?: boolean;
   _: (string | number)[];
 }
 
@@ -86,6 +87,10 @@ export const cli = async (): Promise<CLIResult> => {
       describe: "Include deprecated functions and services",
       type: "boolean",
     })
+    .option("generate-filter", {
+      describe: "Generate the old filter property for some and count queries",
+      type: "boolean",
+    })
     .epilog(`Copyright ${new Date().getFullYear()} weclapp GmbH`) as {
     argv: Args;
   };
@@ -108,6 +113,7 @@ export const cli = async (): Promise<CLIResult> => {
     deprecated,
     generateUnique: argv.generateUnique ?? false,
     target: argv.target ?? Target.BROWSER_PROMISES,
+    generateFilter: argv.generateFilter ?? false,
   };
 
   if (!src || typeof src === "number") {

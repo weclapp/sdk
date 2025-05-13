@@ -3,6 +3,8 @@ import { generateImport } from "@ts/generateImport";
 import { generateStatements } from "@ts/generateStatements";
 import globalConfig from "./static/globalConfig.ts.txt";
 import multiRequest from "./static/multiRequest.ts.txt";
+import queriesWithFilter from "./static/queriesWithFilter.ts.txt";
+import queriesWithoutFilter from "./static/queriesWithoutFilter.ts.txt";
 import root from "./static/root.ts.txt";
 import types from "./static/types.ts.txt";
 
@@ -24,7 +26,11 @@ const resolveMappings = (target: Target) =>
 const resolveBinaryClass = (target: Target) =>
   `const resolveBinaryObject = () => ${resolveBinaryType(target)};`;
 
-export const generateBase = (target: Target, apiVersion: string): string => {
+export const generateBase = (
+  target: Target,
+  apiVersion: string,
+  generateFilter?: boolean,
+): string => {
   return generateStatements(
     resolveImports(target),
     resolveMappings(target),
@@ -32,6 +38,7 @@ export const generateBase = (target: Target, apiVersion: string): string => {
     `const apiVersion = ${apiVersion}`,
     globalConfig,
     multiRequest,
+    generateFilter ? queriesWithFilter : queriesWithoutFilter,
     types,
     root,
   );

@@ -16,6 +16,8 @@ export interface GeneratorOptions {
   target: Target;
   /* Generate deprecated functions */
   deprecated: boolean;
+  /* Generate the old filter property for some and count queries */
+  generateFilter: boolean;
 }
 
 export const generate = (
