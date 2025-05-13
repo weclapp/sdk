@@ -52,6 +52,7 @@ Check out the [docs](docs) for how the generated SDK looks like and how to use i
 | `--from-env` / `-e` | Use env variables `WECLAPP_BACKEND_URL` and `WECLAPP_API_KEY` as credentials. | `boolean`                                    |
 | `--target` / `-t`   | Specify the target platform.                                                  | `browser`, `browser.rx`, `node` or `node.rx` |
 | `--generate-unique` | Generate additional `.unique` functions.                                      | `boolean`                                    |
+| `--use-query-language` | Use the advanced query language. The property _filter_ will be removed from _SomeQuery_ and _CountQuery_ and the property _where_ will be added instead.                                      | `boolean`                                    |
 
 ### Contributing
 

@@ -1,0 +1,197 @@
+// New filter language
+
+export type ComparisonOperators = 'EQ' | 'NE' | 'LT' | 'GT' | 'LE' | 'GE' | 'LIKE';
+export type ArrayOperators = 'IN';
+export type NullOperator = 'NULL';
+export type Operator = ComparisonOperators | ArrayOperators | NullOperator;
+
+const comparisonOperatorsList: ComparisonOperators[] = ['EQ', 'NE', 'LT', 'GT', 'LE', 'GE', 'LIKE'];
+
+const filterMap: Record<Operator, string> = {
+  EQ: '=',
+  NE: '!=',
+  LT: '<',
+  GT: '>',
+  LE: '<=',
+  GE: '>=',
+  LIKE: '~',
+  IN: 'in',
+  NULL: 'null'
+};
+
+// Maybe we need more in the future, hence the type.
+export type ModifierFunction = 'lower';
+
+export type MapOperators<T> =
+  | ( { [K in ComparisonOperators]?: T; } & { [K in ArrayOperators]?: T[]; } & { [K in NullOperator]?: never; } & { [K in ModifierFunction]?: boolean; })
+  | ( { [K in ComparisonOperators]?: T; } & { [K in ArrayOperators]?: T[]; } & { [K in NullOperator]?: boolean; } & { [K in ModifierFunction]?: never; });
+
+export type SingleFilterExpr<T> =  {
+[P in keyof T]?:
+        T[P] extends Array<infer U> | undefined ?
+            U extends Record<any, any> ? SingleFilterExpr<U> | {NOT?: SingleFilterExpr<U>} : MapOperators<U> :
+                T[P] extends Record<any, any> | undefined ? SingleFilterExpr<T[P]> | {NOT?: SingleFilterExpr<T[P]>} : MapOperators<T[P]>;
+};
+
+export type QueryFilter<T> = SingleFilterExpr<T> & {
+  OR?: QueryFilter<T>[];
+  AND?: QueryFilter<T>[];
+  NOT?: QueryFilter<T>
+};
+
+// Endpoint configurations
+export type CountQuery<F> = {
+    where?: QueryFilter<F> & CustomAttributeFilter;
+};
+
+
+export type SomeQuery<
+    E, // Entity
+    F, // Entity filter
+    I extends (QuerySelect<any> | undefined), // Select for referenced entities
+    S extends (QuerySelect<any> | undefined), // Select for entity properties
+    P extends string[] // Select for additional properties
+> = {
+    serializeNulls?: boolean;
+    include?: I;
+    properties?: P
+    where?: QueryFilter<F> & CustomAttributeFilter;
+    select?: S;
+    sort?: Sort<E>[];
+    pagination?: Pagination;
+};
+
+const possibleModifierFunctions: ModifierFunction[] = ['lower'];
+
+const flattenWhere = (obj: QueryFilter<any> = {}, nestedPaths: string[]): string[] => {
+  const entries: string[] = [];
+  for (const [prop, propValue] of Object.entries(obj)) {
+    const setModifiers = findAllModifierFunctions(propValue ?? {}, possibleModifierFunctions).filter(modifier => modifier[1]);
+    if (prop === 'OR') {
+      const flattedOr: string[][] = [];
+      for (let i = 0; i < (obj.OR?.length ?? 0); i++) {
+        flattedOr.push(flattenWhere(obj.OR?.[i], nestedPaths));
+      }
+      entries.push(
+        `(${flattedOr
+          .map((x) => {
+            const joined = x.join(" and ");
+
+            if (x.length > 1) {
+              return `(${joined})`;
+            } else {
+              return joined;
+            }
+          })
+          .join(" or ")})`
+      );
+    }
+    else if (prop === 'AND') {
+      const flattedAnd: string[][] = [];
+      for (let i = 0; i < (obj.AND?.length ?? 0); i++) {
+        flattedAnd.push(flattenWhere(obj.AND?.[i], nestedPaths));
+      }
+      entries.push(
+        `(${flattedAnd
+          .map((x) => {
+            const joined = x.join(" and ");
+
+            if (x.length > 1) {
+              return `(${joined})`;
+            } else {
+              return joined;
+            }
+          })
+          .join(" and ")})`
+      );
+    }
+    else if (prop === 'NOT') {
+      const flattedNot = flattenWhere(obj.NOT, nestedPaths);
+      entries.push(
+        `not ${flattedNot.length > 1 ? '(' : ''}${flattedNot.join(' and ')}${flattedNot.length > 1 ? ')' : ''}`
+      );
+    } else if (propValue) {
+      for (const [operator, value] of Object.entries(propValue)) {
+        if (value === undefined) continue;
+        if (comparisonOperatorsList.includes((operator as ComparisonOperators))) {
+          entries.push(
+            `${setModifiers.reduce(
+                    (acc, [first]) => `${first}(${acc})`,
+                    nestedPaths.some(path => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
+                  )} ${filterMap[operator as Operator]} ${typeof value === 'string' ? setModifiers.reduce(
+                    (acc, [first]) => `${first}(${acc})`,
+                    JSON.stringify(value)
+                  ) : value}`
+          );
+        } else if ((operator as Operator) === 'NULL') {
+          entries.push(
+            `${!value ? 'not ' : ''}${nestedPaths.some(path => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')} ${filterMap[operator as Operator]}`
+          );
+        } else if ((operator as Operator) === 'IN') {
+          entries.push(
+            `${setModifiers.reduce(
+                    (acc, [first]) => `${first}(${acc})`,
+                    nestedPaths.some(path => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
+                  )} ${filterMap[operator as Operator]} [${value.map((v: string | number) => typeof v === 'string' ? setModifiers.reduce(
+                    (acc, [first]) => `${first}(${acc})`,
+                    JSON.stringify(v)
+                  ) : v)}]`
+          );
+        } else if (!possibleModifierFunctions.includes(operator as ModifierFunction)) {
+          entries.push(...flattenWhere(propValue as QueryFilter<any>, [...nestedPaths, prop]));
+          break;
+        }
+      }
+    }
+  }
+  return entries;
+};
+
+const assembleFilterParam = (obj: QueryFilter<any> = {}): Record<string, string> => {
+    const flattedFilter = flattenWhere(obj, []);
+    return flattedFilter.length ? { filter: flattedFilter.join(' and ') }: {}
+};
+
+const findAllModifierFunctions = (obj: Record<string, any>, types: ModifierFunction[]) => {
+    const result: Record<string, any> = {};
+    for (const key in obj) {
+        if (types.includes(key as ModifierFunction)) {
+            result[key] = obj[key];
+        }
+    }
+    return Object.entries(result);
+}
+
+const _count = (
+    cfg: ServiceConfig | undefined,
+    endpoint: string,
+    query?: CountQuery<any> & {params?: Record<any, any>}
+) => wrapResponse(() => raw(cfg, endpoint, {
+    unwrap: true,
+    query: {
+        ...assembleFilterParam(query?.where),
+        ...query?.params
+    }
+}));
+
+const _some = (
+    cfg: ServiceConfig | undefined,
+    endpoint: string,
+    query?: SomeQuery<any, any, any, any, any> & {params?: Record<any, any>}
+) => wrapResponse(() => raw(cfg, endpoint, {
+        query: {
+            serializeNulls: query?.serializeNulls,
+            additionalProperties: query?.properties?.join(','),
+            properties: query?.select ? flattenSelect(query.select).join(',') : undefined,
+            includeReferencedEntities: query?.include ? Object.keys(query.include).join(',') : undefined,
+            ...assembleFilterParam(query?.where),
+            ...flattenSort(query?.sort),
+            ...query?.params,
+            ...query?.pagination
+        }
+    }).then(data => ({
+        entities: data.result,
+        references: data.referencedEntities ?? {},
+        properties: data.additionalProperties ?? {}
+    }))
+);
