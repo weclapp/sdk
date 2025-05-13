@@ -16,6 +16,8 @@ export interface GeneratorOptions {
   target: Target;
   /* Generate deprecated functions */
   deprecated: boolean;
+  /* Generate the new where property for some and count queries */
+  useQueryLanguage: boolean;
 }
 
 export const generate = (
@@ -28,7 +30,7 @@ export const generate = (
   const services = generateServices(doc, aliases, options);
 
   return generateStatements(
-    generateBase(options.target, doc.info.version),
+    generateBase(options.target, doc.info.version, options.useQueryLanguage),
     generateBlockComment(
       "ENUMS",
       generateStatements(...[...enums.values()].map((v) => v.source)),

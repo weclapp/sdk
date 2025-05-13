@@ -1,0 +1,55 @@
+// Endpoint configurations
+export type CountQuery<F> = {
+    where?: QueryFilterNew<F> & CustomAttributeFilter;
+};
+
+
+export type SomeQuery<
+    E, // Entity
+    F, // Entity filter
+    I extends (QuerySelect<any> | undefined), // Select for referenced entities
+    S extends (QuerySelect<any> | undefined), // Select for entity properties
+    P extends string[] // Select for additional properties
+> = {
+    serializeNulls?: boolean;
+    include?: I;
+    properties?: P
+    where?: QueryFilterNew<F> & CustomAttributeFilter;
+    select?: S;
+    sort?: Sort<E>[];
+    pagination?: Pagination;
+};
+
+const _count = (
+    cfg: ServiceConfig | undefined,
+    endpoint: string,
+    query?: CountQuery<any> & {params?: Record<any, any>}
+) => wrapResponse(() => raw(cfg, endpoint, {
+    unwrap: true,
+    query: {
+        ...assembleFilterParam(query?.where),
+        ...query?.params
+    }
+}));
+
+const _some = (
+    cfg: ServiceConfig | undefined,
+    endpoint: string,
+    query?: SomeQuery<any, any, any, any, any> & {params?: Record<any, any>}
+) => wrapResponse(() => raw(cfg, endpoint, {
+        query: {
+            serializeNulls: query?.serializeNulls,
+            additionalProperties: query?.properties?.join(','),
+            properties: query?.select ? flattenSelect(query.select).join(',') : undefined,
+            includeReferencedEntities: query?.include ? Object.keys(query.include).join(',') : undefined,
+            ...assembleFilterParam(query?.where),
+            ...flattenSort(query?.sort),
+            ...query?.params,
+            ...query?.pagination
+        }
+    }).then(data => ({
+        entities: data.result,
+        references: data.referencedEntities ?? {},
+        properties: data.additionalProperties ?? {}
+    }))
+);

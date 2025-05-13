@@ -63,43 +63,9 @@ export const raw = async (
     return payload.unwrap ? data.result : data;
 };
 
-const _count = (
-    cfg: ServiceConfig | undefined,
-    endpoint: string,
-    query?: CountQuery<any> & {params?: Record<any, any>}
-) => wrapResponse(() => raw(cfg, endpoint, {
-    unwrap: true,
-    query: {
-        ...flattenFilter(query?.filter),
-        ...flattenOrFilter(query?.or),
-        ...assembleFilterParam(query?.where),
-        ...query?.params
-    }
-}));
 
-const _some = (
-    cfg: ServiceConfig | undefined,
-    endpoint: string,
-    query?: SomeQuery<any, any, any, any, any> & {params?: Record<any, any>}
-) => wrapResponse(() => raw(cfg, endpoint, {
-        query: {
-            serializeNulls: query?.serializeNulls,
-            additionalProperties: query?.properties?.join(','),
-            properties: query?.select ? flattenSelect(query.select).join(',') : undefined,
-            includeReferencedEntities: query?.include ? Object.keys(query.include).join(',') : undefined,
-            ...flattenOrFilter(query?.or),
-            ...flattenFilter(query?.filter),
-            ...assembleFilterParam(query?.where),
-            ...flattenSort(query?.sort),
-            ...query?.params,
-            ...query?.pagination
-        }
-    }).then(data => ({
-        entities: data.result,
-        references: data.referencedEntities ?? {},
-        properties: data.additionalProperties ?? {}
-    }))
-);
+
+
 
 const _remove = (
     cfg: ServiceConfigWithoutMultiRequest | undefined,
