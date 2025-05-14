@@ -25,14 +25,12 @@
     "npm": ">=10"
   },
   "types": "./sdk/dist/index.d.ts",
-  "main": "./sdk/dist/index.cjs",
   "module": "./sdk/dist/index.js",
   "type": "module",
   "exports": {
     ".": {
       "types": "./sdk/dist/index.d.ts",
-      "import": "./sdk/dist/index.js",
-      "require": "./sdk/dist/index.cjs"
+      "import": "./sdk/dist/index.js"
     }
   },
   "scripts": {
