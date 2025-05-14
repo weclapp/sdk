@@ -37,7 +37,10 @@ export const bundle = async (workingDirectory: string, target: Target) => {
   const bundles: Record<Target, () => RollupOptions> = {
     [Target.BROWSER_PROMISES]: () => ({
       input: src("index.ts"),
-      plugins: [ts({ tsconfig, declarationDir: dist() }), terser()],
+      plugins: [
+        ts({ tsconfig, declarationDir: dist(), filterRoot: src() }),
+        terser(),
+      ],
       output: [
         generateOutput({
           file: dist("index.js"),
@@ -47,7 +50,10 @@ export const bundle = async (workingDirectory: string, target: Target) => {
     }),
     [Target.BROWSER_RX]: () => ({
       input: src("index.ts"),
-      plugins: [ts({ tsconfig, declarationDir: dist() }), terser()],
+      plugins: [
+        ts({ tsconfig, declarationDir: dist(), filterRoot: src() }),
+        terser(),
+      ],
       external: ["rxjs"],
       output: [
         generateOutput({
@@ -59,13 +65,19 @@ export const bundle = async (workingDirectory: string, target: Target) => {
     }),
     [Target.NODE_PROMISES]: () => ({
       input: src("index.ts"),
-      plugins: [ts({ tsconfig, declarationDir: dist() }), terser()],
+      plugins: [
+        ts({ tsconfig, declarationDir: dist(), filterRoot: src() }),
+        terser(),
+      ],
       external: ["node-fetch", "url"],
       output: generateNodeOutput(),
     }),
     [Target.NODE_RX]: () => ({
       input: src("index.ts"),
-      plugins: [ts({ tsconfig, declarationDir: dist() }), terser()],
+      plugins: [
+        ts({ tsconfig, declarationDir: dist(), filterRoot: src() }),
+        terser(),
+      ],
       external: ["node-fetch", "url", "rxjs"],
       output: generateNodeOutput(),
     }),

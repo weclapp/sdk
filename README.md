@@ -205,6 +205,7 @@ The generator generates various utilities that can be used to integrate it in a 
 | `WEntityProperties`     | Generalized type of `wEntityProperties`.                                                                    |                                       |
 
 # Services and Raw in depth
+
 As already described above, the api endpoints can be requested via services or the raw function. The advantage of wServices over the raw function is that all endpoints of the entities are available as functions and these functions are typed. This makes it easier to work with the data provided via the weclapp API.
 
 A service of an entity has in general the following base function:
@@ -216,6 +217,7 @@ A service of an entity has in general the following base function:
     update: // updates a entity
 
 In addition there are some custom endpoint functions. The generated PartyService is shown below as an example:
+
 ```ts
 interface PartyService {
   some: PartyService_Some;
@@ -232,147 +234,178 @@ interface PartyService {
 ```
 
 ## Comparison
+
 ```ts
-import { PartyType, setGlobalConfig, wServices } from '@weclapp/sdk';
+import { PartyType, setGlobalConfig, wServices } from "@weclapp/sdk";
 
 setGlobalConfig({
-  domain: 'company.weclapp.com',
-  secure: true
+  domain: "company.weclapp.com",
+  secure: true,
 });
 
 // to get the count of parties via service
-const serviceN = await wServices['party'].count();
+const serviceN = await wServices["party"].count();
 
 // to get the count of parties via raw
-const rawN = await raw(undefined, '/party/count');
+const rawN = await raw(undefined, "/party/count");
 
 // to get all parties via service
-const partiesService = await wServices['party'].some();
+const partiesService = await wServices["party"].some();
 
 // to get all parties via raw
-const partiesRaw = await raw(undefined, '/party');
+const partiesRaw = await raw(undefined, "/party");
 
 // to create a party via service
-const contact = await wServices['party'].create({ partyType: PartyType.PERSON, lastName: 'Mueller' }); // the returned object is already typed as Party
+const contact = await wServices["party"].create({
+  partyType: PartyType.PERSON,
+  lastName: "Mueller",
+}); // the returned object is already typed as Party
 
 // to create a party via raw
-const contactRaw = await await raw(undefined, '/party', { // the returned object has the type any.
-  method: 'POST',
-  body: { partyType: PartyType.PERSON, lastName: 'Mueller' }
+const contactRaw = await await raw(undefined, "/party", {
+  // the returned object has the type any.
+  method: "POST",
+  body: { partyType: PartyType.PERSON, lastName: "Mueller" },
 });
 
 // to delete a party via service
-await wServices['party'].remove(contact.id);
+await wServices["party"].remove(contact.id);
 
 // to delete a party via raw
-if (contactRaw && typeof contactRaw.id === 'string') {
+if (contactRaw && typeof contactRaw.id === "string") {
   await raw(undefined, `/party/id/${contactRaw.id}`, {
-    method: 'DELETE'
+    method: "DELETE",
   });
 }
 ```
 
 ## Service request arguments
+
 ### Filtering
+
 With the some and count functions you can filter the requested data.
+
 ```ts
-wServices['article'].some({
+wServices["article"].some({
   filter: {
-      name: { EQ: 'toy 1'},
-      articleNumber: { EQ: '12345' }
-  }
+    name: { EQ: "toy 1" },
+    articleNumber: { EQ: "12345" },
+  },
 });
 ```
-The SDK makes an AND operator between the properties. So this equivalent to the follwing expression: 
+
+The SDK makes an AND operator between the properties. So this equivalent to the follwing expression:
 
     name EQ 'toy 1' AND articleNumber EQ '12345'.
 
 If you want an OR operator you have to set an array in the or property:
+
 ```ts
-wServices['article'].some({
+wServices["article"].some({
   or: [
     {
-      name: { EQ: 'toy 1'},
-      articleNumber: { EQ: '12345' }
-    }
-  ]
+      name: { EQ: "toy 1" },
+      articleNumber: { EQ: "12345" },
+    },
+  ],
 });
 ```
+
 The above example is the equivalent of the expression
 
     name EQ 'toy 1' OR articleNumber EQ '12345'.
 
 To combine OR and AND clauses, you can also group OR expressions by adding several objects to the array:
+
 ```ts
-wServices['article'].some({
+wServices["article"].some({
   or: [
     {
-      name: { EQ: 'toy 1'},
-      articleNumber: { EQ: '12345' }
+      name: { EQ: "toy 1" },
+      articleNumber: { EQ: "12345" },
     },
     {
-      batchNumberRequired: { EQ: true}
-    }
-  ]
-})
+      batchNumberRequired: { EQ: true },
+    },
+  ],
+});
 ```
+
 This is evaluated to:
-    (name EQ 'toy 1' OR articleNumber EQ '12345') AND batchNumberRequired EQ true
+(name EQ 'toy 1' OR articleNumber EQ '12345') AND batchNumberRequired EQ true
 
 ### Where filter
+
 <strong>Warning: This is still a beta feature.</strong>
 
 It is also possible to specify complex filter expressions that can combine multiple conditions and express relations between properties:
+
 ```ts
-wServices['article'].some({
+wServices["article"].some({
   where: {
     AND: [
-      { OR: [{ name: { LIKE: '%test%', lower: true } }, { articleNumber: { LIKE: '%345%' } }] },
-      { batchNumberRequired: { EQ: true } }
-    ]
-  }
+      {
+        OR: [
+          { name: { LIKE: "%test%", lower: true } },
+          { articleNumber: { LIKE: "%345%" } },
+        ],
+      },
+      { batchNumberRequired: { EQ: true } },
+    ],
+  },
 });
 ```
+
 "where" parameters are ANDed with other filter parameters.
 
 ### Sort
+
 You can sort your requested data with an array properties.
+
 ```ts
-wServices['article'].some({
-  sort: [{ name: 'asc' }, { minimumPurchaseQuantity: 'desc' }]
+wServices["article"].some({
+  sort: [{ name: "asc" }, { minimumPurchaseQuantity: "desc" }],
 });
 ```
+
 Sort by name (ascending) and then minimumPurchaseQuantity descending.
 
 ### Pagination
+
 By default the API returns only the first 100 entities. You can increase the size of one response to the maximum of 1000. To get the next 1000 entities you have increase the page number.
+
 ```ts
-wServices['article'].some({
+wServices["article"].some({
   pagination: {
     page: 2,
-    pageSize: 10
-  }
+    pageSize: 10,
+  },
 });
 ```
+
 This returns the first 10 articles of the second page.
 
 ### Select
+
 With the select option you can fetch specific subset of properties:
+
 ```ts
-wServices['article'].some({
-      select: { articleNumber: true }
-    });
+wServices["article"].some({
+  select: { articleNumber: true },
+});
 ```
+
 This only returns the articleNumber property of all articles.
 
 # Enums
 
 The generated enums are a good posibility to check if an entity is of a specific type. For example, you can get all articles of a certain article type:
+
 ```ts
-wServices['article'].some({
+wServices["article"].some({
   filter: {
-      articleType: { EQ: ArticleType.STORABLE }
-  }
+    articleType: { EQ: ArticleType.STORABLE },
+  },
 });
 ```
 

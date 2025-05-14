@@ -50,13 +50,16 @@ void (async () => {
     );
     logger.infoLn(`Generate sdk (target: ${options.target})`);
 
-    // Generate and write SDK
+    // Generate and write SDK (index.ts)
     const sdk = generate(doc, options);
     await writeFile(await workingDirPath("src", "index.ts"), sdk.trim() + "\n");
 
     // Bundle and write SDK
     logger.infoLn("Bundle... (this may take some time)");
     await bundle(workingDir, options.target);
+
+    // Remove index.ts (only bundle is required)
+    await rm(await workingDirPath("src"), { recursive: true, force: true });
 
     if (useCache) {
       // Copy SDK to cache
