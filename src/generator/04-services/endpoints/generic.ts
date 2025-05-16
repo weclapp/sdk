@@ -55,15 +55,15 @@ export const generateGenericEndpoint =
     const functionSource = generateArrowFunction({
       name: functionName,
       signature: interfaceName,
-      params: hasId ? ["id", "query"] : ["query"],
-      returns: `_generic(cfg, ${generateString(method.toUpperCase())}, \`${insertPathPlaceholder(endpoint.path, { id: "${id}" })}\`, query, ${forceBlobResponse})`,
+      params: hasId ? ["id", "query", "requestOptions?: RequestOptions"] : ["query", "requestOptions?: RequestOptions"],
+      returns: `_generic(cfg, ${generateString(method.toUpperCase())}, \`${insertPathPlaceholder(endpoint.path, { id: "${id}" })}\`, query, ${forceBlobResponse}, requestOptions)`,
     });
 
     const interfaceSource = generateArrowFunctionType({
       type: interfaceName,
       params: [
         ...(hasId ? ["id: string"] : []),
-        `query${params.isFullyOptional() ? "?" : ""}: ${entityQuery}`,
+        `query${params.isFullyOptional() ? "?" : ""}: ${entityQuery}`, "requestOptions?: RequestOptions"
       ],
       returns: `${resolveResponseType(target)}<${wrapBody(responseBody, target).toString()}>`,
     });
