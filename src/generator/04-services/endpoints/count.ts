@@ -36,14 +36,14 @@ export const generateCountEndpoint: ServiceFunctionGenerator = ({
   const functionSource = generateArrowFunction({
     name: functionName,
     signature: interfaceName,
-    returns: `_${functionName}(cfg, ${generateString(endpoint.path)}, query)`,
-    params: ["query"],
+    returns: `_${functionName}(cfg, ${generateString(endpoint.path)}, query, requestOptions)`,
+    params: ["query", "requestOptions?: RequestOptions"],
   });
 
   const interfaceSource = generateArrowFunctionType({
     type: interfaceName,
     params: [
-      `query${parameters.isFullyOptional() ? "?" : ""}: CountQuery<${entityFilter}> & ${entityParameters}`,
+      `query${parameters.isFullyOptional() ? "?" : ""}: CountQuery<${entityFilter}> & ${entityParameters}`, "requestOptions?: RequestOptions",
     ],
     returns: `${resolveResponseType(target)}<number>`,
   });

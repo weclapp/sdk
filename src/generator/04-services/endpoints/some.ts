@@ -92,7 +92,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
       `I extends (QuerySelect<${entityMappings}> | undefined) = undefined`,
     ],
     params: [
-      `query${parameters.isFullyOptional() ? "?" : ""}: SomeQuery<${entity}, ${entityFilter}, I, S, ${additionalPropertyNamesType}> & ${entityParameters}`,
+      `query${parameters.isFullyOptional() ? "?" : ""}: SomeQuery<${entity}, ${entityFilter}, I, S, ${additionalPropertyNamesType}> & ${entityParameters}`, "requestOptions?: RequestOptions",
     ],
     returns: `${resolveResponseType(target)}<SomeQueryReturn<${entity}, ${entityReferences}, ${entityMappings}, I, S, ${properties}>>`,
   });
@@ -100,8 +100,8 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   const functionSource = generateArrowFunction({
     name: functionName,
     signature: interfaceName,
-    returns: `_${functionName}(cfg, ${generateString(endpoint.path)}, query)`,
-    params: ["query"],
+    returns: `_${functionName}(cfg, ${generateString(endpoint.path)}, query, requestOptions)`,
+    params: ["query", "requestOptions?: RequestOptions"],
   });
 
   return {
