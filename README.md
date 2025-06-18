@@ -54,6 +54,7 @@ This way, every time someone installs or updates dependencies, the SDK is genera
 | `--deprecated` / `-d` | Include deprecated functions and services.                                    | `boolean`                                    |
 | `--from-env` / `-e`   | Use env variables `WECLAPP_BACKEND_URL` and `WECLAPP_API_KEY` as credentials. | `boolean`                                    |
 | `--generate-unique`   | Generate additional `.unique` functions.                                      | `boolean`                                    |
+| `--use-query-language`| Use the advanced query language. The property _filter_ will be removed from _SomeQuery_ and _CountQuery_ and the property _where_ will be added instead. | `boolean`                                    |
 | `--help` / `-h`       | Show help.                                                                    | `boolean`                                    |
 | `--key` / `-k`        | API Key in case of using a remote.                                            | `string`                                     |
 | `--target` / `-t`     | Specify the target platform.                                                  | `browser`, `browser.rx`, `node` or `node.rx` |

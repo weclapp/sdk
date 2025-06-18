@@ -16,6 +16,7 @@ interface Args {
   deprecated?: boolean;
   fromEnv?: boolean;
   target?: Target;
+  useQueryLanguage?: boolean;
   _: (string | number)[];
 }
 
@@ -81,6 +82,10 @@ export const cli = async (): Promise<CLIResult> => {
       type: "string",
       choices: ["browser", "browser.rx", "node", "node.rx"],
     })
+    .option("use-query-language", {
+      describe: "Generate the new where property for some and count queries",
+      type: "boolean",
+    })
     .epilog(`Copyright ${new Date().getFullYear()} weclapp GmbH`) as {
     argv: Args;
   };
@@ -103,6 +108,7 @@ export const cli = async (): Promise<CLIResult> => {
     deprecated,
     generateUnique: argv.generateUnique ?? false,
     target: argv.target ?? Target.BROWSER_PROMISES,
+    useQueryLanguage: argv.useQueryLanguage ?? false,
   };
 
   if (!src || typeof src === "number") {
