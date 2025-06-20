@@ -1,4 +1,4 @@
-import { Target } from '@enums/Target';
+import { Target } from './target';
 import { GeneratorOptions } from '@generator/generate';
 import { logger } from '@logger';
 import { config } from 'dotenv';
@@ -34,6 +34,7 @@ export const cli = async (): Promise<CLIResult> => {
     .scriptName('build-weclapp-sdk')
     .usage('Usage: $0 <source> [flags]')
     .version(version)
+    .example('$0 openapi.json', 'Generate the SDK based on a local openapi file')
     .example('$0 openapi.json', 'Generate the SDK based on a local openapi file')
     .example(
       '$0 xxx.weclapp.com --key ...',

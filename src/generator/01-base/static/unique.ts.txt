@@ -1,0 +1,2 @@
+const _unique = (cfg: ServiceConfigWithoutMultiRequest | undefined, endpoint: string, query?: UniqueQuery) =>
+  wrapResponse(() => raw({ ...cfg, multiRequest: false }, endpoint, { query }));

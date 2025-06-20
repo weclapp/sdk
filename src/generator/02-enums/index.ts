@@ -4,6 +4,7 @@ import { isEnumSchemaObject } from '@utils/openapi/guards';
 import { OpenAPIV3 } from 'openapi-types';
 
 export interface GeneratedEnum {
+  name: string;
   source: string;
   properties: string[];
 }
@@ -11,14 +12,15 @@ export interface GeneratedEnum {
 export const generateEnums = (schemas: Map<string, OpenAPIV3.SchemaObject>): Map<string, GeneratedEnum> => {
   const enums: Map<string, GeneratedEnum> = new Map();
 
-  for (const [propName, schema] of schemas) {
+  for (const [schemaName, schema] of schemas) {
     if (isEnumSchemaObject(schema)) {
-      const name = loosePascalCase(propName);
+      const enumName = loosePascalCase(schemaName);
 
-      if (!enums.has(name)) {
-        enums.set(name, {
+      if (!enums.has(enumName)) {
+        enums.set(enumName, {
+          name: enumName,
           properties: schema.enum,
-          source: generateEnum(name, schema.enum)
+          source: generateEnum(enumName, schema.enum)
         });
       }
     }

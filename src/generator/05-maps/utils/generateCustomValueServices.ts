@@ -2,14 +2,13 @@ import { GeneratedEntity } from '@generator/03-entities';
 import { GeneratedService } from '@generator/04-services';
 import { logger } from '@logger';
 import { concat } from '@utils/concat';
-import { generateBlockComment } from '@ts/generateComment';
 import { generateStatements } from '@ts/generateStatements';
 import { generateStrings } from '@ts/generateString';
 import { generateType } from '@ts/generateType';
 import { indent } from '@utils/indent';
 import { camelCase } from 'change-case';
 
-export const generateCustomValueUtilities = (
+export const generateCustomValueServices = (
   entities: Map<string, GeneratedEntity>,
   services: GeneratedService[]
 ): string => {
@@ -38,15 +37,12 @@ export const generateCustomValueUtilities = (
       }
     }
 
-    customValueEntities.push(service.entity);
+    customValueEntities.push(service.name);
   }
 
-  return generateBlockComment(
-    'Utilities to identify services that return an entity that is an alias to CustomValue.',
-    generateStatements(
-      generateType('WCustomValueService', concat(generateStrings(customValueEntities), ' | ')),
-      `export const wCustomValueServiceNames: WCustomValueService[] = [${concat(generateStrings(customValueEntities))}];`,
-      `export const isWCustomValueService = (service: string | undefined): service is WCustomValueService =>\n${indent('wCustomValueServiceNames.includes(service as WCustomValueService);')}`
-    )
+  return generateStatements(
+    generateType('WCustomValueService', concat(generateStrings(customValueEntities), ' | ')),
+    `export const wCustomValueServiceNames: WCustomValueService[] = [${concat(generateStrings(customValueEntities))}];`,
+    `export const isWCustomValueService = (service: string | undefined): service is WCustomValueService =>\n${indent('wCustomValueServiceNames.includes(service as WCustomValueService);')}`
   );
 };

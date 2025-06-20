@@ -153,7 +153,7 @@ const addTask = (task: RequestTask) => {
       microtaskQueued = false;
       if (tasksSet.size > 0) {
         const batchTasks = Array.from(tasksSet).map((task) => ({ ...task, settled: false }));
-        batch(batchTasks);
+        void batch(batchTasks);
         tasksSet.clear();
       }
     });

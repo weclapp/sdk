@@ -1,33 +1,31 @@
-import { resolveResponseType } from '@enums/Target';
+import { resolveResponseType } from '../../../target';
 import { GeneratedServiceFunction, ServiceFunctionGenerator } from '@generator/04-services/types';
 import { insertPathPlaceholder } from '@generator/04-services/utils/insertPathPlaceholder';
 import { generateArrowFunction } from '@ts/generateArrowFunction';
 import { generateArrowFunctionType } from '@ts/generateArrowFunctionType';
 import { pascalCase } from 'change-case';
 
-const functionName = 'remove';
-
 export const generateRemoveEndpoint: ServiceFunctionGenerator = ({ target, endpoint }): GeneratedServiceFunction => {
-  const entity = pascalCase(endpoint.entity);
-  const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
+  const functionName = 'remove';
+  const functionTypeName = `${pascalCase(endpoint.service)}Service_${pascalCase(functionName)}`;
 
-  const functionSource = generateArrowFunction({
-    name: functionName,
-    signature: interfaceName,
-    returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, { id: '${id}' })}\`, options)`,
-    params: ['id', 'options?: RemoveQuery']
-  });
-
-  const interfaceSource = generateArrowFunctionType({
-    type: interfaceName,
+  const functionTypeSource = generateArrowFunctionType({
+    type: functionTypeName,
     params: ['id: string', 'options?: RemoveQuery'],
     returns: `${resolveResponseType(target)}<void>`
   });
 
-  return {
-    entity,
+  const functionSource = generateArrowFunction({
     name: functionName,
-    type: { name: interfaceName, source: interfaceSource },
+    signature: functionTypeName,
+    returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, { id: '${id}' })}\`, options)`,
+    params: ['id', 'options?: RemoveQuery']
+  });
+
+  return {
+    entity: pascalCase(endpoint.service),
+    name: functionName,
+    type: { name: functionTypeName, source: functionTypeSource },
     func: { name: functionName, source: functionSource }
   };
 };

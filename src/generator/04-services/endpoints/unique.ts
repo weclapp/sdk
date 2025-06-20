@@ -1,4 +1,4 @@
-import { resolveResponseType } from '@enums/Target';
+import { resolveResponseType } from '../../../target';
 import { GeneratedServiceFunction, ServiceFunctionGenerator } from '@generator/04-services/types';
 import { generateResponseBodyType } from '@generator/04-services/utils/generateResponseBodyType';
 import { insertPathPlaceholder } from '@generator/04-services/utils/insertPathPlaceholder';
@@ -6,34 +6,32 @@ import { generateArrowFunction } from '@ts/generateArrowFunction';
 import { generateArrowFunctionType } from '@ts/generateArrowFunctionType';
 import { pascalCase } from 'change-case';
 
-const functionName = 'unique';
-
 export const generateUniqueEndpoint: ServiceFunctionGenerator = ({
   target,
   path,
   endpoint
 }): GeneratedServiceFunction => {
-  const entity = pascalCase(endpoint.entity);
-  const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
+  const functionName = 'unique';
+  const functionTypeName = `${pascalCase(endpoint.service)}Service_${pascalCase(functionName)}`;
 
-  const functionSource = generateArrowFunction({
-    name: functionName,
-    signature: interfaceName,
-    params: ['id', 'query'],
-    returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, { id: '${id}' })}\`, query)`
-  });
-
-  const interfaceSource = generateArrowFunctionType({
-    type: interfaceName,
+  const functionTypeSource = generateArrowFunctionType({
+    type: functionTypeName,
     params: ['id: string', 'query?: Q'],
     generics: ['Q extends UniqueQuery'],
     returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`
   });
 
-  return {
-    entity,
+  const functionSource = generateArrowFunction({
     name: functionName,
-    type: { name: interfaceName, source: interfaceSource },
+    signature: functionTypeName,
+    params: ['id', 'query'],
+    returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, { id: '${id}' })}\`, query)`
+  });
+
+  return {
+    entity: pascalCase(endpoint.service),
+    name: functionName,
+    type: { name: functionTypeName, source: functionTypeSource },
     func: { name: functionName, source: functionSource }
   };
 };

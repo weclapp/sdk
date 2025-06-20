@@ -1,6 +1,7 @@
-import { Target } from '@enums/Target';
+import { Target } from '../../target';
 import { WeclappEndpoint } from '@utils/weclapp/parseEndpointPath';
 import { OpenAPIV3 } from 'openapi-types';
+import { GeneratedEntity } from '../03-entities';
 
 export interface Export {
   name: string;
@@ -20,6 +21,7 @@ export interface ServiceFunctionGeneratorConfig {
   method: string;
   path: OpenAPIV3.OperationObject;
   endpoint: WeclappEndpoint;
+  entities: Map<string, GeneratedEntity>;
   aliases: Map<string, string>;
 }
 
