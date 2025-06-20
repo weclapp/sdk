@@ -28,7 +28,7 @@ export const raw = async (
 
   const host = getHost(localCfg);
 
-  let data: any = undefined;
+  let data;
   if (!cfg && localCfg.multiRequest) {
     let ep = endpoint;
     if (endpoint.startsWith('/')) {
@@ -40,7 +40,7 @@ export const raw = async (
       ...(payload.body && {
         body: isBinaryData
           ? payload.body
-          : JSON.stringify(payload.body, (key, value) => (value === undefined ? null : value))
+          : JSON.stringify(payload.body, (_key, value) => (value === undefined ? null : value))
       }),
       ...(!localCfg.key && { credentials: 'same-origin' }),
       method: payload.method ?? 'get',
@@ -106,9 +106,6 @@ const _update = (
       }
     })
   );
-
-const _unique = (cfg: ServiceConfigWithoutMultiRequest | undefined, endpoint: string, query?: UniqueQuery) =>
-  wrapResponse(() => raw({ ...cfg, multiRequest: false }, endpoint, { query }));
 
 const _generic = (
   cfg: ServiceConfigWithoutMultiRequest | undefined,

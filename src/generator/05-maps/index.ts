@@ -1,138 +1,85 @@
 import { GeneratedEntity } from '@generator/03-entities';
 import { GeneratedService } from '@generator/04-services';
-import { generateCustomValueUtilities } from '@generator/05-maps/utils/generateCustomValueUtilities';
-import { generateEntityPropertyMap } from '@generator/05-maps/utils/generateEntityPropertyMap';
+import { generateCustomValueServices } from './utils/generateCustomValueServices';
+import { generateEntityProperties } from '@generator/05-maps/utils/generateEntityProperties';
 import { generateGroupedServices } from '@generator/05-maps/utils/generateGroupedServices';
 import { GeneratorOptions } from '@generator/generate';
-import { generateBlockComment, generateInlineComment } from '@ts/generateComment';
 import { generateInterface } from '@ts/generateInterface';
 import { generateStatements } from '@ts/generateStatements';
 import { generateType } from '@ts/generateType';
-import { indent } from '@utils/indent';
-import { pascalCase } from 'change-case';
+import { GeneratedEnum } from '../02-enums';
+import { loosePascalCase } from '@utils/case';
+import { generateArray } from '@ts/generateArray';
+import { generateObject } from '@ts/generateObject';
 
-interface GeneratedMaps {
+export interface GeneratedMaps {
   source: string;
 }
 
-interface MapsGenerator {
-  services: GeneratedService[];
-  entities: Map<string, GeneratedEntity>;
-  enums: string[];
-  aliases: Map<string, string>;
-  options: GeneratorOptions;
-}
-
-const obj = (list: string[]) => `{\n${indent(list.join(',\n'))}\n}`;
-
-const arr = (list: string[]) => `[\n${indent(list.join(',\n'))}\n]`;
-
-export const generateMaps = ({ services, entities, aliases, enums, options }: MapsGenerator): GeneratedMaps => {
-  const entitiesKeys = [...entities.keys()];
-
-  const enumsArray = `export const wEnums = ${obj(enums)};`;
-  const entityNames = `export const wEntityNames: WEntity[] = ${arr(entitiesKeys.map((v) => `'${v}'`))};`;
-  const serviceNames = `export const wServiceNames: WService[] = ${arr(services.map((v) => `'${v.entity}'`))};`;
-
-  const serviceValues = `export const wServiceFactories = ${obj(services.map((v) => `${v.entity}: ${v.serviceName}`))};`;
-  const serviceInstanceValues = `export const wServices = ${obj(
-    services.map((v) => {
-      const src = `${v.entity}: ${v.serviceName}()`;
-      return v.deprecated ? generateInlineComment('@deprecated') + `\n${src}` : src;
-    })
+export const generateMaps = (
+  enums: Map<string, GeneratedEnum>,
+  entities: Map<string, GeneratedEntity>,
+  services: Map<string, GeneratedService>,
+  aliases: Map<string, string>,
+  options: GeneratorOptions
+): GeneratedMaps => {
+  const enumInstances = `export const wEnums = ${generateObject(
+    [...enums.keys()].map((v) => ({ key: v, value: v }))
   )};`;
 
-  const entityInterfaces = [
-    ...entitiesKeys.map((entity) => ({
-      name: entity,
-      type: pascalCase(entity),
-      required: true
-    })),
-    ...services.map((service) => {
-      const alias = aliases.get(service.entity);
+  const entityNames = `export const wEntityNames: WEntity[] = ${generateArray([...entities.keys()])};`;
 
-      return {
-        name: service.entity,
-        type: alias ?? 'never',
-        required: true,
-        comment: alias ? undefined : 'no response defined or inlined'
-      };
-    })
-  ];
-
-  const createMappingType = (type: string, prefix: string) => (type !== 'never' ? `${type}_${prefix}` : type);
-
-  const entitiesList = generateInterface('WEntities', entityInterfaces);
-  const entityReferences = generateInterface(
-    'WEntityReferences',
-    entityInterfaces.map((v) => ({
-      ...v,
-      type: createMappingType(v.type, 'References')
+  const generatedServices = [...services.values()];
+  const serviceInstances = `export const wServices = ${generateObject(
+    generatedServices.map((v) => ({
+      key: v.name,
+      value: `${v.serviceFnName}()`,
+      comment: v.deprecated ? '@deprecated' : undefined
     }))
-  );
-  const entityMappings = generateInterface(
-    'WEntityMappings',
-    entityInterfaces.map((v) => ({
-      ...v,
-      type: createMappingType(v.type, 'Mappings')
+  )};`;
+  const serviceFactories = `export const wServiceFactories = ${generateObject(
+    generatedServices.map((v) => ({
+      key: v.name,
+      value: v.serviceFnName,
+      comment: v.deprecated ? '@deprecated' : undefined
     }))
-  );
-  const entityFilter = generateInterface(
-    'WEntityFilters',
-    entityInterfaces.map((v) => ({
-      ...v,
-      type: createMappingType(v.type, 'Filter')
-    }))
-  );
+  )};`;
 
   return {
     source: generateStatements(
-      /* JS Values */
-      serviceValues,
-      serviceInstanceValues,
-      entityNames,
-      serviceNames,
-      enumsArray,
-      generateEntityPropertyMap(entities, services, options),
-
-      /* Map of entity to references / mappings and filters*/
-      entityReferences,
-      entityMappings,
-      entityFilter,
-
-      /* List of all entities with their corresponding service */
-      generateBlockComment(
-        `
-                This interfaces merges two maps:
-                - Map<[entityName], [entityInterfaceName]>
-                - Map<[serviceName], [entityInterfaceName]>
-                
-                Where [entityName] is 
-                - the name of a nested entity (e.g. 'address' from Party)
-                - the name of an entity (e.g. 'party', 'article' etc.)
-                
-                Where [serviceName] is the name of an endpoint (e.g. for /article its 'article')
-               
-                Where [entityInterfaceName] is
-                - the underlying type for this entity
-                - the type for what is returned by the api
-            `,
-        entitiesList
+      /* Enums */
+      generateInterface(
+        'WEnums',
+        [...enums.keys()].map((name) => ({ name, type: name, required: true }))
       ),
-
-      /* type-ofs and types */
-      generateType('WServices', 'typeof wServices'),
-      generateType('WServiceFactories', 'typeof wServiceFactories'),
-      generateType('WService', 'keyof WServices'),
-      generateType('WEntity', 'keyof WEntities'),
-      generateType('WEnums', 'typeof wEnums'),
       generateType('WEnum', 'keyof WEnums'),
+      enumInstances,
 
-      /* Utilities. */
-      generateCustomValueUtilities(entities, services),
+      /* Entities */
+      generateInterface(
+        'WEntities',
+        [
+          ...[...entities.keys()].map((name) => ({ name, type: loosePascalCase(name), required: true })),
+          ...[...aliases.entries()].map(([name, type]) => ({ name, type, required: true }))
+        ].sort((a, b) => (a.name > b.name ? 1 : -1))
+      ),
+      generateType('WEntity', 'keyof WEntities'),
+      entityNames,
 
-      /* All functions grouped by service supporting it */
-      ...generateGroupedServices(services)
+      /* Services */
+      serviceInstances,
+      generateType('WServices', 'typeof wServices'),
+      generateType('WService', 'keyof WServices'),
+
+      serviceFactories,
+      generateType('WServiceFactories', 'typeof wServiceFactories'),
+
+      /* Service Utils */
+      generateGroupedServices(generatedServices),
+      generateCustomValueServices(entities, generatedServices),
+
+      /* Entity Properties (Runtime Meta Infos) */
+      generateEntityProperties(entities, aliases, generatedServices, options)
     )
   };
 };

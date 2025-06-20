@@ -1,4 +1,4 @@
-import { isNodeTarget, resolveResponseType, Target } from '@enums/Target';
+import { isNodeTarget, resolveResponseType, Target } from '../../../target';
 import { GeneratedServiceFunction, ServiceFunctionGenerator } from '@generator/04-services/types';
 import { generateGenericFunctionName } from '@generator/04-services/utils/generateGenericFunctionName';
 import { generateRequestBodyType } from '@generator/04-services/utils/generateRequestBodyType';
@@ -25,9 +25,9 @@ export const generateGenericEndpoint =
   (suffix?: string): ServiceFunctionGenerator =>
   ({ target, method, path, endpoint }): GeneratedServiceFunction => {
     const functionName = generateGenericFunctionName(endpoint.path, suffix, method);
-    const entity = pascalCase(endpoint.entity);
-    const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
-    const entityQuery = `${interfaceName}_Query`;
+    const functionTypeName = `${pascalCase(endpoint.service)}Service_${pascalCase(functionName)}`;
+
+    const entityQuery = `${functionTypeName}_Query`;
     const hasId = endpoint.path.includes('{id}');
 
     const params = createObjectType({
@@ -36,25 +36,24 @@ export const generateGenericEndpoint =
     });
 
     const responseBody = generateResponseBodyType(path);
-    const forceBlobResponse = String(responseBody.toString() === 'binary');
 
-    const functionSource = generateArrowFunction({
-      name: functionName,
-      signature: interfaceName,
-      params: hasId ? ['id', 'query'] : ['query'],
-      returns: `_generic(cfg, ${generateString(method.toUpperCase())}, \`${insertPathPlaceholder(endpoint.path, { id: '${id}' })}\`, query, ${forceBlobResponse})`
-    });
-
-    const interfaceSource = generateArrowFunctionType({
-      type: interfaceName,
+    const functionTypeSource = generateArrowFunctionType({
+      type: functionTypeName,
       params: [...(hasId ? ['id: string'] : []), `query${params.isFullyOptional() ? '?' : ''}: ${entityQuery}`],
       returns: `${resolveResponseType(target)}<${wrapBody(responseBody, target).toString()}>`
     });
 
-    return {
-      entity,
+    const functionSource = generateArrowFunction({
       name: functionName,
-      type: { name: interfaceName, source: interfaceSource },
+      signature: functionTypeName,
+      params: hasId ? ['id', 'query'] : ['query'],
+      returns: `_generic(cfg, ${generateString(method.toUpperCase())}, \`${insertPathPlaceholder(endpoint.path, { id: '${id}' })}\`, query, ${String(responseBody.toString() === 'binary')})`
+    });
+
+    return {
+      entity: pascalCase(endpoint.service),
+      name: functionName,
+      type: { name: functionTypeName, source: functionTypeSource },
       func: { name: functionName, source: functionSource },
       interfaces: [
         {

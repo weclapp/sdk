@@ -18,9 +18,8 @@ export type Sort<T> = {
   };
 }[keyof T];
 
-// Select properties
 export type CustomAttributeFilter = {
-  [K in number]: string | number | boolean | { id: string } | { entityName: string; entityId: string };
+  [K in number]:| string | number | boolean | { id: string } | { entityName: string; entityId: string };
 };
 
 export type QuerySelect<T> = {
@@ -52,6 +51,8 @@ export type MapKeys<T, S extends Record<keyof T, string>> = {
   [K in keyof T as S[K]]: T[K];
 };
 
+export type ValueOf<T> = T[keyof T];
+
 export type Pagination = {
   page: number;
   pageSize: number;
@@ -61,17 +62,10 @@ export type UniqueQuery = {
   serializeNulls?: boolean;
 };
 
-export type SomeQueryReturn<
-  E, // Entity
-  R, // Map of referenced-entity names to the type
-  M, // Map of referenced-entity-id names to their entity name
-  I extends QuerySelect<any> | undefined, // Select for referenced entities
-  S extends QuerySelect<any> | undefined, // Select for entity properties
-  P // Additional properties
-> = {
-  entities: (S extends QuerySelect<E> ? Select<E, S> : E)[];
-  references: I extends QuerySelect<R> ? Partial<MapKeys<Select<R, I>, M & Record<any, any>>> : {};
-  properties: P;
+export type SomeQueryReturn<E, R, P> = {
+  entities: E[];
+  references?: R;
+  properties?: P[];
 };
 
 export type GenericQuery<P, B> = {
@@ -88,7 +82,6 @@ export type RemoveQuery = {
   dryRun?: boolean;
 };
 
-// Entity meta types
 export type WEntityPropertyMeta =
   | {
       type: 'string';
@@ -98,7 +91,10 @@ export type WEntityPropertyMeta =
       entity?: WEntity;
       service?: WService;
     }
-  | { type: 'integer'; format: 'int32' | 'int64' | 'duration' | 'date' | 'timestamp' }
+  | {
+      type: 'integer';
+      format: 'int32' | 'int64' | 'duration' | 'date' | 'timestamp';
+    }
   | { type: 'array'; format: 'reference'; entity: WEntity; service?: WService }
   | { type: 'array'; format: 'reference'; enum: WEnum }
   | { type: 'array'; format: 'string' }
@@ -107,43 +103,3 @@ export type WEntityPropertyMeta =
   | { type: 'reference'; enum: WEnum }
   | { type: 'boolean' }
   | { type: 'object' };
-
-// Utils
-const equality: string[] = ['EQ', 'NE', 'IEQ', 'NOT_IEQ'];
-const simple: string[] = [...equality, 'LT', 'GT', 'LE', 'GE', 'LIKE', 'NOT_LIKE', 'ILIKE', 'NOT_ILIKE'];
-const array: string[] = ['IN', 'NOT_IN'];
-
-const flattenSelect = (obj: Select<any, any> = {}): string[] => {
-  const entries: string[] = [];
-
-  for (const [prop, value] of Object.entries(obj)) {
-    if (typeof value === 'object' && value) {
-      entries.push(...flattenSelect(value).map((v) => `${prop}.${v}`));
-    } else if (value) {
-      entries.push(prop);
-    }
-  }
-
-  return entries;
-};
-
-export const flattenSort = (obj: Sort<any>[] = []): { sort?: string } => {
-  const flatten = (obj: Sort<any>, base = ''): string | undefined => {
-    const [key, value] = Object.entries(obj ?? {})[0] ?? [];
-
-    if (key && value) {
-      const path = base + key;
-
-      if (typeof value === 'object') {
-        return flatten(value, path ? `${path}.` : '');
-      } else if (['asc', 'desc'].includes(value)) {
-        return `${value === 'desc' ? '-' : ''}${path}`;
-      }
-    }
-
-    return undefined;
-  };
-
-  const sorts = obj.map((v) => flatten(v)).filter(Boolean);
-  return sorts.length ? { sort: sorts.join(',') } : {};
-};

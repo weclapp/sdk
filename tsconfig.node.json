@@ -23,5 +23,5 @@
       "@tests/*": ["tests/*"]
     }
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts", "rollup.config.ts", "prettier.config.js", "eslint.config.js"]
+  "include": ["src/**/*.ts", "tests/**/*.ts", "rollup.config.ts"]
 }

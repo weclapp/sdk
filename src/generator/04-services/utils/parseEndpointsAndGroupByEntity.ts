@@ -7,15 +7,13 @@ export interface ParsedEndpoint {
   path: OpenAPIV3.PathItemObject;
 }
 
-export type GroupedEndpoints = Map<string, ParsedEndpoint[]>;
-
 const isMultiPartUploadPath = (path: string) => {
   const [, entity, ...rest] = path.split('/');
   return entity && rest.length === 2 && rest[1] === 'multipartUpload';
 };
 
-export const groupEndpointsByEntity = (paths: OpenAPIV3.PathsObject): GroupedEndpoints => {
-  const endpoints: GroupedEndpoints = new Map();
+export const parseEndpointsAndGroupByEntity = (paths: OpenAPIV3.PathsObject): Map<string, ParsedEndpoint[]> => {
+  const endpoints: Map<string, ParsedEndpoint[]> = new Map();
 
   for (const [rawPath, path] of Object.entries(paths)) {
     const endpoint = parseEndpointPath(rawPath);
@@ -29,10 +27,10 @@ export const groupEndpointsByEntity = (paths: OpenAPIV3.PathsObject): GroupedEnd
       continue;
     }
 
-    if (endpoints.has(endpoint.entity)) {
-      endpoints.get(endpoint.entity)?.push({ endpoint, path });
+    if (endpoints.has(endpoint.service)) {
+      endpoints.get(endpoint.service)?.push({ endpoint, path });
     } else {
-      endpoints.set(endpoint.entity, [{ endpoint, path }]);
+      endpoints.set(endpoint.service, [{ endpoint, path }]);
     }
   }
 

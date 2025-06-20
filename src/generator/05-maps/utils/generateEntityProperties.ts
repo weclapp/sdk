@@ -4,9 +4,10 @@ import { GeneratorOptions } from '@generator/generate';
 import { generateStatements } from '@ts/generateStatements';
 import { generateString } from '@ts/generateString';
 import { generateObject, ObjectProperty } from '@ts/generateObject';
+import { camelCase } from 'change-case';
 
 const resolveInheritedEntities = (root: GeneratedEntity, entities: Map<string, GeneratedEntity>): GeneratedEntity[] => {
-  const parent = root.extends ? entities.get(root.extends) : undefined;
+  const parent = root.parentName ? entities.get(root.parentName) : undefined;
   return parent ? [parent, ...resolveInheritedEntities(parent, entities)] : [];
 };
 
@@ -24,7 +25,7 @@ const generatePropertyDescriptors = (
       }
 
       // Check if corresponding service is deprecated and can be removed
-      const service = services.find((v) => v.entity === meta.service);
+      const service = services.find((v) => v.name === meta.service);
       return !meta.service || (service && !service.deprecated);
     })
     .map(([property, meta]) => ({
@@ -35,13 +36,19 @@ const generatePropertyDescriptors = (
       }))
     }));
 
-export const generateEntityPropertyMap = (
+export const generateEntityProperties = (
   entities: Map<string, GeneratedEntity>,
+  aliases: Map<string, string>,
   services: GeneratedService[],
   options: GeneratorOptions
 ): string => {
   const typeName = 'WEntityProperties';
-  const propertyMap: ObjectProperty[] = [...entities].map(([entity, data]) => ({
+  const propertyMap: ObjectProperty[] = [
+    ...entities.entries(),
+    ...[...aliases.entries()].map(
+      ([service, type]) => [service, entities.get(camelCase(type))] as [string, GeneratedEntity]
+    )
+  ].map(([entity, data]) => ({
     key: entity,
     value: generatePropertyDescriptors(data, entities, services, options)
   }));

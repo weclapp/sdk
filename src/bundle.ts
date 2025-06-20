@@ -1,9 +1,9 @@
-import { Target } from '@enums/Target';
 import { currentDirname } from '@utils/currentDirname';
 import { resolve } from 'path';
 import { OutputOptions, rollup, RollupOptions } from 'rollup';
 import terser from '@rollup/plugin-terser';
 import ts from '@rollup/plugin-typescript';
+import { Target } from './target';
 
 const tsconfig = resolve(currentDirname(), './tsconfig.sdk.json');
 const resolveGlobals = (...globals: string[]) => Object.fromEntries(globals.map((v) => [v, '*']));

@@ -1,0 +1,34 @@
+const flattenSelect = (obj: Select<any, any> = {}): string[] => {
+  const entries: string[] = [];
+
+  for (const [prop, value] of Object.entries(obj)) {
+    if (typeof value === 'object' && value) {
+      entries.push(...flattenSelect(value).map((v) => `${prop}.${v}`));
+    } else if (value) {
+      entries.push(prop);
+    }
+  }
+
+  return entries;
+};
+
+export const flattenSort = (obj: Sort<any>[] = []): { sort?: string } => {
+  const flatten = (obj: Sort<any>, base = ''): string | undefined => {
+    const [key, value] = Object.entries(obj ?? {})[0] ?? [];
+
+    if (key && value) {
+      const path = base + key;
+
+      if (typeof value === 'object') {
+        return flatten(value, path ? `${path}.` : '');
+      } else if (['asc', 'desc'].includes(value)) {
+        return `${value === 'desc' ? '-' : ''}${path}`;
+      }
+    }
+
+    return undefined;
+  };
+
+  const sorts = obj.map((v) => flatten(v)).filter(Boolean);
+  return sorts.length ? { sort: sorts.join(',') } : {};
+};
