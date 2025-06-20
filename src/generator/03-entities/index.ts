@@ -1,25 +1,18 @@
-import { GeneratedEnum } from "@generator/02-enums";
-import {
-  extractPropertyMetaData,
-  PropertyMetaData,
-} from "@generator/03-entities/utils/extractPropertyMetaData";
-import {
-  generateInterface,
-  generateInterfaceType,
-  InterfaceProperty,
-} from "@ts/generateInterface";
-import { generateStatements } from "@ts/generateStatements";
-import { generateString } from "@ts/generateString";
-import { convertToTypeScriptType } from "@utils/openapi/convertToTypeScriptType";
+import { GeneratedEnum } from '@generator/02-enums';
+import { extractPropertyMetaData, PropertyMetaData } from '@generator/03-entities/utils/extractPropertyMetaData';
+import { generateInterface, generateInterfaceType, InterfaceProperty } from '@ts/generateInterface';
+import { generateStatements } from '@ts/generateStatements';
+import { generateString } from '@ts/generateString';
+import { convertToTypeScriptType } from '@utils/openapi/convertToTypeScriptType';
 import {
   isEnumSchemaObject,
   isNonArraySchemaObject,
   isObjectSchemaObject,
   isReferenceObject,
-  isRelatedEntitySchema,
-} from "@utils/openapi/guards";
-import { camelCase, pascalCase } from "change-case";
-import { OpenAPIV3 } from "openapi-types";
+  isRelatedEntitySchema
+} from '@utils/openapi/guards';
+import { camelCase, pascalCase } from 'change-case';
+import { OpenAPIV3 } from 'openapi-types';
 
 export interface GeneratedEntity {
   properties: Map<string, PropertyMetaData>;
@@ -29,7 +22,7 @@ export interface GeneratedEntity {
 
 export const generateEntities = (
   schemas: Map<string, OpenAPIV3.SchemaObject>,
-  enums: Map<string, GeneratedEnum>,
+  enums: Map<string, GeneratedEnum>
 ): Map<string, GeneratedEntity> => {
   const entities: Map<string, GeneratedEntity> = new Map();
 
@@ -54,16 +47,9 @@ export const generateEntities = (
     // The parent entity
     let extend = undefined;
 
-    const processProperties = (
-      props: Record<
-        string,
-        OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject
-      > = {},
-    ) => {
+    const processProperties = (props: Record<string, OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject> = {}) => {
       for (const [name, property] of Object.entries(props)) {
-        const meta = isRelatedEntitySchema(property)
-          ? property["x-weclapp"]
-          : {};
+        const meta = isRelatedEntitySchema(property) ? property['x-weclapp'] : {};
 
         if (meta.entity) {
           const type = `${pascalCase(meta.entity)}[]`;
@@ -78,7 +64,7 @@ export const generateEntities = (
             referenceMappingsInterface.push({
               name,
               type: generateString(meta.service),
-              required: true,
+              required: true
             });
           }
         }
@@ -86,7 +72,7 @@ export const generateEntities = (
         const type = convertToTypeScriptType(property, name).toString();
         const comment = isNonArraySchemaObject(property)
           ? property.deprecated
-            ? "@deprecated will be removed."
+            ? '@deprecated will be removed.'
             : property.format
               ? `format: ${property.format}`
               : undefined
@@ -97,7 +83,7 @@ export const generateEntities = (
           type,
           comment,
           required: meta.required,
-          readonly: !isReferenceObject(property) && property.readOnly,
+          readonly: !isReferenceObject(property) && property.readOnly
         });
 
         properties.set(name, extractPropertyMetaData(enums, meta, property));
@@ -117,27 +103,15 @@ export const generateEntities = (
     processProperties(schema.properties);
     const source = generateStatements(
       generateInterface(entity, entityInterface, extend),
-      generateInterface(
-        `${entity}_References`,
-        referenceInterface,
-        extend ? [`${extend}_References`] : undefined,
-      ),
-      generateInterface(
-        `${entity}_Mappings`,
-        referenceMappingsInterface,
-        extend ? [`${extend}_Mappings`] : undefined,
-      ),
-      generateInterfaceType(
-        `${entity}_Filter`,
-        filterInterface,
-        extend ? [entity, `${extend}_Filter`] : undefined,
-      ),
+      generateInterface(`${entity}_References`, referenceInterface, extend ? [`${extend}_References`] : undefined),
+      generateInterface(`${entity}_Mappings`, referenceMappingsInterface, extend ? [`${extend}_Mappings`] : undefined),
+      generateInterfaceType(`${entity}_Filter`, filterInterface, extend ? [entity, `${extend}_Filter`] : undefined)
     );
 
     entities.set(schemaName, {
       extends: extend ? camelCase(extend) : extend,
       properties,
-      source,
+      source
     });
   }
 

@@ -1,138 +1,149 @@
-export type DeepPartial<T> = T extends object ? {
-    [P in keyof T]?: DeepPartial<T[P]>;
-} : T;
+export type DeepPartial<T> = T extends object
+  ? {
+      [P in keyof T]?: DeepPartial<T[P]>;
+    }
+  : T;
 
 export type Sort<T> = {
-    [K in keyof T]?: {
-        [V in keyof T]?:
-            V extends K ?
-                T[V] extends Array<infer U> | undefined ?
-                    U extends object ?
-                        Sort<U> : never :
-                            T[V] extends object | undefined ?
-                                Sort<T[V]> : 'asc' | 'desc' : never;
-    };
+  [K in keyof T]?: {
+    [V in keyof T]?: V extends K
+      ? T[V] extends Array<infer U> | undefined
+        ? U extends object
+          ? Sort<U>
+          : never
+        : T[V] extends object | undefined
+          ? Sort<T[V]>
+          : 'asc' | 'desc'
+      : never;
+  };
 }[keyof T];
 
 // Select properties
 export type CustomAttributeFilter = {
-    [K in number]: string | number | boolean |
-    {id: string;} |
-    {entityName: string; entityId: string;};
+  [K in number]: string | number | boolean | { id: string } | { entityName: string; entityId: string };
 };
 
 export type QuerySelect<T> = {
-    [P in keyof T]?:
-        T[P] extends Array<infer U> | undefined ? (QuerySelect<U> | boolean) :
-            T[P] extends Record<any, any> | undefined ? (QuerySelect<T[P]> | boolean) : boolean;
-}
+  [P in keyof T]?: T[P] extends Array<infer U> | undefined
+    ? QuerySelect<U> | boolean
+    : T[P] extends Record<any, any> | undefined
+      ? QuerySelect<T[P]> | boolean
+      : boolean;
+};
 
-export type Select<T, Q extends (QuerySelect<T> | undefined)> = Q extends QuerySelect<T> ? {
-
-    // Filter out excluded properties beforehand
-    [P in keyof T as Q[P] extends boolean ? P : Q[P] extends object ? P : never]:
-
-    // Property
-    Q[P] extends true ? T[P] :
-
-        // Array
-        T[P] extends Array<infer U> ? Select<U, Q[P] & QuerySelect<any>>[] :
-
-            // Object
-            T[P] extends Record<any, any> ? Select<T[P], Q[P] & QuerySelect<any>> : never
-} : undefined;
+export type Select<T, Q extends QuerySelect<T> | undefined> =
+  Q extends QuerySelect<T>
+    ? {
+        // Filter out excluded properties beforehand
+        [P in keyof T as Q[P] extends boolean ? P : Q[P] extends object ? P : never]: // Property
+        Q[P] extends true
+          ? T[P]
+          : // Array
+            T[P] extends Array<infer U>
+            ? Select<U, Q[P] & QuerySelect<any>>[]
+            : // Object
+              T[P] extends Record<any, any>
+              ? Select<T[P], Q[P] & QuerySelect<any>>
+              : never;
+      }
+    : undefined;
 
 export type MapKeys<T, S extends Record<keyof T, string>> = {
-    [K in keyof T as S[K]]: T[K];
+  [K in keyof T as S[K]]: T[K];
 };
 
 export type Pagination = {
-    page: number;
-    pageSize: number;
+  page: number;
+  pageSize: number;
 };
 
 export type UniqueQuery = {
-    serializeNulls?: boolean;
-}
+  serializeNulls?: boolean;
+};
 
 export type SomeQueryReturn<
-    E, // Entity
-    R, // Map of referenced-entity names to the type
-    M, // Map of referenced-entity-id names to their entity name
-    I extends (QuerySelect<any> | undefined), // Select for referenced entities
-    S extends (QuerySelect<any> | undefined), // Select for entity properties
-    P // Additional properties
+  E, // Entity
+  R, // Map of referenced-entity names to the type
+  M, // Map of referenced-entity-id names to their entity name
+  I extends QuerySelect<any> | undefined, // Select for referenced entities
+  S extends QuerySelect<any> | undefined, // Select for entity properties
+  P // Additional properties
 > = {
-    entities: (S extends QuerySelect<E> ? Select<E, S> : E)[];
-    references: I extends QuerySelect<R> ? Partial<MapKeys<Select<R, I>, M & Record<any, any>>> : {};
-    properties: P
+  entities: (S extends QuerySelect<E> ? Select<E, S> : E)[];
+  references: I extends QuerySelect<R> ? Partial<MapKeys<Select<R, I>, M & Record<any, any>>> : {};
+  properties: P;
 };
 
 export type GenericQuery<P, B> = {
-    params?: P;
-    body?: B;
+  params?: P;
+  body?: B;
 };
 
 export type UpdateQuery = {
-    ignoreMissingProperties?: boolean;
-    dryRun?: boolean;
-}
+  ignoreMissingProperties?: boolean;
+  dryRun?: boolean;
+};
 
 export type RemoveQuery = {
-    dryRun?: boolean;
-}
+  dryRun?: boolean;
+};
 
 // Entity meta types
-export type WEntityPropertyMeta = (
-    { type: 'string'; format?: 'decimal' | 'html' | 'email' | 'password'; maxLength?: number; pattern?: string; entity?: WEntity; service?: WService; } |
-    { type: 'integer'; format: 'int32' | 'int64' | 'duration' | 'date' | 'timestamp'; } |
-    { type: 'array'; format: 'reference'; entity: WEntity; service?: WService; } |
-    { type: 'array'; format: 'reference'; enum: WEnum; } |
-    { type: 'array'; format: 'string'; } |
-    { type: 'number'; format: 'double'; } |
-    { type: 'reference'; entity: WEntity; } |
-    { type: 'reference'; enum: WEnum; } |
-    { type: 'boolean'; } |
-    { type: 'object'; }
-);
+export type WEntityPropertyMeta =
+  | {
+      type: 'string';
+      format?: 'decimal' | 'html' | 'email' | 'password';
+      maxLength?: number;
+      pattern?: string;
+      entity?: WEntity;
+      service?: WService;
+    }
+  | { type: 'integer'; format: 'int32' | 'int64' | 'duration' | 'date' | 'timestamp' }
+  | { type: 'array'; format: 'reference'; entity: WEntity; service?: WService }
+  | { type: 'array'; format: 'reference'; enum: WEnum }
+  | { type: 'array'; format: 'string' }
+  | { type: 'number'; format: 'double' }
+  | { type: 'reference'; entity: WEntity }
+  | { type: 'reference'; enum: WEnum }
+  | { type: 'boolean' }
+  | { type: 'object' };
 
 // Utils
 const equality: string[] = ['EQ', 'NE', 'IEQ', 'NOT_IEQ'];
 const simple: string[] = [...equality, 'LT', 'GT', 'LE', 'GE', 'LIKE', 'NOT_LIKE', 'ILIKE', 'NOT_ILIKE'];
 const array: string[] = ['IN', 'NOT_IN'];
 
-
 const flattenSelect = (obj: Select<any, any> = {}): string[] => {
-    const entries: string[] = [];
+  const entries: string[] = [];
 
-    for (const [prop, value] of Object.entries(obj)) {
-        if (typeof value === 'object' && value) {
-            entries.push(...flattenSelect(value).map(v => `${prop}.${v}`));
-        } else if (value) {
-            entries.push(prop);
-        }
+  for (const [prop, value] of Object.entries(obj)) {
+    if (typeof value === 'object' && value) {
+      entries.push(...flattenSelect(value).map((v) => `${prop}.${v}`));
+    } else if (value) {
+      entries.push(prop);
     }
+  }
 
-    return entries;
+  return entries;
 };
 
-export const flattenSort = (obj: Sort<any>[] = []): {sort?: string} => {
-    const flatten = (obj: Sort<any>, base = ''): string | undefined => {
-        const [key, value] = Object.entries(obj ?? {})[0] ?? [];
+export const flattenSort = (obj: Sort<any>[] = []): { sort?: string } => {
+  const flatten = (obj: Sort<any>, base = ''): string | undefined => {
+    const [key, value] = Object.entries(obj ?? {})[0] ?? [];
 
-        if (key && value) {
-            const path = base + key;
+    if (key && value) {
+      const path = base + key;
 
-            if (typeof value === 'object') {
-                return flatten(value, path ? `${path}.` : '');
-            } else if (['asc', 'desc'].includes(value)) {
-                return `${value === 'desc' ? '-' : ''}${path}`;
-            }
-        }
+      if (typeof value === 'object') {
+        return flatten(value, path ? `${path}.` : '');
+      } else if (['asc', 'desc'].includes(value)) {
+        return `${value === 'desc' ? '-' : ''}${path}`;
+      }
+    }
 
-        return undefined;
-    };
+    return undefined;
+  };
 
-    const sorts = obj.map(v => flatten(v)).filter(Boolean);
-    return sorts.length ? {sort: sorts.join(',')} : {};
+  const sorts = obj.map((v) => flatten(v)).filter(Boolean);
+  return sorts.length ? { sort: sorts.join(',') } : {};
 };

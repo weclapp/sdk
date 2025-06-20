@@ -1,27 +1,23 @@
-import { GeneratorOptions } from "@generator/generate";
-import { logger } from "@logger";
-import { concat } from "@utils/concat";
-import { generateBlockComment } from "@ts/generateComment";
-import { generateInterface } from "@ts/generateInterface";
-import {
-  generateBlockStatements,
-  generateStatements,
-} from "@ts/generateStatements";
-import { WeclappEndpointType } from "@utils/weclapp/parseEndpointPath";
-import { camelCase, pascalCase } from "change-case";
-import { OpenAPIV3 } from "openapi-types";
-import { generateCountEndpoint } from "./endpoints/count";
-import { generateCreateEndpoint } from "./endpoints/create";
-import { generateGenericEndpoint } from "./endpoints/generic";
-import { generateRemoveEndpoint } from "./endpoints/remove";
-import { generateSomeEndpoint } from "./endpoints/some";
-import { generateUniqueEndpoint } from "./endpoints/unique";
-import { generateUpdateEndpoint } from "./endpoints/update";
-import { GeneratedServiceFunction, ServiceFunctionGenerator } from "./types";
-import { groupEndpointsByEntity } from "./utils/groupEndpointsByEntity";
+import { GeneratorOptions } from '@generator/generate';
+import { logger } from '@logger';
+import { concat } from '@utils/concat';
+import { generateBlockComment } from '@ts/generateComment';
+import { generateInterface } from '@ts/generateInterface';
+import { generateBlockStatements, generateStatements } from '@ts/generateStatements';
+import { WeclappEndpointType } from '@utils/weclapp/parseEndpointPath';
+import { camelCase, pascalCase } from 'change-case';
+import { OpenAPIV3 } from 'openapi-types';
+import { generateCountEndpoint } from './endpoints/count';
+import { generateCreateEndpoint } from './endpoints/create';
+import { generateGenericEndpoint } from './endpoints/generic';
+import { generateRemoveEndpoint } from './endpoints/remove';
+import { generateSomeEndpoint } from './endpoints/some';
+import { generateUniqueEndpoint } from './endpoints/unique';
+import { generateUpdateEndpoint } from './endpoints/update';
+import { GeneratedServiceFunction, ServiceFunctionGenerator } from './types';
+import { groupEndpointsByEntity } from './utils/groupEndpointsByEntity';
 
-export interface ExtendedGeneratedServiceFunction
-  extends GeneratedServiceFunction {
+export interface ExtendedGeneratedServiceFunction extends GeneratedServiceFunction {
   path: OpenAPIV3.OperationObject;
 }
 
@@ -34,45 +30,42 @@ export interface GeneratedService {
   functions: ExtendedGeneratedServiceFunction[];
 }
 
-const generators: Record<
-  WeclappEndpointType,
-  Record<string, ServiceFunctionGenerator>
-> = {
+const generators: Record<WeclappEndpointType, Record<string, ServiceFunctionGenerator>> = {
   /* /article */
   [WeclappEndpointType.ROOT]: {
     get: generateSomeEndpoint,
-    post: generateCreateEndpoint,
+    post: generateCreateEndpoint
   },
 
   /* /article/count */
   [WeclappEndpointType.COUNT]: {
-    get: generateCountEndpoint,
+    get: generateCountEndpoint
   },
 
   /* /article/:id */
   [WeclappEndpointType.ENTITY]: {
     get: generateUniqueEndpoint,
     delete: generateRemoveEndpoint,
-    put: generateUpdateEndpoint,
+    put: generateUpdateEndpoint
   },
 
   /* /article/:id/method */
   [WeclappEndpointType.GENERIC_ENTITY]: {
-    get: generateGenericEndpoint("ById"),
-    post: generateGenericEndpoint("ById"),
+    get: generateGenericEndpoint('ById'),
+    post: generateGenericEndpoint('ById')
   },
 
   /* /article/method */
   [WeclappEndpointType.GENERIC_ROOT]: {
     get: generateGenericEndpoint(),
-    post: generateGenericEndpoint(),
-  },
+    post: generateGenericEndpoint()
+  }
 };
 
 export const generateServices = (
   doc: OpenAPIV3.Document,
   aliases: Map<string, string>,
-  options: GeneratorOptions,
+  options: GeneratorOptions
 ): Map<string, GeneratedService> => {
   const services: Map<string, GeneratedService> = new Map();
   const grouped = groupEndpointsByEntity(doc.paths);
@@ -87,11 +80,7 @@ export const generateServices = (
       const resolver = generators[endpoint.type];
 
       for (const [method, config] of Object.entries(path)) {
-        if (
-          method === "get" &&
-          endpoint.type === WeclappEndpointType.ENTITY &&
-          !options.generateUnique
-        ) {
+        if (method === 'get' && endpoint.type === WeclappEndpointType.ENTITY && !options.generateUnique) {
           continue;
         }
 
@@ -102,13 +91,11 @@ export const generateServices = (
           if (!path.deprecated || options.deprecated) {
             functions.push({
               ...resolver[method]({ endpoint, method, target, path, aliases }),
-              path,
+              path
             });
           }
         } else {
-          logger.errorLn(
-            `Failed to generate a function for ${method.toUpperCase()}:${endpoint.type} ${endpoint.path}`,
-          );
+          logger.errorLn(`Failed to generate a function for ${method.toUpperCase()}:${endpoint.type} ${endpoint.path}`);
         }
       }
     }
@@ -124,24 +111,21 @@ export const generateServices = (
       generateInterface(serviceTypeName, [
         ...functions.map((v) => ({
           required: true,
-          comment: v.path.deprecated ? "@deprecated" : undefined,
+          comment: v.path.deprecated ? '@deprecated' : undefined,
           name: v.func.name,
-          type: v.type.name,
-        })),
-      ]),
+          type: v.type.name
+        }))
+      ])
     );
 
     // Construct service value
     const funcBody = generateBlockStatements(
       ...functions.map((v) => v.func.source),
-      `return {${concat(functions.map((v) => v.func.name))}};`,
+      `return {${concat(functions.map((v) => v.func.name))}};`
     );
 
     const func = `export const ${serviceName} = (cfg?: ServiceConfig): ${serviceTypeName} => ${funcBody};`;
-    const source = generateBlockComment(
-      `${pascalCase(endpoint)} service`,
-      generateStatements(types, func),
-    );
+    const source = generateBlockComment(`${pascalCase(endpoint)} service`, generateStatements(types, func));
     const deprecated = functions.every((v) => v.path.deprecated);
     services.set(endpoint, {
       entity: endpoint,
@@ -149,7 +133,7 @@ export const generateServices = (
       serviceName,
       serviceTypeName,
       source,
-      functions,
+      functions
     });
   }
 

@@ -5220,12 +5220,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "firstScheduledDeliveryDate",
-                  "fixReleasedQuantity",
-                  "repeatInterval",
-                  "repeatType"
-                ],
+                "required": ["firstScheduledDeliveryDate", "fixReleasedQuantity", "repeatInterval", "repeatType"],
                 "type": "object"
               }
             }
@@ -27667,11 +27662,7 @@
               "schema": {
                 "properties": {
                   "collectiveInvoicePositionPrintType": {
-                    "enum": [
-                      "ORDER_POSITION_GROUP",
-                      "PERFORMANCE_RECORD_POSITION_GROUP",
-                      "SHIPMENT_POSITION_GROUP"
-                    ],
+                    "enum": ["ORDER_POSITION_GROUP", "PERFORMANCE_RECORD_POSITION_GROUP", "SHIPMENT_POSITION_GROUP"],
                     "type": "string"
                   },
                   "salesOrderIds": {
@@ -35424,11 +35415,7 @@
                     "type": "boolean"
                   }
                 },
-                "required": [
-                  "countryCode",
-                  "personsThirdCountryFreeTax",
-                  "taxEuPersonsRecipientCountry"
-                ],
+                "required": ["countryCode", "personsThirdCountryFreeTax", "taxEuPersonsRecipientCountry"],
                 "type": "object"
               }
             }
@@ -35525,13 +35512,7 @@
             "name": "taxRateType",
             "required": false,
             "schema": {
-              "enum": [
-                "REDUCED",
-                "SLIGHTLY_REDUCED",
-                "STANDARD",
-                "SUPER_REDUCED",
-                "ZERO"
-              ],
+              "enum": ["REDUCED", "SLIGHTLY_REDUCED", "STANDARD", "SUPER_REDUCED", "ZERO"],
               "type": "string"
             }
           },
@@ -35624,13 +35605,7 @@
             "name": "taxRateType",
             "required": false,
             "schema": {
-              "enum": [
-                "REDUCED",
-                "SLIGHTLY_REDUCED",
-                "STANDARD",
-                "SUPER_REDUCED",
-                "ZERO"
-              ],
+              "enum": ["REDUCED", "SLIGHTLY_REDUCED", "STANDARD", "SUPER_REDUCED", "ZERO"],
               "type": "string"
             }
           },
@@ -35859,12 +35834,7 @@
                     "type": "boolean"
                   }
                 },
-                "required": [
-                  "countryCode",
-                  "initAllStores",
-                  "personsThirdCountryFreeTax",
-                  "taxRecipientCountry"
-                ],
+                "required": ["countryCode", "initAllStores", "personsThirdCountryFreeTax", "taxRecipientCountry"],
                 "type": "object"
               }
             }
@@ -40285,11 +40255,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "bookLoadingEquipmentOnDissolveOfPreferred",
-                  "inputQuantity",
-                  "pickId"
-                ],
+                "required": ["bookLoadingEquipmentOnDissolveOfPreferred", "inputQuantity", "pickId"],
                 "type": "object"
               }
             }
@@ -43020,11 +42986,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "articleId",
-                  "destinationStoragePlaceId",
-                  "quantity"
-                ],
+                "required": ["articleId", "destinationStoragePlaceId", "quantity"],
                 "type": "object"
               }
             }
@@ -47246,12 +47208,7 @@
         "type": "string"
       },
       "calculationType": {
-        "enum": [
-          "MARGIN_CALCULATION",
-          "PURCHASE",
-          "RECOMMENDED_RETAIL_PRICE",
-          "SALES"
-        ],
+        "enum": ["MARGIN_CALCULATION", "PURCHASE", "RECOMMENDED_RETAIL_PRICE", "SALES"],
         "type": "string"
       },
       "calendar": {
@@ -47658,11 +47615,7 @@
         ]
       },
       "collectiveInvoicePositionPrintType": {
-        "enum": [
-          "ORDER_POSITION_GROUP",
-          "PERFORMANCE_RECORD_POSITION_GROUP",
-          "SHIPMENT_POSITION_GROUP"
-        ],
+        "enum": ["ORDER_POSITION_GROUP", "PERFORMANCE_RECORD_POSITION_GROUP", "SHIPMENT_POSITION_GROUP"],
         "type": "string"
       },
       "comment": {
@@ -47810,14 +47763,7 @@
         ]
       },
       "commissionType": {
-        "enum": [
-          "FIX",
-          "FIX_AND_MARGIN",
-          "FIX_AND_REVENUE",
-          "MARGIN",
-          "NO_COMMISSION",
-          "REVENUE"
-        ],
+        "enum": ["FIX", "FIX_AND_MARGIN", "FIX_AND_REVENUE", "MARGIN", "NO_COMMISSION", "REVENUE"],
         "type": "string"
       },
       "conditionsForEntityType": {
@@ -48237,13 +48183,7 @@
         ]
       },
       "contractBillingType": {
-        "enum": [
-          "INVOICE_AFTER",
-          "INVOICE_BEFORE",
-          "NONE",
-          "NOT_INVOICEABLE",
-          "SALES_ORDER"
-        ],
+        "enum": ["INVOICE_AFTER", "INVOICE_BEFORE", "NONE", "NOT_INVOICEABLE", "SALES_ORDER"],
         "type": "string"
       },
       "contractChargeInterval": {
@@ -50274,14 +50214,7 @@
         "type": "object"
       },
       "eventInvitationStatus": {
-        "enum": [
-          "ACCEPT",
-          "CANCEL",
-          "DECLINE",
-          "INVITATION",
-          "TENTATIVE",
-          "UNDEFINED"
-        ],
+        "enum": ["ACCEPT", "CANCEL", "DECLINE", "INVITATION", "TENTATIVE", "UNDEFINED"],
         "type": "string"
       },
       "eventRight": {
@@ -50372,12 +50305,7 @@
         "type": "object"
       },
       "fastProductionBookingResultMessage": {
-        "enum": [
-          "INVALID_ORDER",
-          "INVALID_ORDER_NUMBER",
-          "INVALID_QUANTITY",
-          "SUCCESS"
-        ],
+        "enum": ["INVALID_ORDER", "INVALID_ORDER_NUMBER", "INVALID_QUANTITY", "SUCCESS"],
         "type": "string"
       },
       "financialYear": {
@@ -50751,14 +50679,7 @@
         "type": "string"
       },
       "internalTicketStatus": {
-        "enum": [
-          "CLOSED",
-          "FIXED",
-          "IN_PROGRESS",
-          "POOL",
-          "UNASSIGNED",
-          "WAITING"
-        ],
+        "enum": ["CLOSED", "FIXED", "IN_PROGRESS", "POOL", "UNASSIGNED", "WAITING"],
         "type": "string"
       },
       "internalTransportReference": {
@@ -50949,13 +50870,7 @@
         ]
       },
       "leadStatus": {
-        "enum": [
-          "CONVERTED",
-          "DISQUALIFIED",
-          "NEW",
-          "PREQUALIFIED",
-          "QUALIFIED"
-        ],
+        "enum": ["CONVERTED", "DISQUALIFIED", "NEW", "PREQUALIFIED", "QUALIFIED"],
         "type": "string"
       },
       "ledgerAccount": {
@@ -51007,11 +50922,7 @@
         ]
       },
       "ledgerAccountType": {
-        "enum": [
-          "CARRY_FORWARD_ACCOUNT",
-          "IMPERSONAL_ACCOUNT",
-          "PERSONAL_ACCOUNT"
-        ],
+        "enum": ["CARRY_FORWARD_ACCOUNT", "IMPERSONAL_ACCOUNT", "PERSONAL_ACCOUNT"],
         "type": "string"
       },
       "license": {
@@ -51109,12 +51020,7 @@
         ]
       },
       "marginCalculationPriceType": {
-        "enum": [
-          "ARTICLE_CALCULATION_PRICE",
-          "EMPLOYEE_COST",
-          "MOVING_AVERAGE",
-          "PURCHASE_PRICE_PRODUCTION_COST"
-        ],
+        "enum": ["ARTICLE_CALCULATION_PRICE", "EMPLOYEE_COST", "MOVING_AVERAGE", "PURCHASE_PRICE_PRODUCTION_COST"],
         "type": "string"
       },
       "minimalStoragePlace": {
@@ -51715,13 +51621,7 @@
         ]
       },
       "orderStatusType": {
-        "enum": [
-          "CANCELLED",
-          "CLOSED",
-          "MANUALLY_CLOSED",
-          "ORDER_CONFIRMATION_PRINTED",
-          "ORDER_ENTRY_IN_PROGRESS"
-        ],
+        "enum": ["CANCELLED", "CLOSED", "MANUALLY_CLOSED", "ORDER_CONFIRMATION_PRINTED", "ORDER_ENTRY_IN_PROGRESS"],
         "type": "string"
       },
       "packagingUnit": {
@@ -52798,14 +52698,7 @@
         "type": "string"
       },
       "paymentStatus": {
-        "enum": [
-          "CLEARED_WITH_CREDIT_NOTE",
-          "CREDIT_NOTE_CLEARED",
-          "NO_OPEN_ITEM",
-          "OPEN",
-          "PAID",
-          "UNKNOWN"
-        ],
+        "enum": ["CLEARED_WITH_CREDIT_NOTE", "CREDIT_NOTE_CLEARED", "NO_OPEN_ITEM", "OPEN", "PAID", "UNKNOWN"],
         "type": "string"
       },
       "paymentType": {
@@ -52813,11 +52706,7 @@
         "type": "string"
       },
       "performanceRecordedStatus": {
-        "enum": [
-          "NOT_PERFORMANCE_RECORDED",
-          "PERFORMANCE_RECORDED",
-          "UNDEFINED"
-        ],
+        "enum": ["NOT_PERFORMANCE_RECORDED", "PERFORMANCE_RECORDED", "UNDEFINED"],
         "type": "string"
       },
       "period": {
@@ -53564,12 +53453,7 @@
         ]
       },
       "priceConditionType": {
-        "enum": [
-          "ADDITIONAL_ABS",
-          "ADDITION_PERCENT",
-          "REDUCTION_ABS",
-          "REDUCTION_PERCENT"
-        ],
+        "enum": ["ADDITIONAL_ABS", "ADDITION_PERCENT", "REDUCTION_ABS", "REDUCTION_PERCENT"],
         "type": "string"
       },
       "priceData": {
@@ -53636,11 +53520,7 @@
         "type": "string"
       },
       "productionCostCenterType": {
-        "enum": [
-          "DIRECT_COST_CENTER",
-          "INDIRECT_COST_CENTER",
-          "SERVICE_COST_CENTER"
-        ],
+        "enum": ["DIRECT_COST_CENTER", "INDIRECT_COST_CENTER", "SERVICE_COST_CENTER"],
         "type": "string"
       },
       "productionOrder": {
@@ -53856,15 +53736,7 @@
         "type": "object"
       },
       "productionOrderStatusType": {
-        "enum": [
-          "CANCELLED",
-          "CLOSED",
-          "DOCUMENTS_PRINTED",
-          "ENTRY_IN_PROGRESS",
-          "INTERRUPTED",
-          "NEW",
-          "STARTED"
-        ],
+        "enum": ["CANCELLED", "CLOSED", "DOCUMENTS_PRINTED", "ENTRY_IN_PROGRESS", "INTERRUPTED", "NEW", "STARTED"],
         "type": "string"
       },
       "productionOrderWorkItem": {
@@ -54982,11 +54854,7 @@
         "type": "object"
       },
       "purchaseOrderRequestPurchasePriceUpdateMode": {
-        "enum": [
-          "NO_UPDATE",
-          "UPDATE_GENERAL_PURCHASE_PRICE",
-          "UPDATE_PURCHASE_PRICE_ONLY_FOR_CUSTOMER"
-        ],
+        "enum": ["NO_UPDATE", "UPDATE_GENERAL_PURCHASE_PRICE", "UPDATE_PURCHASE_PRICE_ONLY_FOR_CUSTOMER"],
         "type": "string"
       },
       "purchaseOrderRequestStatusHistory": {
@@ -55015,25 +54883,11 @@
         "type": "object"
       },
       "purchaseOrderRequestStatusType": {
-        "enum": [
-          "CANCELLED",
-          "CLOSED",
-          "DOCUMENT_PRINTED",
-          "NEW",
-          "OFFER_RECEIVED"
-        ],
+        "enum": ["CANCELLED", "CLOSED", "DOCUMENT_PRINTED", "NEW", "OFFER_RECEIVED"],
         "type": "string"
       },
       "purchaseOrderRequestSupplierStatusType": {
-        "enum": [
-          "ACCEPTED",
-          "DECLINED",
-          "OFFER_RECEIVED",
-          "OPEN",
-          "REQUESTED",
-          "REVISED",
-          "REVISED_REQUEST"
-        ],
+        "enum": ["ACCEPTED", "DECLINED", "OFFER_RECEIVED", "OPEN", "REQUESTED", "REVISED", "REVISED_REQUEST"],
         "type": "string"
       },
       "purchaseOrderRequestType": {
@@ -55533,22 +55387,11 @@
         "type": "string"
       },
       "recordItemReductionAdditionSource": {
-        "enum": [
-          "ARTICLE",
-          "ARTICLE_AND_CUSTOMER",
-          "ARTICLE_CATEGORY",
-          "ARTICLE_CATEGORY_AND_CUSTOMER",
-          "MANUAL"
-        ],
+        "enum": ["ARTICLE", "ARTICLE_AND_CUSTOMER", "ARTICLE_CATEGORY", "ARTICLE_CATEGORY_AND_CUSTOMER", "MANUAL"],
         "type": "string"
       },
       "recordItemReductionAdditionType": {
-        "enum": [
-          "ADDITION_ABSOLUTE",
-          "ADDITION_PERCENT",
-          "REDUCTION_ABSOLUTE",
-          "REDUCTION_PERCENT"
-        ],
+        "enum": ["ADDITION_ABSOLUTE", "ADDITION_PERCENT", "REDUCTION_ABSOLUTE", "REDUCTION_PERCENT"],
         "type": "string"
       },
       "recurringEvent": {
@@ -55743,14 +55586,7 @@
         ]
       },
       "remotePrintJobStatus": {
-        "enum": [
-          "DOCUMENT_NOT_FOUND",
-          "ERROR",
-          "NEW",
-          "PRINTED",
-          "SUBMITTED",
-          "UNKNOWN_PRINTER"
-        ],
+        "enum": ["DOCUMENT_NOT_FOUND", "ERROR", "NEW", "PRINTED", "SUBMITTED", "UNKNOWN_PRINTER"],
         "type": "string"
       },
       "salesBillOfMaterialArticleItem": {
@@ -56018,13 +55854,7 @@
         "type": "object"
       },
       "salesInvoiceStatusType": {
-        "enum": [
-          "CANCELLED",
-          "DOCUMENT_CREATED",
-          "ENTRY_COMPLETED",
-          "NEW",
-          "OPEN_ITEM_CREATED"
-        ],
+        "enum": ["CANCELLED", "DOCUMENT_CREATED", "ENTRY_COMPLETED", "NEW", "OPEN_ITEM_CREATED"],
         "type": "string"
       },
       "salesInvoiceType": {
@@ -56321,13 +56151,7 @@
         ]
       },
       "salesOrderPaymentType": {
-        "enum": [
-          "ADVANCE_PAYMENT",
-          "COUNTER_SALES",
-          "PART_PAYMENT",
-          "PREPAYMENT",
-          "STANDARD"
-        ],
+        "enum": ["ADVANCE_PAYMENT", "COUNTER_SALES", "PART_PAYMENT", "PREPAYMENT", "STANDARD"],
         "type": "string"
       },
       "salesOrderStatusHistory": {
@@ -56803,12 +56627,7 @@
         ]
       },
       "shipmentInType": {
-        "enum": [
-          "CUSTOMER_RETURN",
-          "INTERNAL",
-          "STANDARD",
-          "SUPPLIER_COMPENSATION"
-        ],
+        "enum": ["CUSTOMER_RETURN", "INTERNAL", "STANDARD", "SUPPLIER_COMPENSATION"],
         "type": "string"
       },
       "shipmentItem": {
@@ -57397,12 +57216,7 @@
         "type": "string"
       },
       "supplierOrderType": {
-        "enum": [
-          "BLANKET_PURCHASE_ORDER",
-          "NORMAL",
-          "SALES_ORDER",
-          "TRIANGULAR"
-        ],
+        "enum": ["BLANKET_PURCHASE_ORDER", "NORMAL", "SALES_ORDER", "TRIANGULAR"],
         "type": "string"
       },
       "supplySource": {
@@ -58413,22 +58227,11 @@
         "type": "string"
       },
       "taxRateType": {
-        "enum": [
-          "REDUCED",
-          "SLIGHTLY_REDUCED",
-          "STANDARD",
-          "SUPER_REDUCED",
-          "ZERO"
-        ],
+        "enum": ["REDUCED", "SLIGHTLY_REDUCED", "STANDARD", "SUPER_REDUCED", "ZERO"],
         "type": "string"
       },
       "taxType": {
-        "enum": [
-          "IMPORT_SALES_TAX",
-          "INPUT_VAT",
-          "INPUT_VAT_REVERSED",
-          "VALUE_ADDED_TAX"
-        ],
+        "enum": ["IMPORT_SALES_TAX", "INPUT_VAT", "INPUT_VAT_REVERSED", "VALUE_ADDED_TAX"],
         "type": "string"
       },
       "teamRole": {

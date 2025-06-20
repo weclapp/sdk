@@ -1,9 +1,6 @@
-import { logger } from "@logger";
-import {
-  parseEndpointPath,
-  WeclappEndpoint,
-} from "@utils/weclapp/parseEndpointPath";
-import { OpenAPIV3 } from "openapi-types";
+import { logger } from '@logger';
+import { parseEndpointPath, WeclappEndpoint } from '@utils/weclapp/parseEndpointPath';
+import { OpenAPIV3 } from 'openapi-types';
 
 export interface ParsedEndpoint {
   endpoint: WeclappEndpoint;
@@ -13,13 +10,11 @@ export interface ParsedEndpoint {
 export type GroupedEndpoints = Map<string, ParsedEndpoint[]>;
 
 const isMultiPartUploadPath = (path: string) => {
-  const [, entity, ...rest] = path.split("/");
-  return entity && rest.length === 2 && rest[1] === "multipartUpload";
+  const [, entity, ...rest] = path.split('/');
+  return entity && rest.length === 2 && rest[1] === 'multipartUpload';
 };
 
-export const groupEndpointsByEntity = (
-  paths: OpenAPIV3.PathsObject,
-): GroupedEndpoints => {
+export const groupEndpointsByEntity = (paths: OpenAPIV3.PathsObject): GroupedEndpoints => {
   const endpoints: GroupedEndpoints = new Map();
 
   for (const [rawPath, path] of Object.entries(paths)) {

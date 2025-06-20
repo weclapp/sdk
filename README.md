@@ -40,26 +40,26 @@ This way, every time someone installs or updates dependencies, the SDK is genera
 {
   // in your package.json
   scripts: {
-    "sdk:generate": "build-weclapp-sdk company.weclapp.com --key [your api key] --cache --target browser",
-    postinstall: "npm run sdk:generate",
-  },
+    'sdk:generate': 'build-weclapp-sdk company.weclapp.com --key [your api key] --cache --target browser',
+    postinstall: 'npm run sdk:generate'
+  }
 }
 ```
 
 ## Available flags
 
-| Flag                  | Description                                                                   | Value / Type                                 |
-| --------------------- | ----------------------------------------------------------------------------- | -------------------------------------------- |
-| `--cache` / `-c`      | Extra query params when fetching the openapi.json from a server.              | `boolean`                                    |
-| `--deprecated` / `-d` | Include deprecated functions and services.                                    | `boolean`                                    |
-| `--from-env` / `-e`   | Use env variables `WECLAPP_BACKEND_URL` and `WECLAPP_API_KEY` as credentials. | `boolean`                                    |
-| `--generate-unique`   | Generate additional `.unique` functions.                                      | `boolean`                                    |
-| `--use-query-language`| Use the advanced query language. The property _filter_ will be removed from _SomeQuery_ and _CountQuery_ and the property _where_ will be added instead. | `boolean`                                    |
-| `--help` / `-h`       | Show help.                                                                    | `boolean`                                    |
-| `--key` / `-k`        | API Key in case of using a remote.                                            | `string`                                     |
-| `--target` / `-t`     | Specify the target platform.                                                  | `browser`, `browser.rx`, `node` or `node.rx` |
-| `--query` / `-q`      | Extra query params when fetching the openapi.json from a server               | `string`                                     |
-| `--version` / `-v`    | Show version of SDK.                                                          | `boolean`                                    |
+| Flag                   | Description                                                                                                                                              | Value / Type                                 |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `--cache` / `-c`       | Extra query params when fetching the openapi.json from a server.                                                                                         | `boolean`                                    |
+| `--deprecated` / `-d`  | Include deprecated functions and services.                                                                                                               | `boolean`                                    |
+| `--from-env` / `-e`    | Use env variables `WECLAPP_BACKEND_URL` and `WECLAPP_API_KEY` as credentials.                                                                            | `boolean`                                    |
+| `--generate-unique`    | Generate additional `.unique` functions.                                                                                                                 | `boolean`                                    |
+| `--use-query-language` | Use the advanced query language. The property _filter_ will be removed from _SomeQuery_ and _CountQuery_ and the property _where_ will be added instead. | `boolean`                                    |
+| `--help` / `-h`        | Show help.                                                                                                                                               | `boolean`                                    |
+| `--key` / `-k`         | API Key in case of using a remote.                                                                                                                       | `string`                                     |
+| `--target` / `-t`      | Specify the target platform.                                                                                                                             | `browser`, `browser.rx`, `node` or `node.rx` |
+| `--query` / `-q`       | Extra query params when fetching the openapi.json from a server                                                                                          | `string`                                     |
+| `--version` / `-v`     | Show version of SDK.                                                                                                                                     | `boolean`                                    |
 
 After that, you can import the sdk via `@weclapp/sdk`.
 Check out the [docs](docs) for how the generated SDK looks like and how to use it!
@@ -98,14 +98,12 @@ interface ServiceConfig {
     // The payload contains the raw input generated by the SDK.
     request?: (
       request: Request,
-      payload: RequestPayload,
+      payload: RequestPayload
     ) => Request | Response | void | Promise<Request | Response | void>;
 
     // Takes the response. This can either be the one from the server or an
     // artificially-crafted one by the request interceptor.
-    response?: (
-      response: Response,
-    ) => Response | void | Promise<Response | void>;
+    response?: (response: Response) => Response | void | Promise<Response | void>;
   };
 }
 ```
@@ -117,11 +115,11 @@ There are three ways of accessing a service through the SDK:
 #### Using a Global Config
 
 ```ts
-import { setGlobalConfig, partyService } from "@weclapp/sdk";
+import { setGlobalConfig, partyService } from '@weclapp/sdk';
 
 setGlobalConfig({
-  key: "mykey",
-  domain: "myweclapp.com",
+  key: 'mykey',
+  domain: 'myweclapp.com'
 });
 
 const party = partyService();
@@ -132,11 +130,11 @@ console.log(`Total amount of parties: ${await party.count()}`);
 #### Using a Config per Service
 
 ```ts
-import { partyService } from "@weclapp/sdk";
+import { partyService } from '@weclapp/sdk';
 
 const party = partyService({
-  key: "mykey",
-  domain: "myweclapp.com",
+  key: 'mykey',
+  domain: 'myweclapp.com'
 });
 
 console.log(`Total amount of parties: ${await party.count()}`);
@@ -237,45 +235,45 @@ interface PartyService {
 ## Comparison
 
 ```ts
-import { PartyType, setGlobalConfig, wServices } from "@weclapp/sdk";
+import { PartyType, setGlobalConfig, wServices } from '@weclapp/sdk';
 
 setGlobalConfig({
-  domain: "company.weclapp.com",
-  secure: true,
+  domain: 'company.weclapp.com',
+  secure: true
 });
 
 // to get the count of parties via service
-const serviceN = await wServices["party"].count();
+const serviceN = await wServices['party'].count();
 
 // to get the count of parties via raw
-const rawN = await raw(undefined, "/party/count");
+const rawN = await raw(undefined, '/party/count');
 
 // to get all parties via service
-const partiesService = await wServices["party"].some();
+const partiesService = await wServices['party'].some();
 
 // to get all parties via raw
-const partiesRaw = await raw(undefined, "/party");
+const partiesRaw = await raw(undefined, '/party');
 
 // to create a party via service
-const contact = await wServices["party"].create({
+const contact = await wServices['party'].create({
   partyType: PartyType.PERSON,
-  lastName: "Mueller",
+  lastName: 'Mueller'
 }); // the returned object is already typed as Party
 
 // to create a party via raw
-const contactRaw = await await raw(undefined, "/party", {
+const contactRaw = await await raw(undefined, '/party', {
   // the returned object has the type any.
-  method: "POST",
-  body: { partyType: PartyType.PERSON, lastName: "Mueller" },
+  method: 'POST',
+  body: { partyType: PartyType.PERSON, lastName: 'Mueller' }
 });
 
 // to delete a party via service
-await wServices["party"].remove(contact.id);
+await wServices['party'].remove(contact.id);
 
 // to delete a party via raw
-if (contactRaw && typeof contactRaw.id === "string") {
+if (contactRaw && typeof contactRaw.id === 'string') {
   await raw(undefined, `/party/id/${contactRaw.id}`, {
-    method: "DELETE",
+    method: 'DELETE'
   });
 }
 ```
@@ -287,11 +285,11 @@ if (contactRaw && typeof contactRaw.id === "string") {
 With the some and count functions you can filter the requested data.
 
 ```ts
-wServices["article"].some({
+wServices['article'].some({
   filter: {
-    name: { EQ: "toy 1" },
-    articleNumber: { EQ: "12345" },
-  },
+    name: { EQ: 'toy 1' },
+    articleNumber: { EQ: '12345' }
+  }
 });
 ```
 
@@ -302,13 +300,13 @@ The SDK makes an AND operator between the properties. So this equivalent to the 
 If you want an OR operator you have to set an array in the or property:
 
 ```ts
-wServices["article"].some({
+wServices['article'].some({
   or: [
     {
-      name: { EQ: "toy 1" },
-      articleNumber: { EQ: "12345" },
-    },
-  ],
+      name: { EQ: 'toy 1' },
+      articleNumber: { EQ: '12345' }
+    }
+  ]
 });
 ```
 
@@ -319,16 +317,16 @@ The above example is the equivalent of the expression
 To combine OR and AND clauses, you can also group OR expressions by adding several objects to the array:
 
 ```ts
-wServices["article"].some({
+wServices['article'].some({
   or: [
     {
-      name: { EQ: "toy 1" },
-      articleNumber: { EQ: "12345" },
+      name: { EQ: 'toy 1' },
+      articleNumber: { EQ: '12345' }
     },
     {
-      batchNumberRequired: { EQ: true },
-    },
-  ],
+      batchNumberRequired: { EQ: true }
+    }
+  ]
 });
 ```
 
@@ -342,18 +340,15 @@ This is evaluated to:
 It is also possible to specify complex filter expressions that can combine multiple conditions and express relations between properties:
 
 ```ts
-wServices["article"].some({
+wServices['article'].some({
   where: {
     AND: [
       {
-        OR: [
-          { name: { LIKE: "%test%", lower: true } },
-          { articleNumber: { LIKE: "%345%" } },
-        ],
+        OR: [{ name: { LIKE: '%test%', lower: true } }, { articleNumber: { LIKE: '%345%' } }]
       },
-      { batchNumberRequired: { EQ: true } },
-    ],
-  },
+      { batchNumberRequired: { EQ: true } }
+    ]
+  }
 });
 ```
 
@@ -364,8 +359,8 @@ wServices["article"].some({
 You can sort your requested data with an array properties.
 
 ```ts
-wServices["article"].some({
-  sort: [{ name: "asc" }, { minimumPurchaseQuantity: "desc" }],
+wServices['article'].some({
+  sort: [{ name: 'asc' }, { minimumPurchaseQuantity: 'desc' }]
 });
 ```
 
@@ -376,11 +371,11 @@ Sort by name (ascending) and then minimumPurchaseQuantity descending.
 By default the API returns only the first 100 entities. You can increase the size of one response to the maximum of 1000. To get the next 1000 entities you have increase the page number.
 
 ```ts
-wServices["article"].some({
+wServices['article'].some({
   pagination: {
     page: 2,
-    pageSize: 10,
-  },
+    pageSize: 10
+  }
 });
 ```
 
@@ -391,8 +386,8 @@ This returns the first 10 articles of the second page.
 With the select option you can fetch specific subset of properties:
 
 ```ts
-wServices["article"].some({
-  select: { articleNumber: true },
+wServices['article'].some({
+  select: { articleNumber: true }
 });
 ```
 
@@ -403,10 +398,10 @@ This only returns the articleNumber property of all articles.
 The generated enums are a good posibility to check if an entity is of a specific type. For example, you can get all articles of a certain article type:
 
 ```ts
-wServices["article"].some({
+wServices['article'].some({
   filter: {
-    articleType: { EQ: ArticleType.STORABLE },
-  },
+    articleType: { EQ: ArticleType.STORABLE }
+  }
 });
 ```
 

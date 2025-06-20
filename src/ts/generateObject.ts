@@ -1,4 +1,4 @@
-import { indent } from "@utils/indent";
+import { indent } from '@utils/indent';
 
 export interface ObjectProperty {
   key: string;
@@ -24,5 +24,5 @@ export const generateObject = (properties: ObjectProperty[]): string => {
     }
   }
 
-  return body.length ? `{\n${indent(body.join(",\n"))}\n}` : `{}`;
+  return body.length ? `{\n${indent(body.join(',\n'))}\n}` : `{}`;
 };

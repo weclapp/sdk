@@ -1,16 +1,16 @@
 type RequestTask = {
-    uri: string;
-    resolve: (result: unknown) => void;
-    reject: (error: unknown) => void;
+  uri: string;
+  resolve: (result: unknown) => void;
+  reject: (error: unknown) => void;
 };
 
 type BatchRequestTask = RequestTask & {
-    settled: boolean;
+  settled: boolean;
 };
 
 type MultiRequestResponse = {
-    status: number;
-    body: object;
+  status: number;
+  body: object;
 };
 
 let microtaskQueued: boolean = false;
@@ -21,142 +21,144 @@ const COMMA = ','.charCodeAt(0);
 const DECODER = new TextDecoder();
 
 const readNextResponse = (bytes: Uint8Array) => {
-    let headerStart: number | undefined = undefined;
-    let commasSeen = 0;
+  let headerStart: number | undefined = undefined;
+  let commasSeen = 0;
 
-    for (let i = 0; i < bytes.length; i++) {
-        const byte = bytes[i];
-        if (headerStart === undefined) {
-            if (byte === SQUARE_BRACKET_OPEN || byte === COMMA) {
-                headerStart = i + 1;
-            }
-        } else {
-            if (byte === COMMA) {
-                commasSeen++;
-            }
-            if (commasSeen === 2) {
-                const headerArrayString = `[${DECODER.decode(bytes.subarray(headerStart, i))}]`;
-                const [index, jsonLength] = JSON.parse(headerArrayString);
-                if (!(typeof index === 'number') || !(typeof jsonLength === 'number')) {
-                    throw new Error(`unexpected header: ${headerArrayString}`);
-                }
-
-                const endIndex = i + 1 + jsonLength;
-                if (endIndex > bytes.length) {
-                    // not all bytes available yet
-                    return undefined;
-                }
-                const jsonString = DECODER.decode(bytes.subarray(i + 1, endIndex));
-                const data = JSON.parse(jsonString) as MultiRequestResponse;
-                return {
-                    index,
-                    data,
-                    remainingBytes: bytes.subarray(endIndex)
-                };
-            }
+  for (let i = 0; i < bytes.length; i++) {
+    const byte = bytes[i];
+    if (headerStart === undefined) {
+      if (byte === SQUARE_BRACKET_OPEN || byte === COMMA) {
+        headerStart = i + 1;
+      }
+    } else {
+      if (byte === COMMA) {
+        commasSeen++;
+      }
+      if (commasSeen === 2) {
+        const headerArrayString = `[${DECODER.decode(bytes.subarray(headerStart, i))}]`;
+        const [index, jsonLength] = JSON.parse(headerArrayString);
+        if (!(typeof index === 'number') || !(typeof jsonLength === 'number')) {
+          throw new Error(`unexpected header: ${headerArrayString}`);
         }
+
+        const endIndex = i + 1 + jsonLength;
+        if (endIndex > bytes.length) {
+          // not all bytes available yet
+          return undefined;
+        }
+        const jsonString = DECODER.decode(bytes.subarray(i + 1, endIndex));
+        const data = JSON.parse(jsonString) as MultiRequestResponse;
+        return {
+          index,
+          data,
+          remainingBytes: bytes.subarray(endIndex)
+        };
+      }
     }
-    return undefined;
+  }
+  return undefined;
 };
 
 const fetchMultiRequest = async (requests: string[]) => {
-    const cfg = getGlobalConfig();
+  const cfg = getGlobalConfig();
 
-    if (!cfg) {
-        throw new Error(`ServiceConfig missing.`);
-    }
+  if (!cfg) {
+    throw new Error(`ServiceConfig missing.`);
+  }
 
-    const host = getHost(cfg);
-    const protocol = getProtocol(cfg);
+  const host = getHost(cfg);
+  const protocol = getProtocol(cfg);
 
-    return await fetch(`${protocol}//${host}/webapp/api/v2/batch/query`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            ...(cfg.key && {'AuthenticationToken': cfg.key})
-        },
-        body: JSON.stringify({requests})
-    });
+  return await fetch(`${protocol}//${host}/webapp/api/v2/batch/query`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(cfg.key && { AuthenticationToken: cfg.key })
+    },
+    body: JSON.stringify({ requests })
+  });
 };
 
 const rejectTasks = (tasks: BatchRequestTask[], error: unknown) => {
-    for (const task of tasks) {
-        if (!task.settled) {
-            task.reject(error);
-        }
+  for (const task of tasks) {
+    if (!task.settled) {
+      task.reject(error);
     }
+  }
 };
 
 const processStream = (
-    {value: chunk, done}: ReadableStreamReadResult<Uint8Array>,
-    remainingBytes: Uint8Array,
-    reader: ReadableStreamDefaultReader<Uint8Array>,
-    tasks: BatchRequestTask[]
-  ) => {
-    if (done) {
-        return;
-    }
-    if (chunk) {
-        let bytes = new Uint8Array(remainingBytes.length + chunk.length);
-        bytes.set(remainingBytes);
-        bytes.set(chunk, remainingBytes.length);
+  { value: chunk, done }: ReadableStreamReadResult<Uint8Array>,
+  remainingBytes: Uint8Array,
+  reader: ReadableStreamDefaultReader<Uint8Array>,
+  tasks: BatchRequestTask[]
+) => {
+  if (done) {
+    return;
+  }
+  if (chunk) {
+    let bytes = new Uint8Array(remainingBytes.length + chunk.length);
+    bytes.set(remainingBytes);
+    bytes.set(chunk, remainingBytes.length);
 
-        while (bytes.length) {
-            const result = readNextResponse(bytes);
-            if (!result) {
-                break;
-            }
-            const task = tasks[result.index];
-            if (result.data.status >= 100 && result.data.status < 400) {
-                task.resolve({
-                    ...result.data.body
-                });
-            } else {
-                task.reject({
-                    ...result.data.body
-                });
-            }
-            task.settled = true;
-            bytes = result.remainingBytes;
-        }
-        reader.read()
-            .then((readResult) => processStream(readResult, bytes, reader, tasks))
-            .catch((error) => rejectTasks(tasks, error));
+    while (bytes.length) {
+      const result = readNextResponse(bytes);
+      if (!result) {
+        break;
+      }
+      const task = tasks[result.index];
+      if (result.data.status >= 100 && result.data.status < 400) {
+        task.resolve({
+          ...result.data.body
+        });
+      } else {
+        task.reject({
+          ...result.data.body
+        });
+      }
+      task.settled = true;
+      bytes = result.remainingBytes;
     }
-  };
+    reader
+      .read()
+      .then((readResult) => processStream(readResult, bytes, reader, tasks))
+      .catch((error) => rejectTasks(tasks, error));
+  }
+};
 
 const batch = async (tasks: BatchRequestTask[]) => {
-    try {
-        const requests = tasks.map(({uri}) => uri);
-        const resp = await fetchMultiRequest(requests);
-        const reader = resp.body?.getReader();
+  try {
+    const requests = tasks.map(({ uri }) => uri);
+    const resp = await fetchMultiRequest(requests);
+    const reader = resp.body?.getReader();
 
-        if (!reader) {
-            throw new Error('Stream reader is undefined');
-        }
-        reader.read()
-            .then((readResult) => processStream(readResult, new Uint8Array(0), reader, tasks))
-            .catch((error) => rejectTasks(tasks, error));
-    } catch (e) {
-        rejectTasks(tasks, e);
-        throw e;
+    if (!reader) {
+      throw new Error('Stream reader is undefined');
     }
+    reader
+      .read()
+      .then((readResult) => processStream(readResult, new Uint8Array(0), reader, tasks))
+      .catch((error) => rejectTasks(tasks, error));
+  } catch (e) {
+    rejectTasks(tasks, e);
+    throw e;
+  }
 };
 
 const addTask = (task: RequestTask) => {
-    tasksSet.add(task);
+  tasksSet.add(task);
 
-    if (!microtaskQueued) {
-        queueMicrotask(() => {
-            microtaskQueued = false;
-            if (tasksSet.size > 0) {
-                const batchTasks = Array.from(tasksSet).map((task) => ({...task, settled: false}));
-                batch(batchTasks);
-                tasksSet.clear();
-            }
-        });
-        microtaskQueued = true;
-    }
+  if (!microtaskQueued) {
+    queueMicrotask(() => {
+      microtaskQueued = false;
+      if (tasksSet.size > 0) {
+        const batchTasks = Array.from(tasksSet).map((task) => ({ ...task, settled: false }));
+        batch(batchTasks);
+        tasksSet.clear();
+      }
+    });
+    microtaskQueued = true;
+  }
 };
 
-const addRequest = (uri: string) => new Promise((resolve, reject) => addTask({uri, resolve, reject}));
+const addRequest = (uri: string) => new Promise((resolve, reject) => addTask({ uri, resolve, reject }));
