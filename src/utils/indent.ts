@@ -1,4 +1,4 @@
-import indentString from "indent-string";
+import indentString from 'indent-string';
 
 /**
  * Indents each line of the given string

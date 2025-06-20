@@ -1,8 +1,8 @@
 export enum Target {
-  BROWSER_PROMISES = "browser",
-  BROWSER_RX = "browser.rx",
-  NODE_PROMISES = "node",
-  NODE_RX = "node.rx",
+  BROWSER_PROMISES = 'browser',
+  BROWSER_RX = 'browser.rx',
+  NODE_PROMISES = 'node',
+  NODE_RX = 'node.rx'
 }
 
 export const isNodeTarget = (target: Target): boolean => {
@@ -14,9 +14,9 @@ export const isRXTarget = (target: Target): boolean => {
 };
 
 export const resolveResponseType = (target: Target) => {
-  return isRXTarget(target) ? "Observable" : "Promise";
+  return isRXTarget(target) ? 'Observable' : 'Promise';
 };
 
 export const resolveBinaryType = (target: Target) => {
-  return isNodeTarget(target) ? "Buffer" : "Blob";
+  return isNodeTarget(target) ? 'Buffer' : 'Blob';
 };

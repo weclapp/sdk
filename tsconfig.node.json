@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowJs": true,
     "strict": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
@@ -22,5 +23,5 @@
       "@tests/*": ["tests/*"]
     }
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts", "rollup.config.ts"]
+  "include": ["src/**/*.ts", "tests/**/*.ts", "rollup.config.ts", "prettier.config.js", "eslint.config.js"]
 }

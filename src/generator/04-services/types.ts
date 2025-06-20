@@ -1,6 +1,6 @@
-import { Target } from "@enums/Target";
-import { WeclappEndpoint } from "@utils/weclapp/parseEndpointPath";
-import { OpenAPIV3 } from "openapi-types";
+import { Target } from '@enums/Target';
+import { WeclappEndpoint } from '@utils/weclapp/parseEndpointPath';
+import { OpenAPIV3 } from 'openapi-types';
 
 export interface Export {
   name: string;
@@ -23,6 +23,4 @@ export interface ServiceFunctionGeneratorConfig {
   aliases: Map<string, string>;
 }
 
-export type ServiceFunctionGenerator = (
-  v: ServiceFunctionGeneratorConfig,
-) => GeneratedServiceFunction;
+export type ServiceFunctionGenerator = (v: ServiceFunctionGeneratorConfig) => GeneratedServiceFunction;

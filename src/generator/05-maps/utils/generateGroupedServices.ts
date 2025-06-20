@@ -1,11 +1,11 @@
-import { GeneratedService } from "@generator/04-services";
-import { generateArray } from "@ts/generateArray";
-import { generateBlockComment } from "@ts/generateComment";
-import { generateInterface, InterfaceProperty } from "@ts/generateInterface";
-import { generateStatements } from "@ts/generateStatements";
-import { generateType } from "@ts/generateType";
-import { indent } from "@utils/indent";
-import { camelCase, pascalCase } from "change-case";
+import { GeneratedService } from '@generator/04-services';
+import { generateArray } from '@ts/generateArray';
+import { generateBlockComment } from '@ts/generateComment';
+import { generateInterface, InterfaceProperty } from '@ts/generateInterface';
+import { generateStatements } from '@ts/generateStatements';
+import { generateType } from '@ts/generateType';
+import { indent } from '@utils/indent';
+import { camelCase, pascalCase } from 'change-case';
 
 // Only functions matching this regex are included in the generation.
 const FILTER_REGEX = /^(some|count|create|remove|unique|update)$/;
@@ -29,8 +29,8 @@ export const generateGroupedServices = (services: GeneratedService[]) => {
         {
           name: entity,
           required: true,
-          type: `${pascalCase(entity)}Service_${pascalCase(name)}`,
-        },
+          type: `${pascalCase(entity)}Service_${pascalCase(name)}`
+        }
       ]);
     }
   }
@@ -46,14 +46,9 @@ export const generateGroupedServices = (services: GeneratedService[]) => {
   }
 
   return [
-    ...descriptors.map(([name, props]) =>
-      generateInterface(pascalCase(`WServicesWith_${name}`), props),
-    ),
+    ...descriptors.map(([name, props]) => generateInterface(pascalCase(`WServicesWith_${name}`), props)),
     ...descriptors.map(([name]) =>
-      generateType(
-        pascalCase(`WServiceWith_${name}`),
-        `keyof ${pascalCase(`WServicesWith_${name}`)}`,
-      ),
+      generateType(pascalCase(`WServiceWith_${name}`), `keyof ${pascalCase(`WServicesWith_${name}`)}`)
     ),
     ...descriptors.map(([name, props]) => {
       const constant = camelCase(`wServiceWith_${name}_Names`);
@@ -61,9 +56,6 @@ export const generateGroupedServices = (services: GeneratedService[]) => {
       const value = generateArray(props.map((v) => v.name));
       return `export const ${constant}: ${type}[] = ${value};`;
     }),
-    generateBlockComment(
-      "Type guards for service classes.",
-      generateStatements(...typeGuards),
-    ),
+    generateBlockComment('Type guards for service classes.', generateStatements(...typeGuards))
   ];
 };

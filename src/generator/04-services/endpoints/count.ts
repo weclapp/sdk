@@ -1,26 +1,20 @@
-import { resolveResponseType } from "@enums/Target";
-import {
-  GeneratedServiceFunction,
-  ServiceFunctionGenerator,
-} from "@generator/04-services/types";
-import { generateArrowFunction } from "@ts/generateArrowFunction";
-import { generateArrowFunctionType } from "@ts/generateArrowFunctionType";
-import { generateInterfaceFromObject } from "@ts/generateInterface";
-import { generateString } from "@ts/generateString";
-import { convertParametersToSchema } from "@utils/openapi/convertParametersToSchema";
-import {
-  convertToTypeScriptType,
-  createObjectType,
-} from "@utils/openapi/convertToTypeScriptType";
-import { pascalCase } from "change-case";
+import { resolveResponseType } from '@enums/Target';
+import { GeneratedServiceFunction, ServiceFunctionGenerator } from '@generator/04-services/types';
+import { generateArrowFunction } from '@ts/generateArrowFunction';
+import { generateArrowFunctionType } from '@ts/generateArrowFunctionType';
+import { generateInterfaceFromObject } from '@ts/generateInterface';
+import { generateString } from '@ts/generateString';
+import { convertParametersToSchema } from '@utils/openapi/convertParametersToSchema';
+import { convertToTypeScriptType, createObjectType } from '@utils/openapi/convertToTypeScriptType';
+import { pascalCase } from 'change-case';
 
-const functionName = "count";
+const functionName = 'count';
 
 export const generateCountEndpoint: ServiceFunctionGenerator = ({
   aliases,
   path,
   target,
-  endpoint,
+  endpoint
 }): GeneratedServiceFunction => {
   const service = pascalCase(endpoint.entity);
   const entity = aliases.get(endpoint.entity) ?? service;
@@ -30,22 +24,20 @@ export const generateCountEndpoint: ServiceFunctionGenerator = ({
   const parameterSchema = convertParametersToSchema(path.parameters);
 
   const parameters = createObjectType({
-    params: convertToTypeScriptType(parameterSchema),
+    params: convertToTypeScriptType(parameterSchema)
   });
 
   const functionSource = generateArrowFunction({
     name: functionName,
     signature: interfaceName,
     returns: `_${functionName}(cfg, ${generateString(endpoint.path)}, query)`,
-    params: ["query"],
+    params: ['query']
   });
 
   const interfaceSource = generateArrowFunctionType({
     type: interfaceName,
-    params: [
-      `query${parameters.isFullyOptional() ? "?" : ""}: CountQuery<${entityFilter}> & ${entityParameters}`,
-    ],
-    returns: `${resolveResponseType(target)}<number>`,
+    params: [`query${parameters.isFullyOptional() ? '?' : ''}: CountQuery<${entityFilter}> & ${entityParameters}`],
+    returns: `${resolveResponseType(target)}<number>`
   });
 
   return {
@@ -56,8 +48,8 @@ export const generateCountEndpoint: ServiceFunctionGenerator = ({
     interfaces: [
       {
         name: entityParameters,
-        source: generateInterfaceFromObject(entityParameters, parameters, true),
-      },
-    ],
+        source: generateInterfaceFromObject(entityParameters, parameters, true)
+      }
+    ]
   };
 };

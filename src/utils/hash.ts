@@ -1,9 +1,6 @@
-import { BinaryLike, createHash } from "crypto";
+import { BinaryLike, createHash } from 'crypto';
 
-export const hash = (
-  content: BinaryLike | BinaryLike[],
-  algorithm = "sha256",
-): string => {
+export const hash = (content: BinaryLike | BinaryLike[], algorithm = 'sha256'): string => {
   const hash = createHash(algorithm);
 
   if (Array.isArray(content)) {
@@ -12,5 +9,5 @@ export const hash = (
     hash.update(content);
   }
 
-  return hash.digest("hex");
+  return hash.digest('hex');
 };

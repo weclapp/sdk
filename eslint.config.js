@@ -1,15 +1,21 @@
-import tsEslint from "typescript-eslint";
+import tsEslint from 'typescript-eslint';
 
-export default tsEslint.config({
-  extends: [...tsEslint.configs.recommendedTypeChecked],
-  languageOptions: {
-    sourceType: "module",
-    ecmaVersion: 2022,
-    parserOptions: {
-      projectService: true,
+export default tsEslint.config(
+  {
+    name: 'app/files-to-ignore',
+    ignores: ['**/*.d.ts', '**/.*', '**/dist', '**/sdk', '**/node_modules']
+  },
+  {
+    extends: [...tsEslint.configs.recommendedTypeChecked],
+    languageOptions: {
+      sourceType: 'module',
+      ecmaVersion: 2022,
+      parserOptions: {
+        projectService: true
+      }
     },
-  },
-  rules: {
-    "no-console": "error",
-  },
-});
+    rules: {
+      'no-console': 'error'
+    }
+  }
+);
