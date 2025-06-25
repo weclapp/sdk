@@ -56,6 +56,7 @@ jobs:
         run: |
           chmod +x ./bin/cli.js
           ./bin/cli.js test/openapi.json --target ${{ matrix.target }}
+          ./bin/cli.js test/openapi_v2.json --target ${{ matrix.target }}
 
   publish:
     name: Publish stable release
