@@ -30,7 +30,7 @@ export const generateCountEndpoint: ServiceFunctionGenerator = ({
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
     params: [
-      `query${parametersType.isFullyOptional() ? '?' : ''}: CountQuery<${filterTypeName}>${path.parameters?.length ? ' & ' + parametersTypeName : ''}`
+      `query${parametersType.isFullyOptional() ? '?' : ''}: CountQuery<${filterTypeName}>${path.parameters?.length ? ' & ' + parametersTypeName : ''}`, 'requestOptions?: RequestOptions'
     ],
     returns: `${resolveResponseType(target)}<number>`
   });
@@ -38,8 +38,8 @@ export const generateCountEndpoint: ServiceFunctionGenerator = ({
   const functionSource = generateArrowFunction({
     name: functionName,
     signature: functionTypeName,
-    returns: `_${functionName}(cfg, ${generateString(endpoint.path)}, query)`,
-    params: ['query']
+    returns: `_${functionName}(cfg, ${generateString(endpoint.path)}, query, requestOptions)`,
+    params: ['query', 'requestOptions?: RequestOptions']
   });
 
   return {

@@ -172,6 +172,47 @@ interface RequestPayload {
   forceBlob?: boolean;
 }
 ```
+and `RequestOptions` looks like this:
+```ts
+interface RequestOptions {
+    signal?: AbortSignal;
+}
+````
+
+#### Aborting a request
+To abort a request an AbortController has to be instantiated and its signal has to be passed to the request. The controller can
+abort the request when needed and the case can be handled with a catch.
+```ts
+import { wServices } from "@sdk/dist";
+
+const controller = new AbortController();
+let count = 0;
+
+wServices.article
+    .count(
+        {
+            where: {
+                active: { EQ: true },
+            },
+        },
+        { signal: controller.signal }
+    )
+    .then((c) => (count = c))
+    .catch((err) => {
+        if (controller.signal.aborted) {
+            if (controller.signal.reason) {
+                console.log(`Request aborted with reason: ${controller.signal.reason}`);
+            } else {
+                console.log('Request aborted but no reason was given.');
+            }
+        } else {
+            console.log(err);
+        }
+    });
+
+controller.abort('Abort article count request');
+```
+
 
 # Generated types and utilities
 

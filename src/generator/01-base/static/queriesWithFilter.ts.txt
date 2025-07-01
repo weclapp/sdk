@@ -139,7 +139,8 @@ const flattenOrFilter = (obj: QueryFilter<any>[] = []): Record<string, string> =
 const _count = (
   cfg: ServiceConfig | undefined,
   endpoint: string,
-  query?: CountQuery<any> & { params?: Record<any, any> }
+  query?: CountQuery<any> & { params?: Record<any, any> },
+  requestOptions?: RequestOptions
 ) =>
   wrapResponse(() =>
     raw(cfg, endpoint, {
@@ -149,13 +150,14 @@ const _count = (
         ...flattenOrFilter(query?.or),
         ...query?.params
       }
-    })
+    }, requestOptions)
   );
 
 const _some = (
   cfg: ServiceConfig | undefined,
   endpoint: string,
-  query?: SomeQuery<any, any, any, any> & { params?: Record<any, any> }
+  query?: SomeQuery<any, any, any, any> & { params?: Record<any, any> },
+  requestOptions?: RequestOptions
 ) =>
   wrapResponse(() =>
     raw(cfg, endpoint, {
@@ -170,7 +172,7 @@ const _some = (
         ...query?.params,
         ...query?.pagination
       }
-    }).then((data) => ({
+    }, requestOptions).then((data) => ({
       entities: data.result,
       references: data.referencedEntities ?? {},
       properties: data.additionalProperties ?? {}

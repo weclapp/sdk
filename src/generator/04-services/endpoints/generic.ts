@@ -39,15 +39,15 @@ export const generateGenericEndpoint =
 
     const functionTypeSource = generateArrowFunctionType({
       type: functionTypeName,
-      params: [...(hasId ? ['id: string'] : []), `query${params.isFullyOptional() ? '?' : ''}: ${entityQuery}`],
+      params: [...(hasId ? ['id: string'] : []), `query${params.isFullyOptional() ? '?' : ''}: ${entityQuery}`, 'requestOptions?: RequestOptions'],
       returns: `${resolveResponseType(target)}<${wrapBody(responseBody, target).toString()}>`
     });
 
     const functionSource = generateArrowFunction({
       name: functionName,
       signature: functionTypeName,
-      params: hasId ? ['id', 'query'] : ['query'],
-      returns: `_generic(cfg, ${generateString(method.toUpperCase())}, \`${insertPathPlaceholder(endpoint.path, { id: '${id}' })}\`, query, ${String(responseBody.toString() === 'binary')})`
+      params: hasId ? ['id', 'query', 'requestOptions?: RequestOptions'] : ['query', 'requestOptions?: RequestOptions'],
+      returns: `_generic(cfg, ${generateString(method.toUpperCase())}, \`${insertPathPlaceholder(endpoint.path, { id: '${id}' })}\`, query, ${String(responseBody.toString() === 'binary')}, requestOptions)`
     });
 
     return {
