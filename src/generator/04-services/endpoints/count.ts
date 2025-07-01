@@ -30,7 +30,7 @@ export const generateCountEndpoint: ServiceFunctionGenerator = ({
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
     params: [
-      `query${parametersType.isFullyOptional() ? '?' : ''}: CountQuery<${filterTypeName}>${path.parameters?.length ? ' & ' + parametersTypeName : ''}`
+      `query${parametersType.isFullyOptional() ? '?' : ''}: CountQuery<${filterTypeName}>${path.parameters?.length ? ' & ' + parametersTypeName : ''}`, 'requestOptions?: RequestOptions'
     ],
     returns: `${resolveResponseType(target)}<number>`
   });

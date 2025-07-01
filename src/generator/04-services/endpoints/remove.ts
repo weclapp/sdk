@@ -11,7 +11,7 @@ export const generateRemoveEndpoint: ServiceFunctionGenerator = ({ target, endpo
 
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
-    params: ['id: string', 'options?: RemoveQuery'],
+    params: ['id: string', 'options?: RemoveQuery', 'requestOptions?: RequestOptions'],
     returns: `${resolveResponseType(target)}<void>`
   });
 

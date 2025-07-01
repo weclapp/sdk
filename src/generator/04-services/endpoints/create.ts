@@ -17,7 +17,7 @@ export const generateCreateEndpoint: ServiceFunctionGenerator = ({
 
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
-    params: [`data: DeepPartial<${generateRequestBodyType(path).toString()}>`],
+    params: [`data: DeepPartial<${generateRequestBodyType(path).toString()}>`, 'requestOptions?: RequestOptions'],
     returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`
   });
 
