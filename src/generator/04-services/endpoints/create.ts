@@ -1,42 +1,37 @@
-import { resolveResponseType } from "@enums/Target";
-import {
-  GeneratedServiceFunction,
-  ServiceFunctionGenerator,
-} from "@generator/04-services/types";
-import { generateRequestBodyType } from "@generator/04-services/utils/generateRequestBodyType";
-import { generateResponseBodyType } from "@generator/04-services/utils/generateResponseBodyType";
-import { generateArrowFunction } from "@ts/generateArrowFunction";
-import { generateArrowFunctionType } from "@ts/generateArrowFunctionType";
-import { generateString } from "@ts/generateString";
-import { pascalCase } from "change-case";
-
-const functionName = "create";
+import { resolveResponseType } from '../../../target';
+import { GeneratedServiceFunction, ServiceFunctionGenerator } from '@generator/04-services/types';
+import { generateRequestBodyType } from '@generator/04-services/utils/generateRequestBodyType';
+import { generateResponseBodyType } from '@generator/04-services/utils/generateResponseBodyType';
+import { generateArrowFunction } from '@ts/generateArrowFunction';
+import { generateArrowFunctionType } from '@ts/generateArrowFunctionType';
+import { generateString } from '@ts/generateString';
+import { pascalCase } from 'change-case';
 
 export const generateCreateEndpoint: ServiceFunctionGenerator = ({
   target,
   path,
-  endpoint,
+  endpoint
 }): GeneratedServiceFunction => {
-  const entity = pascalCase(endpoint.entity);
-  const interfaceName = `${entity}Service_${pascalCase(functionName)}`;
+  const functionName = 'create';
+  const functionTypeName = `${pascalCase(endpoint.service)}Service_${pascalCase(functionName)}`;
+
+  const functionTypeSource = generateArrowFunctionType({
+    type: functionTypeName,
+    params: [`data: DeepPartial<${generateRequestBodyType(path).toString()}>`],
+    returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`
+  });
 
   const functionSource = generateArrowFunction({
     name: functionName,
-    signature: interfaceName,
+    signature: functionTypeName,
     returns: `_${functionName}(cfg, ${generateString(endpoint.path)}, data, requestOptions)`,
-    params: ["data", "requestOptions?: RequestOptions"],
-  });
-
-  const interfaceSource = generateArrowFunctionType({
-    type: interfaceName,
-    params: [`data: DeepPartial<${generateRequestBodyType(path).toString()}>`, "requestOptions?: RequestOptions"],
-    returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`,
+    params: ['data', 'requestOptions?: RequestOptions']
   });
 
   return {
-    entity,
+    entity: pascalCase(endpoint.service),
     name: functionName,
-    type: { name: interfaceName, source: interfaceSource },
-    func: { name: functionName, source: functionSource },
+    type: { name: functionTypeName, source: functionTypeSource },
+    func: { name: functionName, source: functionSource }
   };
 };

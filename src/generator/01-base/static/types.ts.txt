@@ -1,409 +1,105 @@
-export type DeepPartial<T> = T extends object ? {
-    [P in keyof T]?: DeepPartial<T[P]>;
-} : T;
-
-// Filter properties
-export type EqualityOperators = 'EQ' | 'NE';
-export type ComparisonOperators = 'LT' | 'GT' | 'LE' | 'GE' | 'LIKE' | 'ILIKE' | 'NOT_LIKE' | 'NOT_ILIKE' | 'IEQ' | 'NOT_IEQ';
-export type ArrayOperators = 'IN' | 'NOT_IN';
-export type Operator = EqualityOperators | ComparisonOperators | ArrayOperators;
-
-export type MapOperators<T> = { [K in EqualityOperators]?: T | null; } &
-    { [K in ComparisonOperators]?: T; } &
-    { [K in ArrayOperators]?: T[]; };
-
-export type QueryFilter<T> = {
-    [P in keyof T]?:
-        T[P] extends Array<infer U> | undefined ?
-            U extends Record<any, any> ? QueryFilter<U> : MapOperators<U> :
-                T[P] extends Record<any, any> | undefined ? QueryFilter<T[P]> : MapOperators<T[P]>;
-};
+export type DeepPartial<T> = T extends object
+  ? {
+      [P in keyof T]?: DeepPartial<T[P]>;
+    }
+  : T;
 
 export type Sort<T> = {
-    [K in keyof T]?: {
-        [V in keyof T]?:
-            V extends K ?
-                T[V] extends Array<infer U> | undefined ?
-                    U extends object ?
-                        Sort<U> : never :
-                            T[V] extends object | undefined ?
-                                Sort<T[V]> : 'asc' | 'desc' : never;
-    };
+  [K in keyof T]?: {
+    [V in keyof T]?: V extends K
+      ? T[V] extends Array<infer U> | undefined
+        ? U extends object
+          ? Sort<U>
+          : never
+        : T[V] extends object | undefined
+          ? Sort<T[V]>
+          : 'asc' | 'desc'
+      : never;
+  };
 }[keyof T];
 
-// Select properties
 export type CustomAttributeFilter = {
-    [K in number]: string | number | boolean |
-    {id: string;} |
-    {entityName: string; entityId: string;};
-};
-
-// New filter language
-
-export type ComparisonOperatorsNew = 'EQ' | 'NE' | 'LT' | 'GT' | 'LE' | 'GE' | 'LIKE';
-export type ArrayOperatorsNew = 'IN';
-export type NullOperator = 'NULL';
-export type OperatorNew = ComparisonOperatorsNew | ArrayOperatorsNew | NullOperator;
-
-// Maybe we need more in the future, hence the type.
-export type ModifierFunction = 'lower';
-
-export type MapOperatorsNew<T> =
-  | ( { [K in ComparisonOperatorsNew]?: T; } & { [K in ArrayOperatorsNew]?: T[]; } & { [K in NullOperator]?: never; } & { [K in ModifierFunction]?: boolean; })
-  | ( { [K in ComparisonOperatorsNew]?: T; } & { [K in ArrayOperatorsNew]?: T[]; } & { [K in NullOperator]?: boolean; } & { [K in ModifierFunction]?: never; });
-
-export type SingleFilterExpr<T> =  {
-[P in keyof T]?:
-        T[P] extends Array<infer U> | undefined ?
-            U extends Record<any, any> ? SingleFilterExpr<U> | {NOT?: SingleFilterExpr<U>} : MapOperatorsNew<U> :
-                T[P] extends Record<any, any> | undefined ? SingleFilterExpr<T[P]> | {NOT?: SingleFilterExpr<T[P]>} : MapOperatorsNew<T[P]>;
-};
-
-export type QueryFilterNew<T> = SingleFilterExpr<T> & {
-  OR?: QueryFilterNew<T>[];
-  AND?: QueryFilterNew<T>[];
-  NOT?: QueryFilterNew<T>
+  [K in number]:| string | number | boolean | { id: string } | { entityName: string; entityId: string };
 };
 
 export type QuerySelect<T> = {
-    [P in keyof T]?:
-        T[P] extends Array<infer U> | undefined ? (QuerySelect<U> | boolean) :
-            T[P] extends Record<any, any> | undefined ? (QuerySelect<T[P]> | boolean) : boolean;
-}
+  [P in keyof T]?: T[P] extends Array<infer U> | undefined
+    ? QuerySelect<U> | boolean
+    : T[P] extends Record<any, any> | undefined
+      ? QuerySelect<T[P]> | boolean
+      : boolean;
+};
 
-export type Select<T, Q extends (QuerySelect<T> | undefined)> = Q extends QuerySelect<T> ? {
-
-    // Filter out excluded properties beforehand
-    [P in keyof T as Q[P] extends boolean ? P : Q[P] extends object ? P : never]:
-
-    // Property
-    Q[P] extends true ? T[P] :
-
-        // Array
-        T[P] extends Array<infer U> ? Select<U, Q[P] & QuerySelect<any>>[] :
-
-            // Object
-            T[P] extends Record<any, any> ? Select<T[P], Q[P] & QuerySelect<any>> : never
-} : undefined;
+export type Select<T, Q extends QuerySelect<T> | undefined> =
+  Q extends QuerySelect<T>
+    ? {
+        // Filter out excluded properties beforehand
+        [P in keyof T as Q[P] extends boolean ? P : Q[P] extends object ? P : never]: // Property
+        Q[P] extends true
+          ? T[P]
+          : // Array
+            T[P] extends Array<infer U>
+            ? Select<U, Q[P] & QuerySelect<any>>[]
+            : // Object
+              T[P] extends Record<any, any>
+              ? Select<T[P], Q[P] & QuerySelect<any>>
+              : never;
+      }
+    : undefined;
 
 export type MapKeys<T, S extends Record<keyof T, string>> = {
-    [K in keyof T as S[K]]: T[K];
+  [K in keyof T as S[K]]: T[K];
 };
 
-// Endpoint configurations
-export type CountQuery<F> = {
-    filter?: QueryFilter<F>;
-    where?: QueryFilterNew<F> & CustomAttributeFilter;
-    or?: (QueryFilter<F> & CustomAttributeFilter)[];
-};
+export type ValueOf<T> = T[keyof T];
 
 export type Pagination = {
-    page: number;
-    pageSize: number;
-};
-
-export type SomeQuery<
-    E, // Entity
-    F, // Entity filter
-    I extends (QuerySelect<any> | undefined), // Select for referenced entities
-    S extends (QuerySelect<any> | undefined), // Select for entity properties
-    P extends string[] // Select for additional properties
-> = {
-    serializeNulls?: boolean;
-    include?: I;
-    properties?: P
-    filter?: QueryFilter<F> & CustomAttributeFilter;
-    where?: QueryFilterNew<F> & CustomAttributeFilter;
-    select?: S;
-    or?: (QueryFilter<F> & CustomAttributeFilter)[];
-    sort?: Sort<E>[];
-    pagination?: Pagination;
+  page: number;
+  pageSize: number;
 };
 
 export type UniqueQuery = {
-    serializeNulls?: boolean;
-}
+  serializeNulls?: boolean;
+};
 
-export type SomeQueryReturn<
-    E, // Entity
-    R, // Map of referenced-entity names to the type
-    M, // Map of referenced-entity-id names to their entity name
-    I extends (QuerySelect<any> | undefined), // Select for referenced entities
-    S extends (QuerySelect<any> | undefined), // Select for entity properties
-    P // Additional properties
-> = {
-    entities: (S extends QuerySelect<E> ? Select<E, S> : E)[];
-    references: I extends QuerySelect<R> ? Partial<MapKeys<Select<R, I>, M & Record<any, any>>> : {};
-    properties: P
+export type SomeQueryReturn<E, R, P> = {
+  entities: E[];
+  references?: R;
+  properties?: P[];
 };
 
 export type GenericQuery<P, B> = {
-    params?: P;
-    body?: B;
+  params?: P;
+  body?: B;
 };
 
 export type UpdateQuery = {
-    ignoreMissingProperties?: boolean;
-    dryRun?: boolean;
-}
+  ignoreMissingProperties?: boolean;
+  dryRun?: boolean;
+};
 
 export type RemoveQuery = {
-    dryRun?: boolean;
-}
-
-// Entity meta types
-export type WEntityPropertyMeta = (
-    { type: 'string'; format?: 'decimal' | 'html' | 'email' | 'password'; maxLength?: number; pattern?: string; entity?: WEntity; service?: WService; } |
-    { type: 'integer'; format: 'int32' | 'int64' | 'duration' | 'date' | 'timestamp'; } |
-    { type: 'array'; format: 'reference'; entity: WEntity; service?: WService; } |
-    { type: 'array'; format: 'reference'; enum: WEnum; } |
-    { type: 'array'; format: 'string'; } |
-    { type: 'number'; format: 'double'; } |
-    { type: 'reference'; entity: WEntity; } |
-    { type: 'reference'; enum: WEnum; } |
-    { type: 'boolean'; } |
-    { type: 'object'; }
-);
-
-// Utils
-const equality: string[] = ['EQ', 'NE', 'IEQ', 'NOT_IEQ'];
-const simple: string[] = [...equality, 'LT', 'GT', 'LE', 'GE', 'LIKE', 'NOT_LIKE', 'ILIKE', 'NOT_ILIKE'];
-const array: string[] = ['IN', 'NOT_IN'];
-const filterMap: Record<Operator, string> = {
-    EQ: 'eq',
-    NE: 'ne',
-    LT: 'lt',
-    GT: 'gt',
-    LE: 'le',
-    GE: 'ge',
-    LIKE: 'like',
-    NOT_LIKE: 'notlike',
-    ILIKE: 'ilike',
-    NOT_ILIKE: 'notilike',
-    IN: 'in',
-    NOT_IN: 'notin',
-    IEQ: 'ieq',
-    NOT_IEQ: 'notieq',
+  dryRun?: boolean;
 };
 
-
-const comparisonOperatorsList: ComparisonOperatorsNew[] = ['EQ', 'NE', 'LT', 'GT', 'LE', 'GE', 'LIKE'];
-
-const filterMapNew: Record<OperatorNew, string> = {
-  EQ: '=',
-  NE: '!=',
-  LT: '<',
-  GT: '>',
-  LE: '<=',
-  GE: '>=',
-  LIKE: '~',
-  IN: 'in',
-  NULL: 'null'
-};
-
-const flattenCustomAttributes = (obj: CustomAttributeFilter = {}): [string, string][] => {
-    const entries: [string, string][] = [];
-
-    for (const [id, filter] of Object.entries(obj)) {
-        const key = `customAttribute${id}`;
-
-        if (typeof filter === 'object') {
-            for (const [prop, value] of Object.entries(filter)) {
-                entries.push([`${key}.${prop}-eq`, String(value)]);
-            }
-        } else if (filter !== undefined) {
-            entries.push([`${key}-eq`, String(filter)]);
-        }
+export type WEntityPropertyMeta =
+  | {
+      type: 'string';
+      format?: 'decimal' | 'html' | 'email' | 'password';
+      maxLength?: number;
+      pattern?: string;
+      entity?: WEntity;
+      service?: WService;
     }
-
-    return entries;
-};
-
-const flatten = (obj: QueryFilter<any> = {}): [string, string][] => {
-    const entries: [string, string][] = [];
-
-    for (const [prop, propValue] of Object.entries(obj)) {
-        for (const [filter, value] of Object.entries(propValue as object)) {
-            if (value === undefined) continue;
-
-            if (simple.includes(filter) || array.includes(filter)) {
-                if (value === null && equality.includes(filter)) {
-                    entries.push([`${prop}-${filter === 'EQ' ? 'null' : 'notnull'}`, '']);
-                } else {
-                    entries.push([`${prop}-${filterMap[filter as Operator]}`, value]);
-                }
-            } else {
-                entries.push(
-                    ...flatten(propValue as QueryFilter<any>)
-                        .map(v => [`${prop}.${v[0]}`, v[1]]) as [string, string][]
-                );
-                break;
-            }
-        }
+  | {
+      type: 'integer';
+      format: 'int32' | 'int64' | 'duration' | 'date' | 'timestamp';
     }
-
-    return entries;
-};
-
-
-const findAllModifierFunctions = (obj: Record<string, any>, types: ModifierFunction[]) => {
-    const result: Record<string, any> = {};
-    for (const key in obj) {
-        if (types.includes(key as ModifierFunction)) {
-            result[key] = obj[key];
-        }
-    }
-    return Object.entries(result);
-}
-
-const possibleModifierFunctions: ModifierFunction[] = ['lower'];
-
-const flattenWhere = (obj: QueryFilterNew<any> = {}, nestedPaths: string[]): string[] => {
-  const entries: string[] = [];
-  for (const [prop, propValue] of Object.entries(obj)) {
-    const setModifiers = findAllModifierFunctions(propValue ?? {}, possibleModifierFunctions).filter(modifier => modifier[1]);
-    if (prop === 'OR') {
-      const flattedOr: string[][] = [];
-      for (let i = 0; i < (obj.OR?.length ?? 0); i++) {
-        flattedOr.push(flattenWhere(obj.OR?.[i], nestedPaths));
-      }
-      entries.push(
-        `(${flattedOr
-          .map((x) => {
-            const joined = x.join(" and ");
-
-            if (x.length > 1) {
-              return `(${joined})`;
-            } else {
-              return joined;
-            }
-          })
-          .join(" or ")})`
-      );
-    }
-    else if (prop === 'AND') {
-      const flattedAnd: string[][] = [];
-      for (let i = 0; i < (obj.AND?.length ?? 0); i++) {
-        flattedAnd.push(flattenWhere(obj.AND?.[i], nestedPaths));
-      }
-      entries.push(
-        `(${flattedAnd
-          .map((x) => {
-            const joined = x.join(" and ");
-
-            if (x.length > 1) {
-              return `(${joined})`;
-            } else {
-              return joined;
-            }
-          })
-          .join(" and ")})`
-      );
-    }
-    else if (prop === 'NOT') {
-      const flattedNot = flattenWhere(obj.NOT, nestedPaths);
-      entries.push(
-        `not ${flattedNot.length > 1 ? '(' : ''}${flattedNot.join(' and ')}${flattedNot.length > 1 ? ')' : ''}`
-      );
-    } else if (propValue) {
-      for (const [operator, value] of Object.entries(propValue)) {
-        if (value === undefined) continue;
-        if (comparisonOperatorsList.includes((operator as ComparisonOperatorsNew))) {
-          entries.push(
-            `${setModifiers.reduce(
-                    (acc, [first]) => `${first}(${acc})`,
-                    nestedPaths.some(path => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
-                  )} ${filterMapNew[operator as OperatorNew]} ${typeof value === 'string' ? setModifiers.reduce(
-                    (acc, [first]) => `${first}(${acc})`,
-                    JSON.stringify(value)
-                  ) : value}`
-          );
-        } else if ((operator as OperatorNew) === 'NULL') {
-          entries.push(
-            `${!value ? 'not ' : ''}${nestedPaths.some(path => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')} ${filterMapNew[operator as OperatorNew]}`
-          );
-        } else if ((operator as OperatorNew) === 'IN') {
-          entries.push(
-            `${setModifiers.reduce(
-                    (acc, [first]) => `${first}(${acc})`,
-                    nestedPaths.some(path => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
-                  )} ${filterMapNew[operator as OperatorNew]} [${value.map((v: string | number) => typeof v === 'string' ? setModifiers.reduce(
-                    (acc, [first]) => `${first}(${acc})`,
-                    JSON.stringify(v)
-                  ) : v)}]`
-          );
-        } else if (!possibleModifierFunctions.includes(operator as ModifierFunction)) {
-          entries.push(...flattenWhere(propValue as QueryFilterNew<any>, [...nestedPaths, prop]));
-          break;
-        }
-      }
-    }
-  }
-  return entries;
-};
-
-const assembleFilterParam = (obj: QueryFilterNew<any> = {}): Record<string, string> => {
-    const flattedFilter = flattenWhere(obj, []);
-    return flattedFilter.length ? { filter: flattedFilter.join(' and ') }: {}
-};
-
-const flattenFilter = (obj: QueryFilter<any> = {}): Record<string, string> => {
-    const filter: [string, any][] = [], customAttributes: [string, any][] = [];
-
-    Object.entries(obj).forEach(value => {
-        (value[0].match(/^\d+$/) ? customAttributes : filter).push(value);
-    });
-
-    return Object.fromEntries([
-        ...flatten(Object.fromEntries(filter)),
-        ...flattenCustomAttributes(Object.fromEntries(customAttributes) as CustomAttributeFilter)
-    ]);
-};
-
-const flattenOrFilter = (obj: QueryFilter<any>[] = []): Record<string, string> => {
-    const entries: [string, any][] = [];
-
-    for (let i = 0; i < obj.length; i++) {
-        entries.push(
-            ...flatten(obj[i])
-                .map(v => [`or${i || ''}-${v[0]}`, v[1]]) as [string, string][]
-        );
-    }
-
-    return Object.fromEntries(entries);
-};
-
-const flattenSelect = (obj: Select<any, any> = {}): string[] => {
-    const entries: string[] = [];
-
-    for (const [prop, value] of Object.entries(obj)) {
-        if (typeof value === 'object' && value) {
-            entries.push(...flattenSelect(value).map(v => `${prop}.${v}`));
-        } else if (value) {
-            entries.push(prop);
-        }
-    }
-
-    return entries;
-};
-
-export const flattenSort = (obj: Sort<any>[] = []): {sort?: string} => {
-    const flatten = (obj: Sort<any>, base = ''): string | undefined => {
-        const [key, value] = Object.entries(obj ?? {})[0] ?? [];
-
-        if (key && value) {
-            const path = base + key;
-
-            if (typeof value === 'object') {
-                return flatten(value, path ? `${path}.` : '');
-            } else if (['asc', 'desc'].includes(value)) {
-                return `${value === 'desc' ? '-' : ''}${path}`;
-            }
-        }
-
-        return undefined;
-    };
-
-    const sorts = obj.map(v => flatten(v)).filter(Boolean);
-    return sorts.length ? {sort: sorts.join(',')} : {};
-};
+  | { type: 'array'; format: 'reference'; entity: WEntity; service?: WService }
+  | { type: 'array'; format: 'reference'; enum: WEnum }
+  | { type: 'array'; format: 'string' }
+  | { type: 'number'; format: 'double' }
+  | { type: 'reference'; entity: WEntity }
+  | { type: 'reference'; enum: WEnum }
+  | { type: 'boolean' }
+  | { type: 'object' };

@@ -1,16 +1,16 @@
-import { bundle } from "@/src/bundle";
-import { generate } from "@generator/generate";
-import { logger } from "@logger";
-import { currentDirname } from "@utils/currentDirname";
-import { hash } from "@utils/hash";
-import { cp, mkdir, rm, stat, writeFile } from "fs/promises";
-import { dirname, resolve } from "path";
-import { cli } from "./cli";
-import prettyMs from "pretty-ms";
-import pkg from "../package.json" with { type: "json" };
+import { bundle } from '@/src/bundle';
+import { generate } from '@generator/generate';
+import { logger } from '@logger';
+import { currentDirname } from '@utils/currentDirname';
+import { hash } from '@utils/hash';
+import { cp, mkdir, rm, stat, writeFile } from 'fs/promises';
+import { dirname, resolve } from 'path';
+import { cli } from './cli';
+import prettyMs from 'pretty-ms';
+import pkg from '../package.json' with { type: 'json' };
 
-const workingDir = resolve(currentDirname(), "./sdk");
-const cacheDir = resolve(currentDirname(), "./.cache");
+const workingDir = resolve(currentDirname(), './sdk');
+const cacheDir = resolve(currentDirname(), './.cache');
 
 void (async () => {
   const start = process.hrtime.bigint();
@@ -24,11 +24,7 @@ void (async () => {
   };
 
   // Resolve cache dir and key
-  const cacheKey = hash([
-    pkg.version,
-    JSON.stringify(doc),
-    JSON.stringify(options),
-  ]).slice(-8);
+  const cacheKey = hash([pkg.version, JSON.stringify(doc), JSON.stringify(options)]).slice(-8);
   const cachedSdkDir = resolve(cacheDir, cacheKey);
 
   // Remove old SDK
@@ -43,23 +39,20 @@ void (async () => {
     logger.successLn(`Cache match! (${cachedSdkDir})`);
     await cp(cachedSdkDir, workingDir, { recursive: true });
   } else {
-    // Write swagger.json file
-    await writeFile(
-      await workingDirPath("openapi.json"),
-      JSON.stringify(doc, null, 2),
-    );
+    // Write openapi.json file
+    await writeFile(await workingDirPath('openapi.json'), JSON.stringify(doc, null, 2));
     logger.infoLn(`Generate sdk (target: ${options.target})`);
 
     // Generate and write SDK (index.ts)
     const sdk = generate(doc, options);
-    await writeFile(await workingDirPath("src", "index.ts"), sdk.trim() + "\n");
+    await writeFile(await workingDirPath('src', 'index.ts'), sdk.trim() + '\n');
 
     // Bundle and write SDK
-    logger.infoLn("Bundle... (this may take some time)");
+    logger.infoLn('Bundle... (this may take some time)');
     await bundle(workingDir, options.target);
 
     // Remove index.ts (only bundle is required)
-    await rm(await workingDirPath("src"), { recursive: true, force: true });
+    await rm(await workingDirPath('src'), { recursive: true, force: true });
 
     if (useCache) {
       // Copy SDK to cache

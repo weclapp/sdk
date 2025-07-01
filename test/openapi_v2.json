@@ -7,11 +7,11 @@
       "url": "https://www.weclapp.com"
     },
     "title": "weclapp API",
-    "version": "1"
+    "version": "2"
   },
   "servers": [
     {
-      "url": "{protocol}://{host}/webapp/api/v1",
+      "url": "{protocol}://{host}/webapp/api/v2",
       "variables": {
         "host": {
           "default": "dev40.test.internal.weclapp.com"
@@ -126,7 +126,7 @@
             "application/json": {
               "schema": {
                 "properties": {
-                  "batchBookingDto": {
+                  "batchBooking": {
                     "properties": {
                       "batchBookingRecords": {
                         "items": {
@@ -158,7 +158,7 @@
                     "type": "object"
                   }
                 },
-                "required": ["batchBookingDto"],
+                "required": ["batchBooking"],
                 "type": "object"
               }
             }
@@ -8894,472 +8894,6 @@
         "tags": ["companySize"]
       }
     },
-    "/contact": {
-      "get": {
-        "deprecated": true,
-        "description": "query contact",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "page",
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "pageSize",
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "serializeNulls",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "in": "query",
-            "name": "sort",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "filter",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "properties",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "includeReferencedEntities",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "result": {
-                      "items": {
-                        "$ref": "#/components/schemas/contact"
-                      },
-                      "type": "array"
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "contact response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "query contact",
-        "tags": ["contact"]
-      },
-      "post": {
-        "deprecated": true,
-        "description": "create a contact",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "dryRun",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/contact"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/contact"
-                }
-              }
-            },
-            "description": "contact create response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "create a contact",
-        "tags": ["contact"]
-      }
-    },
-    "/contact/count": {
-      "get": {
-        "deprecated": true,
-        "description": "count contact",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "filter",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "result": {
-                      "format": "int64",
-                      "type": "integer"
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "count"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "count contact",
-        "tags": ["contact"]
-      }
-    },
-    "/contact/id/{id}": {
-      "delete": {
-        "deprecated": true,
-        "description": "delete a contact",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "dryRun",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "contact delete response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "delete a contact",
-        "tags": ["contact"]
-      },
-      "get": {
-        "deprecated": true,
-        "description": "query a specific contact",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/contact"
-                }
-              }
-            },
-            "description": "get by id"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "query a specific contact",
-        "tags": ["contact"]
-      },
-      "put": {
-        "deprecated": true,
-        "description": "update contact",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "dryRun",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/contact"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/contact"
-                }
-              }
-            },
-            "description": "contact update response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "update a contact",
-        "tags": ["contact"]
-      }
-    },
-    "/contact/id/{id}/downloadImage": {
-      "get": {
-        "deprecated": true,
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "scaleWidth",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "scaleHeight",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "*/*": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              },
-              "application/pdf": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              },
-              "image/jpeg": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              },
-              "image/png": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              }
-            },
-            "description": "downloadImage response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "tags": ["contact"]
-      }
-    },
-    "/contact/id/{id}/uploadImage": {
-      "post": {
-        "deprecated": true,
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "*/*": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            },
-            "application/pdf": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            },
-            "image/jpeg": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            },
-            "image/png": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "result": {
-                      "$ref": "#/components/schemas/successResponse"
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "uploadImage response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "tags": ["contact"]
-      }
-    },
     "/contract": {
       "get": {
         "description": "query contract",
@@ -13290,472 +12824,6 @@
           }
         },
         "tags": ["customAttributeDefinition"]
-      }
-    },
-    "/customer": {
-      "get": {
-        "deprecated": true,
-        "description": "query customer",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "page",
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "pageSize",
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "serializeNulls",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "in": "query",
-            "name": "sort",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "filter",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "properties",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "includeReferencedEntities",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "result": {
-                      "items": {
-                        "$ref": "#/components/schemas/customer"
-                      },
-                      "type": "array"
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "customer response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "query customer",
-        "tags": ["customer"]
-      },
-      "post": {
-        "deprecated": true,
-        "description": "create a customer",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "dryRun",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/customer"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/customer"
-                }
-              }
-            },
-            "description": "customer create response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "create a customer",
-        "tags": ["customer"]
-      }
-    },
-    "/customer/count": {
-      "get": {
-        "deprecated": true,
-        "description": "count customer",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "filter",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "result": {
-                      "format": "int64",
-                      "type": "integer"
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "count"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "count customer",
-        "tags": ["customer"]
-      }
-    },
-    "/customer/id/{id}": {
-      "delete": {
-        "deprecated": true,
-        "description": "delete a customer",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "dryRun",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "customer delete response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "delete a customer",
-        "tags": ["customer"]
-      },
-      "get": {
-        "deprecated": true,
-        "description": "query a specific customer",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/customer"
-                }
-              }
-            },
-            "description": "get by id"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "query a specific customer",
-        "tags": ["customer"]
-      },
-      "put": {
-        "deprecated": true,
-        "description": "update customer",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "dryRun",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/customer"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/customer"
-                }
-              }
-            },
-            "description": "customer update response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "update a customer",
-        "tags": ["customer"]
-      }
-    },
-    "/customer/id/{id}/downloadImage": {
-      "get": {
-        "deprecated": true,
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "scaleWidth",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "scaleHeight",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "*/*": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              },
-              "application/pdf": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              },
-              "image/jpeg": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              },
-              "image/png": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              }
-            },
-            "description": "downloadImage response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "tags": ["customer"]
-      }
-    },
-    "/customer/id/{id}/uploadImage": {
-      "post": {
-        "deprecated": true,
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "*/*": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            },
-            "application/pdf": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            },
-            "image/jpeg": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            },
-            "image/png": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "result": {
-                      "$ref": "#/components/schemas/successResponse"
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "uploadImage response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "tags": ["customer"]
       }
     },
     "/customerCategory": {
@@ -19047,515 +18115,6 @@
           }
         },
         "tags": ["job"]
-      }
-    },
-    "/lead": {
-      "get": {
-        "deprecated": true,
-        "description": "query lead",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "page",
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "pageSize",
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "serializeNulls",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "in": "query",
-            "name": "sort",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "filter",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "properties",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "includeReferencedEntities",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "result": {
-                      "items": {
-                        "$ref": "#/components/schemas/lead"
-                      },
-                      "type": "array"
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "lead response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "query lead",
-        "tags": ["lead"]
-      },
-      "post": {
-        "deprecated": true,
-        "description": "create a lead",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "dryRun",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/lead"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/lead"
-                }
-              }
-            },
-            "description": "lead create response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "create a lead",
-        "tags": ["lead"]
-      }
-    },
-    "/lead/count": {
-      "get": {
-        "deprecated": true,
-        "description": "count lead",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "filter",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "result": {
-                      "format": "int64",
-                      "type": "integer"
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "count"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "count lead",
-        "tags": ["lead"]
-      }
-    },
-    "/lead/id/{id}": {
-      "delete": {
-        "deprecated": true,
-        "description": "delete a lead",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "dryRun",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "lead delete response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "delete a lead",
-        "tags": ["lead"]
-      },
-      "get": {
-        "deprecated": true,
-        "description": "query a specific lead",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/lead"
-                }
-              }
-            },
-            "description": "get by id"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "query a specific lead",
-        "tags": ["lead"]
-      },
-      "put": {
-        "deprecated": true,
-        "description": "update lead",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "dryRun",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/lead"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/lead"
-                }
-              }
-            },
-            "description": "lead update response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "update a lead",
-        "tags": ["lead"]
-      }
-    },
-    "/lead/id/{id}/convertLeadToCustomer": {
-      "get": {
-        "deprecated": true,
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "result": {
-                      "$ref": "#/components/schemas/customer"
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "convertLeadToCustomer response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "tags": ["lead"]
-      }
-    },
-    "/lead/id/{id}/downloadImage": {
-      "get": {
-        "deprecated": true,
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "scaleWidth",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "scaleHeight",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "*/*": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              },
-              "application/pdf": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              },
-              "image/jpeg": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              },
-              "image/png": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              }
-            },
-            "description": "downloadImage response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "tags": ["lead"]
-      }
-    },
-    "/lead/id/{id}/uploadImage": {
-      "post": {
-        "deprecated": true,
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "*/*": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            },
-            "application/pdf": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            },
-            "image/jpeg": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            },
-            "image/png": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "result": {
-                      "$ref": "#/components/schemas/successResponse"
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "uploadImage response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "tags": ["lead"]
       }
     },
     "/leadRating": {
@@ -29102,11 +27661,13 @@
             "application/json": {
               "schema": {
                 "properties": {
-                  "moneyTransactionId": {
+                  "bankTransactionId": {
+                    "type": "string"
+                  },
+                  "cashAccountTransactionId": {
                     "type": "string"
                   }
                 },
-                "required": ["moneyTransactionId"],
                 "type": "object"
               }
             }
@@ -30596,8 +29157,7 @@
               "schema": {
                 "properties": {
                   "offerItemId": {
-                    "format": "int32",
-                    "type": "integer"
+                    "type": "string"
                   },
                   "orderedQuantity": {
                     "format": "decimal",
@@ -30659,8 +29219,7 @@
               "schema": {
                 "properties": {
                   "offerId": {
-                    "format": "int32",
-                    "type": "integer"
+                    "type": "string"
                   },
                   "offerItemToUpdateSupplierInformation": {
                     "items": {
@@ -30669,16 +29228,14 @@
                           "type": "boolean"
                         },
                         "offerItemId": {
-                          "format": "int32",
-                          "type": "integer"
+                          "type": "string"
                         },
                         "quantity": {
                           "format": "decimal",
                           "type": "string"
                         },
                         "salesOrderItemId": {
-                          "format": "int32",
-                          "type": "integer"
+                          "type": "string"
                         },
                         "updateInformation": {
                           "type": "boolean"
@@ -30692,8 +29249,7 @@
                     "type": "array"
                   },
                   "salesOrderId": {
-                    "format": "int32",
-                    "type": "integer"
+                    "type": "string"
                   }
                 },
                 "required": ["offerId", "offerItemToUpdateSupplierInformation"],
@@ -35149,11 +33705,13 @@
             "application/json": {
               "schema": {
                 "properties": {
-                  "moneyTransactionId": {
+                  "bankTransactionId": {
+                    "type": "string"
+                  },
+                  "cashAccountTransactionId": {
                     "type": "string"
                   }
                 },
-                "required": ["moneyTransactionId"],
                 "type": "object"
               }
             }
@@ -42872,472 +41430,6 @@
         "tags": ["storagePlaceSize"]
       }
     },
-    "/supplier": {
-      "get": {
-        "deprecated": true,
-        "description": "query supplier",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "page",
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "pageSize",
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "serializeNulls",
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "in": "query",
-            "name": "sort",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "filter",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "properties",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "includeReferencedEntities",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "result": {
-                      "items": {
-                        "$ref": "#/components/schemas/supplier"
-                      },
-                      "type": "array"
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "supplier response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "query supplier",
-        "tags": ["supplier"]
-      },
-      "post": {
-        "deprecated": true,
-        "description": "create a supplier",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "dryRun",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/supplier"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/supplier"
-                }
-              }
-            },
-            "description": "supplier create response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "create a supplier",
-        "tags": ["supplier"]
-      }
-    },
-    "/supplier/count": {
-      "get": {
-        "deprecated": true,
-        "description": "count supplier",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "filter",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "result": {
-                      "format": "int64",
-                      "type": "integer"
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "count"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "count supplier",
-        "tags": ["supplier"]
-      }
-    },
-    "/supplier/id/{id}": {
-      "delete": {
-        "deprecated": true,
-        "description": "delete a supplier",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "dryRun",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "supplier delete response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "delete a supplier",
-        "tags": ["supplier"]
-      },
-      "get": {
-        "deprecated": true,
-        "description": "query a specific supplier",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/supplier"
-                }
-              }
-            },
-            "description": "get by id"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "query a specific supplier",
-        "tags": ["supplier"]
-      },
-      "put": {
-        "deprecated": true,
-        "description": "update supplier",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "dryRun",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/supplier"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/supplier"
-                }
-              }
-            },
-            "description": "supplier update response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "update a supplier",
-        "tags": ["supplier"]
-      }
-    },
-    "/supplier/id/{id}/downloadImage": {
-      "get": {
-        "deprecated": true,
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "scaleWidth",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "scaleHeight",
-            "required": false,
-            "schema": {
-              "format": "int32",
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "*/*": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              },
-              "application/pdf": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              },
-              "image/jpeg": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              },
-              "image/png": {
-                "schema": {
-                  "format": "binary",
-                  "type": "string"
-                }
-              }
-            },
-            "description": "downloadImage response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "tags": ["supplier"]
-      }
-    },
-    "/supplier/id/{id}/uploadImage": {
-      "post": {
-        "deprecated": true,
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "*/*": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            },
-            "application/pdf": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            },
-            "image/jpeg": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            },
-            "image/png": {
-              "schema": {
-                "format": "binary",
-                "type": "string"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "result": {
-                      "$ref": "#/components/schemas/successResponse"
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            },
-            "description": "uploadImage response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "tags": ["supplier"]
-      }
-    },
     "/system/createDemoTestSystem": {
       "post": {
         "requestBody": {
@@ -49805,45 +47897,6 @@
       }
     },
     "/user/id/{id}": {
-      "delete": {
-        "deprecated": true,
-        "description": "delete a user",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "dryRun",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "user delete response"
-          },
-          "default": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/apiProblem"
-                }
-              }
-            },
-            "description": "error response"
-          }
-        },
-        "summary": "delete a user",
-        "tags": ["user"]
-      },
       "get": {
         "description": "query a specific user",
         "parameters": [
@@ -53519,11 +51572,6 @@
                   "service": "article"
                 }
               },
-              "articleNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
-              },
               "positionNumber": {
                 "format": "int32",
                 "type": "integer"
@@ -53741,11 +51789,6 @@
                 },
                 "type": "array"
               },
-              "title": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "titleId": {
                 "type": "string",
                 "x-weclapp": {
@@ -53789,11 +51832,6 @@
                   "required": true,
                   "service": "currency"
                 }
-              },
-              "currencyName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
               },
               "draft": {
                 "type": "boolean"
@@ -53946,8 +51984,7 @@
                 "maxLength": 1000,
                 "type": "string"
               },
-              "primeAddress": {
-                "deprecated": true,
+              "primaryAddress": {
                 "type": "boolean"
               },
               "salutation": {
@@ -53963,11 +52000,6 @@
               },
               "street2": {
                 "maxLength": 1000,
-                "type": "string"
-              },
-              "title": {
-                "deprecated": true,
-                "maxLength": 255,
                 "type": "string"
               },
               "titleId": {
@@ -54204,11 +52236,6 @@
                   "service": "ledgerAccount"
                 }
               },
-              "accountNumber": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "accountingCodeId": {
                 "type": "string",
                 "x-weclapp": {
@@ -54351,11 +52378,6 @@
                 "maxLength": 256,
                 "type": "string"
               },
-              "customsTariffNumber": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "customsTariffNumberId": {
                 "type": "string",
                 "x-weclapp": {
@@ -54399,11 +52421,6 @@
                   "service": "ledgerAccount"
                 }
               },
-              "expenseAccountNumber": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "expirationDays": {
                 "format": "int32",
                 "type": "integer"
@@ -54438,11 +52455,6 @@
                   "service": "manufacturer"
                 }
               },
-              "manufacturerName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "marginCalculationPriceType": {
                 "$ref": "#/components/schemas/marginCalculationPriceType"
               },
@@ -54472,13 +52484,6 @@
               "plannedWorkingTimePerUnit": {
                 "format": "int64",
                 "type": "integer"
-              },
-              "priceCalculationParameters": {
-                "deprecated": true,
-                "items": {
-                  "$ref": "#/components/schemas/priceCalculationParameterV1"
-                },
-                "type": "array"
               },
               "primarySupplySourceId": {
                 "type": "string",
@@ -54520,11 +52525,6 @@
                   "service": "costCenter"
                 }
               },
-              "purchaseCostCenterNumber": {
-                "deprecated": true,
-                "maxLength": 30,
-                "type": "string"
-              },
               "quantityConversions": {
                 "items": {
                   "$ref": "#/components/schemas/quantityConversion"
@@ -54537,11 +52537,6 @@
                   "entity": "customValue",
                   "service": "articleRating"
                 }
-              },
-              "ratingName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "recordItemGroupName": {
                 "maxLength": 1000,
@@ -54563,11 +52558,6 @@
                   "entity": "costCenter",
                   "service": "costCenter"
                 }
-              },
-              "salesCostCenterNumber": {
-                "deprecated": true,
-                "maxLength": 30,
-                "type": "string"
               },
               "sellByDate": {
                 "format": "timestamp",
@@ -54691,11 +52681,6 @@
                   "required": true,
                   "service": "warehouse"
                 }
-              },
-              "warehouseName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
               }
             },
             "type": "object"
@@ -54906,11 +52891,6 @@
                   "required": true,
                   "service": "article"
                 }
-              },
-              "articleNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
               }
             },
             "type": "object"
@@ -54949,11 +52929,6 @@
                   "required": true,
                   "service": "currency"
                 }
-              },
-              "currencyName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
               },
               "customerId": {
                 "type": "string",
@@ -55050,11 +53025,6 @@
                   "entity": "party",
                   "service": "party"
                 }
-              },
-              "supplierNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
               },
               "supplierStockQuantity": {
                 "format": "decimal",
@@ -55464,11 +53434,6 @@
                   "required": true,
                   "service": "unit"
                 }
-              },
-              "unitName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
               }
             },
             "type": "object"
@@ -55488,11 +53453,6 @@
                   "entity": "article",
                   "service": "article"
                 }
-              },
-              "articleNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
               },
               "note": {
                 "maxLength": 1000,
@@ -55562,11 +53522,6 @@
                   "service": "user"
                 }
               },
-              "responsibleUserUsername": {
-                "deprecated": true,
-                "maxLength": 256,
-                "type": "string"
-              },
               "servicePeriodFrom": {
                 "format": "timestamp",
                 "type": "integer"
@@ -55581,11 +53536,6 @@
                   "entity": "party",
                   "service": "party"
                 }
-              },
-              "supplierNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
               }
             },
             "type": "object"
@@ -55611,8 +53561,7 @@
                 "maxLength": 255,
                 "type": "string"
               },
-              "disableEmailTemplate": {
-                "deprecated": true,
+              "disableRecordEmailingRule": {
                 "type": "boolean"
               },
               "recordComment": {
@@ -55681,11 +53630,6 @@
                   "entity": "unit",
                   "service": "unit"
                 }
-              },
-              "unitName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
               }
             },
             "type": "object"
@@ -55750,11 +53694,6 @@
                   "service": "tax"
                 }
               },
-              "taxName": {
-                "deprecated": true,
-                "maxLength": 256,
-                "type": "string"
-              },
               "unitPrice": {
                 "format": "decimal",
                 "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
@@ -55800,8 +53739,10 @@
                 "format": "timestamp",
                 "type": "integer"
               },
+              "currencyConversionLocked": {
+                "type": "boolean"
+              },
               "currencyConversionRate": {
-                "deprecated": true,
                 "format": "decimal",
                 "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
                 "type": "string"
@@ -55843,22 +53784,12 @@
                   "service": "tax"
                 }
               },
-              "nonStandardTaxName": {
-                "deprecated": true,
-                "maxLength": 256,
-                "type": "string"
-              },
               "paymentMethodId": {
                 "type": "string",
                 "x-weclapp": {
                   "entity": "paymentMethod",
                   "service": "paymentMethod"
                 }
-              },
-              "paymentMethodName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "recordCurrencyId": {
                 "type": "string",
@@ -55867,22 +53798,12 @@
                   "service": "currency"
                 }
               },
-              "recordCurrencyName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
-              },
               "termOfPaymentId": {
                 "type": "string",
                 "x-weclapp": {
                   "entity": "termOfPayment",
                   "service": "termOfPayment"
                 }
-              },
-              "termOfPaymentName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               }
             },
             "type": "object"
@@ -55913,11 +53834,6 @@
                   "service": "party"
                 }
               },
-              "customerNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
-              },
               "dispatchCountryCode": {
                 "maxLength": 5,
                 "type": "string"
@@ -55936,11 +53852,6 @@
                   "service": "user"
                 }
               },
-              "responsibleUserUsername": {
-                "deprecated": true,
-                "maxLength": 256,
-                "type": "string"
-              },
               "salesChannel": {
                 "$ref": "#/components/schemas/distributionChannel"
               },
@@ -55958,11 +53869,6 @@
                   "entity": "shipmentMethod",
                   "service": "shipmentMethod"
                 }
-              },
-              "shipmentMethodName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               }
             },
             "type": "object"
@@ -56057,11 +53963,6 @@
                   "service": "shippingCarrier"
                 }
               },
-              "defaultShippingCarrierName": {
-                "deprecated": true,
-                "maxLength": 200,
-                "type": "string"
-              },
               "deliveryAddress": {
                 "$ref": "#/components/schemas/recordAddress"
               },
@@ -56103,19 +54004,6 @@
               "recipientAddress": {
                 "$ref": "#/components/schemas/recordAddress"
               },
-              "salesOrderId": {
-                "deprecated": true,
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "salesOrder",
-                  "service": "salesOrder"
-                }
-              },
-              "salesOrderNumber": {
-                "deprecated": true,
-                "maxLength": 30,
-                "type": "string"
-              },
               "salesOrders": {
                 "items": {
                   "$ref": "#/components/schemas/onlyId"
@@ -56153,11 +54041,6 @@
                   "entity": "article",
                   "service": "article"
                 }
-              },
-              "articleNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
               },
               "grossAmount": {
                 "format": "decimal",
@@ -56262,11 +54145,6 @@
                   "required": true,
                   "service": "article"
                 }
-              },
-              "articleNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
               },
               "batchNumber": {
                 "maxLength": 1000,
@@ -56424,11 +54302,6 @@
               "calculationMode": {
                 "$ref": "#/components/schemas/specialCalculationMode"
               },
-              "comment": {
-                "deprecated": true,
-                "maxLength": 512,
-                "type": "string"
-              },
               "commercialLanguage": {
                 "maxLength": 255,
                 "type": "string"
@@ -56463,9 +54336,8 @@
                   "required": true
                 }
               },
-              "formSettingsFromDistributionChannel": {
-                "$ref": "#/components/schemas/distributionChannel",
-                "deprecated": true
+              "formSettingsFromSalesChannel": {
+                "$ref": "#/components/schemas/distributionChannel"
               },
               "headerDiscount": {
                 "format": "decimal",
@@ -56486,6 +54358,10 @@
                   "entity": "tax",
                   "service": "tax"
                 }
+              },
+              "note": {
+                "maxLength": 512,
+                "type": "string"
               },
               "orderDate": {
                 "format": "timestamp",
@@ -57002,11 +54878,6 @@
                   "entity": "user",
                   "service": "user"
                 }
-              },
-              "responsibleUserUsername": {
-                "deprecated": true,
-                "maxLength": 256,
-                "type": "string"
               }
             },
             "type": "object"
@@ -57027,11 +54898,6 @@
                   "required": true,
                   "service": "campaign"
                 }
-              },
-              "campaignNumber": {
-                "deprecated": true,
-                "maxLength": 64,
-                "type": "string"
               },
               "participation": {
                 "type": "boolean",
@@ -57094,11 +54960,6 @@
                   "required": true,
                   "service": "currency"
                 }
-              },
-              "currencyName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
               },
               "description": {
                 "maxLength": 300,
@@ -57237,11 +55098,6 @@
                   "service": "user"
                 }
               },
-              "authorUserUsername": {
-                "deprecated": true,
-                "maxLength": 256,
-                "type": "string"
-              },
               "comment": {
                 "maxLength": 255,
                 "type": "string",
@@ -57355,11 +55211,6 @@
                   "required": true,
                   "service": "party"
                 }
-              },
-              "salesPartnerSupplierNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
               }
             },
             "type": "object"
@@ -57383,71 +55234,6 @@
           }
         },
         "type": "object"
-      },
-      "contact": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/abstractParty"
-          },
-          {
-            "properties": {
-              "customerCategoryId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "customValue",
-                  "service": "customerCategory"
-                }
-              },
-              "customerCategoryName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "description": {
-                "format": "html",
-                "maxLength": 255,
-                "type": "string"
-              },
-              "fixPhone2": {
-                "maxLength": 1000,
-                "type": "string"
-              },
-              "mobilePhone2": {
-                "maxLength": 1000,
-                "type": "string"
-              },
-              "optIn": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "optInLetter": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "optInPhone": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "optInSms": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "phoneHome": {
-                "maxLength": 1000,
-                "type": "string"
-              }
-            },
-            "type": "object"
-          }
-        ]
       },
       "contract": {
         "allOf": [
@@ -57682,11 +55468,6 @@
                   "required": true,
                   "service": "currency"
                 }
-              },
-              "recordCurrencyName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
               },
               "recordEmailAddresses": {
                 "$ref": "#/components/schemas/emailAddresses"
@@ -58113,11 +55894,6 @@
                   "required": true,
                   "service": "costCenter"
                 }
-              },
-              "costCenterNumber": {
-                "deprecated": true,
-                "maxLength": 30,
-                "type": "string"
               },
               "distributionPercentage": {
                 "format": "decimal",
@@ -58703,323 +56479,9 @@
           }
         ]
       },
-      "customer": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/customerOrLead"
-          },
-          {
-            "properties": {
-              "amountInsured": {
-                "format": "decimal",
-                "pattern": "^([0-9]{1,14})([.][0-9]{1,4})?$",
-                "type": "string"
-              },
-              "bankAccounts": {
-                "items": {
-                  "$ref": "#/components/schemas/partyBankAccount"
-                },
-                "type": "array"
-              },
-              "blockNotice": {
-                "maxLength": 1000,
-                "type": "string"
-              },
-              "blocked": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "commissionSalesPartners": {
-                "items": {
-                  "$ref": "#/components/schemas/commissionSalesPartner"
-                },
-                "type": "array"
-              },
-              "creditLimit": {
-                "format": "decimal",
-                "pattern": "^([0-9]{1,14})([.][0-9]{1,4})?$",
-                "type": "string"
-              },
-              "customerNumber": {
-                "maxLength": 1000,
-                "type": "string"
-              },
-              "customerRatingId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "customValue",
-                  "service": "partyRating"
-                }
-              },
-              "customerRatingName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "customerSupplierNumber": {
-                "maxLength": 1000,
-                "type": "string"
-              },
-              "customerTopics": {
-                "deprecated": true,
-                "items": {
-                  "$ref": "#/components/schemas/entity"
-                },
-                "type": "array"
-              },
-              "defaultHeaderDiscount": {
-                "format": "decimal",
-                "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
-                "type": "string"
-              },
-              "defaultHeaderSurcharge": {
-                "format": "decimal",
-                "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
-                "type": "string"
-              },
-              "deliveryBlock": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "description": {
-                "format": "html",
-                "maxLength": 255,
-                "type": "string"
-              },
-              "insolvent": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "insured": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "invoiceBlock": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "invoiceRecipientId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "party",
-                  "service": "party"
-                }
-              },
-              "leadSourceId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "customValue",
-                  "service": "leadSource"
-                }
-              },
-              "leadSourceName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "lossDescription": {
-                "maxLength": 255,
-                "type": "string"
-              },
-              "lossReasonId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "customValue",
-                  "service": "customerLeadLossReason"
-                }
-              },
-              "lossReasonName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "nonStandardTaxId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "tax",
-                  "service": "tax"
-                }
-              },
-              "oldCustomerNumber": {
-                "maxLength": 1000,
-                "type": "string"
-              },
-              "optIn": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "optInLetter": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "optInPhone": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "optInSms": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "referenceNumber": {
-                "maxLength": 1000,
-                "type": "string"
-              },
-              "responsibleUserFixed": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "salesChannel": {
-                "$ref": "#/components/schemas/distributionChannel"
-              },
-              "salesStageId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "salesStage",
-                  "service": "salesStage"
-                }
-              },
-              "salesStageName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "satisfaction": {
-                "$ref": "#/components/schemas/customerSatisfaction"
-              },
-              "useCustomsTariffNumber": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              }
-            },
-            "type": "object"
-          }
-        ]
-      },
       "customerBusinessType": {
         "enum": ["B2B", "B2C", "B2G"],
         "type": "string"
-      },
-      "customerOrLead": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/partyButNotContact"
-          },
-          {
-            "properties": {
-              "annualRevenue": {
-                "format": "decimal",
-                "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
-                "type": "string"
-              },
-              "companySizeId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "customValue",
-                  "service": "companySize"
-                }
-              },
-              "companySizeName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "customerCategoryId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "customValue",
-                  "service": "customerCategory"
-                }
-              },
-              "customerCategoryName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "parentPartyId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "party",
-                  "service": "party"
-                }
-              },
-              "paymentMethodId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "paymentMethod",
-                  "service": "paymentMethod"
-                }
-              },
-              "paymentMethodName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "responsibleUserId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "user",
-                  "service": "user"
-                }
-              },
-              "responsibleUserUsername": {
-                "deprecated": true,
-                "maxLength": 256,
-                "type": "string"
-              },
-              "shipmentMethodId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "shipmentMethod",
-                  "service": "shipmentMethod"
-                }
-              },
-              "shipmentMethodName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "termOfPaymentId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "termOfPayment",
-                  "service": "termOfPayment"
-                }
-              },
-              "termOfPaymentName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "vatRegistrationNumber": {
-                "maxLength": 1000,
-                "type": "string"
-              }
-            },
-            "type": "object"
-          }
-        ]
       },
       "customerSatisfaction": {
         "enum": ["NEUTRAL", "SATISFIED", "UNSATISFIED"],
@@ -59918,21 +57380,6 @@
         },
         "type": "object"
       },
-      "entity": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/onlyId"
-          },
-          {
-            "properties": {
-              "name": {
-                "type": "string"
-              }
-            },
-            "type": "object"
-          }
-        ]
-      },
       "entityReference": {
         "properties": {
           "entityId": {
@@ -60221,19 +57668,6 @@
                   "service": "party"
                 }
               },
-              "purchaseOrderId": {
-                "deprecated": true,
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "purchaseOrder",
-                  "service": "purchaseOrder"
-                }
-              },
-              "purchaseOrderNumber": {
-                "deprecated": true,
-                "maxLength": 30,
-                "type": "string"
-              },
               "purchaseOrders": {
                 "items": {
                   "$ref": "#/components/schemas/onlyId"
@@ -60290,22 +57724,12 @@
                   "service": "warehouse"
                 }
               },
-              "sourceWarehouseName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
-              },
               "warehouseId": {
                 "type": "string",
                 "x-weclapp": {
                   "entity": "warehouse",
                   "service": "warehouse"
                 }
-              },
-              "warehouseName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
               }
             },
             "type": "object"
@@ -60340,11 +57764,6 @@
                   "service": "shipmentReturnAssessment"
                 }
               },
-              "returnAssessmentName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "returnDescription": {
                 "format": "html",
                 "maxLength": 4000,
@@ -60357,11 +57776,6 @@
                   "service": "shipmentReturnError"
                 }
               },
-              "returnErrorName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "returnReasonId": {
                 "type": "string",
                 "x-weclapp": {
@@ -60369,22 +57783,12 @@
                   "service": "shipmentReturnReason"
                 }
               },
-              "returnReasonName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "returnRectificationId": {
                 "type": "string",
                 "x-weclapp": {
                   "entity": "shipmentReturnDescription",
                   "service": "shipmentReturnRectification"
                 }
-              },
-              "returnRectificationName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "salesOrderItemId": {
                 "type": "string"
@@ -60862,13 +58266,6 @@
       },
       "jobResult": {
         "properties": {
-          "errors": {
-            "deprecated": true,
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          },
           "progress": {
             "$ref": "#/components/schemas/jobProgress"
           },
@@ -61349,126 +58746,6 @@
         ],
         "type": "string"
       },
-      "lead": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/customerOrLead"
-          },
-          {
-            "properties": {
-              "description": {
-                "format": "html",
-                "maxLength": 255,
-                "type": "string"
-              },
-              "leadNumber": {
-                "maxLength": 1000,
-                "type": "string"
-              },
-              "leadRatingId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "customValue",
-                  "service": "leadRating"
-                }
-              },
-              "leadRatingName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "leadSourceId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "customValue",
-                  "service": "leadSource"
-                }
-              },
-              "leadSourceName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "leadStatus": {
-                "$ref": "#/components/schemas/leadStatus"
-              },
-              "leadTopics": {
-                "deprecated": true,
-                "items": {
-                  "$ref": "#/components/schemas/entity"
-                },
-                "type": "array"
-              },
-              "lossDescription": {
-                "maxLength": 255,
-                "type": "string"
-              },
-              "lossReasonId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "customValue",
-                  "service": "customerLeadLossReason"
-                }
-              },
-              "lossReasonName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "oldLeadNumber": {
-                "maxLength": 1000,
-                "type": "string"
-              },
-              "optIn": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "optInLetter": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "optInPhone": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "optInSms": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "responsibleUserFixed": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "salesChannel": {
-                "$ref": "#/components/schemas/distributionChannel"
-              },
-              "salesStageId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "salesStage",
-                  "service": "salesStage"
-                }
-              },
-              "salesStageName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              }
-            },
-            "type": "object"
-          }
-        ]
-      },
       "leadStatus": {
         "enum": ["CONVERTED", "DISQUALIFIED", "NEW", "PREQUALIFIED", "QUALIFIED"],
         "type": "string"
@@ -61506,11 +58783,6 @@
                   "entity": "ledgerAccount",
                   "service": "ledgerAccount"
                 }
-              },
-              "parentAccountNumber": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "type": {
                 "$ref": "#/components/schemas/ledgerAccountType",
@@ -61647,10 +58919,6 @@
               "address": {
                 "$ref": "#/components/schemas/recordAddress"
               },
-              "description": {
-                "deprecated": true,
-                "type": "string"
-              },
               "email": {
                 "maxLength": 255,
                 "type": "string"
@@ -61661,11 +58929,6 @@
                 "x-weclapp": {
                   "required": true
                 }
-              },
-              "positionNumber": {
-                "deprecated": true,
-                "format": "int32",
-                "type": "integer"
               }
             },
             "type": "object"
@@ -61689,157 +58952,6 @@
                 "x-weclapp": {
                   "required": true
                 }
-              }
-            },
-            "type": "object"
-          }
-        ]
-      },
-      "moneyTransaction": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/abstractEntity"
-          },
-          {
-            "properties": {
-              "accountForCostsOfMonetaryTrafficId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "ledgerAccount",
-                  "service": "ledgerAccount"
-                }
-              },
-              "accountForCostsOfMonetaryTrafficNumber": {
-                "maxLength": 255,
-                "type": "string"
-              },
-              "accountForDunningFeeId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "ledgerAccount",
-                  "service": "ledgerAccount"
-                }
-              },
-              "accountForDunningFeeNumber": {
-                "maxLength": 255,
-                "type": "string"
-              },
-              "accountId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "ledgerAccount",
-                  "service": "ledgerAccount"
-                }
-              },
-              "accountNumber": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "amount": {
-                "format": "decimal",
-                "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
-                "type": "string",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "amountDiscount": {
-                "format": "decimal",
-                "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
-                "type": "string",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "cashAccountSheetId": {
-                "type": "string"
-              },
-              "createdById": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "user",
-                  "service": "user"
-                }
-              },
-              "currencyId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "currency",
-                  "required": true,
-                  "service": "currency"
-                }
-              },
-              "currencyName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
-              },
-              "description": {
-                "maxLength": 255,
-                "type": "string"
-              },
-              "effectiveDate": {
-                "format": "timestamp",
-                "type": "integer",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "externalRecordNumber": {
-                "maxLength": 1000,
-                "type": "string"
-              },
-              "origin": {
-                "$ref": "#/components/schemas/moneyTransactionSource"
-              },
-              "partyId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "party",
-                  "service": "party"
-                }
-              },
-              "paymentMethodId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "paymentMethod",
-                  "service": "paymentMethod"
-                }
-              },
-              "paymentMethodName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "paymentToleranceAccountId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "ledgerAccount",
-                  "service": "ledgerAccount"
-                }
-              },
-              "paymentToleranceAccountNumber": {
-                "maxLength": 255,
-                "type": "string"
-              },
-              "paymentType": {
-                "$ref": "#/components/schemas/paymentType",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "taxId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "tax",
-                  "service": "tax"
-                }
-              },
-              "taxName": {
-                "deprecated": true,
-                "maxLength": 256,
-                "type": "string"
               }
             },
             "type": "object"
@@ -62174,11 +59286,6 @@
                   "service": "party"
                 }
               },
-              "customerNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
-              },
               "description": {
                 "format": "html",
                 "maxLength": 255,
@@ -62220,11 +59327,6 @@
                   "service": "user"
                 }
               },
-              "responsibleUserUsername": {
-                "deprecated": true,
-                "maxLength": 256,
-                "type": "string"
-              },
               "revenue": {
                 "format": "decimal",
                 "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
@@ -62257,11 +59359,6 @@
                   "service": "salesStage"
                 }
               },
-              "salesStageName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "startDate": {
                 "format": "timestamp",
                 "type": "integer"
@@ -62273,15 +59370,10 @@
                 "type": "array"
               },
               "topics": {
-                "deprecated": true,
                 "items": {
-                  "$ref": "#/components/schemas/entity"
+                  "$ref": "#/components/schemas/onlyId"
                 },
-                "type": "array",
-                "x-weclapp": {
-                  "entity": "customValue",
-                  "service": "opportunityTopic"
-                }
+                "type": "array"
               },
               "winLossDescription": {
                 "maxLength": 255,
@@ -62293,11 +59385,6 @@
                   "entity": "customValue",
                   "service": "opportunityWinLossReason"
                 }
-              },
-              "winLossReasonName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               }
             },
             "type": "object"
@@ -62337,13 +59424,6 @@
           },
           {
             "properties": {
-              "allowPurchaseOrderCreation": {
-                "deprecated": true,
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
               "bankAccounts": {
                 "items": {
                   "$ref": "#/components/schemas/partyBankAccount"
@@ -62376,11 +59456,6 @@
                   "service": "companySize"
                 }
               },
-              "companySizeName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "competitor": {
                 "type": "boolean",
                 "x-weclapp": {
@@ -62407,11 +59482,6 @@
                   "entity": "currency",
                   "service": "currency"
                 }
-              },
-              "currencyName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
               },
               "customer": {
                 "type": "boolean",
@@ -62458,11 +59528,6 @@
                   "service": "customerCategory"
                 }
               },
-              "customerCategoryName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "customerCreditLimit": {
                 "format": "decimal",
                 "pattern": "^([0-9]{1,14})([.][0-9]{1,4})?$",
@@ -62475,22 +59540,12 @@
                   "service": "salesStage"
                 }
               },
-              "customerCurrentSalesStageName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "customerDebtorAccountId": {
                 "type": "string",
                 "x-weclapp": {
                   "entity": "ledgerAccount",
                   "service": "ledgerAccount"
                 }
-              },
-              "customerDebtorAccountNumber": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "customerDebtorAccountingCodeId": {
                 "type": "string",
@@ -62550,11 +59605,6 @@
                   "service": "customerLeadLossReason"
                 }
               },
-              "customerLossReasonName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "customerNonStandardTaxId": {
                 "type": "string",
                 "x-weclapp": {
@@ -62576,11 +59626,6 @@
                   "entity": "paymentMethod",
                   "service": "paymentMethod"
                 }
-              },
-              "customerPaymentMethodName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "customerSalesChannel": {
                 "$ref": "#/components/schemas/distributionChannel"
@@ -62608,11 +59653,6 @@
                   "service": "shipmentMethod"
                 }
               },
-              "customerShipmentMethodName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "customerSupplierNumber": {
                 "maxLength": 1000,
                 "type": "string"
@@ -62623,11 +59663,6 @@
                   "entity": "termOfPayment",
                   "service": "termOfPayment"
                 }
-              },
-              "customerTermOfPaymentName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "customerUseCustomsTariffNumber": {
                 "type": "boolean",
@@ -62710,22 +59745,12 @@
                   "service": "leadRating"
                 }
               },
-              "leadRatingName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "leadSourceId": {
                 "type": "string",
                 "x-weclapp": {
                   "entity": "customValue",
                   "service": "leadSource"
                 }
-              },
-              "leadSourceName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "leadStatus": {
                 "$ref": "#/components/schemas/leadStatus"
@@ -62736,11 +59761,6 @@
                   "entity": "customValue",
                   "service": "legalForm"
                 }
-              },
-              "legalFormName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "mobilePhone2": {
                 "maxLength": 1000,
@@ -62827,11 +59847,6 @@
                   "service": "partyRating"
                 }
               },
-              "ratingName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "referenceNumber": {
                 "maxLength": 1000,
                 "type": "string"
@@ -62849,11 +59864,6 @@
                   "entity": "user",
                   "service": "user"
                 }
-              },
-              "responsibleUserUsername": {
-                "deprecated": true,
-                "maxLength": 256,
-                "type": "string"
               },
               "salesInvoiceEmailAddressesId": {
                 "type": "string"
@@ -62887,12 +59897,13 @@
                   "service": "sector"
                 }
               },
-              "sectorName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "supplier": {
+                "type": "boolean",
+                "x-weclapp": {
+                  "required": true
+                }
+              },
+              "supplierActive": {
                 "type": "boolean",
                 "x-weclapp": {
                   "required": true
@@ -62904,11 +59915,6 @@
                   "entity": "ledgerAccount",
                   "service": "ledgerAccount"
                 }
-              },
-              "supplierCreditorAccountNumber": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "supplierCreditorAccountingCodeId": {
                 "type": "string",
@@ -62972,11 +59978,6 @@
                   "service": "paymentMethod"
                 }
               },
-              "supplierPaymentMethodName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "supplierShipmentMethodId": {
                 "type": "string",
                 "x-weclapp": {
@@ -62984,22 +59985,12 @@
                   "service": "shipmentMethod"
                 }
               },
-              "supplierShipmentMethodName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "supplierTermOfPaymentId": {
                 "type": "string",
                 "x-weclapp": {
                   "entity": "termOfPayment",
                   "service": "termOfPayment"
                 }
-              },
-              "supplierTermOfPaymentName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "taxId": {
                 "maxLength": 1000,
@@ -63010,9 +60001,8 @@
                 }
               },
               "topics": {
-                "deprecated": true,
                 "items": {
-                  "$ref": "#/components/schemas/entity"
+                  "$ref": "#/components/schemas/onlyId"
                 },
                 "type": "array"
               },
@@ -63071,62 +60061,6 @@
                 "x-weclapp": {
                   "required": true
                 }
-              }
-            },
-            "type": "object"
-          }
-        ]
-      },
-      "partyButNotContact": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/abstractParty"
-          },
-          {
-            "properties": {
-              "commercialLanguageId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "commercialLanguage",
-                  "service": "commercialLanguage"
-                }
-              },
-              "contacts": {
-                "items": {
-                  "$ref": "#/components/schemas/contact"
-                },
-                "type": "array"
-              },
-              "currencyId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "currency",
-                  "service": "currency"
-                }
-              },
-              "currencyName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
-              },
-              "primaryContactId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "party",
-                  "service": "party"
-                }
-              },
-              "sectorId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "customValue",
-                  "service": "sector"
-                }
-              },
-              "sectorName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               }
             },
             "type": "object"
@@ -63284,10 +60218,6 @@
                   "service": "user"
                 }
               },
-              "moneyTransactionId": {
-                "deprecated": true,
-                "type": "string"
-              },
               "openItemClearingId": {
                 "type": "string"
               }
@@ -63442,10 +60372,6 @@
                 "x-weclapp": {
                   "required": true
                 }
-              },
-              "moneyTransaction": {
-                "$ref": "#/components/schemas/moneyTransaction",
-                "deprecated": true
               },
               "partyBankAccountId": {
                 "type": "string"
@@ -64275,56 +61201,6 @@
           }
         ]
       },
-      "priceCalculationParameterV1": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/abstractEntity"
-          },
-          {
-            "properties": {
-              "fixSurcharge": {
-                "format": "decimal",
-                "type": "string"
-              },
-              "fromScale": {
-                "format": "decimal",
-                "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
-                "type": "string",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "lowerPurchasePriceBound": {
-                "format": "decimal",
-                "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
-                "type": "string",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "margin": {
-                "format": "decimal",
-                "type": "string"
-              },
-              "percentSurcharge": {
-                "format": "decimal",
-                "type": "string"
-              },
-              "profit": {
-                "format": "decimal",
-                "type": "string"
-              },
-              "salesChannel": {
-                "$ref": "#/components/schemas/distributionChannel",
-                "x-weclapp": {
-                  "required": true
-                }
-              }
-            },
-            "type": "object"
-          }
-        ]
-      },
       "priceConditionType": {
         "enum": ["ADDITIONAL_ABS", "ADDITION_PERCENT", "REDUCTION_ABS", "REDUCTION_PERCENT"],
         "type": "string"
@@ -64441,11 +61317,6 @@
                   "service": "article"
                 }
               },
-              "articleNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
-              },
               "assemblyStoragePlaceId": {
                 "type": "string",
                 "x-weclapp": {
@@ -64523,11 +61394,6 @@
                   "required": true,
                   "service": "warehouse"
                 }
-              },
-              "warehouseName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
               },
               "workItems": {
                 "items": {
@@ -64970,11 +61836,6 @@
                   "service": "costCenter"
                 }
               },
-              "costCenterNumber": {
-                "deprecated": true,
-                "maxLength": 30,
-                "type": "string"
-              },
               "costTypeId": {
                 "type": "string",
                 "x-weclapp": {
@@ -65168,10 +62029,12 @@
                   "service": "ledgerAccount"
                 }
               },
-              "accountNumber": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
+              "articleSupplySourceId": {
+                "type": "string",
+                "x-weclapp": {
+                  "entity": "article",
+                  "service": "article"
+                }
               },
               "contractItemId": {
                 "type": "string"
@@ -65203,8 +62066,7 @@
                 "format": "timestamp",
                 "type": "integer"
               },
-              "purchaseInvoiceItemRelationship": {
-                "deprecated": true,
+              "purchaseInvoiceItemRelationships": {
                 "items": {
                   "$ref": "#/components/schemas/purchaseInvoiceItemRelationship"
                 },
@@ -65221,14 +62083,6 @@
               "shippingDate": {
                 "format": "timestamp",
                 "type": "integer"
-              },
-              "supplierArticleId": {
-                "deprecated": true,
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "article",
-                  "service": "article"
-                }
               }
             },
             "type": "object"
@@ -65242,6 +62096,12 @@
           },
           {
             "properties": {
+              "incomingGoodsItemId": {
+                "type": "string"
+              },
+              "purchaseOrderItemId": {
+                "type": "string"
+              },
               "quantity": {
                 "format": "decimal",
                 "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
@@ -65249,14 +62109,6 @@
                 "x-weclapp": {
                   "required": true
                 }
-              },
-              "shipmentItemId": {
-                "deprecated": true,
-                "type": "string"
-              },
-              "supplierOrderItemId": {
-                "deprecated": true,
-                "type": "string"
               }
             },
             "type": "object"
@@ -65465,11 +62317,6 @@
                   "service": "salesOrder"
                 }
               },
-              "salesOrderNumber": {
-                "deprecated": true,
-                "maxLength": 30,
-                "type": "string"
-              },
               "senderCountryCode": {
                 "maxLength": 5,
                 "type": "string"
@@ -65480,11 +62327,6 @@
                   "entity": "shipmentMethod",
                   "service": "shipmentMethod"
                 }
-              },
-              "shipmentMethodName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "shippingCarrierId": {
                 "type": "string",
@@ -65529,11 +62371,6 @@
                   "required": true,
                   "service": "warehouse"
                 }
-              },
-              "warehouseName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
               }
             },
             "type": "object"
@@ -65547,6 +62384,13 @@
           },
           {
             "properties": {
+              "articleSupplySourceId": {
+                "type": "string",
+                "x-weclapp": {
+                  "entity": "article",
+                  "service": "article"
+                }
+              },
               "batchSerialNumbers": {
                 "items": {
                   "$ref": "#/components/schemas/batchSerialNumber"
@@ -65591,9 +62435,7 @@
                 }
               },
               "salesOrderItemId": {
-                "deprecated": true,
-                "format": "int32",
-                "type": "integer"
+                "type": "string"
               },
               "servicePeriodFromDate": {
                 "format": "timestamp",
@@ -65602,14 +62444,6 @@
               "servicePeriodToDate": {
                 "format": "timestamp",
                 "type": "integer"
-              },
-              "supplierArticleId": {
-                "deprecated": true,
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "article",
-                  "service": "article"
-                }
               }
             },
             "type": "object"
@@ -65676,11 +62510,6 @@
                   "service": "quotation"
                 }
               },
-              "quotationNumber": {
-                "deprecated": true,
-                "maxLength": 30,
-                "type": "string"
-              },
               "recordAddress": {
                 "$ref": "#/components/schemas/recordAddress"
               },
@@ -65691,22 +62520,12 @@
                   "service": "user"
                 }
               },
-              "responsibleUserUsername": {
-                "deprecated": true,
-                "maxLength": 256,
-                "type": "string"
-              },
               "salesOrderId": {
                 "type": "string",
                 "x-weclapp": {
                   "entity": "salesOrder",
                   "service": "salesOrder"
                 }
-              },
-              "salesOrderNumber": {
-                "deprecated": true,
-                "maxLength": 30,
-                "type": "string"
               },
               "status": {
                 "$ref": "#/components/schemas/purchaseOrderRequestStatusType",
@@ -65727,11 +62546,6 @@
                   "required": true,
                   "service": "warehouse"
                 }
-              },
-              "warehouseName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
               }
             },
             "type": "object"
@@ -65781,11 +62595,6 @@
           },
           {
             "properties": {
-              "commercialLanguage": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "creatorId": {
                 "type": "string"
               },
@@ -65796,8 +62605,13 @@
                   "required": true
                 }
               },
+              "currencyConversionLocked": {
+                "type": "boolean",
+                "x-weclapp": {
+                  "required": true
+                }
+              },
               "currencyConversionRate": {
-                "deprecated": true,
                 "format": "decimal",
                 "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
                 "type": "string",
@@ -65809,10 +62623,6 @@
                 "format": "html",
                 "maxLength": 255,
                 "type": "string"
-              },
-              "disableEmailTemplate": {
-                "deprecated": true,
-                "type": "boolean"
               },
               "endDate": {
                 "format": "timestamp",
@@ -65867,11 +62677,6 @@
                   "service": "tax"
                 }
               },
-              "nonStandardTaxName": {
-                "deprecated": true,
-                "maxLength": 256,
-                "type": "string"
-              },
               "offerDate": {
                 "format": "timestamp",
                 "type": "integer"
@@ -65883,11 +62688,6 @@
                   "service": "paymentMethod"
                 }
               },
-              "paymentMethodName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "plannedDeliveryDate": {
                 "format": "timestamp",
                 "type": "integer"
@@ -65898,11 +62698,6 @@
                 },
                 "type": "array"
               },
-              "recordComment": {
-                "deprecated": true,
-                "format": "html",
-                "type": "string"
-              },
               "recordCurrencyId": {
                 "type": "string",
                 "x-weclapp": {
@@ -65911,23 +62706,8 @@
                   "service": "currency"
                 }
               },
-              "recordCurrencyName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
-              },
               "recordEmailAddresses": {
                 "$ref": "#/components/schemas/emailAddresses"
-              },
-              "recordFreeText": {
-                "deprecated": true,
-                "format": "html",
-                "type": "string"
-              },
-              "recordOpening": {
-                "deprecated": true,
-                "format": "html",
-                "type": "string"
               },
               "replyDate": {
                 "format": "timestamp",
@@ -65936,13 +62716,6 @@
               "requestDate": {
                 "format": "timestamp",
                 "type": "integer"
-              },
-              "sentToRecipient": {
-                "deprecated": true,
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
               },
               "startDate": {
                 "format": "timestamp",
@@ -65962,21 +62735,9 @@
                   "service": "party"
                 }
               },
-              "supplierNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
-              },
               "supplierReference": {
                 "maxLength": 255,
                 "type": "string"
-              },
-              "tags": {
-                "deprecated": true,
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
               },
               "termOfPaymentId": {
                 "type": "string",
@@ -65984,11 +62745,6 @@
                   "entity": "termOfPayment",
                   "service": "termOfPayment"
                 }
-              },
-              "termOfPaymentName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "validFrom": {
                 "format": "timestamp",
@@ -66017,34 +62773,16 @@
                 }
               },
               "articleId": {
-                "deprecated": true,
                 "type": "string",
                 "x-weclapp": {
                   "entity": "article",
                   "service": "article"
                 }
               },
-              "articleNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
-              },
               "containerQuantity": {
                 "format": "decimal",
                 "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
                 "type": "string"
-              },
-              "description": {
-                "deprecated": true,
-                "format": "html",
-                "type": "string"
-              },
-              "descriptionFixed": {
-                "deprecated": true,
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
               },
               "discountPercentage": {
                 "format": "decimal",
@@ -66063,14 +62801,6 @@
                 "format": "decimal",
                 "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
                 "type": "string"
-              },
-              "manualQuantity": {
-                "deprecated": true,
-                "type": "boolean"
-              },
-              "manualUnitPrice": {
-                "deprecated": true,
-                "type": "boolean"
               },
               "minQuantity": {
                 "format": "decimal",
@@ -66109,34 +62839,17 @@
                   "required": true
                 }
               },
-              "note": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
-              },
-              "parentItemId": {
-                "deprecated": true,
-                "type": "string"
-              },
-              "positionNumber": {
-                "deprecated": true,
-                "format": "int32",
-                "type": "integer"
-              },
               "procurementLeadDays": {
                 "format": "int32",
                 "type": "integer"
               },
               "purchaseOrderRequestItemId": {
-                "deprecated": true,
-                "format": "int32",
-                "type": "integer",
+                "type": "string",
                 "x-weclapp": {
                   "required": true
                 }
               },
               "quantity": {
-                "deprecated": true,
                 "format": "decimal",
                 "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
                 "type": "string",
@@ -66171,27 +62884,8 @@
                   "service": "tax"
                 }
               },
-              "taxName": {
-                "deprecated": true,
-                "maxLength": 256,
-                "type": "string"
-              },
               "title": {
-                "deprecated": true,
                 "maxLength": 1000,
-                "type": "string"
-              },
-              "unitId": {
-                "deprecated": true,
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "unit",
-                  "service": "unit"
-                }
-              },
-              "unitName": {
-                "deprecated": true,
-                "maxLength": 150,
                 "type": "string"
               },
               "unitPrice": {
@@ -66468,11 +63162,6 @@
                   "entity": "tax",
                   "service": "tax"
                 }
-              },
-              "taxName": {
-                "deprecated": true,
-                "maxLength": 256,
-                "type": "string"
               }
             },
             "type": "object"
@@ -66563,11 +63252,6 @@
                   "service": "opportunity"
                 }
               },
-              "opportunityNumber": {
-                "deprecated": true,
-                "maxLength": 64,
-                "type": "string"
-              },
               "publicLink": {
                 "type": "string"
               },
@@ -66653,11 +63337,6 @@
                   "service": "salesStage"
                 }
               },
-              "salesStageName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "shippingCostItems": {
                 "items": {
                   "$ref": "#/components/schemas/quotationShippingCostItem"
@@ -66696,11 +63375,6 @@
                   "entity": "warehouse",
                   "service": "warehouse"
                 }
-              },
-              "warehouseName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
               }
             },
             "type": "object"
@@ -66870,11 +63544,6 @@
             "maxLength": 1000,
             "type": "string"
           },
-          "title": {
-            "deprecated": true,
-            "maxLength": 255,
-            "type": "string"
-          },
           "titleId": {
             "type": "string",
             "x-weclapp": {
@@ -66951,8 +63620,7 @@
                 "maxLength": 1000,
                 "type": "string"
               },
-              "paymentMethodTypes": {
-                "deprecated": true,
+              "paymentMethods": {
                 "items": {
                   "$ref": "#/components/schemas/onlyId"
                 },
@@ -67607,11 +64275,6 @@
                   "service": "salesOrder"
                 }
               },
-              "salesOrderNumber": {
-                "deprecated": true,
-                "maxLength": 30,
-                "type": "string"
-              },
               "salesOrders": {
                 "items": {
                   "$ref": "#/components/schemas/onlyId"
@@ -67674,11 +64337,6 @@
                   "service": "ledgerAccount"
                 }
               },
-              "accountNumber": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "contractItemId": {
                 "type": "string"
               },
@@ -67709,8 +64367,7 @@
                 "format": "timestamp",
                 "type": "integer"
               },
-              "salesInvoiceItemRelationship": {
-                "deprecated": true,
+              "salesInvoiceItemRelationships": {
                 "items": {
                   "$ref": "#/components/schemas/salesInvoiceItemRelationship"
                 },
@@ -67739,13 +64396,6 @@
           "quantity": {
             "format": "decimal",
             "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
-            "type": "string",
-            "x-weclapp": {
-              "required": true
-            }
-          },
-          "salesInvoiceItemId": {
-            "deprecated": true,
             "type": "string",
             "x-weclapp": {
               "required": true
@@ -67887,11 +64537,6 @@
                   "service": "shippingCarrier"
                 }
               },
-              "defaultShippingReturnCarrierName": {
-                "deprecated": true,
-                "maxLength": 200,
-                "type": "string"
-              },
               "ecommerceOrder": {
                 "$ref": "#/components/schemas/ecommerceOrder"
               },
@@ -67992,11 +64637,6 @@
                   "service": "quotation"
                 }
               },
-              "quotationNumber": {
-                "deprecated": true,
-                "maxLength": 30,
-                "type": "string"
-              },
               "recordAsn": {
                 "maxLength": 255,
                 "type": "string"
@@ -68081,11 +64721,6 @@
                   "entity": "warehouse",
                   "service": "warehouse"
                 }
-              },
-              "warehouseName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
               }
             },
             "type": "object"
@@ -68291,11 +64926,6 @@
                   "service": "tax"
                 }
               },
-              "taxName": {
-                "deprecated": true,
-                "maxLength": 256,
-                "type": "string"
-              },
               "unitCost": {
                 "format": "decimal",
                 "pattern": "^([0-9]{1,13})([.][0-9]{1,5})?$",
@@ -68351,11 +64981,6 @@
                   "required": true,
                   "service": "salesStage"
                 }
-              },
-              "salesStageName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "userId": {
                 "type": "string",
@@ -68446,11 +65071,6 @@
                   "required": true,
                   "service": "article"
                 }
-              },
-              "articleNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
               },
               "serialNumber": {
                 "maxLength": 1000,
@@ -68547,11 +65167,6 @@
                   "service": "currency"
                 }
               },
-              "declaredValueAmountCurrencyName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
-              },
               "deliveryDate": {
                 "format": "timestamp",
                 "type": "integer"
@@ -68570,11 +65185,6 @@
                   "service": "warehouse"
                 }
               },
-              "destinationWarehouseName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
-              },
               "dhlReceiverId": {
                 "maxLength": 1000,
                 "type": "string"
@@ -68584,6 +65194,13 @@
                 "x-weclapp": {
                   "entity": "party",
                   "service": "party"
+                }
+              },
+              "mainSalesOrderId": {
+                "type": "string",
+                "x-weclapp": {
+                  "entity": "salesOrder",
+                  "service": "salesOrder"
                 }
               },
               "packageHeight": {
@@ -68684,11 +65301,6 @@
                   "service": "shipmentMethod"
                 }
               },
-              "shipmentMethodName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "shipmentNumber": {
                 "maxLength": 255,
                 "type": "string"
@@ -68706,11 +65318,6 @@
                   "service": "shippingCarrier"
                 }
               },
-              "shippingCarrierName": {
-                "deprecated": true,
-                "maxLength": 200,
-                "type": "string"
-              },
               "shippingDate": {
                 "format": "timestamp",
                 "type": "integer"
@@ -68726,22 +65333,12 @@
                   "service": "shippingCarrier"
                 }
               },
-              "shippingReturnCarrierName": {
-                "deprecated": true,
-                "maxLength": 200,
-                "type": "string"
-              },
               "warehouseId": {
                 "type": "string",
                 "x-weclapp": {
                   "entity": "warehouse",
                   "service": "warehouse"
                 }
-              },
-              "warehouseName": {
-                "deprecated": true,
-                "maxLength": 150,
-                "type": "string"
               }
             },
             "type": "object"
@@ -68797,11 +65394,6 @@
                   "service": "shipmentReturnAssessment"
                 }
               },
-              "returnAssessmentName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "returnDescription": {
                 "format": "html",
                 "maxLength": 4000,
@@ -68814,11 +65406,6 @@
                   "service": "shipmentReturnError"
                 }
               },
-              "returnErrorName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "returnReasonId": {
                 "type": "string",
                 "x-weclapp": {
@@ -68826,22 +65413,12 @@
                   "service": "shipmentReturnReason"
                 }
               },
-              "returnReasonName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "returnRectificationId": {
                 "type": "string",
                 "x-weclapp": {
                   "entity": "shipmentReturnDescription",
                   "service": "shipmentReturnRectification"
                 }
-              },
-              "returnRectificationName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "salesOrderItemId": {
                 "type": "string"
@@ -69259,106 +65836,6 @@
         },
         "type": "object"
       },
-      "supplier": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/partyButNotContact"
-          },
-          {
-            "properties": {
-              "bankAccounts": {
-                "items": {
-                  "$ref": "#/components/schemas/partyBankAccount"
-                },
-                "type": "array"
-              },
-              "customerNumberAtSupplier": {
-                "maxLength": 64,
-                "type": "string"
-              },
-              "description": {
-                "format": "html",
-                "maxLength": 255,
-                "type": "string"
-              },
-              "nonStandardTaxId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "tax",
-                  "service": "tax"
-                }
-              },
-              "orderBlock": {
-                "type": "boolean",
-                "x-weclapp": {
-                  "required": true
-                }
-              },
-              "paymentMethodId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "paymentMethod",
-                  "service": "paymentMethod"
-                }
-              },
-              "paymentMethodName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "referenceNumber": {
-                "maxLength": 1000,
-                "type": "string"
-              },
-              "shipmentMethodId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "shipmentMethod",
-                  "service": "shipmentMethod"
-                }
-              },
-              "shipmentMethodName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "supplierNumber": {
-                "maxLength": 1000,
-                "type": "string"
-              },
-              "supplierRatingId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "customValue",
-                  "service": "partyRating"
-                }
-              },
-              "supplierRatingName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "termOfPaymentId": {
-                "type": "string",
-                "x-weclapp": {
-                  "entity": "termOfPayment",
-                  "service": "termOfPayment"
-                }
-              },
-              "termOfPaymentName": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
-              "vatRegistrationNumber": {
-                "maxLength": 1000,
-                "type": "string"
-              }
-            },
-            "type": "object"
-          }
-        ]
-      },
       "supplierOrderStatusType": {
         "enum": [
           "CANCELLED",
@@ -69434,22 +65911,12 @@
                   "service": "ledgerAccount"
                 }
               },
-              "accountNumber": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "contraAccountId": {
                 "type": "string",
                 "x-weclapp": {
                   "entity": "ledgerAccount",
                   "service": "ledgerAccount"
                 }
-              },
-              "contraAccountNumber": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "defaultDiscountAccountId": {
                 "type": "string",
@@ -69458,22 +65925,12 @@
                   "service": "ledgerAccount"
                 }
               },
-              "defaultDiscountAccountNumber": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
-              },
               "defaultNominalAccountId": {
                 "type": "string",
                 "x-weclapp": {
                   "entity": "ledgerAccount",
                   "service": "ledgerAccount"
                 }
-              },
-              "defaultNominalAccountNumber": {
-                "deprecated": true,
-                "maxLength": 255,
-                "type": "string"
               },
               "depositAccountId": {
                 "type": "string",
@@ -71745,11 +68202,6 @@
                   "service": "article"
                 }
               },
-              "primaryArticleNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
-              },
               "variantArticleName": {
                 "maxLength": 1000,
                 "type": "string"
@@ -71830,11 +68282,6 @@
                   "required": true,
                   "service": "variantArticle"
                 }
-              },
-              "variantArticleNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
               }
             },
             "type": "object"
@@ -71854,11 +68301,6 @@
                   "entity": "article",
                   "service": "article"
                 }
-              },
-              "articleNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
               },
               "attributeOptions": {
                 "items": {
@@ -72001,11 +68443,6 @@
                   "service": "article"
                 }
               },
-              "articleNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
-              },
               "batchNumber": {
                 "maxLength": 1000,
                 "type": "string"
@@ -72100,11 +68537,6 @@
                   "required": true,
                   "service": "article"
                 }
-              },
-              "batchNumber": {
-                "deprecated": true,
-                "maxLength": 1000,
-                "type": "string"
               },
               "batchNumberId": {
                 "type": "string",

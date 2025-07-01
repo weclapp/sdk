@@ -1,158 +1,126 @@
 export const raw = async (
-    cfg: ServiceConfig | undefined,
-    endpoint: string,
-    payload: RequestPayload = {},
+  cfg: ServiceConfig | undefined,
+  endpoint: string,
+  payload: RequestPayload = {},
     requestOptions?: RequestOptions
 ): Promise<any> => {
-    const globalConfig = getGlobalConfig();
-    if (!cfg && !globalConfig) {
-        throw new Error(`ServiceConfig missing.`);
-    }
+  const globalConfig = getGlobalConfig();
+  if (!cfg && !globalConfig) {
+    throw new Error(`ServiceConfig missing.`);
+  }
 
-    const localCfg = {
-        ...globalConfig, ...cfg,
-        interceptors: {...globalConfig?.interceptors, ...cfg?.interceptors}
-    };
+  const localCfg = {
+    ...globalConfig,
+    ...cfg,
+    interceptors: { ...globalConfig?.interceptors, ...cfg?.interceptors }
+  };
 
     const isBinaryData = payload.body instanceof resolveBinaryObject();
-    const params = new URLSearchParams(Object.entries(payload.query ?? {}).filter(v => v[1] !== undefined)
-      .map(([key, value]) => [key, typeof value === "string" ? value : JSON.stringify(value)]));
+    const params = new URLSearchParams(Object.entries(payload.query ?? {}).filter((v) => v[1] !== undefined)
+      .map(([key, value]) => [key, typeof value === 'string' ? value : JSON.stringify(value)])
+  );
 
-    const protocol = getProtocol(localCfg);
+  const protocol = getProtocol(localCfg);
 
-    const interceptRequest = localCfg.interceptors?.request ?? (v => v);
-    const interceptResponse = localCfg.interceptors?.response ?? (v => v);
+  const interceptRequest = localCfg.interceptors?.request ?? ((v) => v);
+  const interceptResponse = localCfg.interceptors?.response ?? ((v) => v);
 
-    const host = getHost(localCfg);
+  const host = getHost(localCfg);
 
-    let data: any = undefined;
-    if (!cfg && localCfg.multiRequest) {
-        let ep = endpoint;
-        if (endpoint.startsWith('/')) {
-            ep = endpoint.replace('/', '');
-        }
-        data = await addRequest(`${ep}?${params}`);
-    } else {
-        const request = new Request(`${protocol}//${host}/webapp/api/v${apiVersion}${endpoint}?${params}`, {
-            ...(payload.body && {
-                body: isBinaryData ?
-                    payload.body :
-                    JSON.stringify(payload.body, (key, value) => value === undefined ? null : value)
-            }),
-            ...(!localCfg.key && {credentials: 'same-origin'}),
-            method: payload.method ?? 'get',
-            headers: {
-                'Accept': 'application/json',
-                ...(localCfg.key && {'AuthenticationToken': localCfg.key}),
-                ...(!isBinaryData && {'Content-Type': 'application/json'})
-            }
-        });
-        let res = await interceptRequest(request, payload) ?? request;
-        if (!(res instanceof Response)) {
-            res = requestOptions?.signal ?  await fetch(res, { signal: requestOptions.signal } ) : await fetch(res);
-        }
-        res = await interceptResponse(res) ?? res;
-        data = (!payload.forceBlob || !res.ok) && res.headers?.get('content-type')?.includes('application/json') ?
-            await res.json() : await res.blob();
-
-        // Check if response was successful
-        if (!res.ok) {
-            return Promise.reject(data);
-        }
+  let data;
+  if (!cfg && localCfg.multiRequest) {
+    let ep = endpoint;
+    if (endpoint.startsWith('/')) {
+      ep = endpoint.replace('/', '');
     }
+    data = await addRequest(`${ep}?${params}`);
+  } else {
+    const request = new Request(`${protocol}//${host}/webapp/api/v${apiVersion}${endpoint}?${params}`, {
+      ...(payload.body && {
+        body: isBinaryData
+          ? payload.body
+          : JSON.stringify(payload.body, (_key, value) => (value === undefined ? null : value))
+      }),
+      ...(!localCfg.key && { credentials: 'same-origin' }),
+      method: payload.method ?? 'get',
+      headers: {
+        Accept: 'application/json',
+        ...(localCfg.key && { AuthenticationToken: localCfg.key }),
+        ...(!isBinaryData && { 'Content-Type': 'application/json' })
+      }
+    });
+    let res = (await interceptRequest(request, payload)) ?? request;
+    if (!(res instanceof Response)) {
+      res = requestOptions?.signal ?  await fetch(res, { signal: requestOptions.signal } ) : await fetch(res);
+    }
+    res = (await interceptResponse(res)) ?? res;
+    data =
+      (!payload.forceBlob || !res.ok) && res.headers?.get('content-type')?.includes('application/json')
+        ? await res.json()
+        : await res.blob();
 
-    return payload.unwrap ? data.result : data;
+    // Check if response was successful
+    if (!res.ok) {
+      return Promise.reject(data);
+    }
+  }
+
+  return payload.unwrap ? data.result : data;
 };
 
-const _count = (
-    cfg: ServiceConfig | undefined,
-    endpoint: string,
-    query?: CountQuery<any> & {params?: Record<any, any>},
-    requestOptions?: RequestOptions
-) => wrapResponse(() => raw(cfg, endpoint, {
-    unwrap: true,
-    query: {
-        ...flattenFilter(query?.filter),
-        ...flattenOrFilter(query?.or),
-        ...assembleFilterParam(query?.where),
-        ...query?.params
-    }
-}, requestOptions));
-
-const _some = (
-    cfg: ServiceConfig | undefined,
-    endpoint: string,
-    query?: SomeQuery<any, any, any, any, any> & {params?: Record<any, any>},
-    requestOptions?: RequestOptions
-) => wrapResponse(() => raw(cfg, endpoint, {
-        query: {
-            serializeNulls: query?.serializeNulls,
-            additionalProperties: query?.properties?.join(','),
-            properties: query?.select ? flattenSelect(query.select).join(',') : undefined,
-            includeReferencedEntities: query?.include ? Object.keys(query.include).join(',') : undefined,
-            ...flattenOrFilter(query?.or),
-            ...flattenFilter(query?.filter),
-            ...assembleFilterParam(query?.where),
-            ...flattenSort(query?.sort),
-            ...query?.params,
-            ...query?.pagination
-        }
-    }, requestOptions).then(data => ({
-        entities: data.result,
-        references: data.referencedEntities ?? {},
-        properties: data.additionalProperties ?? {}
-    }))
-);
-
 const _remove = (
-    cfg: ServiceConfigWithoutMultiRequest | undefined,
-    endpoint: string,
-    {dryRun = false}: RemoveQuery = {},
+  cfg: ServiceConfigWithoutMultiRequest | undefined,
+  endpoint: string,
+  { dryRun = false }: RemoveQuery = {},
     requestOptions?: RequestOptions
-) => wrapResponse(() => raw({...cfg, multiRequest: false}, endpoint, {
-    method: 'DELETE',
-    query: {dryRun}
-}, requestOptions).then(() => undefined));
+) =>
+  wrapResponse(() =>
+    raw({ ...cfg, multiRequest: false }, endpoint, {
+      method: 'DELETE',
+      query: { dryRun }
+    }, requestOptions).then(() => undefined)
+  );
 
-const _create = (
-    cfg: ServiceConfigWithoutMultiRequest | undefined,
-    endpoint: string,
-    data: any,
-    requestOptions?: RequestOptions
-) => wrapResponse(() => raw({...cfg, multiRequest: false}, endpoint, {
-    method: 'POST',
-    body: data
-}, requestOptions));
+const _create = (cfg: ServiceConfigWithoutMultiRequest | undefined, endpoint: string, data: any, requestOptions?: RequestOptions) =>
+  wrapResponse(() =>
+    raw({ ...cfg, multiRequest: false }, endpoint, {
+      method: 'POST',
+      body: data
+    }, requestOptions)
+  );
 
 const _update = (
-    cfg: ServiceConfigWithoutMultiRequest | undefined,
-    endpoint: string,
-    data: any,
-    {ignoreMissingProperties, dryRun = false}: UpdateQuery = {},
-    requestOptions?: RequestOptions
-) => wrapResponse(() => raw({...cfg, multiRequest: false}, endpoint, {
-    method: 'PUT',
-    body: data,
-    query: {ignoreMissingProperties: ignoreMissingProperties ?? cfg?.ignoreMissingProperties ?? globalConfig?.ignoreMissingProperties, dryRun}
-}, requestOptions));
-
-const _unique = (
-    cfg: ServiceConfigWithoutMultiRequest | undefined,
-    endpoint: string,
-    query?: UniqueQuery,
-    requestOptions?: RequestOptions
-) => wrapResponse(() => raw({...cfg, multiRequest: false}, endpoint, {query}, requestOptions));
+  cfg: ServiceConfigWithoutMultiRequest | undefined,
+  endpoint: string,
+  data: any,
+  { ignoreMissingProperties, dryRun = false }: UpdateQuery = {},
+  requestOptions?: RequestOptions
+) =>
+  wrapResponse(() =>
+    raw({ ...cfg, multiRequest: false }, endpoint, {
+      method: 'PUT',
+      body: data,
+      query: {
+        ignoreMissingProperties:
+          ignoreMissingProperties ?? cfg?.ignoreMissingProperties ?? globalConfig?.ignoreMissingProperties,
+        dryRun
+      }
+    }, requestOptions)
+  );
 
 const _generic = (
-    cfg: ServiceConfigWithoutMultiRequest | undefined,
-    method: RequestPayloadMethod,
-    endpoint: string,
-    payload?: GenericQuery<any, any>,
-    forceBlob?: boolean,
-    requestOptions?: RequestOptions
-) => wrapResponse(() => raw({...cfg, multiRequest: false}, endpoint, {
-    method,
-    forceBlob,
-    body: payload?.body,
-    query: payload?.params
-}, requestOptions));
+  cfg: ServiceConfigWithoutMultiRequest | undefined,
+  method: RequestPayloadMethod,
+  endpoint: string,
+  payload?: GenericQuery<any, any>,
+  forceBlob?: boolean,
+  requestOptions?: RequestOptions
+) =>
+  wrapResponse(() =>
+    raw({ ...cfg, multiRequest: false }, endpoint, {
+      method,
+      forceBlob,
+      body: payload?.body,
+      query: payload?.params
+    }, requestOptions)
+);

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowJs": true,
     "strict": true,
     "noImplicitAny": true,
     "esModuleInterop": true,

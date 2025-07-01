@@ -1,0 +1,178 @@
+export type EqualityOperator = 'EQ' | 'NE';
+
+export type ComparisonOperator =
+  | 'LT'
+  | 'GT'
+  | 'LE'
+  | 'GE'
+  | 'LIKE'
+  | 'ILIKE'
+  | 'NOT_LIKE'
+  | 'NOT_ILIKE'
+  | 'IEQ'
+  | 'NOT_IEQ';
+
+export type ArrayOperator = 'IN' | 'NOT_IN';
+
+export type Operator = EqualityOperator | ComparisonOperator | ArrayOperator;
+
+export type MapOperators<T> = { [K in EqualityOperator]?: T | null } & { [K in ComparisonOperator]?: T } & {
+  [K in ArrayOperator]?: T[];
+};
+
+export type QueryFilter<T> = {
+  [P in keyof T]?: T[P] extends Array<infer U> | undefined
+    ? U extends Record<any, any>
+      ? QueryFilter<U>
+      : MapOperators<U>
+    : T[P] extends Record<any, any> | undefined
+      ? QueryFilter<T[P]>
+      : MapOperators<T[P]>;
+};
+
+export type CountQuery<F> = {
+  filter?: QueryFilter<F>;
+  or?: (QueryFilter<F> & CustomAttributeFilter)[];
+};
+
+export type SomeQuery<E, F, I, P> = {
+  serializeNulls?: boolean;
+  include?: QuerySelect<I>;
+  properties?: P;
+  filter?: QueryFilter<F> & CustomAttributeFilter;
+  select?: QuerySelect<E>;
+  or?: (QueryFilter<F> & CustomAttributeFilter)[];
+  sort?: Sort<E>[];
+  pagination?: Pagination;
+};
+
+const equality: string[] = ['EQ', 'NE', 'IEQ', 'NOT_IEQ'];
+
+const simple: string[] = [...equality, 'LT', 'GT', 'LE', 'GE', 'LIKE', 'NOT_LIKE', 'ILIKE', 'NOT_ILIKE'];
+
+const array: string[] = ['IN', 'NOT_IN'];
+
+const filterMap: Record<Operator, string> = {
+  EQ: 'eq',
+  NE: 'ne',
+  LT: 'lt',
+  GT: 'gt',
+  LE: 'le',
+  GE: 'ge',
+  LIKE: 'like',
+  NOT_LIKE: 'notlike',
+  ILIKE: 'ilike',
+  NOT_ILIKE: 'notilike',
+  IN: 'in',
+  NOT_IN: 'notin',
+  IEQ: 'ieq',
+  NOT_IEQ: 'notieq'
+};
+
+const flattenCustomAttributes = (obj: CustomAttributeFilter = {}): [string, string][] => {
+  const entries: [string, string][] = [];
+
+  for (const [id, filter] of Object.entries(obj)) {
+    const key = `customAttribute${id}`;
+
+    if (typeof filter === 'object') {
+      for (const [prop, value] of Object.entries(filter)) {
+        entries.push([`${key}.${prop}-eq`, String(value)]);
+      }
+    } else if (filter !== undefined) {
+      entries.push([`${key}-eq`, String(filter)]);
+    }
+  }
+
+  return entries;
+};
+
+const flatten = (obj: QueryFilter<any> = {}): [string, string][] => {
+  const entries: [string, string][] = [];
+
+  for (const [prop, propValue] of Object.entries(obj)) {
+    for (const [filter, value] of Object.entries(propValue as object)) {
+      if (value === undefined) continue;
+
+      if (simple.includes(filter) || array.includes(filter)) {
+        if (value === null && equality.includes(filter)) {
+          entries.push([`${prop}-${filter === 'EQ' ? 'null' : 'notnull'}`, '']);
+        } else {
+          entries.push([`${prop}-${filterMap[filter as Operator]}`, value]);
+        }
+      } else {
+        entries.push(
+          ...(flatten(propValue as QueryFilter<any>).map((v) => [`${prop}.${v[0]}`, v[1]]) as [string, string][])
+        );
+        break;
+      }
+    }
+  }
+
+  return entries;
+};
+
+const flattenFilter = (obj: QueryFilter<any> = {}): Record<string, string> => {
+  const filter: [string, any][] = [],
+    customAttributes: [string, any][] = [];
+
+  Object.entries(obj).forEach((value) => {
+    (value[0].match(/^\d+$/) ? customAttributes : filter).push(value);
+  });
+
+  return Object.fromEntries([
+    ...flatten(Object.fromEntries(filter)),
+    ...flattenCustomAttributes(Object.fromEntries(customAttributes) as CustomAttributeFilter)
+  ]);
+};
+
+const flattenOrFilter = (obj: QueryFilter<any>[] = []): Record<string, string> => {
+  const entries: [string, any][] = [];
+
+  for (let i = 0; i < obj.length; i++) {
+    entries.push(...(flatten(obj[i]).map((v) => [`or${i || ''}-${v[0]}`, v[1]]) as [string, string][]));
+  }
+
+  return Object.fromEntries(entries);
+};
+
+const _count = (
+  cfg: ServiceConfig | undefined,
+  endpoint: string,
+  query?: CountQuery<any> & { params?: Record<any, any> }
+) =>
+  wrapResponse(() =>
+    raw(cfg, endpoint, {
+      unwrap: true,
+      query: {
+        ...flattenFilter(query?.filter),
+        ...flattenOrFilter(query?.or),
+        ...query?.params
+      }
+    })
+  );
+
+const _some = (
+  cfg: ServiceConfig | undefined,
+  endpoint: string,
+  query?: SomeQuery<any, any, any, any> & { params?: Record<any, any> }
+) =>
+  wrapResponse(() =>
+    raw(cfg, endpoint, {
+      query: {
+        serializeNulls: query?.serializeNulls,
+        additionalProperties: query?.properties?.join(','),
+        properties: query?.select ? flattenSelect(query.select).join(',') : undefined,
+        includeReferencedEntities: query?.include ? Object.keys(query.include).join(',') : undefined,
+        ...flattenOrFilter(query?.or),
+        ...flattenFilter(query?.filter),
+        ...flattenSort(query?.sort),
+        ...query?.params,
+        ...query?.pagination
+      }
+    }).then((data) => ({
+      entities: data.result,
+      references: data.referencedEntities ?? {},
+      properties: data.additionalProperties ?? {}
+    }))
+  );
