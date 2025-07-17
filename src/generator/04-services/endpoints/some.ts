@@ -130,15 +130,15 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
 
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
-    params: [`query${parametersType.isFullyOptional() ? '?' : ''}: ${queryTypeName}`],
+    params: [`query${parametersType.isFullyOptional() ? '?' : ''}: ${queryTypeName}, requestOptions?: RequestOptions`],
     returns: `${resolveResponseType(target)}<SomeQueryReturn<${entity}, ${referencedEntitiesTypeName}, ${additionalPropertiesTypeName}>>`
   });
 
   const functionSource = generateArrowFunction({
     name: functionName,
     signature: functionTypeName,
-    returns: `_${functionName}(cfg, ${generateString(endpoint.path)}, query)`,
-    params: ['query']
+    returns: `_${functionName}(cfg, ${generateString(endpoint.path)}, query, requestOptions)`,
+    params: ['query', 'requestOptions?: RequestOptions']
   });
 
   return {

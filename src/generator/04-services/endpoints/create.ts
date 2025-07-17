@@ -17,15 +17,15 @@ export const generateCreateEndpoint: ServiceFunctionGenerator = ({
 
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
-    params: [`data: DeepPartial<${generateRequestBodyType(path).toString()}>`],
+    params: [`data: DeepPartial<${generateRequestBodyType(path).toString()}>`, 'requestOptions?: RequestOptions'],
     returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`
   });
 
   const functionSource = generateArrowFunction({
     name: functionName,
     signature: functionTypeName,
-    returns: `_${functionName}(cfg, ${generateString(endpoint.path)}, data)`,
-    params: ['data']
+    returns: `_${functionName}(cfg, ${generateString(endpoint.path)}, data, requestOptions)`,
+    params: ['data', 'requestOptions?: RequestOptions']
   });
 
   return {

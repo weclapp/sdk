@@ -1,7 +1,8 @@
 export const raw = async (
   cfg: ServiceConfig | undefined,
   endpoint: string,
-  payload: RequestPayload = {}
+  payload: RequestPayload = {},
+    requestOptions?: RequestOptions
 ): Promise<any> => {
   const globalConfig = getGlobalConfig();
   if (!cfg && !globalConfig) {
@@ -14,10 +15,8 @@ export const raw = async (
     interceptors: { ...globalConfig?.interceptors, ...cfg?.interceptors }
   };
 
-  const isBinaryData = payload.body instanceof resolveBinaryObject();
-  const params = new URLSearchParams(
-    Object.entries(payload.query ?? {})
-      .filter((v) => v[1] !== undefined)
+    const isBinaryData = payload.body instanceof resolveBinaryObject();
+    const params = new URLSearchParams(Object.entries(payload.query ?? {}).filter((v) => v[1] !== undefined)
       .map(([key, value]) => [key, typeof value === 'string' ? value : JSON.stringify(value)])
   );
 
@@ -52,7 +51,7 @@ export const raw = async (
     });
     let res = (await interceptRequest(request, payload)) ?? request;
     if (!(res instanceof Response)) {
-      res = await fetch(res);
+      res = requestOptions?.signal ?  await fetch(res, { signal: requestOptions.signal } ) : await fetch(res);
     }
     res = (await interceptResponse(res)) ?? res;
     data =
@@ -72,28 +71,30 @@ export const raw = async (
 const _remove = (
   cfg: ServiceConfigWithoutMultiRequest | undefined,
   endpoint: string,
-  { dryRun = false }: RemoveQuery = {}
+  { dryRun = false }: RemoveQuery = {},
+    requestOptions?: RequestOptions
 ) =>
   wrapResponse(() =>
     raw({ ...cfg, multiRequest: false }, endpoint, {
       method: 'DELETE',
       query: { dryRun }
-    }).then(() => undefined)
+    }, requestOptions).then(() => undefined)
   );
 
-const _create = (cfg: ServiceConfigWithoutMultiRequest | undefined, endpoint: string, data: any) =>
+const _create = (cfg: ServiceConfigWithoutMultiRequest | undefined, endpoint: string, data: any, requestOptions?: RequestOptions) =>
   wrapResponse(() =>
     raw({ ...cfg, multiRequest: false }, endpoint, {
       method: 'POST',
       body: data
-    })
+    }, requestOptions)
   );
 
 const _update = (
   cfg: ServiceConfigWithoutMultiRequest | undefined,
   endpoint: string,
   data: any,
-  { ignoreMissingProperties, dryRun = false }: UpdateQuery = {}
+  { ignoreMissingProperties, dryRun = false }: UpdateQuery = {},
+  requestOptions?: RequestOptions
 ) =>
   wrapResponse(() =>
     raw({ ...cfg, multiRequest: false }, endpoint, {
@@ -104,7 +105,7 @@ const _update = (
           ignoreMissingProperties ?? cfg?.ignoreMissingProperties ?? globalConfig?.ignoreMissingProperties,
         dryRun
       }
-    })
+    }, requestOptions)
   );
 
 const _generic = (
@@ -112,7 +113,8 @@ const _generic = (
   method: RequestPayloadMethod,
   endpoint: string,
   payload?: GenericQuery<any, any>,
-  forceBlob?: boolean
+  forceBlob?: boolean,
+  requestOptions?: RequestOptions
 ) =>
   wrapResponse(() =>
     raw({ ...cfg, multiRequest: false }, endpoint, {
@@ -120,5 +122,5 @@ const _generic = (
       forceBlob,
       body: payload?.body,
       query: payload?.params
-    })
-  );
+    }, requestOptions)
+);
