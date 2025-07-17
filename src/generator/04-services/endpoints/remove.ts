@@ -11,15 +11,15 @@ export const generateRemoveEndpoint: ServiceFunctionGenerator = ({ target, endpo
 
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
-    params: ['id: string', 'options?: RemoveQuery'],
+    params: ['id: string', 'options?: RemoveQuery', 'requestOptions?: RequestOptions'],
     returns: `${resolveResponseType(target)}<void>`
   });
 
   const functionSource = generateArrowFunction({
     name: functionName,
     signature: functionTypeName,
-    returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, { id: '${id}' })}\`, options)`,
-    params: ['id', 'options?: RemoveQuery']
+    returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, { id: '${id}' })}\`, options, requestOptions)`,
+    params: ['id', 'options?: RemoveQuery', 'requestOptions?: RequestOptions']
   });
 
   return {

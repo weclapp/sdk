@@ -16,7 +16,7 @@ export const generateUniqueEndpoint: ServiceFunctionGenerator = ({
 
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
-    params: ['id: string', 'query?: Q'],
+    params: ['id: string', 'query?: Q', 'requestOptions?: RequestOptions'],
     generics: ['Q extends UniqueQuery'],
     returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`
   });
@@ -24,8 +24,8 @@ export const generateUniqueEndpoint: ServiceFunctionGenerator = ({
   const functionSource = generateArrowFunction({
     name: functionName,
     signature: functionTypeName,
-    params: ['id', 'query'],
-    returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, { id: '${id}' })}\`, query)`
+    params: ['id', 'query', 'requestOptions?: RequestOptions'],
+    returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, { id: '${id}' })}\`, query, requestOptions?: RequestOptions)`
   });
 
   return {
