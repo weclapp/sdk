@@ -2,9 +2,8 @@ export const raw = async (
   cfg: ServiceConfig | undefined,
   endpoint: string,
   payload: RequestPayload = {},
-    requestOptions?: RequestOptions
+  requestOptions?: RequestOptions,
 ): Promise<any> => {
-  const globalConfig = getGlobalConfig();
   if (!cfg && !globalConfig) {
     throw new Error(`ServiceConfig missing.`);
   }
@@ -15,9 +14,9 @@ export const raw = async (
     interceptors: { ...globalConfig?.interceptors, ...cfg?.interceptors }
   };
 
-    const isBinaryData = payload.body instanceof resolveBinaryObject();
-    const params = new URLSearchParams(Object.entries(payload.query ?? {}).filter((v) => v[1] !== undefined)
-      .map(([key, value]) => [key, typeof value === 'string' ? value : JSON.stringify(value)])
+  const isBinaryData = payload.body instanceof resolveBinaryObject();
+  const params = new URLSearchParams(Object.entries(payload.query ?? {}).filter((v) => v[1] !== undefined)
+    .map(([key, value]) => [key, typeof value === 'string' ? value : JSON.stringify(value)])
   );
 
   const protocol = getProtocol(localCfg);

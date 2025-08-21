@@ -105,6 +105,9 @@ interface ServiceConfig {
     // artificially-crafted one by the request interceptor.
     response?: (response: Response) => Response | void | Promise<Response | void>;
   };
+
+  // Whether POST method should be used for filter queries or not
+  usePost?: boolean;
 }
 ```
 
