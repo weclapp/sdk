@@ -1,7 +1,7 @@
 import { Target } from '../target';
 import { generateBase } from '@generator/01-base';
 import { generateEnums } from '@generator/02-enums';
-import { generateEntities } from '@generator/03-entities';
+import { generateEntities, generateEntityFilterProps } from '@generator/03-entities';
 import { generateServices } from '@generator/04-services';
 import { generateMaps } from '@generator/05-maps';
 import { generateBlockComment } from '@ts/generateComment';
@@ -25,12 +25,14 @@ export const generate = (doc: OpenAPIV3.Document, options: GeneratorOptions): st
 
   const enums = generateEnums(schemas);
   const entities = generateEntities(schemas, enums);
+  const entityFilterProps = generateEntityFilterProps(entities, enums);
   const services = generateServices(doc.paths, entities, aliases, options);
   const maps = generateMaps(enums, entities, services, aliases, options);
 
   return generateStatements(
     generateBase(options.target, doc.info.version, options),
     generateBlockComment('ENUMS', generateStatements(...[...enums.values()].map((v) => v.source))),
+    generateBlockComment('ENTITY FILTER PROPS', generateStatements(...[...entityFilterProps.values()].map((v) => v.source))),
     generateBlockComment('ENTITIES', generateStatements(...[...entities.values()].map((v) => v.source))),
     generateBlockComment('SERVICES', generateStatements(...[...services.values()].map((v) => v.source))),
     generateBlockComment('MAPS', generateStatements(maps.source))

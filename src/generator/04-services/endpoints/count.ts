@@ -7,6 +7,7 @@ import { generateString } from '@ts/generateString';
 import { convertParametersToSchema } from '@utils/openapi/convertParametersToSchema';
 import { convertToTypeScriptType, createObjectType } from '@utils/openapi/convertToTypeScriptType';
 import { pascalCase } from 'change-case';
+import { FILTER_PROPS_SUFFIX } from "@generator/03-entities";
 
 export const generateCountEndpoint: ServiceFunctionGenerator = ({
   aliases,
@@ -25,7 +26,7 @@ export const generateCountEndpoint: ServiceFunctionGenerator = ({
   const parametersTypeSource = generateInterfaceFromObject(parametersTypeName, parametersType, true);
 
   const filterTypeName = `${functionTypeName}_Filter`;
-  const filterTypeSource = generateInterfaceType(filterTypeName, [], [entity]);
+  const filterTypeSource = generateInterfaceType(filterTypeName, [], [`${entity}_${FILTER_PROPS_SUFFIX}`]);
 
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,

@@ -10,6 +10,7 @@ export interface InterfaceProperty {
   required?: boolean;
   readonly?: boolean;
   comment?: string;
+  filterable?: boolean;
 }
 
 const generateInterfaceProperties = (entries: InterfaceProperty[]): string => {
@@ -46,5 +47,17 @@ export const generateInterfaceType = (
 ): string => {
   const body = generateInterfaceProperties(entries);
   const bases = extend ? arrayify(extend).join(' & ') : undefined;
-  return generateType(name, `${bases ? `${bases} & ` : ''}${body}`);
+
+  let typeDefinition = '';
+  if(bases) {
+    typeDefinition = bases;
+  }
+  else {
+    typeDefinition = body;
+  }
+  if(bases && body !== '{}') {
+    typeDefinition += ` & ${body}`;
+  }
+
+  return generateType(name, typeDefinition);
 };
