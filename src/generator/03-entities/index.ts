@@ -10,7 +10,7 @@ import {
   isReferenceObject,
   isRelatedEntitySchema
 } from '@utils/openapi/guards';
-import { camelCase } from 'change-case';
+import { camelCase, pascalCase } from 'change-case';
 import { OpenAPIV3 } from 'openapi-types';
 import { loosePascalCase } from '@utils/case';
 
@@ -19,6 +19,7 @@ export interface GeneratedEntity {
   properties: Map<string, PropertyMetaData>;
   parentName?: string;
   source: string;
+  createProperties: InterfaceProperty[];
 }
 
 export const generateEntities = (
@@ -78,12 +79,67 @@ export const generateEntities = (
     entities.set(schemaName, {
       name: schemaName,
       properties,
+      createProperties: entityInterfaceProperties.filter((prop) => !prop.readonly),
       parentName: parentEntityInterfaceName ? camelCase(parentEntityInterfaceName) : undefined,
       source: generateStatements(
-        generateInterface(entityInterfaceName, entityInterfaceProperties, parentEntityInterfaceName)
+        generateInterface(
+          entityInterfaceName,
+          entityInterfaceProperties.map((prop) => ({
+            ...prop,
+            required: !!(prop.required ?? prop.type?.endsWith('[]')) || prop.type !== 'string'
+          })),
+          parentEntityInterfaceName
+        )
       )
     });
   }
 
   return entities;
+};
+
+export const generateCreateEntityStatements = (
+  entities: Map<string, GeneratedEntity>,
+  enums: Map<string, GeneratedEnum>
+): string[] => {
+  const isPrimitiveOrEnumOrObject = (propType?: string) => {
+    return (
+      !propType ||
+      enums.has(propType) ||
+      propType === 'string' ||
+      propType === 'number' ||
+      propType === 'boolean' ||
+      propType === '{}'
+    );
+  };
+
+  const transformCreateEntityInterfaceProps = (props: InterfaceProperty[]) => {
+    return props.map((prop) => {
+      if (isPrimitiveOrEnumOrObject(prop.type)) {
+        return prop;
+      }
+
+      if (prop.type?.endsWith('[]')) {
+        const typeWithoutBrackets = prop.type.replace(/^\((.*?)\)\[\]$/, '$1');
+        return isPrimitiveOrEnumOrObject(typeWithoutBrackets) ? prop : { ...prop, type: `(${typeWithoutBrackets}_Create)[]` };
+      }
+
+      return { ...prop, type: `${prop.type}_Create` };
+    });
+  };
+
+  const createEntityStatements: string[] = [];
+
+  const generateCreateEntityStatement = (entity: GeneratedEntity, entityName: string): string => {
+    const name = `${pascalCase(entityName)}_Create`;
+    const parentName = entity.parentName ? `${pascalCase(entity.parentName)}_Create` : undefined;
+    const interfaceProperties = Array.from(transformCreateEntityInterfaceProps(entity.createProperties));
+
+    return generateStatements(generateInterface(name, interfaceProperties, parentName));
+  };
+
+  entities.forEach((entity, name) => {
+    createEntityStatements.push(generateCreateEntityStatement(entity, name));
+  });
+
+  return createEntityStatements;
 };

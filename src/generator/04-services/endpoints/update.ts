@@ -1,11 +1,11 @@
 import { resolveResponseType } from '../../../target';
 import { GeneratedServiceFunction, ServiceFunctionGenerator } from '@generator/04-services/types';
-import { generateRequestBodyType } from '@generator/04-services/utils/generateRequestBodyType';
 import { generateResponseBodyType } from '@generator/04-services/utils/generateResponseBodyType';
 import { insertPathPlaceholder } from '@generator/04-services/utils/insertPathPlaceholder';
 import { generateArrowFunction } from '@ts/generateArrowFunction';
 import { generateArrowFunctionType } from '@ts/generateArrowFunctionType';
 import { pascalCase } from 'change-case';
+import { generateRequestBodyType } from '@generator/04-services/utils/generateRequestBodyType';
 
 export const generateUpdateEndpoint: ServiceFunctionGenerator = ({
   target,
@@ -17,7 +17,12 @@ export const generateUpdateEndpoint: ServiceFunctionGenerator = ({
 
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
-    params: ['id: string', `data: DeepPartial<${generateRequestBodyType(path).toString()}>`, 'options?: UpdateQuery', 'requestOptions?: RequestOptions'],
+    params: [
+      'id: string',
+      `data: ${generateRequestBodyType(path).toString()}`,
+      'options?: UpdateQuery',
+      'requestOptions?: RequestOptions'
+    ],
     returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`
   });
 

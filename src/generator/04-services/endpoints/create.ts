@@ -1,23 +1,24 @@
 import { resolveResponseType } from '../../../target';
 import { GeneratedServiceFunction, ServiceFunctionGenerator } from '@generator/04-services/types';
-import { generateRequestBodyType } from '@generator/04-services/utils/generateRequestBodyType';
 import { generateResponseBodyType } from '@generator/04-services/utils/generateResponseBodyType';
 import { generateArrowFunction } from '@ts/generateArrowFunction';
 import { generateArrowFunctionType } from '@ts/generateArrowFunctionType';
 import { generateString } from '@ts/generateString';
 import { pascalCase } from 'change-case';
+import { generateRequestBodyType } from '@generator/04-services/utils/generateRequestBodyType';
 
 export const generateCreateEndpoint: ServiceFunctionGenerator = ({
   target,
   path,
   endpoint
 }): GeneratedServiceFunction => {
+  const endpointName = pascalCase(endpoint.service);
   const functionName = 'create';
-  const functionTypeName = `${pascalCase(endpoint.service)}Service_${pascalCase(functionName)}`;
+  const functionTypeName = `${endpointName}Service_${pascalCase(functionName)}`;
 
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
-    params: [`data: DeepPartial<${generateRequestBodyType(path).toString()}>`, 'requestOptions?: RequestOptions'],
+    params: [`data: ${generateRequestBodyType(path).toString()}_Create`, 'requestOptions?: RequestOptions'],
     returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`
   });
 
@@ -29,7 +30,7 @@ export const generateCreateEndpoint: ServiceFunctionGenerator = ({
   });
 
   return {
-    entity: pascalCase(endpoint.service),
+    entity: endpointName,
     name: functionName,
     type: { name: functionTypeName, source: functionTypeSource },
     func: { name: functionName, source: functionSource }

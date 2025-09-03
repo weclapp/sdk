@@ -53,7 +53,11 @@ export const createTupleType = (value: (Type | string)[]): TupleType => ({
   toString: () => concat([...new Set(value.map((v) => (typeof v === 'string' ? `'${v}'` : v.toString())))], ' | ')
 });
 
-export const createObjectType = (value: Record<string, Type | undefined>, required: string[] = []): ObjectType => ({
+export const createObjectType = (
+  value: Record<string, Type | undefined>,
+  required: string[] = [],
+  isDeepPartialType?: boolean
+): ObjectType => ({
   type: 'object',
   isFullyOptional: () => {
     return (
@@ -72,7 +76,10 @@ export const createObjectType = (value: Record<string, Type | undefined>, requir
         const isRequired =
           required.includes(name) ||
           (value.type === 'object' && !value.isFullyOptional() && propagateOptionalProperties);
-        return `${name + (isRequired ? '' : '?')}: ${value.toString()};`;
+        const valueString =
+          isDeepPartialType && value.type === 'reference' ? `DeepPartial<${value.toString()}>` : value.toString();
+
+        return `${name + (isRequired ? '' : '?')}: ${valueString};`;
       });
 
     return properties.length ? `{\n${indent(properties.join('\n'))}\n}` : '{}';
@@ -87,7 +94,8 @@ export const getRefName = (obj: OpenAPIV3.ReferenceObject) => {
 
 export const convertToTypeScriptType = (
   schema: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject,
-  property?: string
+  property?: string,
+  isDeepPartialType?: boolean
 ): AnyType => {
   if (isReferenceObject(schema)) {
     return createReferenceType(getRefName(schema));
@@ -108,7 +116,8 @@ export const convertToTypeScriptType = (
         const { properties = {}, required = [] } = schema;
         return createObjectType(
           Object.fromEntries(Object.entries(properties).map((v) => [v[0], convertToTypeScriptType(v[1])])),
-          required
+          required,
+          isDeepPartialType
         );
       }
       case 'array':

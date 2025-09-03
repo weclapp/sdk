@@ -31,15 +31,19 @@ export const generateGenericEndpoint =
     const hasId = endpoint.path.includes('{id}');
 
     const params = createObjectType({
-      params: convertToTypeScriptType(convertParametersToSchema(path.parameters)),
-      body: method === 'get' ? undefined : wrapBody(generateRequestBodyType(path), target)
+      params: convertToTypeScriptType(convertParametersToSchema(path.parameters), undefined, true),
+      body: method === 'get' ? undefined : wrapBody(generateRequestBodyType(path, true), target)
     });
 
     const responseBody = generateResponseBodyType(path);
 
     const functionTypeSource = generateArrowFunctionType({
       type: functionTypeName,
-      params: [...(hasId ? ['id: string'] : []), `query${params.isFullyOptional() ? '?' : ''}: ${entityQuery}`, 'requestOptions?: RequestOptions'],
+      params: [
+        ...(hasId ? ['id: string'] : []),
+        `query${params.isFullyOptional() ? '?' : ''}: ${entityQuery}`,
+        'requestOptions?: RequestOptions'
+      ],
       returns: `${resolveResponseType(target)}<${wrapBody(responseBody, target).toString()}>`
     });
 
