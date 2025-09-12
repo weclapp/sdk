@@ -15,12 +15,14 @@ export type Operator = ComparisonOperator | ArrayOperator | NullOperator;
 
 export type ModifierFunction = 'lower';
 
+export type NonEmptyArray<T> = [T, ...T[]];
+
 export type MapOperators<T> =
-  | ({ [K in ComparisonOperator]?: T } & { [K in ArrayOperator]?: T[] } & {
+  | ({ [K in ComparisonOperator]?: T } & { [K in ArrayOperator]?: NonEmptyArray<T> } & {
       [K in NullOperator]?: never } & {
       [K in ModifierFunction]?: boolean
     })
-  | ({ [K in ComparisonOperator]?: T } & { [K in ArrayOperator]?: T[] } & {
+  | ({ [K in ComparisonOperator]?: T } & { [K in ArrayOperator]?: NonEmptyArray<T> } & {
       [K in NullOperator]?: boolean } & {
       [K in ModifierFunction]?: never
     });
