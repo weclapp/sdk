@@ -6,7 +6,7 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "noImplicitAny": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "strict": true,
     "target": "ES2022"
   },
