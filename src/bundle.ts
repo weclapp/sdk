@@ -9,7 +9,7 @@ const tsconfig = resolve(currentDirname(), './tsconfig.sdk.json');
 const resolveGlobals = (...globals: string[]) => Object.fromEntries(globals.map((v) => [v, '*']));
 
 const generateOutput = (config: OutputOptions): OutputOptions => ({
-  sourcemap: true,
+  sourcemap: false,
   banner: `/* weclapp sdk */`,
   ...config
 });
