@@ -152,7 +152,7 @@ const _count = (
 
     return wrapResponse(() =>
       raw(cfg, endpoint, {
-        method: usePost ? 'POST' : undefined,
+        method: usePost ? 'POST' : 'GET',
         unwrap: true,
         ...(usePost ? { body: payload } : { query: payload })
       }, requestOptions)
@@ -181,7 +181,7 @@ const _some = (
 
    return wrapResponse(() =>
       raw(cfg, usePost ? `${endpoint}/query` : endpoint, {
-        method: usePost ? 'POST' : undefined,
+        method: usePost ? 'POST' : 'GET',
         ...(usePost ? { body: payload } : { query: payload })
       }, requestOptions).then((data) => ({
         entities: data.result,

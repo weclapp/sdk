@@ -106,7 +106,7 @@ interface ServiceConfig {
     response?: (response: Response) => Response | void | Promise<Response | void>;
   };
 
-  // Whether POST method should be used for filter queries or not
+  // Whether POST should be used instead of GET for some() and count() operations
   usePost?: boolean;
 }
 ```

@@ -2,7 +2,7 @@ export const raw = async (
   cfg: ServiceConfig | undefined,
   endpoint: string,
   payload: RequestPayload = {},
-  requestOptions?: RequestOptions,
+  requestOptions?: RequestOptions
 ): Promise<any> => {
   if (!cfg && !globalConfig) {
     throw new Error(`ServiceConfig missing.`);
