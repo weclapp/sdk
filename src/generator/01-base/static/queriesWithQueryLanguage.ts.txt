@@ -44,14 +44,14 @@ export type QueryFilter<T> = SingleFilterExpr<T> & {
 };
 
 export type CountQuery<F> = {
-  where?: QueryFilter<F> & CustomAttributeFilter;
+  where?: QueryFilter<F>;
 };
 
 export type SomeQuery<E, F, I, P> = {
   serializeNulls?: boolean;
   include?: QuerySelect<I>;
   properties?: P;
-  where?: QueryFilter<F> & CustomAttributeFilter;
+  where?: QueryFilter<F>;
   select?: QuerySelect<E>;
   sort?: Sort<E>[];
   pagination?: Pagination;
