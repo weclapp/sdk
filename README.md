@@ -105,6 +105,9 @@ interface ServiceConfig {
     // artificially-crafted one by the request interceptor.
     response?: (response: Response) => Response | void | Promise<Response | void>;
   };
+
+  // Whether POST should be used instead of GET for some() and count() operations
+  usePost?: boolean;
 }
 ```
 

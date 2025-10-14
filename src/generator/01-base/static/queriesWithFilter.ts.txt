@@ -144,16 +144,22 @@ const _count = (
   query?: CountQuery<any> & { params?: Record<any, any> },
   requestOptions?: RequestOptions
 ) =>
-  wrapResponse(() =>
-    raw(cfg, endpoint, {
-      unwrap: true,
-      query: {
-        ...flattenFilter(query?.filter),
-        ...flattenOrFilter(query?.or),
-        ...query?.params
-      }
-    }, requestOptions)
-  );
+{
+    const usePost = cfg?.usePost ?? globalConfig?.usePost
+    const payload = {
+      ...flattenFilter(query?.filter),
+      ...flattenOrFilter(query?.or),
+      ...query?.params
+    }
+
+    return wrapResponse(() =>
+      raw(cfg, endpoint, {
+        method: usePost ? 'POST' : 'GET',
+        unwrap: true,
+        ...(usePost ? { body: payload } : { query: payload })
+      }, requestOptions)
+    )
+  };
 
 const _some = (
   cfg: ServiceConfig | undefined,
@@ -161,22 +167,28 @@ const _some = (
   query?: SomeQuery<any, any, any, any> & { params?: Record<any, any> },
   requestOptions?: RequestOptions
 ) =>
-  wrapResponse(() =>
-    raw(cfg, endpoint, {
-      query: {
-        serializeNulls: query?.serializeNulls,
-        additionalProperties: query?.properties?.join(','),
-        properties: query?.select ? flattenSelect(query.select).join(',') : undefined,
-        includeReferencedEntities: query?.include ? Object.keys(query.include).join(',') : undefined,
-        ...flattenOrFilter(query?.or),
-        ...flattenFilter(query?.filter),
-        ...flattenSort(query?.sort),
-        ...query?.params,
-        ...query?.pagination
-      }
-    }, requestOptions).then((data) => ({
-      entities: data.result,
-      references: data.referencedEntities ?? {},
-      properties: data.additionalProperties ?? {}
-    }))
-  );
+{
+  const usePost = cfg?.usePost ?? globalConfig?.usePost
+  const payload = {
+      serializeNulls: query?.serializeNulls,
+      additionalProperties: query?.properties?.join(','),
+      properties: query?.select ? flattenSelect(query.select).join(',') : undefined,
+      includeReferencedEntities: query?.include ? Object.keys(query.include).join(',') : undefined,
+      ...flattenOrFilter(query?.or),
+      ...flattenFilter(query?.filter),
+      ...flattenSort(query?.sort),
+      ...query?.params,
+      ...query?.pagination
+  }
+
+   return wrapResponse(() =>
+      raw(cfg, usePost ? `${endpoint}/query` : endpoint, {
+        method: usePost ? 'POST' : 'GET',
+        ...(usePost ? { body: payload } : { query: payload })
+      }, requestOptions).then((data) => ({
+        entities: data.result,
+        references: data.referencedEntities ?? {},
+        properties: data.additionalProperties ?? {}
+      }))
+    )
+  };
