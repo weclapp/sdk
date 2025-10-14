@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 22.14.0
 
@@ -40,10 +40,10 @@ jobs:
         target: [node, node.rx, browser, browser.rx]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 22.14.0
 
@@ -69,10 +69,10 @@ jobs:
     needs: build
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 22.14.0
 
@@ -83,7 +83,9 @@ jobs:
           path: dist
 
       - name: Publish release
-        run: npm publish --access public --tag latest
+        run: |
+          npm install -g npm@latest
+          npm publish --access public --tag latest
 
   publish_snapshot:
     name: Publish snapshot version
@@ -94,12 +96,12 @@ jobs:
     needs: build
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 22.14.0
 
@@ -111,6 +113,7 @@ jobs:
 
       - name: Publish snapshot
         run: |
+          npm install -g npm@latest
           LATEST_TAG=$(git describe --tags --abbrev=0)
           LATEST_TAG_RAW=$(echo "$LATEST_TAG" | sed 's/v//')
           COMMITS_SINCE_LAST_TAG=$(git rev-list "$LATEST_TAG"..HEAD --count)

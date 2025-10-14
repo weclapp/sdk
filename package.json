@@ -6,14 +6,17 @@
   "sideEffects": false,
   "bugs": "https://github.com/weclapp/sdk/issues",
   "homepage": "https://github.com/weclapp/sdk#readme",
-  "repository": "git+https://github.com/weclapp/sdk.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weclapp/sdk.git"
+  },
   "keywords": [
     "sdk",
     "generator",
     "weclapp"
   ],
   "bin": {
-    "build-weclapp-sdk": "./bin/cli.js"
+    "build-weclapp-sdk": "bin/cli.js"
   },
   "files": [
     "bin",
