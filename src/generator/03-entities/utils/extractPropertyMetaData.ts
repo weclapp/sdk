@@ -12,6 +12,7 @@ export interface PropertyMetaData {
   service?: string;
   entity?: string;
   enum?: string;
+  filterable?: boolean;
 }
 
 const setEntityEnumProperty = (

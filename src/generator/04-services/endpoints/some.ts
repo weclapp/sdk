@@ -11,7 +11,7 @@ import { isObjectSchemaObject, isParameterObject, isResponseObject } from '@util
 import { pascalCase } from 'change-case';
 import { OpenAPIV3 } from 'openapi-types';
 import { generateType } from '@ts/generateType';
-import { GeneratedEntity } from '../../03-entities';
+import { FILTER_PROPS_SUFFIX, GeneratedEntity } from '../../03-entities';
 
 const excludedParameters = [
   'page',
@@ -101,7 +101,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   const parametersTypeSource = generateInterfaceFromObject(parametersTypeName, parametersType, true);
 
   const filterTypeName = `${functionTypeName}_Filter`;
-  const filterTypeSource = generateInterfaceType(filterTypeName, [], [entity]);
+  const filterTypeSource = generateInterfaceType(filterTypeName, [], [`${entity}_${FILTER_PROPS_SUFFIX}`]);
 
   const referencesTypeName = `${functionTypeName}_References`;
   const referencesTypeSource = generateInterfaceType(referencesTypeName, resolveReferences(endpoint.service, entities));
