@@ -17,6 +17,7 @@ interface Args {
   fromEnv?: boolean;
   target?: Target;
   useQueryLanguage?: boolean;
+  apiVersion?: string;
   _: (string | number)[];
 }
 
@@ -82,6 +83,10 @@ export const cli = async (): Promise<CLIResult> => {
       describe: 'Generate the new where property for some and count queries',
       type: 'boolean'
     })
+    .option('apiVersion', {
+      describe: 'Specify the api version (only needed when not using a local file)',
+      type: 'string'
+    })
     .epilog(`Copyright ${new Date().getFullYear()} weclapp GmbH`) as {
     argv: Args;
   };
@@ -97,6 +102,7 @@ export const cli = async (): Promise<CLIResult> => {
     cache = false,
     deprecated = false,
     key = WECLAPP_API_KEY,
+    apiVersion,
     _: [src = WECLAPP_BACKEND_URL]
   } = argv;
 
@@ -127,9 +133,12 @@ export const cli = async (): Promise<CLIResult> => {
     return Promise.reject(new Error('API key is missing'));
   }
 
+  if (!apiVersion) {
+    return Promise.reject(new Error('API version is missing'));
+  }
+
   const url = new URL(src.startsWith('http') ? src : `https://${src}`);
-  // At the moment just v1
-  url.pathname = '/webapp/api/v1/meta/openapi.json';
+  url.pathname = `/webapp/api/${apiVersion}/meta/openapi.json`;
 
   if (query?.length) {
     for (const param of query.split(',')) {
