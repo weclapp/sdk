@@ -79,8 +79,10 @@ export const generateServices = (
     for (const { path, endpoint } of paths) {
       const generator = generators[endpoint.type];
       for (const [method, config] of Object.entries(path)) {
-        if ((method === 'get' && endpoint.type === WeclappEndpointType.ENTITY && !options.generateUnique)
-            || (method === 'post' && (endpoint.type === WeclappEndpointType.COUNT || endpoint.path.endsWith('query')))) {
+        if (
+          (method === 'get' && endpoint.type === WeclappEndpointType.ENTITY && !options.generateUnique) ||
+          (method === 'post' && (endpoint.type === WeclappEndpointType.COUNT || endpoint.path.endsWith('query')))
+        ) {
           // Skip unique endpoints if generateUnique option is not set or if POST is used for filter queries
           continue;
         }

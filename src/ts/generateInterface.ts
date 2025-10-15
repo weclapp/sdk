@@ -49,13 +49,12 @@ export const generateInterfaceType = (
   const bases = extend ? arrayify(extend).join(' & ') : undefined;
 
   let typeDefinition = '';
-  if(bases) {
+  if (bases) {
     typeDefinition = bases;
-  }
-  else {
+  } else {
     typeDefinition = body;
   }
-  if(bases && body !== '{}') {
+  if (bases && body !== '{}') {
     typeDefinition += ` & ${body}`;
   }
 

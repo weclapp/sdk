@@ -17,7 +17,12 @@ export const generateUpdateEndpoint: ServiceFunctionGenerator = ({
 
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
-    params: ['id: string', `data: DeepPartial<${generateRequestBodyType(path).toString()}>`, 'options?: UpdateQuery', 'requestOptions?: RequestOptions'],
+    params: [
+      'id: string',
+      `data: DeepPartial<${generateRequestBodyType(path).toString()}>`,
+      'options?: UpdateQuery',
+      'requestOptions?: RequestOptions'
+    ],
     returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`
   });
 

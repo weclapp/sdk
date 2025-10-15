@@ -4,7 +4,9 @@ import { generateInterface, InterfaceProperty } from '@ts/generateInterface';
 import { generateStatements } from '@ts/generateStatements';
 import { convertToTypeScriptType } from '@utils/openapi/convertToTypeScriptType';
 import {
-  isEnumSchemaObject, isFilterPathsSchemaObject, isFilterPropertySchemaObject,
+  isEnumSchemaObject,
+  isFilterPathsSchemaObject,
+  isFilterPropertySchemaObject,
   isNonArraySchemaObject,
   isObjectSchemaObject,
   isReferenceObject,
@@ -49,7 +51,10 @@ export const generateEntities = (
     const filterableInterfaceProperties: InterfaceProperty[] = [];
     const properties = new Map<string, PropertyMetaData>();
 
-    const processProperties = (props: Record<string, OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject> = {}, isXweclappFilterProp?: boolean) => {
+    const processProperties = (
+      props: Record<string, OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject> = {},
+      isXweclappFilterProp?: boolean
+    ) => {
       for (const [name, property] of Object.entries(props)) {
         const meta = isRelatedEntitySchema(property) ? property['x-weclapp'] : {};
         const type = convertToTypeScriptType(property, name).toString();
@@ -61,11 +66,11 @@ export const generateEntities = (
               : undefined
           : undefined;
 
-        if(meta.filterable !== false) {
+        if (meta.filterable !== false) {
           filterableInterfaceProperties.push({ name, type });
         }
 
-        if(!isXweclappFilterProp) {
+        if (!isXweclappFilterProp) {
           entityInterfaceProperties.push({
             name,
             type,
@@ -87,15 +92,15 @@ export const generateEntities = (
         } else if (isObjectSchemaObject(item)) {
           processProperties(item.properties);
 
-          if(isFilterPropertySchemaObject(item)) {
+          if (isFilterPropertySchemaObject(item)) {
             processProperties(item['x-weclapp-filterProperties'], true);
           }
 
-          if(isFilterPathsSchemaObject(item)) {
+          if (isFilterPathsSchemaObject(item)) {
             const fPaths: Record<string, string> = item['x-weclapp-filterPaths'];
-            for(const path in fPaths) {
-              if(!path.includes('.')) {
-                filterableInterfaceProperties.push({name: path, type: fPaths[path]});
+            for (const path in fPaths) {
+              if (!path.includes('.')) {
+                filterableInterfaceProperties.push({ name: path, type: fPaths[path] });
               }
             }
           }
@@ -108,7 +113,9 @@ export const generateEntities = (
     entities.set(schemaName, {
       name: schemaName,
       properties,
-      filterableInterfaceProperties: filterableInterfaceProperties.sort((propA, propB) => propA.name.localeCompare(propB.name)),
+      filterableInterfaceProperties: filterableInterfaceProperties.sort((propA, propB) =>
+        propA.name.localeCompare(propB.name)
+      ),
       parentName: parentEntityInterfaceName ? camelCase(parentEntityInterfaceName) : undefined,
       source: generateStatements(
         generateInterface(entityInterfaceName, entityInterfaceProperties, parentEntityInterfaceName)
@@ -119,32 +126,41 @@ export const generateEntities = (
   return entities;
 };
 
-export const generateEntityFilterProps = (entities: Map<string, GeneratedEntity>, enums: Map<string, GeneratedEnum>): Map<string, GeneratedEntityFilterProp> => {
+export const generateEntityFilterProps = (
+  entities: Map<string, GeneratedEntity>,
+  enums: Map<string, GeneratedEnum>
+): Map<string, GeneratedEntityFilterProp> => {
   const entityFilterProps: Map<string, GeneratedEntityFilterProp> = new Map();
 
   const transformFilterProps = (props: InterfaceProperty[]) => {
     return props.map((prop) => {
-      if(!prop.type || enums.has(prop.type) || prop.type === 'string' || prop.type === 'number' || prop.type === 'boolean' || prop.type.endsWith('[]')) {
+      if (
+        !prop.type ||
+        enums.has(prop.type) ||
+        prop.type === 'string' ||
+        prop.type === 'number' ||
+        prop.type === 'boolean' ||
+        prop.type.endsWith('[]') ||
+        prop.type === '{}'
+      ) {
         return prop;
       }
 
-      return {...prop, type: `${pascalCase(prop.type)}_${FILTER_PROPS_SUFFIX}`}
-    })
-  }
+      return { ...prop, type: `${pascalCase(prop.type)}_${FILTER_PROPS_SUFFIX}` };
+    });
+  };
 
   entities.forEach((entity, name) => {
-    const entityFilterName = `${pascalCase(name)}_${FILTER_PROPS_SUFFIX}`
+    const entityFilterName = `${pascalCase(name)}_${FILTER_PROPS_SUFFIX}`;
     const parentName = entity.parentName ? `${pascalCase(entity.parentName)}_${FILTER_PROPS_SUFFIX}` : undefined;
     const filterableInterfaceProperties = transformFilterProps(entity.filterableInterfaceProperties);
 
     entityFilterProps.set(entityFilterName, {
       name: entityFilterName,
       parentName,
-      source: generateStatements(
-          generateInterface(entityFilterName, filterableInterfaceProperties, parentName)
-      )
+      source: generateStatements(generateInterface(entityFilterName, filterableInterfaceProperties, parentName))
     });
   });
 
   return entityFilterProps;
-}
+};
