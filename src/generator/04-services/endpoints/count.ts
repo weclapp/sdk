@@ -7,7 +7,7 @@ import { generateString } from '@ts/generateString';
 import { convertParametersToSchema } from '@utils/openapi/convertParametersToSchema';
 import { convertToTypeScriptType, createObjectType } from '@utils/openapi/convertToTypeScriptType';
 import { pascalCase } from 'change-case';
-import { FILTER_PROPS_SUFFIX } from "@generator/03-entities";
+import { FILTER_PROPS_SUFFIX } from '@generator/03-entities';
 
 export const generateCountEndpoint: ServiceFunctionGenerator = ({
   aliases,
@@ -31,7 +31,8 @@ export const generateCountEndpoint: ServiceFunctionGenerator = ({
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
     params: [
-      `query${parametersType.isFullyOptional() ? '?' : ''}: CountQuery<${filterTypeName}>${path.parameters?.length ? ' & ' + parametersTypeName : ''}`, 'requestOptions?: RequestOptions'
+      `query${parametersType.isFullyOptional() ? '?' : ''}: CountQuery<${filterTypeName}>${path.parameters?.length ? ' & ' + parametersTypeName : ''}`,
+      'requestOptions?: RequestOptions'
     ],
     returns: `${resolveResponseType(target)}<number>`
   });

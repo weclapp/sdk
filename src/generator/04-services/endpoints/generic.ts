@@ -39,7 +39,11 @@ export const generateGenericEndpoint =
 
     const functionTypeSource = generateArrowFunctionType({
       type: functionTypeName,
-      params: [...(hasId ? ['id: string'] : []), `query${params.isFullyOptional() ? '?' : ''}: ${entityQuery}`, 'requestOptions?: RequestOptions'],
+      params: [
+        ...(hasId ? ['id: string'] : []),
+        `query${params.isFullyOptional() ? '?' : ''}: ${entityQuery}`,
+        'requestOptions?: RequestOptions'
+      ],
       returns: `${resolveResponseType(target)}<${wrapBody(responseBody, target).toString()}>`
     });
 

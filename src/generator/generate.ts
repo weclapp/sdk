@@ -32,7 +32,10 @@ export const generate = (doc: OpenAPIV3.Document, options: GeneratorOptions): st
   return generateStatements(
     generateBase(options.target, doc.info.version, options),
     generateBlockComment('ENUMS', generateStatements(...[...enums.values()].map((v) => v.source))),
-    generateBlockComment('ENTITY FILTER PROPS', generateStatements(...[...entityFilterProps.values()].map((v) => v.source))),
+    generateBlockComment(
+      'ENTITY FILTER PROPS',
+      generateStatements(...[...entityFilterProps.values()].map((v) => v.source))
+    ),
     generateBlockComment('ENTITIES', generateStatements(...[...entities.values()].map((v) => v.source))),
     generateBlockComment('SERVICES', generateStatements(...[...services.values()].map((v) => v.source))),
     generateBlockComment('MAPS', generateStatements(maps.source))

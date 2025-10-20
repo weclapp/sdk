@@ -51,7 +51,6 @@ export const isFilterPropertySchemaObject = (v: any): v is WeclappSchemaObject =
   return isObject(v) && v.type === 'object' && isObject(v['x-weclapp-filterProperties']);
 };
 
-
 export interface WeclappMetaProperties {
   entity?: string;
   service?: string;
