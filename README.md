@@ -1,12 +1,6 @@
-<br/>
+# weclapp SDK Generator
 
-<div align="center">
-    <h1>weclapp sdk generator</h1>
-</div>
-
-<br/>
-
-# Introduction
+## Introduction
 
 This is an SDK generator, it will take an [`openapi.json`](https://swagger.io/specification/) from [weclapp](https://weclapp.com/) and build services and typescript types according to the entities defined in it. Each service is responsible for a _single_ entity. Every service contains all functions available for this
 entity, this may include functions such as `update`, `remove`, `some` and many more. With these functions you can send requests to your weclapp system to get data or manipulate them.
@@ -17,7 +11,7 @@ Check out [generated types and utilities](#generated-types-and-utilities) for mo
 
 What's being generated depends on the weclapp version you're using.
 
-# Getting started
+## Getting started
 
 The SDK generator requires the current or LTS version of nodejs, as well as npm v10.
 
@@ -46,7 +40,7 @@ This way, every time someone installs or updates dependencies, the SDK is genera
 }
 ```
 
-## Available flags
+### Available flags
 
 | Flag                   | Description                                                                                                                                              | Value / Type                                 |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
@@ -64,12 +58,12 @@ This way, every time someone installs or updates dependencies, the SDK is genera
 After that, you can import the sdk via `@weclapp/sdk`.
 Check out the [docs](docs) for how the generated SDK looks like and how to use it!
 
-# Initialization
+## Initialization
 
 To initialize a service a `ServiceConfig` is needed, you can specify a global config in case you don't want to pass the config every time to the service you
 want to use manually. If you pass an empty object as ServiceConfig the [location](https://developer.mozilla.org/en-US/docs/Web/API/Window/location) will be used to get the domain and the protocol (secure config option).
 
-## The Service Configuration
+### Service config
 
 The configuration looks like the following (taken from [globalConfig.ts](/src/generator/01-base/static/globalConfig.ts.txt)):
 
@@ -111,11 +105,11 @@ interface ServiceConfig {
 }
 ```
 
-### Usage
+### Using the config
 
 There are three ways of accessing a service through the SDK:
 
-#### Using a Global Config
+#### Using the global config
 
 ```ts
 import { setGlobalConfig, partyService } from '@weclapp/sdk';
@@ -130,7 +124,7 @@ const party = partyService();
 console.log(`Total amount of parties: ${await party.count()}`);
 ```
 
-#### Using a Config per Service
+#### Using a config per service
 
 ```ts
 import { partyService } from '@weclapp/sdk';
@@ -182,46 +176,11 @@ interface RequestOptions {
 }
 ````
 
-#### Aborting a request
-To abort a request an AbortController has to be instantiated and its signal has to be passed to the request. The controller can
-abort the request when needed and the case can be handled with a catch.
-```ts
-import { wServices } from "@sdk/dist";
-
-const controller = new AbortController();
-let count = 0;
-
-wServices.article
-    .count(
-        {
-            where: {
-                active: { EQ: true },
-            },
-        },
-        { signal: controller.signal }
-    )
-    .then((c) => (count = c))
-    .catch((err) => {
-        if (controller.signal.aborted) {
-            if (controller.signal.reason) {
-                console.log(`Request aborted with reason: ${controller.signal.reason}`);
-            } else {
-                console.log('Request aborted but no reason was given.');
-            }
-        } else {
-            console.log(err);
-        }
-    });
-
-controller.abort('Abort article count request');
-```
-
-
-# Generated types and utilities
+## Generated types and utilities
 
 The generator generates various utilities that can be used to integrate it in a generic way into your app.
 
-## Exported constants
+### Exported constants
 
 | Constant                    | Description                                                                                                            |
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
@@ -232,7 +191,7 @@ The generator generates various utilities that can be used to integrate it in a 
 | `wServices`                 | Object with all services where the name is the key and the value the service (that is using the global config).        |
 | `wEntityProperties`         | Object with all entity names as key and properties including the type and format as value.                             |
 
-## Exported types
+### Exported types
 
 | Type                    | Description                                                                                                 | Type guards available?                |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------- |
@@ -247,7 +206,7 @@ The generator generates various utilities that can be used to integrate it in a 
 | `WServices`             | Type of `wServices`.                                                                                        |                                       |
 | `WEntityProperties`     | Generalized type of `wEntityProperties`.                                                                    |                                       |
 
-# Services and Raw in depth
+## Services and raw-function in depth
 
 As already described above, the api endpoints can be requested via services or the raw function. The advantage of wServices over the raw function is that all endpoints of the entities are available as functions and these functions are typed. This makes it easier to work with the data provided via the weclapp API.
 
@@ -259,7 +218,7 @@ A service of an entity has in general the following base function:
     remove: // deletes a entity
     update: // updates a entity
 
-In addition there are some custom endpoint functions. The generated PartyService is shown below as an example:
+In addition, there are some custom endpoint functions. The generated PartyService is shown below as an example:
 
 ```ts
 interface PartyService {
@@ -276,7 +235,7 @@ interface PartyService {
 }
 ```
 
-## Comparison
+### Example
 
 ```ts
 import { PartyType, setGlobalConfig, wServices } from '@weclapp/sdk';
@@ -322,9 +281,9 @@ if (contactRaw && typeof contactRaw.id === 'string') {
 }
 ```
 
-## Service request arguments
+### Service request params
 
-### Filtering
+#### Filtering
 
 With the some and count functions you can filter the requested data.
 
@@ -377,9 +336,9 @@ wServices['article'].some({
 This is evaluated to:
 (name EQ 'toy 1' OR articleNumber EQ '12345') AND batchNumberRequired EQ true
 
-### Where filter
+#### Where filter
 
-<strong>Warning: This is still a beta feature.</strong>
+>Warning: This is still a beta feature
 
 It is also possible to specify complex filter expressions that can combine multiple conditions and express relations between properties:
 
@@ -398,7 +357,7 @@ wServices['article'].some({
 
 "where" parameters are ANDed with other filter parameters.
 
-### Sort
+#### Sort
 
 You can sort your requested data with an array properties.
 
@@ -410,7 +369,7 @@ wServices['article'].some({
 
 Sort by name (ascending) and then minimumPurchaseQuantity descending.
 
-### Pagination
+#### Pagination
 
 By default the API returns only the first 100 entities. You can increase the size of one response to the maximum of 1000. To get the next 1000 entities you have increase the page number.
 
@@ -425,7 +384,7 @@ wServices['article'].some({
 
 This returns the first 10 articles of the second page.
 
-### Select
+#### Select
 
 With the select option you can fetch specific subset of properties:
 
@@ -437,18 +396,40 @@ wServices['article'].some({
 
 This only returns the articleNumber property of all articles.
 
-# Enums
-
-The generated enums are a good posibility to check if an entity is of a specific type. For example, you can get all articles of a certain article type:
-
+### Aborting a request
+To abort a request an AbortController has to be instantiated and its signal has to be passed to the request. The controller can
+abort the request when needed and the case can be handled with a catch.
 ```ts
-wServices['article'].some({
-  filter: {
-    articleType: { EQ: ArticleType.STORABLE }
-  }
-});
+import { wServices } from "@sdk/dist";
+
+const controller = new AbortController();
+let count = 0;
+
+wServices.article
+    .count(
+        {
+            where: {
+                active: { EQ: true },
+            },
+        },
+        { signal: controller.signal }
+    )
+    .then((c) => (count = c))
+    .catch((err) => {
+        if (controller.signal.aborted) {
+            if (controller.signal.reason) {
+                console.log(`Request aborted with reason: ${controller.signal.reason}`);
+            } else {
+                console.log('Request aborted but no reason was given.');
+            }
+        } else {
+            console.log(err);
+        }
+    });
+
+controller.abort('Abort article count request');
 ```
 
-# Contributing
+## Contributing
 
 Check out the [contributing guidelines](.github/CONTRIBUTING.md).

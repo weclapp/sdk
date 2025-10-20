@@ -1,7 +1,7 @@
 {
   "name": "@weclapp/sdk",
   "version": "2.0.0",
-  "description": "SDK generator based on a weclapp api swagger file",
+  "description": "weclapp SDK Generator",
   "author": "weclapp",
   "sideEffects": false,
   "bugs": "https://github.com/weclapp/sdk/issues",
