@@ -3,7 +3,7 @@ name: Main
 on: push
 
 permissions:
-  id-token: write  # Required for OIDC
+  id-token: write # Required for OIDC
   contents: read
 
 jobs:
@@ -23,7 +23,10 @@ jobs:
         run: npm ci
 
       - name: Build CLI
-        run: npm run build
+        run: |
+          npm run prettier
+          npm run lint
+          npm run build
 
       - name: Upload dist files
         uses: actions/upload-artifact@v4
