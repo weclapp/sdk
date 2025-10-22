@@ -16,10 +16,8 @@ export type ArrayOperator = 'IN' | 'NOT_IN';
 
 export type Operator = EqualityOperator | ComparisonOperator | ArrayOperator;
 
-export type NonEmptyArray<T> = [T, ...T[]];
-
 export type MapOperators<T> = { [K in EqualityOperator]?: T | null } & { [K in ComparisonOperator]?: T } & {
-  [K in ArrayOperator]?: NonEmptyArray<T>;
+  [K in ArrayOperator]?: T[];
 };
 
 export type QueryFilter<T> = {

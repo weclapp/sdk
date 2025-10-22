@@ -15,14 +15,12 @@ export type Operator = ComparisonOperator | ArrayOperator | NullOperator;
 
 export type ModifierFunction = 'lower';
 
-export type NonEmptyArray<T> = [T, ...T[]];
-
 export type MapOperators<T> =
-  | ({ [K in ComparisonOperator]?: T } & { [K in ArrayOperator]?: NonEmptyArray<T> } & {
+  | ({ [K in ComparisonOperator]?: T } & { [K in ArrayOperator]?: T[] } & {
       [K in NullOperator]?: never } & {
       [K in ModifierFunction]?: boolean
     })
-  | ({ [K in ComparisonOperator]?: T } & { [K in ArrayOperator]?: NonEmptyArray<T> } & {
+  | ({ [K in ComparisonOperator]?: T } & { [K in ArrayOperator]?: T[] } & {
       [K in NullOperator]?: boolean } & {
       [K in ModifierFunction]?: never
     });
@@ -150,14 +148,18 @@ const flattenWhere = (
             `${!value ? 'not ' : ''}${nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')} ${comparisonOperatorMap[operator as Operator]}`
           );
         } else if ((operator as Operator) === 'IN') {
-          entries.push(
-            `${setModifiers.reduce(
-              (acc, [first]) => `${first}(${acc})`,
-              nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
-            )} ${comparisonOperatorMap[operator as Operator]} [${value.map((v: string | number) =>
-              typeof v === 'string' ? setModifiers.reduce((acc, [first]) => `${first}(${acc})`, JSON.stringify(v)) : v
-            )}]`
-          );
+          if(value.length === 0) {
+            entries.push('1 = 0')
+          } else {
+            entries.push(
+              `${setModifiers.reduce(
+                (acc, [first]) => `${first}(${acc})`,
+                nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
+              )} ${comparisonOperatorMap[operator as Operator]} [${value.map((v: string | number) =>
+                typeof v === 'string' ? setModifiers.reduce((acc, [first]) => `${first}(${acc})`, JSON.stringify(v)) : v
+              )}]`
+            );
+          }
         } else if (
           !modifierFunctionList.includes(operator as ModifierFunction)
         ) {
