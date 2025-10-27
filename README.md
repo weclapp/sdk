@@ -359,6 +359,20 @@ wServices['article'].some({
 
 "where" parameters are ANDed with other filter parameters.
 
+It is also possible to set an empty list within an IN-query:
+
+```ts
+wServices['article'].some({
+  where: {
+    id: {
+      IN: []
+    }
+  }
+});
+```
+
+This actually evaluates to `filter = 1 = 0`. The API does not accept filtering for empty lists. Therefore, in this case you have to send a falsy expression. You cannot send `false` directly, though.
+
 #### Sort
 
 You can sort your requested data with an array properties.
