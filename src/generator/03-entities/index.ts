@@ -2,6 +2,7 @@ import { GeneratedEnum } from '@generator/02-enums';
 import { extractPropertyMetaData, PropertyMetaData } from '@generator/03-entities/utils/extractPropertyMetaData';
 import { generateInterface, InterfaceProperty } from '@ts/generateInterface';
 import { generateStatements } from '@ts/generateStatements';
+import { loosePascalCase } from '@utils/case';
 import { convertToTypeScriptType } from '@utils/openapi/convertToTypeScriptType';
 import {
   isEnumSchemaObject,
@@ -14,7 +15,6 @@ import {
 } from '@utils/openapi/guards';
 import { camelCase, pascalCase } from 'change-case';
 import { OpenAPIV3 } from 'openapi-types';
-import { loosePascalCase } from '@utils/case';
 
 export interface GeneratedEntity {
   name: string;
@@ -57,7 +57,7 @@ export const generateEntities = (
     ) => {
       for (const [name, property] of Object.entries(props)) {
         const meta = isRelatedEntitySchema(property) ? property['x-weclapp'] : {};
-        const type = convertToTypeScriptType(property, name).toString();
+        const type = convertToTypeScriptType(property).toString();
         const comment = isNonArraySchemaObject(property)
           ? property.deprecated
             ? '@deprecated will be removed.'
@@ -140,8 +140,9 @@ export const generateEntityFilterProps = (
         prop.type === 'string' ||
         prop.type === 'number' ||
         prop.type === 'boolean' ||
+        prop.type === '{}' ||
         prop.type.endsWith('[]') ||
-        prop.type === '{}'
+        prop.type.includes("'")
       ) {
         return prop;
       }
