@@ -1,5 +1,5 @@
-import { concat } from '@utils/concat';
 import { loosePascalCase } from '@utils/case';
+import { concat } from '@utils/concat';
 import { indent } from '@utils/indent';
 import { isReferenceObject } from '@utils/openapi/guards';
 import { OpenAPIV3 } from 'openapi-types';
@@ -98,7 +98,7 @@ export const convertToTypeScriptType = (
         return createRawType('number');
       case 'string':
         if (schema.enum) {
-          return property ? createReferenceType(property) : createTupleType(schema.enum as string[]);
+          return createTupleType(schema.enum as string[]);
         } else {
           return schema.format === 'binary' ? createRawType('binary') : createRawType('string');
         }
