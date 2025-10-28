@@ -142,7 +142,7 @@ export const generateEntityFilterProps = (
         prop.type === 'boolean' ||
         prop.type === '{}' ||
         prop.type.endsWith('[]') ||
-        prop.type.endsWith("'")
+        prop.type.includes("'")
       ) {
         return prop;
       }
