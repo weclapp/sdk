@@ -57,7 +57,7 @@ export const generateEntities = (
     ) => {
       for (const [name, property] of Object.entries(props)) {
         const meta = isRelatedEntitySchema(property) ? property['x-weclapp'] : {};
-        const type = convertToTypeScriptType(property, name);
+        const type = convertToTypeScriptType(property).toString();
         const comment = isNonArraySchemaObject(property)
           ? property.deprecated
             ? '@deprecated will be removed.'
@@ -67,13 +67,13 @@ export const generateEntities = (
           : undefined;
 
         if (meta.filterable !== false) {
-          filterableInterfaceProperties.push({ name, type: type.type === 'tuple' ? 'string' : type.toString() });
+          filterableInterfaceProperties.push({ name, type });
         }
 
         if (!isXweclappFilterProp) {
           entityInterfaceProperties.push({
             name,
-            type: type.toString(),
+            type,
             comment,
             required: meta.required,
             filterable: meta.filterable ?? true,
@@ -140,8 +140,9 @@ export const generateEntityFilterProps = (
         prop.type === 'string' ||
         prop.type === 'number' ||
         prop.type === 'boolean' ||
+        prop.type === '{}' ||
         prop.type.endsWith('[]') ||
-        prop.type === '{}'
+        prop.type.endsWith("'")
       ) {
         return prop;
       }

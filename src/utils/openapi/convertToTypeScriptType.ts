@@ -85,10 +85,7 @@ export const getRefName = (obj: OpenAPIV3.ReferenceObject) => {
   return obj.$ref.replace(/.*\//, '');
 };
 
-export const convertToTypeScriptType = (
-  schema: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject,
-  property?: string
-): AnyType => {
+export const convertToTypeScriptType = (schema: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject): AnyType => {
   if (isReferenceObject(schema)) {
     return createReferenceType(getRefName(schema));
   } else {
@@ -112,7 +109,7 @@ export const convertToTypeScriptType = (
         );
       }
       case 'array':
-        return createArrayType(convertToTypeScriptType(schema.items, property));
+        return createArrayType(convertToTypeScriptType(schema.items));
       default:
         return createRawType('unknown');
     }
