@@ -1,12 +1,13 @@
 import { GeneratorOptions } from '@generator/generate';
 import { logger } from '@logger';
-import { concat } from '@utils/concat';
 import { generateBlockComment } from '@ts/generateComment';
 import { generateInterface } from '@ts/generateInterface';
 import { generateBlockStatements, generateStatements } from '@ts/generateStatements';
+import { concat } from '@utils/concat';
 import { WeclappEndpointType } from '@utils/weclapp/parseEndpointPath';
 import { camelCase, pascalCase } from 'change-case';
 import { OpenAPIV3 } from 'openapi-types';
+import { GeneratedEntity } from '../03-entities';
 import { generateCountEndpoint } from './endpoints/count';
 import { generateCreateEndpoint } from './endpoints/create';
 import { generateGenericEndpoint } from './endpoints/generic';
@@ -16,7 +17,6 @@ import { generateUniqueEndpoint } from './endpoints/unique';
 import { generateUpdateEndpoint } from './endpoints/update';
 import { GeneratedServiceFunction, ServiceFunctionGenerator } from './types';
 import { parseEndpointsAndGroupByEntity } from './utils/parseEndpointsAndGroupByEntity';
-import { GeneratedEntity } from '../03-entities';
 
 export interface ExtendedGeneratedServiceFunction extends GeneratedServiceFunction {
   path: OpenAPIV3.OperationObject;
@@ -62,6 +62,8 @@ const generators: Record<WeclappEndpointType, Record<string, ServiceFunctionGene
     post: generateGenericEndpoint()
   }
 };
+
+export const RESERVERD_FUNCTION_NAMES = ['update', 'some', 'count', 'unique', 'create', 'delete'];
 
 export const generateServices = (
   paths: OpenAPIV3.PathsObject,
