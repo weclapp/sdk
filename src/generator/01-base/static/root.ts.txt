@@ -53,10 +53,17 @@ export const raw = async (
       res = requestOptions?.signal ?  await fetch(res, { signal: requestOptions.signal } ) : await fetch(res);
     }
     res = (await interceptResponse(res)) ?? res;
-    data =
-      (!payload.forceBlob || !res.ok) && res.headers?.get('content-type')?.includes('application/json')
-        ? await res.json()
-        : await res.blob();
+
+    if (res.ok) {
+      data =
+        payload.forceBlob || !res.headers?.get('content-type')?.includes('application/json')
+          ? await res.blob()
+          : await res.json();
+    } else {
+      data = res.headers?.get('content-type')?.includes('application/json')
+          ? await res.json()
+          : res;
+    }
 
     // Check if response was successful
     if (!res.ok) {
