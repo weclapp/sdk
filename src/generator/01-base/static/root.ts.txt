@@ -128,8 +128,8 @@ const _generic = (
     raw({ ...cfg, multiRequest: false }, endpoint, {
       method: usePost ? 'POST' : method,
       forceBlob,
-      ...(usePost ?
-        { body: { ...payload?.body, ...payload?.params } }
+      ...(usePost && method === 'GET' ?
+        { body: { ...payload?.params } }
         :
         { body: payload?.body, query: payload?.params } )
   }, requestOptions))
