@@ -122,11 +122,15 @@ const _generic = (
   forceBlob?: boolean,
   requestOptions?: RequestOptions
 ) =>
-  wrapResponse(() =>
+{
+  const usePost = cfg?.usePost ?? globalConfig?.usePost
+  return wrapResponse(() =>
     raw({ ...cfg, multiRequest: false }, endpoint, {
-      method,
+      method: usePost ? 'POST' : method,
       forceBlob,
-      body: payload?.body,
-      query: payload?.params
-    }, requestOptions)
-);
+      ...(usePost && method === 'GET' ?
+        { body: { ...payload?.params } }
+        :
+        { body: payload?.body, query: payload?.params } )
+  }, requestOptions))
+};
