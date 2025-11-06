@@ -25,7 +25,7 @@ export const generateUniqueEndpoint: ServiceFunctionGenerator = ({
     name: functionName,
     signature: functionTypeName,
     params: ['id', 'query', 'requestOptions?: RequestOptions'],
-    returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, { id: '${id}' })}\`, query, requestOptions?: RequestOptions)`
+    returns: `_${functionName}(cfg, \`${insertPathPlaceholder(endpoint.path, { id: '${id}' })}\`, query, requestOptions)`
   });
 
   return {
