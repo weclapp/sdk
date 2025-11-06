@@ -30,8 +30,10 @@ export interface ObjectType extends Type {
 
   isFullyOptional(): boolean;
 
-  toString(propagateOptionalProperties?: boolean): string;
+  toString(propertyPropagationOption?: PropertyPropagationOption): string;
 }
+
+export type PropertyPropagationOption = 'ignore' | 'propagate' | 'force';
 
 export const createReferenceType = (value: string): ReferenceType => ({
   type: 'reference',
@@ -63,7 +65,7 @@ export const createObjectType = (value: Record<string, Type | undefined>, requir
         .every((v) => (v as ObjectType).isFullyOptional())
     );
   },
-  toString: (propagateOptionalProperties = false) => {
+  toString: (propertyPropagationOption = 'ignore') => {
     const properties = Object.entries(value)
       .filter((v) => v[1])
       .map((v) => {
@@ -71,7 +73,8 @@ export const createObjectType = (value: Record<string, Type | undefined>, requir
         const value = v[1] as AnyType;
         const isRequired =
           required.includes(name) ||
-          (value.type === 'object' && !value.isFullyOptional() && propagateOptionalProperties);
+          propertyPropagationOption === 'force' ||
+          (value.type === 'object' && !value.isFullyOptional() && propertyPropagationOption === 'propagate');
         return `${name + (isRequired ? '' : '?')}: ${value.toString()};`;
       });
 
