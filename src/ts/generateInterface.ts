@@ -2,7 +2,7 @@ import { generateInlineComment } from '@ts/generateComment';
 import { generateType } from '@ts/generateType';
 import { arrayify } from '@utils/arrayify';
 import { indent } from '@utils/indent';
-import { ObjectType } from '@utils/openapi/convertToTypeScriptType';
+import { ObjectType, PropertyPropagationOption } from '@utils/openapi/convertToTypeScriptType';
 
 export interface InterfaceProperty {
   name: string;
@@ -31,8 +31,8 @@ const generateInterfaceProperties = (entries: InterfaceProperty[]): string => {
 export const generateInterfaceFromObject = (
   name: string,
   obj: ObjectType,
-  propagateOptionalProperties?: boolean
-): string => `export interface ${name} ${obj.toString(propagateOptionalProperties)}`;
+  propertyPropagationOption?: PropertyPropagationOption
+): string => `export interface ${name} ${obj.toString(propertyPropagationOption)}`;
 
 export const generateInterface = (name: string, entries: InterfaceProperty[], extend?: string | string[]): string => {
   const signature = `${name} ${extend ? `extends ${arrayify(extend).join(', ')}` : ''}`.trim();

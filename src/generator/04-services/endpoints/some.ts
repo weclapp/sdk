@@ -98,7 +98,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   const parametersType = createObjectType({
     params: convertToTypeScriptType(convertParametersToSchema(parameters))
   });
-  const parametersTypeSource = generateInterfaceFromObject(parametersTypeName, parametersType, true);
+  const parametersTypeSource = generateInterfaceFromObject(parametersTypeName, parametersType, 'propagate');
 
   const filterTypeName = `${functionTypeName}_Filter`;
   const filterTypeSource = generateInterfaceType(filterTypeName, [], [`${entity}_${FILTER_PROPS_SUFFIX}`]);

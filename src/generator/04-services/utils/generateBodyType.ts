@@ -16,5 +16,5 @@ export const generateBodyType = (
     }
   }
 
-  return types.length ? createTupleType(types) : undefined;
+  return types.length ? (types.length === 1 ? types[0] : createTupleType(types)) : undefined;
 };

@@ -44,7 +44,7 @@ export const generateGenericEndpoint =
         `query${params.isFullyOptional() ? '?' : ''}: ${entityQuery}`,
         'requestOptions?: RequestOptions'
       ],
-      returns: `${resolveResponseType(target)}<${wrapBody(responseBody, target).toString()}>`
+      returns: `${resolveResponseType(target)}<${wrapBody(responseBody, target).toString('force')}>`
     });
 
     const functionSource = generateArrowFunction({
@@ -62,7 +62,7 @@ export const generateGenericEndpoint =
       interfaces: [
         {
           name: entityQuery,
-          source: generateInterfaceFromObject(entityQuery, params, true)
+          source: generateInterfaceFromObject(entityQuery, params, 'propagate')
         }
       ]
     };
