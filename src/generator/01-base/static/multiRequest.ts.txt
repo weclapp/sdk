@@ -20,7 +20,7 @@ const SQUARE_BRACKET_OPEN = '['.charCodeAt(0);
 const COMMA = ','.charCodeAt(0);
 const DECODER = new TextDecoder();
 
-const readNextResponse = (bytes: Uint8Array) => {
+const readNextResponse = (bytes: Uint8Array<ArrayBuffer>) => {
   let headerStart: number | undefined = undefined;
   let commasSeen = 0;
 
