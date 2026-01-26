@@ -12,6 +12,7 @@ import { pascalCase } from 'change-case';
 import { OpenAPIV3 } from 'openapi-types';
 import { generateType } from '@ts/generateType';
 import { FILTER_PROPS_SUFFIX, GeneratedEntity } from '../../03-entities';
+import { generateTupleArray } from '@ts/generateTupleArray';
 
 const excludedParameters = [
   'page',
@@ -106,8 +107,12 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   const referencesTypeName = `${functionTypeName}_References`;
   const referencesTypeSource = generateInterfaceType(referencesTypeName, resolveReferences(endpoint.service, entities));
 
-  const additionalPropertyTypeName = `${functionTypeName}_AdditionalProperty`;
-  const additionalPropertyTypeSource = generateType(additionalPropertyTypeName, 'string');
+  const additionalPropertiesSchema = resolveAdditionalPropertiesSchema(path);
+  const additionalPropertyTypeName = `${functionTypeName}_AdditionalPropertyNames`;
+  const additionalPropertyTypeSource = generateType(
+    additionalPropertyTypeName,
+    additionalPropertiesSchema ? generateTupleArray(Object.keys(additionalPropertiesSchema?.properties)) : '[]'
+  );
 
   const queryTypeName = `${functionTypeName}_Query`;
   const queryTypeSource = generateType(
@@ -122,7 +127,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   );
 
   const additionalPropertiesTypeName = `${functionTypeName}_AdditionalProperties`;
-  const additionalPropertiesSchema = resolveAdditionalPropertiesSchema(path);
+
   const additionalPropertiesTypeSource = generateType(
     additionalPropertiesTypeName,
     additionalPropertiesSchema ? convertToTypeScriptType(additionalPropertiesSchema).toString() : '{}'
