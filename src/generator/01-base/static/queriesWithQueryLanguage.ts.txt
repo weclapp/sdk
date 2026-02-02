@@ -64,9 +64,23 @@ export type LengthOperator = 'LENGTH';
 
 export type ArrayOperator = 'IN';
 
+export type CaseOperator = 'CASE';
+
+export type CaseNode<FilterProps, PropType> = {
+  [K in CaseOperator]: CaseExpression<FilterProps, PropType>;
+};
+
+export type CaseExpression<FilterProps, PropType> = {
+  IF: SingleFilterExpr<FilterProps>;
+  THEN: PropType;
+  ELSE: PropType | CaseNode<FilterProps, PropType>;
+};
+
 export type NullOperator = 'NULL';
 
-export type Operator = ComparisonOperator | ArrayOperator | NullOperator;
+export type Operator = ComparisonOperator | ArrayOperator | CaseOperator | NullOperator;
+
+export type BinaryOperator = Exclude<Operator, CaseOperator>;
 
 export type ModifierFunction = 'LOWER' | 'TRIM';
 
@@ -109,10 +123,10 @@ export type SingleFilterExpr<T> = {
   [P in keyof T]?: T[P] extends Array<infer U> | undefined
     ? U extends Record<any, any>
       ? SingleFilterExpr<U> | { NOT?: SingleFilterExpr<U> }
-      : MapOperators<U>
+      : MapOperators<U> | CaseNode<T, T[P]>
     : T[P] extends Record<any, any> | undefined
       ? SingleFilterExpr<T[P]> | { NOT?: SingleFilterExpr<T[P]> }
-      : MapOperators<T[P]>;
+      : MapOperators<T[P]> | CaseNode<T, T[P]>;
 };
 
 export type QueryFilter<T> = SingleFilterExpr<T> & {
@@ -178,7 +192,7 @@ const comparisonOperatorList: ComparisonOperator[] = [
   'LIKE'
 ];
 
-const comparisonOperatorMap: Record<Operator, string> = {
+const comparisonOperatorMap: Record<BinaryOperator, string> = {
   EQ: '=',
   NE: '!=',
   LT: '<',
@@ -250,13 +264,15 @@ const flattenWhere = (
             `${setModifiers.reduce(
               (acc, [first]) => `${first.toLowerCase()}(${acc})`,
               nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
-            )} ${comparisonOperatorMap[operator as Operator]} ${
-              typeof value === 'string' ? JSON.stringify(value) : value
+            )} ${comparisonOperatorMap[operator as BinaryOperator]} ${
+              typeof value === 'string'
+                ? setModifiers.reduce((acc, [first]) => `${first}(${acc})`, JSON.stringify(value))
+                : value
             }`
           );
         } else if ((operator as Operator) === 'NULL') {
           entries.push(
-            `${!value ? 'not ' : ''}${nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')} ${comparisonOperatorMap[operator as Operator]}`
+            `${!value ? 'not ' : ''}${nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')} ${comparisonOperatorMap[operator as BinaryOperator]}`
           );
         } else if ((operator as Operator) === 'IN') {
           if(value.length === 0) {
@@ -266,11 +282,13 @@ const flattenWhere = (
               `${setModifiers.reduce(
                 (acc, [first]) => `${first.toLowerCase()}(${acc})`,
                 nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
-              )} ${comparisonOperatorMap[operator as Operator]} [${value.map((v: string | number) =>
-                typeof v === 'string' ? JSON.stringify(v) : v
+              )} ${comparisonOperatorMap[operator as BinaryOperator]} [${value.map((v: string | number) =>
+                typeof v === 'string' ? setModifiers.reduce((acc, [first]) => `${first}(${acc})`, JSON.stringify(v)) : v
               )}]`
             );
           }
+        } else if ((operator as Operator) === 'CASE') {
+          entries.push(evaluateCaseExpression(value as CaseExpression<any, any>, setModifiers, nestedPaths));
         } else if ((operator as LengthOperator) === 'LENGTH') {
           const lengthProp = `length(${setModifiers.reduce(
             (acc, [first]) => `${first.toLowerCase()}(${acc})`,
@@ -294,6 +312,23 @@ const flattenWhere = (
   }
   return entries;
 };
+
+const evaluateCaseExpression = <FilterProps, PropType>(
+  exp: CaseExpression<FilterProps, PropType>,
+  setModifiers: [string, any][],
+  nestedPaths: string[]
+): string =>
+  `(${flattenWhere(exp.IF, nestedPaths)} ? ${
+    typeof exp.THEN === 'string'
+      ? setModifiers.reduce((acc, [first]) => `${first}(${acc})`, JSON.stringify(exp.THEN))
+      : exp.THEN
+  } : ${
+    typeof exp.ELSE === 'string'
+      ? setModifiers.reduce((acc, [first]) => `${first}(${acc})`, JSON.stringify(exp.ELSE))
+      : typeof exp.ELSE === 'number' || typeof exp.ELSE === 'boolean'
+        ? exp.ELSE
+        : evaluateCaseExpression((exp.ELSE as CaseNode<FilterProps, PropType>).CASE, setModifiers, nestedPaths)
+  })`;
 
 const assembleOrderBy = (orderBy: OrderBy<any>[] = []): Record<string, string> => {
   if(!orderBy.length) {
