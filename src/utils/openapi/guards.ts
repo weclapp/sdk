@@ -43,27 +43,15 @@ export const isNonArraySchemaObject = (v: any): v is OpenAPIV3.NonArraySchemaObj
   return isObject(v) && ['string', 'undefined'].includes(typeof v.type);
 };
 
-export const isFilterPathsSchemaObject = (v: any): v is WeclappSchemaObject => {
-  return isObject(v) && v.type === 'object' && isObject(v['x-weclapp-filterPaths']);
-};
-
-export const isFilterPropertySchemaObject = (v: any): v is WeclappSchemaObject => {
-  return isObject(v) && v.type === 'object' && isObject(v['x-weclapp-filterProperties']);
-};
-
-export interface WeclappMetaProperties {
+export interface WeclappExtension {
   entity?: string;
   service?: string;
   required?: boolean;
   filterable?: boolean;
 }
 
-export interface WeclappSchemaObject extends OpenAPIV3.NonArraySchemaObject {
-  'x-weclapp': WeclappMetaProperties;
-  'x-weclapp-filterPaths': Record<string, string>;
-  'x-weclapp-filterProperties': Record<string, OpenAPIV3.SchemaObject>;
+export interface ExtendedSchema {
+  'x-weclapp'?: WeclappExtension;
+  'x-weclapp-filterPaths'?: Record<string, string>;
+  'x-weclapp-filterProperties'?: Record<string, OpenAPIV3.SchemaObject>;
 }
-
-export const isRelatedEntitySchema = (v: any): v is WeclappSchemaObject => {
-  return isObject(v) && isNonArraySchemaObject(v) && 'x-weclapp' in v && isObject(v['x-weclapp']);
-};

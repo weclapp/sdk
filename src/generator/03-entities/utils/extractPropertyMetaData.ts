@@ -1,8 +1,8 @@
-import { GeneratedEnum } from '@generator/02-enums';
 import { loosePascalCase } from '@utils/case';
 import { getRefName } from '@utils/openapi/convertToTypeScriptType';
-import { isArraySchemaObject, isReferenceObject, WeclappMetaProperties } from '@utils/openapi/guards';
+import { ExtendedSchema, isArraySchemaObject, isEnumSchemaObject, isReferenceObject } from '@utils/openapi/guards';
 import { OpenAPIV3 } from 'openapi-types';
+import { OpenApiContext } from '@utils/weclapp/extractContext';
 
 export interface PropertyMetaData {
   type?: string;
@@ -12,53 +12,49 @@ export interface PropertyMetaData {
   service?: string;
   entity?: string;
   enum?: string;
-  filterable?: boolean;
 }
 
-const setEntityEnumProperty = (
-  enums: Map<string, GeneratedEnum>,
-  prop: OpenAPIV3.ReferenceObject,
-  meta: PropertyMetaData
-) => {
+const setReferenceMeta = (prop: OpenAPIV3.ReferenceObject, metaData: PropertyMetaData, context: OpenApiContext) => {
   const referenceName = getRefName(prop);
-  const enumName = loosePascalCase(referenceName);
+  const referenceSchema = context.schemas.get(referenceName);
 
-  if (enums.has(enumName)) {
-    meta.enum = enumName;
+  if (isEnumSchemaObject(referenceSchema)) {
+    metaData.enum = loosePascalCase(referenceName);
   } else {
-    meta.entity = referenceName;
+    metaData.entity = referenceName;
   }
 };
 
 export const extractPropertyMetaData = (
-  enums: Map<string, GeneratedEnum>,
-  meta: WeclappMetaProperties,
-  prop: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject
+  prop: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject,
+  context: OpenApiContext
 ): PropertyMetaData => {
-  const result: PropertyMetaData = {
-    service: meta.service,
-    entity: meta.entity
-  };
+  const metaData: PropertyMetaData = {};
 
-  if (isReferenceObject(prop)) {
-    setEntityEnumProperty(enums, prop, result);
-    result.type = 'reference';
-    return result;
+  const weclappExtension = (prop as ExtendedSchema)['x-weclapp'];
+  if (weclappExtension) {
+    metaData.service = weclappExtension.service;
+    metaData.entity = weclappExtension.entity;
   }
 
-  result.type = prop.type;
-  result.format = prop.format;
-  result.maxLength = prop.maxLength;
-  result.pattern = prop.pattern;
+  if (isReferenceObject(prop)) {
+    metaData.type = 'reference';
+    setReferenceMeta(prop, metaData, context);
+  } else {
+    metaData.type = prop.type;
+    metaData.format = prop.format;
+    metaData.maxLength = prop.maxLength;
+    metaData.pattern = prop.pattern;
 
-  if (isArraySchemaObject(prop)) {
-    if (isReferenceObject(prop.items)) {
-      setEntityEnumProperty(enums, prop.items, result);
-      result.format = 'reference';
-    } else {
-      result.format = 'string';
+    if (isArraySchemaObject(prop)) {
+      if (isReferenceObject(prop.items)) {
+        metaData.format = 'reference';
+        setReferenceMeta(prop.items, metaData, context);
+      } else {
+        metaData.format = 'string';
+      }
     }
   }
 
-  return result;
+  return metaData;
 };

@@ -1,10 +1,10 @@
-import { GeneratedService } from '@generator/04-services';
 import { generateArray } from '@ts/generateArray';
 import { generateInterface, InterfaceProperty } from '@ts/generateInterface';
 import { generateStatements } from '@ts/generateStatements';
 import { generateType } from '@ts/generateType';
 import { indent } from '@utils/indent';
 import { camelCase, pascalCase } from 'change-case';
+import { GeneratedService } from '../../04-services/types';
 
 // Only functions matching this regex are included in the generation.
 const FILTER_REGEX = /^(some|count|create|remove|unique|update)$/;

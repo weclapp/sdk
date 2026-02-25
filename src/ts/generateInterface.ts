@@ -6,11 +6,10 @@ import { ObjectType, PropertyPropagationOption } from '@utils/openapi/convertToT
 
 export interface InterfaceProperty {
   name: string;
-  type?: string;
+  type: string;
   required?: boolean;
   readonly?: boolean;
   comment?: string;
-  filterable?: boolean;
 }
 
 const generateInterfaceProperties = (entries: InterfaceProperty[]): string => {
@@ -21,7 +20,7 @@ const generateInterfaceProperties = (entries: InterfaceProperty[]): string => {
       const cmd = comment ? `${generateInlineComment(comment)}\n` : '';
       const req = required ? '' : '?';
       const rol = readonly ? 'readonly ' : '';
-      return `${cmd + rol + name + req}: ${type as string};`;
+      return `${cmd + rol + name + req}: ${type};`;
     })
     .join('\n');
 

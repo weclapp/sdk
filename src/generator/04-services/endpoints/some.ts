@@ -1,17 +1,17 @@
 import { resolveResponseType } from '../../../target';
 import { GeneratedServiceFunction, ServiceFunctionGenerator } from '@generator/04-services/types';
-import { resolveBodyType } from '@generator/04-services/utils/generateResponseBodyType';
 import { generateArrowFunction } from '@ts/generateArrowFunction';
 import { generateArrowFunctionType } from '@ts/generateArrowFunctionType';
 import { generateInterfaceFromObject, generateInterfaceType, InterfaceProperty } from '@ts/generateInterface';
 import { generateString } from '@ts/generateString';
-import { convertParametersToSchema } from '@utils/openapi/convertParametersToSchema';
 import { convertToTypeScriptType, createObjectType } from '@utils/openapi/convertToTypeScriptType';
 import { isObjectSchemaObject, isParameterObject, isResponseObject } from '@utils/openapi/guards';
 import { pascalCase } from 'change-case';
 import { OpenAPIV3 } from 'openapi-types';
 import { generateType } from '@ts/generateType';
-import { FILTER_PROPS_SUFFIX, GeneratedEntity } from '../../03-entities';
+import { GeneratedEntity } from '../../03-entities';
+import { resolveResponsesObject } from '../utils/resolveResponsesObject';
+import { resolveParameters } from '../utils/resolveParameters';
 
 const excludedParameters = [
   'page',
@@ -23,8 +23,8 @@ const excludedParameters = [
   'additionalProperties'
 ];
 
-const resolveAdditionalPropertiesSchema = (path: OpenAPIV3.OperationObject) => {
-  const body = resolveBodyType(path);
+const resolveAdditionalPropertiesSchema = ({ responses }: OpenAPIV3.OperationObject) => {
+  const body = resolveResponsesObject(responses);
 
   if (isResponseObject(body)) {
     const schema = body?.content?.['application/json']?.schema;
@@ -66,12 +66,14 @@ const resolveReferencedEntities = (entity: string, entities: Map<string, Generat
   const generatedEntity = entities.get(entity);
   if (generatedEntity) {
     for (const [, propertyMetaData] of generatedEntity.properties) {
-      if (propertyMetaData.entity && propertyMetaData.service) {
-        referencedEntities.push({
-          name: propertyMetaData.service,
-          type: `${pascalCase(propertyMetaData.entity)}[]`,
-          required: true
-        });
+      if (propertyMetaData.service && propertyMetaData.entity) {
+        const referencedEntity = entities.get(propertyMetaData.entity);
+        if (referencedEntity)
+          referencedEntities.push({
+            name: propertyMetaData.service,
+            type: `${referencedEntity.interfaceName}[]`,
+            required: true
+          });
       }
     }
     if (generatedEntity.parentName) {
@@ -83,25 +85,32 @@ const resolveReferencedEntities = (entity: string, entities: Map<string, Generat
 
 export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   endpoint,
-  target,
-  path,
+  operationObject,
   entities,
-  aliases
+  context,
+  options
 }): GeneratedServiceFunction => {
   const functionName = 'some';
   const functionTypeName = `${pascalCase(endpoint.service)}Service_${pascalCase(functionName)}`;
-  const entity = aliases.get(endpoint.service) ?? pascalCase(endpoint.service);
+
+  const relatedEntityName = context.aliases.get(endpoint.service);
+  const relatedEntity = !!relatedEntityName && entities.get(relatedEntityName);
+
+  if (!relatedEntity) {
+    throw Error(`Related entity schema for service ${endpoint.service} not found`);
+  }
 
   const parametersTypeName = `${functionTypeName}_Parameters`;
-  const parameters =
-    path.parameters?.filter((v) => (isParameterObject(v) ? !excludedParameters.includes(v.name) : false)) ?? [];
+  const parameters = operationObject.parameters?.filter((v) =>
+    isParameterObject(v) ? !excludedParameters.includes(v.name) : false
+  );
   const parametersType = createObjectType({
-    params: convertToTypeScriptType(convertParametersToSchema(parameters))
+    params: parameters && convertToTypeScriptType(resolveParameters(parameters, context.parameters))
   });
   const parametersTypeSource = generateInterfaceFromObject(parametersTypeName, parametersType, 'propagate');
 
   const filterTypeName = `${functionTypeName}_Filter`;
-  const filterTypeSource = generateInterfaceType(filterTypeName, [], [`${entity}_${FILTER_PROPS_SUFFIX}`]);
+  const filterTypeSource = generateInterfaceType(filterTypeName, [], [`${relatedEntity.filterInterfaceName}`]);
 
   const referencesTypeName = `${functionTypeName}_References`;
   const referencesTypeSource = generateInterfaceType(referencesTypeName, resolveReferences(endpoint.service, entities));
@@ -112,7 +121,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   const queryTypeName = `${functionTypeName}_Query`;
   const queryTypeSource = generateType(
     queryTypeName,
-    `SomeQuery<${entity}, ${filterTypeName}, ${referencesTypeName}, ${additionalPropertyTypeName}> & ${parametersTypeName}`
+    `SomeQuery<${relatedEntity.interfaceName}, ${filterTypeName}, ${referencesTypeName}, ${additionalPropertyTypeName}> & ${parametersTypeName}`
   );
 
   const referencedEntitiesTypeName = `${functionTypeName}_ReferencedEntities`;
@@ -122,7 +131,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   );
 
   const additionalPropertiesTypeName = `${functionTypeName}_AdditionalProperties`;
-  const additionalPropertiesSchema = resolveAdditionalPropertiesSchema(path);
+  const additionalPropertiesSchema = resolveAdditionalPropertiesSchema(operationObject);
   const additionalPropertiesTypeSource = generateType(
     additionalPropertiesTypeName,
     additionalPropertiesSchema ? convertToTypeScriptType(additionalPropertiesSchema).toString() : '{}'
@@ -131,7 +140,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
     params: [`query${parametersType.isFullyOptional() ? '?' : ''}: ${queryTypeName}, requestOptions?: RequestOptions`],
-    returns: `${resolveResponseType(target)}<SomeQueryReturn<${entity}, ${referencedEntitiesTypeName}, ${additionalPropertiesTypeName}>>`
+    returns: `${resolveResponseType(options.target)}<SomeQueryReturn<${relatedEntity.interfaceName}, ${referencedEntitiesTypeName}, ${additionalPropertiesTypeName}>>`
   });
 
   const functionSource = generateArrowFunction({
@@ -142,7 +151,6 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   });
 
   return {
-    entity,
     name: functionName,
     type: { name: functionTypeName, source: functionTypeSource },
     func: { name: functionName, source: functionSource },
