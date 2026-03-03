@@ -17,7 +17,7 @@ export type CaseNode<FilterProps, PropType> = {
 
 export type CaseExpression<FilterProps, PropType> = {
   IF: SingleFilterExpr<FilterProps>;
-  THEN: PropType;
+  THEN: PropType | CaseNode<FilterProps, PropType>;
   ELSE: PropType | CaseNode<FilterProps, PropType>;
 };
 
@@ -30,14 +30,14 @@ export type BinaryOperator = Exclude<Operator, CaseOperator>;
 export type ModifierFunction = 'lower';
 
 export type MapOperators<T> =
-  | ({ [K in ComparisonOperator]?: T }
-    & { [K in ArrayOperator]?: T[] }
-    & { [K in NullOperator]?: never }
-    & { [K in ModifierFunction]?: boolean })
-  | ({ [K in ComparisonOperator]?: T }
-    & { [K in ArrayOperator]?: T[] }
-    & { [K in NullOperator]?: boolean }
-    & { [K in ModifierFunction]?: never });
+  | ({ [K in ComparisonOperator]?: T } & { [K in ArrayOperator]?: T[] } & {
+      [K in NullOperator]?: never } & {
+      [K in ModifierFunction]?: boolean
+    })
+  | ({ [K in ComparisonOperator]?: T } & { [K in ArrayOperator]?: T[] } & {
+      [K in NullOperator]?: boolean } & {
+      [K in ModifierFunction]?: never
+    });
 
 export type SingleFilterExpr<T> = {
   [P in keyof T]?: T[P] extends Array<infer U> | undefined
