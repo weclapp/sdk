@@ -72,7 +72,7 @@ export type CaseNode<FilterProps, PropType> = {
 
 export type CaseExpression<FilterProps, PropType> = {
   IF: SingleFilterExpr<FilterProps>;
-  THEN: PropType;
+  THEN: PropType | CaseNode<FilterProps, PropType>;
   ELSE: PropType | CaseNode<FilterProps, PropType>;
 };
 
