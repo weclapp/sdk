@@ -15,7 +15,7 @@ export type NullOperator = 'NULL';
 
 export type Operator = ComparisonOperator | ArrayOperator | NullOperator;
 
-export type ModifierFunction = 'lower' | 'trim';
+export type ModifierFunction = 'LOWER' | 'TRIM';
 
 export type LengthExpr = {
   [K in LengthOperator]: {
@@ -99,7 +99,7 @@ const comparisonOperatorMap: Record<Operator, string> = {
   NULL: 'null'
 };
 
-const modifierFunctionList: ModifierFunction[] = ['lower', 'trim'];
+const modifierFunctionList: ModifierFunction[] = ['LOWER', 'TRIM'];
 
 const flattenWhere = (
   obj: QueryFilter<any> = {},
@@ -157,7 +157,7 @@ const flattenWhere = (
         if (comparisonOperatorList.includes(operator as ComparisonOperator)) {
           entries.push(
             `${setModifiers.reduce(
-              (acc, [first]) => `${first}(${acc})`,
+              (acc, [first]) => `${first.toLowerCase()}(${acc})`,
               nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
             )} ${comparisonOperatorMap[operator as Operator]} ${
               typeof value === 'string' ? JSON.stringify(value) : value
@@ -173,7 +173,7 @@ const flattenWhere = (
           } else {
             entries.push(
               `${setModifiers.reduce(
-                (acc, [first]) => `${first}(${acc})`,
+                (acc, [first]) => `${first.toLowerCase()}(${acc})`,
                 nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
               )} ${comparisonOperatorMap[operator as Operator]} [${value.map((v: string | number) =>
                 typeof v === 'string' ? JSON.stringify(v) : v
@@ -182,12 +182,13 @@ const flattenWhere = (
           }
         } else if ((operator as LengthOperator) === 'LENGTH') {
           const lengthProp = `length(${setModifiers.reduce(
-            (acc, [first]) => `${first}(${acc})`,
+            (acc, [first]) => `${first.toLowerCase()}(${acc})`,
             nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
           )})`;
           entries.push(...flattenWhere({ [lengthProp]: value } as QueryFilter<any>, []));
         } else if (
           !modifierFunctionList.includes(operator as ModifierFunction)
+          && typeof value === 'object'
         ) {
           entries.push(
             ...flattenWhere(propValue as QueryFilter<any>, [
