@@ -229,15 +229,19 @@ const _some = (
     const usePost = cfg?.usePost ?? globalConfig?.usePost
     const payload = {
       serializeNulls: query?.serializeNulls,
-      additionalProperties: query?.properties?.join(','),
+      additionalProperties: usePost ? query?.properties : query?.properties?.join(','),
       properties: query?.select
-        ? flattenSelect(query.select).join(',')
+        ? usePost
+          ? flattenSelect(query.select)
+          : flattenSelect(query.select).join(',')
         : undefined,
       includeReferencedEntities: query?.include
-        ? Object.keys(query.include).join(',')
+        ? usePost
+          ? Object.keys(query.include)
+          : Object.keys(query.include).join(',')
         : undefined,
       ...assembleFilterParam(query?.where),
-      ...flattenSort(query?.sort),
+      ...flattenSort(query?.sort, usePost),
       ...query?.params,
       ...query?.pagination
     }
