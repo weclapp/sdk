@@ -98,16 +98,13 @@ const resolveArrayReferenceProperties = (
   return properties;
 };
 
+// TODO: check v1 and v2
 // TODO: remove boolean from arrays in QuerySelect
 const resolveReferences = (entity: string, entities: Map<string, GeneratedEntity>) => {
   const references: InterfaceProperty[] = [];
   const generatedEntity = entities.get(entity);
   if (generatedEntity) {
-    if (entity === 'warehouseStock') {
-      console.log('generatedEntity', generatedEntity);
-    }
     for (const [property, propertyMetaData] of generatedEntity.properties) {
-      // TODO: filter things like tags in opportunity
       if (propertyMetaData.type === 'array') {
         if (propertyMetaData.entity === 'onlyId') {
           references.push({
@@ -129,8 +126,7 @@ const resolveReferences = (entity: string, entities: Map<string, GeneratedEntity
         if (propertyMetaData.service) {
           references.push({
             name: property,
-            // TODO: maybe just string
-            type: generateString(propertyMetaData.service),
+            type: 'string',
             required: true
           });
         }
@@ -141,32 +137,7 @@ const resolveReferences = (entity: string, entities: Map<string, GeneratedEntity
     }
   }
 
-  if (entity === 'warehouseStock') {
-    console.log('references', references);
-  }
   return references;
-};
-
-const resolveReferencedEntities = (entity: string, entities: Map<string, GeneratedEntity>) => {
-  const referencedEntities: InterfaceProperty[] = [];
-  const generatedEntity = entities.get(entity);
-  if (generatedEntity) {
-    for (const [, propertyMetaData] of generatedEntity.properties) {
-      if (propertyMetaData.service && propertyMetaData.entity) {
-        const referencedEntity = entities.get(propertyMetaData.entity);
-        if (referencedEntity)
-          referencedEntities.push({
-            name: propertyMetaData.service,
-            type: `${referencedEntity.interfaceName}[]`,
-            required: true
-          });
-      }
-    }
-    if (generatedEntity.parentName) {
-      referencedEntities.push(...resolveReferencedEntities(generatedEntity.parentName, entities));
-    }
-  }
-  return referencedEntities;
 };
 
 export const generateSomeEndpoint: ServiceFunctionGenerator = ({
@@ -201,10 +172,6 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   const referencesTypeName = `${functionTypeName}_References`;
   const referencesTypeSource = generateInterfaceType(referencesTypeName, resolveReferences(endpoint.service, entities));
 
-  // if (endpoint.service === 'warehouseStock') {
-  //   console.log('referencesTypeSource', referencesTypeSource);
-  // }
-
   const additionalPropertyTypeName = `${functionTypeName}_AdditionalProperty`;
   const additionalPropertyTypeSource = generateType(additionalPropertyTypeName, 'string');
 
@@ -212,12 +179,6 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   const queryTypeSource = generateType(
     queryTypeName,
     `SomeQuery<${relatedEntity.interfaceName}, ${filterTypeName}, ${referencesTypeName}, ${additionalPropertyTypeName}> & ${parametersTypeName}`
-  );
-
-  const referencedEntitiesTypeName = `${functionTypeName}_ReferencedEntities`;
-  const referencedEntitiesTypeSource = generateInterfaceType(
-    referencedEntitiesTypeName,
-    resolveReferencedEntities(endpoint.service, entities)
   );
 
   const additionalPropertiesTypeName = `${functionTypeName}_AdditionalProperties`;
@@ -230,7 +191,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
     params: [`query${parametersType.isFullyOptional() ? '?' : ''}: ${queryTypeName}, requestOptions?: RequestOptions`],
-    returns: `${resolveResponseType(options.target)}<SomeQueryReturn<${relatedEntity.interfaceName}, ${referencedEntitiesTypeName}, ${additionalPropertiesTypeName}>>`
+    returns: `${resolveResponseType(options.target)}<SomeQueryReturn<${relatedEntity.interfaceName}, ${additionalPropertiesTypeName}>>`
   });
 
   const functionSource = generateArrowFunction({
@@ -250,7 +211,6 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
       { name: referencesTypeName, source: referencesTypeSource },
       { name: additionalPropertyTypeName, source: additionalPropertyTypeSource },
       { name: queryTypeName, source: queryTypeSource },
-      { name: referencedEntitiesTypeName, source: referencedEntitiesTypeSource },
       { name: additionalPropertiesTypeName, source: additionalPropertiesTypeSource }
     ]
   };

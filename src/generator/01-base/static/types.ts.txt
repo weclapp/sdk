@@ -62,9 +62,9 @@ export type UniqueQuery = {
   serializeNulls?: boolean;
 };
 
-export type SomeQueryReturn<E, R, P> = {
+export type SomeQueryReturn<E, P> = {
   entities: E[];
-  references?: R;
+  references?: ReferencedEntities;
   properties?: P[];
 };
 

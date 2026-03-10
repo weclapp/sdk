@@ -1,12 +1,12 @@
 import { extractPropertyMetaData, PropertyMetaData } from '@generator/03-entities/utils/extractPropertyMetaData';
-import { generateInterface, InterfaceProperty } from '@ts/generateInterface';
+import { logger } from '@logger';
+import { generateInterface, generateInterfaceType, InterfaceProperty } from '@ts/generateInterface';
 import { generateStatements } from '@ts/generateStatements';
 import { loosePascalCase } from '@utils/case';
 import { convertToTypeScriptType, createReferenceType, getRefName } from '@utils/openapi/convertToTypeScriptType';
 import { ExtendedSchema, isEnumSchemaObject, isReferenceObject } from '@utils/openapi/guards';
-import { OpenAPIV3 } from 'openapi-types';
-import { logger } from '@logger';
 import { OpenApiContext } from '@utils/weclapp/extractContext';
+import { OpenAPIV3 } from 'openapi-types';
 
 export interface GeneratedEntity {
   name: string;
@@ -22,6 +22,13 @@ export interface GeneratedEntity {
 }
 
 export const FILTER_PROPS_SUFFIX = 'Filter_Props';
+
+const excludedReferencedEntities = new Set([
+  'abstractParty',
+  'abstractEntity',
+  'abstractEntityWithCustomAttributes',
+  'onlyId'
+]);
 
 export const generateEntities = (context: OpenApiContext): Map<string, GeneratedEntity> => {
   const entities: Map<string, GeneratedEntity> = new Map();
@@ -143,4 +150,15 @@ export const generateEntities = (context: OpenApiContext): Map<string, Generated
   }
 
   return entities;
+};
+
+export const generateReferencedEntities = (entities: Map<string, GeneratedEntity>) => {
+  const referencedEntities = [...entities.values()]
+    .filter((entity) => !excludedReferencedEntities.has(entity.name))
+    .map((entity) => ({
+      name: entity.name,
+      type: `${entity.interfaceName}[]`
+    }));
+
+  return generateInterfaceType('ReferencedEntities', referencedEntities);
 };
