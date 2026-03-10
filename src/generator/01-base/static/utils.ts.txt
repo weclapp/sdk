@@ -12,7 +12,8 @@ const flattenSelect = (obj: Select<any, any> = {}): string[] => {
   return entries;
 };
 
-export const flattenSort = (obj: Sort<any>[] = []): { sort?: string } => {
+export const flattenSort = (obj: Sort<any>[] = [], usePost?: boolean):
+{ sort?: string } | { orderBy?: string[] } | Record<string, never> => {
   const flatten = (obj: Sort<any>, base = ''): string | undefined => {
     const [key, value] = Object.entries(obj ?? {})[0] ?? [];
 
@@ -22,13 +23,23 @@ export const flattenSort = (obj: Sort<any>[] = []): { sort?: string } => {
       if (typeof value === 'object') {
         return flatten(value, path ? `${path}.` : '');
       } else if (['asc', 'desc'].includes(value)) {
-        return `${value === 'desc' ? '-' : ''}${path}`;
+        return `${!usePost && value === 'desc' ? '-' : ''}${path}${usePost && value === 'desc' ? ' desc' : ''}`;
       }
     }
 
     return undefined;
   };
 
-  const sorts = obj.map((v) => flatten(v)).filter(Boolean);
-  return sorts.length ? { sort: sorts.join(',') } : {};
+
+  const sorts = obj.map((v) => flatten(v)).filter((x): x is string => typeof x === 'string');
+
+  if (!sorts.length) {
+    return {};
+  }
+
+  if (usePost) {
+    return { orderBy: sorts };
+  } else {
+    return { sort: sorts.join(',') };
+  }
 };
