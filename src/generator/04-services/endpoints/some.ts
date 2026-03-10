@@ -98,8 +98,6 @@ const resolveArrayReferenceProperties = (
   return properties;
 };
 
-// TODO: check v1 and v2
-// TODO: remove boolean from arrays in QuerySelect
 const resolveReferences = (entity: string, entities: Map<string, GeneratedEntity>) => {
   const references: InterfaceProperty[] = [];
   const generatedEntity = entities.get(entity);

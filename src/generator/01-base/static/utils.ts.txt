@@ -12,6 +12,22 @@ const flattenSelect = (obj: Select<any, any> = {}): string[] => {
   return entries;
 };
 
+const flattenIncludedReferences = (obj: QuerySelectIncludedReferences<any> = {}, base = ''): string[] => {
+  const entries: string[] = [];
+
+  for (const [prop, value] of Object.entries(obj)) {
+    const path = base ? `${base}.${prop}` : prop;
+
+    if (typeof value === 'object' && value) {
+      entries.push(...flattenIncludedReferences(value as QuerySelectIncludedReferences<any>, path));
+    } else if (value) {
+      entries.push(path);
+    }
+  }
+
+  return entries;
+};
+
 export const flattenSort = (obj: Sort<any>[] = []): { sort?: string } => {
   const flatten = (obj: Sort<any>, base = ''): string | undefined => {
     const [key, value] = Object.entries(obj ?? {})[0] ?? [];
