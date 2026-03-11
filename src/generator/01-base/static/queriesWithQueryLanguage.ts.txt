@@ -17,6 +17,11 @@ export type Operator = ComparisonOperator | ArrayOperator | NullOperator;
 
 export type ModifierFunction = 'LOWER' | 'TRIM';
 
+// use globalThis to use typescript's 'Pick', since the SDK contains an interface which is also called 'Pick'
+export type RequireAtLeastOne<T> = {
+  [K in keyof T]-?: Required<globalThis.Pick<T, K>> & Partial<Omit<T, K>>;
+}[keyof T];
+
 export type LengthExpr = {
   [K in LengthOperator]: {
     [K in Exclude<ComparisonOperator, 'LIKE'>]?: number
@@ -36,7 +41,7 @@ export type FilterExpr<T> =
   { [K in keyof LengthExpr]?: never };
 
 export type FilterExprWithoutNull<T> =
-  FilterExpr<T> &
+  RequireAtLeastOne<FilterExpr<T>> &
   { [K in NullOperator]?: never } &
   { [K in ModifierFunction]?: boolean };
 
