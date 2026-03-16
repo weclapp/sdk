@@ -1,7 +1,8 @@
-import { Target } from '../../target';
-import { WeclappEndpoint } from '@utils/weclapp/parseEndpointPath';
 import { OpenAPIV3 } from 'openapi-types';
+import { WeclappEndpoint } from '@utils/weclapp/parseEndpointPath';
 import { GeneratedEntity } from '../03-entities';
+import { OpenApiContext } from '@utils/weclapp/extractContext';
+import { GeneratorOptions } from '../generate';
 
 export interface Export {
   name: string;
@@ -9,20 +10,32 @@ export interface Export {
 }
 
 export interface GeneratedServiceFunction {
-  entity: string;
   name: string;
   type: Export;
   func: Export;
   interfaces?: Export[];
 }
 
-export interface ServiceFunctionGeneratorConfig {
-  target: Target;
-  method: string;
+export interface ExtendedGeneratedServiceFunction extends GeneratedServiceFunction {
   path: OpenAPIV3.OperationObject;
-  endpoint: WeclappEndpoint;
-  entities: Map<string, GeneratedEntity>;
-  aliases: Map<string, string>;
 }
 
-export type ServiceFunctionGenerator = (v: ServiceFunctionGeneratorConfig) => GeneratedServiceFunction;
+export interface ServiceFunctionGeneratorConfig {
+  method: string;
+  endpoint: WeclappEndpoint;
+  operationObject: OpenAPIV3.OperationObject;
+  entities: Map<string, GeneratedEntity>;
+  context: OpenApiContext;
+  options: GeneratorOptions;
+}
+
+export type ServiceFunctionGenerator = (config: ServiceFunctionGeneratorConfig) => GeneratedServiceFunction;
+
+export interface GeneratedService {
+  name: string;
+  serviceFnName: string;
+  source: string;
+  deprecated: boolean;
+  functions: ExtendedGeneratedServiceFunction[];
+  relatedEntity?: GeneratedEntity;
+}

@@ -26,7 +26,10 @@ const resolveMappings = (target: Target) =>
 
 const resolveBinaryClass = (target: Target) => `const resolveBinaryObject = () => ${resolveBinaryType(target)};`;
 
-export const generateBase = (target: Target, apiVersion: string, options: GeneratorOptions): string => {
+export const generateBase = (
+  apiVersion: string,
+  { target, useQueryLanguage, generateUnique }: GeneratorOptions
+): string => {
   return generateStatements(
     resolveImports(target),
     `const apiVersion = ${apiVersion}`,
@@ -36,8 +39,8 @@ export const generateBase = (target: Target, apiVersion: string, options: Genera
     types,
     utils,
     root,
-    options.useQueryLanguage ? queriesWithQueryLanguage : queriesWithFilter,
-    options.generateUnique ? unique : '',
+    useQueryLanguage ? queriesWithQueryLanguage : queriesWithFilter,
+    generateUnique ? unique : '',
     multiRequest
   );
 };

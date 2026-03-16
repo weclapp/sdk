@@ -1,7 +1,7 @@
 import { generateEnum } from '@ts/generateEnum';
 import { loosePascalCase } from '@utils/case';
 import { isEnumSchemaObject } from '@utils/openapi/guards';
-import { OpenAPIV3 } from 'openapi-types';
+import { OpenApiContext } from '@utils/weclapp/extractContext';
 
 export interface GeneratedEnum {
   name: string;
@@ -9,10 +9,10 @@ export interface GeneratedEnum {
   properties: string[];
 }
 
-export const generateEnums = (schemas: Map<string, OpenAPIV3.SchemaObject>): Map<string, GeneratedEnum> => {
+export const generateEnums = (context: OpenApiContext): Map<string, GeneratedEnum> => {
   const enums: Map<string, GeneratedEnum> = new Map();
 
-  for (const [schemaName, schema] of schemas) {
+  for (const [schemaName, schema] of context.schemas) {
     if (isEnumSchemaObject(schema)) {
       const enumName = loosePascalCase(schemaName);
 

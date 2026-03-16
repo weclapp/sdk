@@ -1,5 +1,4 @@
 import { GeneratedEntity } from '@generator/03-entities';
-import { GeneratedService } from '@generator/04-services';
 import { generateCustomValueServices } from './utils/generateCustomValueServices';
 import { generateEntityProperties } from '@generator/05-maps/utils/generateEntityProperties';
 import { generateGroupedServices } from '@generator/05-maps/utils/generateGroupedServices';
@@ -8,21 +7,18 @@ import { generateInterface } from '@ts/generateInterface';
 import { generateStatements } from '@ts/generateStatements';
 import { generateType } from '@ts/generateType';
 import { GeneratedEnum } from '../02-enums';
-import { loosePascalCase } from '@utils/case';
 import { generateArray } from '@ts/generateArray';
 import { generateObject } from '@ts/generateObject';
-
-export interface GeneratedMaps {
-  source: string;
-}
+import { OpenApiContext } from '@utils/weclapp/extractContext';
+import { GeneratedService } from '../04-services/types';
 
 export const generateMaps = (
   enums: Map<string, GeneratedEnum>,
   entities: Map<string, GeneratedEntity>,
   services: Map<string, GeneratedService>,
-  aliases: Map<string, string>,
+  context: OpenApiContext,
   options: GeneratorOptions
-): GeneratedMaps => {
+) => {
   const enumInstances = `export const wEnums = ${generateObject(
     [...enums.keys()].map((v) => ({ key: v, value: v }))
   )};`;
@@ -45,41 +41,50 @@ export const generateMaps = (
     }))
   )};`;
 
-  return {
-    source: generateStatements(
-      /* Enums */
-      generateInterface(
-        'WEnums',
-        [...enums.keys()].map((name) => ({ name, type: name, required: true }))
-      ),
-      generateType('WEnum', 'keyof WEnums'),
-      enumInstances,
+  return generateStatements(
+    /* Enums */
+    generateInterface(
+      'WEnums',
+      [...enums.keys()].map((name) => ({ name, type: name, required: true }))
+    ),
+    generateType('WEnum', 'keyof WEnums'),
+    enumInstances,
 
-      /* Entities */
-      generateInterface(
-        'WEntities',
-        [
-          ...[...entities.keys()].map((name) => ({ name, type: loosePascalCase(name), required: true })),
-          ...[...aliases.entries()].map(([name, type]) => ({ name, type, required: true }))
-        ].sort((a, b) => (a.name > b.name ? 1 : -1))
-      ),
-      generateType('WEntity', 'keyof WEntities'),
-      entityNames,
+    /* Entities */
+    generateInterface(
+      'WEntities',
+      [
+        ...[...entities.entries()].map(([name, entity]) => ({
+          name,
+          type: entity.interfaceName,
+          required: true
+        })),
+        ...generatedServices
+          .filter(({ relatedEntity }) => !!relatedEntity)
+          .filter(({ name }) => !entities.get(name))
+          .map(({ name, relatedEntity }) => ({
+            name,
+            type: relatedEntity!.interfaceName,
+            required: true
+          }))
+      ].sort((a, b) => (a.name > b.name ? 1 : -1))
+    ),
+    generateType('WEntity', 'keyof WEntities'),
+    entityNames,
 
-      /* Services */
-      serviceInstances,
-      generateType('WServices', 'typeof wServices'),
-      generateType('WService', 'keyof WServices'),
+    /* Services */
+    serviceInstances,
+    generateType('WServices', 'typeof wServices'),
+    generateType('WService', 'keyof WServices'),
 
-      serviceFactories,
-      generateType('WServiceFactories', 'typeof wServiceFactories'),
+    serviceFactories,
+    generateType('WServiceFactories', 'typeof wServiceFactories'),
 
-      /* Service Utils */
-      generateGroupedServices(generatedServices),
-      generateCustomValueServices(entities, generatedServices),
+    /* Service Utils */
+    generateGroupedServices(generatedServices),
+    generateCustomValueServices(generatedServices),
 
-      /* Entity Properties (Runtime Meta Infos) */
-      generateEntityProperties(entities, aliases, generatedServices, options)
-    )
-  };
+    /* Entity Properties (Runtime Meta Infos) */
+    generateEntityProperties(entities, generatedServices, options)
+  );
 };

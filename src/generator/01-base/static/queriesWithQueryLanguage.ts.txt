@@ -103,23 +103,50 @@ export type ComparisonOperator =
   | 'GE'
   | 'LIKE';
 
+export type LengthOperator = 'LENGTH';
+
 export type ArrayOperator = 'IN';
 
 export type NullOperator = 'NULL';
 
 export type Operator = ComparisonOperator | ArrayOperator | NullOperator;
 
-export type ModifierFunction = 'lower';
+export type ModifierFunction = 'LOWER' | 'TRIM';
 
-export type MapOperators<T> =
-  | ({ [K in ComparisonOperator]?: T } & { [K in ArrayOperator]?: T[] } & {
-      [K in NullOperator]?: never } & {
-      [K in ModifierFunction]?: boolean
-    })
-  | ({ [K in ComparisonOperator]?: T } & { [K in ArrayOperator]?: T[] } & {
-      [K in NullOperator]?: boolean } & {
-      [K in ModifierFunction]?: never
-    });
+// use globalThis to use typescript's 'Pick', since the SDK contains an interface which is also called 'Pick'
+export type RequireAtLeastOne<T> = {
+  [K in keyof T]-?: Required<globalThis.Pick<T, K>> & Partial<Omit<T, K>>;
+}[keyof T];
+
+export type LengthExpr = {
+  [K in LengthOperator]: {
+    [K in Exclude<ComparisonOperator, 'LIKE'>]?: number
+  }
+};
+
+export type LengthExprWithModifier =
+  LengthExpr &
+  { [K in ComparisonOperator]?: never } &
+  { [K in ArrayOperator]?: never } &
+  { [K in NullOperator]?: never } &
+  { [K in ModifierFunction]?: boolean };
+
+export type FilterExpr<T> =
+  { [K in ComparisonOperator]?: T } &
+  { [K in ArrayOperator]?: T[] } &
+  { [K in keyof LengthExpr]?: never };
+
+export type FilterExprWithoutNull<T> =
+  RequireAtLeastOne<FilterExpr<T>> &
+  { [K in NullOperator]?: never } &
+  { [K in ModifierFunction]?: boolean };
+
+export type FilterExprWithNull<T> =
+  FilterExpr<T> &
+  { [K in NullOperator]?: boolean} &
+  { [K in ModifierFunction]?: never };
+
+export type MapOperators<T> = LengthExprWithModifier | FilterExprWithoutNull<T> | FilterExprWithNull<T>;
 
 export type SingleFilterExpr<T> = {
   [P in keyof T]?: T[P] extends Array<infer U> | undefined
@@ -214,7 +241,7 @@ const comparisonOperatorMap: Record<Operator, string> = {
   NULL: 'null'
 };
 
-const modifierFunctionList: ModifierFunction[] = ['lower'];
+const modifierFunctionList: ModifierFunction[] = ['LOWER', 'TRIM'];
 
 const flattenWhere = (
   obj: QueryFilter<any> = {},
@@ -272,12 +299,10 @@ const flattenWhere = (
         if (comparisonOperatorList.includes(operator as ComparisonOperator)) {
           entries.push(
             `${setModifiers.reduce(
-              (acc, [first]) => `${first}(${acc})`,
+              (acc, [first]) => `${first.toLowerCase()}(${acc})`,
               nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
             )} ${comparisonOperatorMap[operator as Operator]} ${
-              typeof value === 'string'
-                ? setModifiers.reduce((acc, [first]) => `${first}(${acc})`, JSON.stringify(value))
-                : value
+              typeof value === 'string' ? JSON.stringify(value) : value
             }`
           );
         } else if ((operator as Operator) === 'NULL') {
@@ -290,15 +315,22 @@ const flattenWhere = (
           } else {
             entries.push(
               `${setModifiers.reduce(
-                (acc, [first]) => `${first}(${acc})`,
+                (acc, [first]) => `${first.toLowerCase()}(${acc})`,
                 nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
               )} ${comparisonOperatorMap[operator as Operator]} [${value.map((v: string | number) =>
-                typeof v === 'string' ? setModifiers.reduce((acc, [first]) => `${first}(${acc})`, JSON.stringify(v)) : v
+                typeof v === 'string' ? JSON.stringify(v) : v
               )}]`
             );
           }
+        } else if ((operator as LengthOperator) === 'LENGTH') {
+          const lengthProp = `length(${setModifiers.reduce(
+            (acc, [first]) => `${first.toLowerCase()}(${acc})`,
+            nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
+          )})`;
+          entries.push(...flattenWhere({ [lengthProp]: value } as QueryFilter<any>, []));
         } else if (
           !modifierFunctionList.includes(operator as ModifierFunction)
+          && typeof value === 'object'
         ) {
           entries.push(
             ...flattenWhere(propValue as QueryFilter<any>, [
@@ -333,13 +365,13 @@ const findAllModifierFunctions = (
   obj: Record<string, any>,
   types: ModifierFunction[]
 ) => {
-  const result: Record<string, any> = {};
+  const result: [string, any][] = [];
   for (const key in obj) {
     if (types.includes(key as ModifierFunction)) {
-      result[key] = obj[key];
+      result[types.indexOf(key as ModifierFunction)] = [key, obj[key]];
     }
   }
-  return Object.entries(result);
+  return result.filter((modifierTuple) => modifierTuple);
 };
 
 const _count = (
