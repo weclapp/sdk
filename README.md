@@ -412,6 +412,110 @@ wServices['article'].some({
 
 This only returns the articleNumber property of all articles.
 
+#### Ordering
+
+With the some function you can order requested data. You can either merely order by fields or by complex expressions.
+
+```ts
+/**
+ * Order by createdDate in ascending order.
+ *
+ * ?orderBy=createdDate asc
+ */
+wServices['article'].some({
+  orderBy: [{ FIELD: 'createdDate', SORT: 'asc' }]
+});
+```
+
+```ts
+/**
+ * First order by createdDate in ascending order, then by articleNumber in descending order
+ * If you omit SORT the default ordering will be set to ascending.
+ *
+ * ?orderBy=createdDate asc, articleNumber desc
+ */
+wServices['article'].some({
+  orderBy: [{ FIELD: 'createdDate' }, { FIELD: 'articleNumber', SORT: 'desc' }]
+});
+```
+
+```ts
+/**
+ * Order with conditional sorting: if internalNote is not null then 1,
+ * if packagingQuantity > 400 then 2, otherwise 3.
+ * Then order by articleNumber in ascending order.
+ *
+ * ?orderBy=(not internalNote null) ? 1 : (packagingQuantity > 400) ? 2 : 3 asc, articleNumber asc
+ */
+wServices['article'].some({
+  orderBy: [
+    {
+      CASE: [
+        { WHEN: { internalNote: { NULL: false } }, THEN: 1 },
+        { WHEN: { packagingQuantity: { GT: 400 } }, THEN: 2 }
+      ],
+      ELSE: 3,
+      SORT: 'asc'
+    },
+    { FIELD: 'articleNumber' }
+  ]
+});
+```
+
+The `THEN` and `ELSE` values can also be a `FieldOrderBy` to fall back to a field-based ordering:
+
+```ts
+/**
+ * Order with conditional sorting: if internalNote is not null, order by articleNumber,
+ * otherwise order by createdDate.
+ *
+ * ?orderBy=(not internalNote null) ? articleNumber : createdDate asc
+ */
+wServices['article'].some({
+  orderBy: [
+    {
+      CASE: [{ WHEN: { internalNote: { NULL: false } }, THEN: { FIELD: 'articleNumber' } }],
+      ELSE: { FIELD: 'createdDate' },
+      SORT: 'asc'
+    }
+  ]
+});
+```
+
+For properties that are objects or arrays of objects, use dot-notation to reference nested fields:
+
+```ts
+/**
+ * Order by a nested property of an array/object field.
+ *
+ * ?orderBy=articlePrices.price asc
+ */
+wServices['article'].some({
+  orderBy: [{ FIELD: 'articlePrices.price', SORT: 'asc' }]
+});
+```
+
+There are three modifier functions, `TRIM`, `LOWER` and `LENGTH`, which can be used to adjust the expessions:
+
+```ts
+/**
+ * First order by the length of the trimmed lastName in descending order, then by firstName in ascending order
+ *
+ * ?orderBy=length(trim(lastName)) desc, firstName asc
+ */
+wServices['party'].some({
+  orderBy: [
+    {
+      FIELD: 'lastName',
+      LENGTH: true,
+      TRIM: true,
+      SORT: 'desc'
+    },
+    { FIELD: 'firstName' }
+  ]
+});
+```
+
 ### Aborting a request
 
 To abort a request an AbortController has to be instantiated and its signal has to be passed to the request. The controller can
