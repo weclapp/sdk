@@ -1,5 +1,4 @@
 import { GeneratorOptions } from '@generator/generate';
-import { logger } from '@logger';
 import { concat } from '@utils/concat';
 import { generateBlockComment } from '@ts/generateComment';
 import { generateInterface } from '@ts/generateInterface';
@@ -14,99 +13,88 @@ import { generateRemoveEndpoint } from './endpoints/remove';
 import { generateSomeEndpoint } from './endpoints/some';
 import { generateUniqueEndpoint } from './endpoints/unique';
 import { generateUpdateEndpoint } from './endpoints/update';
-import { GeneratedServiceFunction, ServiceFunctionGenerator } from './types';
-import { parseEndpointsAndGroupByEntity } from './utils/parseEndpointsAndGroupByEntity';
 import { GeneratedEntity } from '../03-entities';
+import { OpenApiContext } from '@utils/weclapp/extractContext';
+import { ExtendedGeneratedServiceFunction, GeneratedService, ServiceFunctionGenerator } from './types';
 
-export interface ExtendedGeneratedServiceFunction extends GeneratedServiceFunction {
-  path: OpenAPIV3.OperationObject;
-}
-
-export interface GeneratedService {
-  name: string;
-  serviceFnName: string;
-  serviceTypeName: string;
-  source: string;
-  deprecated: boolean;
-  functions: ExtendedGeneratedServiceFunction[];
-}
-
-const generators: Record<WeclappEndpointType, Record<string, ServiceFunctionGenerator>> = {
+const generators: Record<WeclappEndpointType, { [method in OpenAPIV3.HttpMethods]?: ServiceFunctionGenerator }> = {
   /* /article */
   [WeclappEndpointType.ROOT]: {
-    get: generateSomeEndpoint,
-    post: generateCreateEndpoint
+    [OpenAPIV3.HttpMethods.GET]: generateSomeEndpoint,
+    [OpenAPIV3.HttpMethods.POST]: generateCreateEndpoint
   },
 
   /* /article/count */
   [WeclappEndpointType.COUNT]: {
-    get: generateCountEndpoint
+    [OpenAPIV3.HttpMethods.GET]: generateCountEndpoint
   },
 
   /* /article/:id */
   [WeclappEndpointType.ENTITY]: {
-    get: generateUniqueEndpoint,
-    delete: generateRemoveEndpoint,
-    put: generateUpdateEndpoint
+    [OpenAPIV3.HttpMethods.GET]: generateUniqueEndpoint,
+    [OpenAPIV3.HttpMethods.PUT]: generateUpdateEndpoint,
+    [OpenAPIV3.HttpMethods.DELETE]: generateRemoveEndpoint
   },
 
   /* /article/:id/method */
   [WeclappEndpointType.GENERIC_ENTITY]: {
-    get: generateGenericEndpoint('ById'),
-    post: generateGenericEndpoint('ById')
+    [OpenAPIV3.HttpMethods.GET]: generateGenericEndpoint('ById'),
+    [OpenAPIV3.HttpMethods.POST]: generateGenericEndpoint('ById')
   },
 
   /* /article/method */
   [WeclappEndpointType.GENERIC_ROOT]: {
-    get: generateGenericEndpoint(),
-    post: generateGenericEndpoint()
+    [OpenAPIV3.HttpMethods.GET]: generateGenericEndpoint(),
+    [OpenAPIV3.HttpMethods.POST]: generateGenericEndpoint()
   }
 };
 
 export const generateServices = (
-  paths: OpenAPIV3.PathsObject,
   entities: Map<string, GeneratedEntity>,
-  aliases: Map<string, string>,
+  context: OpenApiContext,
   options: GeneratorOptions
 ): Map<string, GeneratedService> => {
   const services: Map<string, GeneratedService> = new Map();
-  const endpoints = parseEndpointsAndGroupByEntity(paths);
-  for (const [serviceName, paths] of endpoints) {
+  for (const [serviceName, serviceEndpoints] of context.endpoints) {
     const serviceFnName = camelCase(`${serviceName}Service`);
     const serviceTypeName = pascalCase(`${serviceName}Service`);
 
     const functions: ExtendedGeneratedServiceFunction[] = [];
-    for (const { path, endpoint } of paths) {
-      const generator = generators[endpoint.type];
-      for (const [method, config] of Object.entries(path)) {
+    for (const { path, endpoint } of serviceEndpoints) {
+      for (const method of [
+        OpenAPIV3.HttpMethods.GET,
+        OpenAPIV3.HttpMethods.POST,
+        OpenAPIV3.HttpMethods.PUT,
+        OpenAPIV3.HttpMethods.DELETE
+      ]) {
         if (
-          (method === 'get' && endpoint.type === WeclappEndpointType.ENTITY && !options.generateUnique) ||
-          (method === 'post' && (endpoint.type === WeclappEndpointType.COUNT || endpoint.path.endsWith('query')))
+          (method === OpenAPIV3.HttpMethods.GET &&
+            endpoint.type === WeclappEndpointType.ENTITY &&
+            !options.generateUnique) ||
+          (method === OpenAPIV3.HttpMethods.POST &&
+            (endpoint.type === WeclappEndpointType.COUNT || endpoint.path.endsWith('query')))
         ) {
           // Skip unique endpoints if generateUnique option is not set or if POST is used for filter queries
           continue;
         }
 
-        const generatorFn = generator[method];
-        if (generatorFn) {
-          const path = config as OpenAPIV3.OperationObject;
-          const target = options.target;
+        const operationObject = path[method] as OpenAPIV3.OperationObject;
+        const generatorFn = generators[endpoint.type][method];
 
-          if (!path.deprecated || options.deprecated) {
+        if (operationObject && generatorFn) {
+          if (!operationObject.deprecated || options.deprecated) {
             functions.push({
               ...generatorFn({
-                endpoint,
                 method,
-                target,
-                path,
+                endpoint,
+                operationObject,
                 entities,
-                aliases
+                context,
+                options
               }),
-              path
+              path: operationObject
             });
           }
-        } else {
-          logger.errorLn(`Failed to generate a function for ${method.toUpperCase()}:${endpoint.type} ${endpoint.path}`);
         }
       }
     }
@@ -140,13 +128,16 @@ export const generateServices = (
       `return {${concat(functions.map((v) => v.func.name))}};`
     )};`;
 
+    const relatedEntityName = context.aliases.get(serviceName);
+    const relatedEntity = relatedEntityName ? entities.get(relatedEntityName) : undefined;
+
     services.set(serviceName, {
       name: serviceName,
       serviceFnName,
-      serviceTypeName,
       functions,
       source: generateStatements(serviceTypes, serviceFn),
-      deprecated: functions.every((v) => v.path.deprecated)
+      deprecated: functions.every((v) => v.path.deprecated),
+      relatedEntity
     });
   }
 

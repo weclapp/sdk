@@ -1,10 +1,9 @@
 import { GeneratedEntity } from '@generator/03-entities';
-import { GeneratedService } from '@generator/04-services';
 import { GeneratorOptions } from '@generator/generate';
 import { generateStatements } from '@ts/generateStatements';
 import { generateString } from '@ts/generateString';
 import { generateObject, ObjectProperty } from '@ts/generateObject';
-import { camelCase } from 'change-case';
+import { GeneratedService } from '../../04-services/types';
 
 const resolveInheritedEntities = (root: GeneratedEntity, entities: Map<string, GeneratedEntity>): GeneratedEntity[] => {
   const parent = root.parentName ? entities.get(root.parentName) : undefined;
@@ -38,19 +37,21 @@ const generatePropertyDescriptors = (
 
 export const generateEntityProperties = (
   entities: Map<string, GeneratedEntity>,
-  aliases: Map<string, string>,
   services: GeneratedService[],
   options: GeneratorOptions
 ): string => {
   const typeName = 'WEntityProperties';
   const propertyMap: ObjectProperty[] = [
     ...entities.entries(),
-    ...[...aliases.entries()].map(
-      ([service, type]) => [service, entities.get(camelCase(type))] as [string, GeneratedEntity]
-    )
-  ].map(([entity, data]) => ({
-    key: entity,
-    value: generatePropertyDescriptors(data, entities, services, options)
+    ...services
+      .filter(({ relatedEntity }) => !!relatedEntity)
+      .filter(({ name }) => !entities.get(name))
+      .map(({ name, relatedEntity }) => {
+        return [name, relatedEntity] as [string, GeneratedEntity];
+      })
+  ].map(([entityName, entity]) => ({
+    key: entityName,
+    value: generatePropertyDescriptors(entity, entities, services, options)
   }));
 
   return generateStatements(

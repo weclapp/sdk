@@ -1,15 +1,16 @@
 import { resolveResponseType } from '../../../target';
 import { GeneratedServiceFunction, ServiceFunctionGenerator } from '@generator/04-services/types';
-import { generateResponseBodyType } from '@generator/04-services/utils/generateResponseBodyType';
+import { generateResponseType } from '../utils/generateResponseType';
 import { insertPathPlaceholder } from '@generator/04-services/utils/insertPathPlaceholder';
 import { generateArrowFunction } from '@ts/generateArrowFunction';
 import { generateArrowFunctionType } from '@ts/generateArrowFunctionType';
 import { pascalCase } from 'change-case';
 
 export const generateUniqueEndpoint: ServiceFunctionGenerator = ({
-  target,
-  path,
-  endpoint
+  operationObject,
+  endpoint,
+  context,
+  options
 }): GeneratedServiceFunction => {
   const functionName = 'unique';
   const functionTypeName = `${pascalCase(endpoint.service)}Service_${pascalCase(functionName)}`;
@@ -18,7 +19,7 @@ export const generateUniqueEndpoint: ServiceFunctionGenerator = ({
     type: functionTypeName,
     params: ['id: string', 'query?: Q', 'requestOptions?: RequestOptions'],
     generics: ['Q extends UniqueQuery'],
-    returns: `${resolveResponseType(target)}<${generateResponseBodyType(path).toString()}>`
+    returns: `${resolveResponseType(options.target)}<${generateResponseType(operationObject, context.responses).toString()}>`
   });
 
   const functionSource = generateArrowFunction({
@@ -29,7 +30,6 @@ export const generateUniqueEndpoint: ServiceFunctionGenerator = ({
   });
 
   return {
-    entity: pascalCase(endpoint.service),
     name: functionName,
     type: { name: functionTypeName, source: functionTypeSource },
     func: { name: functionName, source: functionSource }

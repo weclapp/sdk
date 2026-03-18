@@ -2,13 +2,12 @@ import { isNodeTarget, resolveResponseType, Target } from '../../../target';
 import { GeneratedServiceFunction, ServiceFunctionGenerator } from '@generator/04-services/types';
 import { generateGenericFunctionName } from '@generator/04-services/utils/generateGenericFunctionName';
 import { generateRequestBodyType } from '@generator/04-services/utils/generateRequestBodyType';
-import { generateResponseBodyType } from '@generator/04-services/utils/generateResponseBodyType';
+import { generateResponseType } from '../utils/generateResponseType';
 import { insertPathPlaceholder } from '@generator/04-services/utils/insertPathPlaceholder';
 import { generateArrowFunction } from '@ts/generateArrowFunction';
 import { generateArrowFunctionType } from '@ts/generateArrowFunctionType';
 import { generateInterfaceFromObject } from '@ts/generateInterface';
 import { generateString } from '@ts/generateString';
-import { convertParametersToSchema } from '@utils/openapi/convertParametersToSchema';
 import {
   AnyType,
   convertToTypeScriptType,
@@ -16,6 +15,7 @@ import {
   createRawType
 } from '@utils/openapi/convertToTypeScriptType';
 import { pascalCase } from 'change-case';
+import { resolveParameters } from '../utils/resolveParameters';
 
 const wrapBody = (type: AnyType, target: Target): AnyType => {
   return type.toString() === 'binary' ? createRawType(isNodeTarget(target) ? 'BodyInit' : 'Blob') : type; // node-fetch returns a Blob as well
@@ -23,7 +23,7 @@ const wrapBody = (type: AnyType, target: Target): AnyType => {
 
 export const generateGenericEndpoint =
   (suffix?: string): ServiceFunctionGenerator =>
-  ({ target, method, path, endpoint }): GeneratedServiceFunction => {
+  ({ method, endpoint, operationObject, context, options }): GeneratedServiceFunction => {
     const functionName = generateGenericFunctionName(endpoint.path, suffix, method);
     const functionTypeName = `${pascalCase(endpoint.service)}Service_${pascalCase(functionName)}`;
 
@@ -31,11 +31,16 @@ export const generateGenericEndpoint =
     const hasId = endpoint.path.includes('{id}');
 
     const params = createObjectType({
-      params: convertToTypeScriptType(convertParametersToSchema(path.parameters)),
-      body: method === 'get' ? undefined : wrapBody(generateRequestBodyType(path), target)
+      params:
+        operationObject.parameters &&
+        convertToTypeScriptType(resolveParameters(operationObject.parameters, context.parameters)),
+      body:
+        method === 'get'
+          ? undefined
+          : wrapBody(generateRequestBodyType(operationObject, context.requestBodies), options.target)
     });
 
-    const responseBody = generateResponseBodyType(path);
+    const responseBody = generateResponseType(operationObject, context.responses);
 
     const functionTypeSource = generateArrowFunctionType({
       type: functionTypeName,
@@ -44,7 +49,7 @@ export const generateGenericEndpoint =
         `query${params.isFullyOptional() ? '?' : ''}: ${entityQuery}`,
         'requestOptions?: RequestOptions'
       ],
-      returns: `${resolveResponseType(target)}<${wrapBody(responseBody, target).toString('force')}>`
+      returns: `${resolveResponseType(options.target)}<${wrapBody(responseBody, options.target).toString('force')}>`
     });
 
     const functionSource = generateArrowFunction({
@@ -55,7 +60,6 @@ export const generateGenericEndpoint =
     });
 
     return {
-      entity: pascalCase(endpoint.service),
       name: functionName,
       type: { name: functionTypeName, source: functionTypeSource },
       func: { name: functionName, source: functionSource },

@@ -5,14 +5,14 @@ import { generateArrowFunction } from '@ts/generateArrowFunction';
 import { generateArrowFunctionType } from '@ts/generateArrowFunctionType';
 import { pascalCase } from 'change-case';
 
-export const generateRemoveEndpoint: ServiceFunctionGenerator = ({ target, endpoint }): GeneratedServiceFunction => {
+export const generateRemoveEndpoint: ServiceFunctionGenerator = ({ endpoint, options }): GeneratedServiceFunction => {
   const functionName = 'remove';
   const functionTypeName = `${pascalCase(endpoint.service)}Service_${pascalCase(functionName)}`;
 
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
     params: ['id: string', 'options?: RemoveQuery', 'requestOptions?: RequestOptions'],
-    returns: `${resolveResponseType(target)}<void>`
+    returns: `${resolveResponseType(options.target)}<void>`
   });
 
   const functionSource = generateArrowFunction({
@@ -23,7 +23,6 @@ export const generateRemoveEndpoint: ServiceFunctionGenerator = ({ target, endpo
   });
 
   return {
-    entity: pascalCase(endpoint.service),
     name: functionName,
     type: { name: functionTypeName, source: functionTypeSource },
     func: { name: functionName, source: functionSource }

@@ -3,6 +3,7 @@ import { concat } from '@utils/concat';
 import { indent } from '@utils/indent';
 import { isReferenceObject } from '@utils/openapi/guards';
 import { OpenAPIV3 } from 'openapi-types';
+import { convertParametersToSchemaObject } from './convertParametersToSchemaObject';
 
 interface Type {
   type: string;
@@ -88,8 +89,12 @@ export const getRefName = (obj: OpenAPIV3.ReferenceObject) => {
   return obj.$ref.replace(/.*\//, '');
 };
 
-export const convertToTypeScriptType = (schema: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject): AnyType => {
-  if (isReferenceObject(schema)) {
+export const convertToTypeScriptType = (
+  schema: OpenAPIV3.SchemaObject | OpenAPIV3.ParameterObject[] | OpenAPIV3.ReferenceObject
+): AnyType => {
+  if (Array.isArray(schema)) {
+    return convertToTypeScriptType(convertParametersToSchemaObject(schema));
+  } else if (isReferenceObject(schema)) {
     return createReferenceType(getRefName(schema));
   } else {
     switch (schema.type) {
@@ -107,7 +112,9 @@ export const convertToTypeScriptType = (schema: OpenAPIV3.SchemaObject | OpenAPI
       case 'object': {
         const { properties = {}, required = [] } = schema;
         return createObjectType(
-          Object.fromEntries(Object.entries(properties).map((v) => [v[0], convertToTypeScriptType(v[1])])),
+          Object.fromEntries(
+            Object.entries(properties).map(([prop, propSchema]) => [prop, convertToTypeScriptType(propSchema)])
+          ),
           required
         );
       }

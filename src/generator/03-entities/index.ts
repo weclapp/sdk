@@ -1,167 +1,146 @@
-import { GeneratedEnum } from '@generator/02-enums';
 import { extractPropertyMetaData, PropertyMetaData } from '@generator/03-entities/utils/extractPropertyMetaData';
 import { generateInterface, InterfaceProperty } from '@ts/generateInterface';
 import { generateStatements } from '@ts/generateStatements';
 import { loosePascalCase } from '@utils/case';
-import { convertToTypeScriptType } from '@utils/openapi/convertToTypeScriptType';
-import {
-  isEnumSchemaObject,
-  isFilterPathsSchemaObject,
-  isFilterPropertySchemaObject,
-  isNonArraySchemaObject,
-  isObjectSchemaObject,
-  isReferenceObject,
-  isRelatedEntitySchema
-} from '@utils/openapi/guards';
-import { camelCase, pascalCase } from 'change-case';
+import { convertToTypeScriptType, createReferenceType, getRefName } from '@utils/openapi/convertToTypeScriptType';
+import { ExtendedSchema, isEnumSchemaObject, isReferenceObject } from '@utils/openapi/guards';
 import { OpenAPIV3 } from 'openapi-types';
+import { logger } from '@logger';
+import { OpenApiContext } from '@utils/weclapp/extractContext';
 
 export interface GeneratedEntity {
   name: string;
+  interfaceName: string;
   properties: Map<string, PropertyMetaData>;
-  filterableInterfaceProperties: InterfaceProperty[];
-  parentName?: string;
   source: string;
-}
 
-export interface GeneratedEntityFilterProp {
-  name: string;
+  filterInterfaceName: string;
+  filterSource: string;
+
   parentName?: string;
-  source: string;
+  parentInterfaceName?: string;
 }
 
 export const FILTER_PROPS_SUFFIX = 'Filter_Props';
 
-export const generateEntities = (
-  schemas: Map<string, OpenAPIV3.SchemaObject>,
-  enums: Map<string, GeneratedEnum>
-): Map<string, GeneratedEntity> => {
+export const generateEntities = (context: OpenApiContext): Map<string, GeneratedEntity> => {
   const entities: Map<string, GeneratedEntity> = new Map();
 
-  for (const [schemaName, schema] of schemas) {
+  for (const [schemaName, schema] of context.schemas) {
     // Enums are generated separately
     if (isEnumSchemaObject(schema)) {
       continue;
     }
 
-    const entityInterfaceName = loosePascalCase(schemaName);
-    let parentEntityInterfaceName: string | undefined = undefined;
-
+    const entityName = schemaName;
+    const entityInterfaceName = loosePascalCase(entityName);
     const entityInterfaceProperties: InterfaceProperty[] = [];
-    const filterableInterfaceProperties: InterfaceProperty[] = [];
     const properties = new Map<string, PropertyMetaData>();
 
-    const processProperties = (
-      props: Record<string, OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject> = {},
-      isXweclappFilterProp?: boolean
-    ) => {
-      for (const [name, property] of Object.entries(props)) {
-        const meta = isRelatedEntitySchema(property) ? property['x-weclapp'] : {};
-        const type = convertToTypeScriptType(property).toString();
-        const comment = isNonArraySchemaObject(property)
-          ? property.deprecated
-            ? '@deprecated will be removed.'
-            : property.format
-              ? `format: ${property.format}`
-              : undefined
-          : undefined;
+    let parentEntityName: string | undefined = undefined;
+    let parentEntityInterfaceName: string | undefined = undefined;
 
-        if (meta.filterable !== false) {
-          filterableInterfaceProperties.push({ name, type });
+    const entityFilterInterfaceName = `${entityInterfaceName}_${FILTER_PROPS_SUFFIX}`;
+    const entityFilterInterfaceProperties: InterfaceProperty[] = [];
+    let parentEntityFilterInterfaceName: string | undefined = undefined;
+
+    const processProperties = (props: Record<string, OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject> = {}) => {
+      for (const [propertyName, propertySchema] of Object.entries(props)) {
+        const weclappExtension = (propertySchema as ExtendedSchema)['x-weclapp'];
+        properties.set(propertyName, extractPropertyMetaData(propertySchema, context));
+
+        const type = convertToTypeScriptType(propertySchema).toString();
+
+        // cast to SchemaObject to access deprecated and readOnly properties (ReferenceObject can also include these props in OpenAPI 3.1)
+        const castedSchema = propertySchema as OpenAPIV3.SchemaObject;
+        const comment = castedSchema.deprecated
+          ? '@deprecated will be removed.'
+          : castedSchema.format
+            ? `format: ${castedSchema.format}`
+            : undefined;
+
+        if (weclappExtension?.filterable !== false) {
+          entityFilterInterfaceProperties.push({ name: propertyName, type, comment });
         }
 
-        if (!isXweclappFilterProp) {
-          entityInterfaceProperties.push({
-            name,
-            type,
-            comment,
-            required: meta.required,
-            filterable: meta.filterable ?? true,
-            readonly: !isReferenceObject(property) && property.readOnly
-          });
+        entityInterfaceProperties.push({
+          name: propertyName,
+          type,
+          required: weclappExtension?.required,
+          readonly: castedSchema.readOnly,
+          comment
+        });
+      }
+    };
 
-          properties.set(name, extractPropertyMetaData(enums, meta, property));
+    const processExtraFilterProperties = (
+      props: Record<string, OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject> = {}
+    ) => {
+      for (const [propertyName, propertySchema] of Object.entries(props)) {
+        if (isReferenceObject(propertySchema)) continue;
+
+        const type = convertToTypeScriptType(propertySchema).toString();
+        const comment = propertySchema.deprecated
+          ? '@deprecated will be removed.'
+          : propertySchema.format
+            ? `format: ${propertySchema.format}`
+            : undefined;
+
+        entityFilterInterfaceProperties.push({ name: propertyName, type, comment });
+      }
+    };
+
+    const processFilterPaths = (filterPaths: Record<string, string> = {}) => {
+      for (const [filterProp, entityName] of Object.entries(filterPaths)) {
+        if (!filterProp.includes('.') && context.schemas.get(entityName)) {
+          entityFilterInterfaceProperties.push({
+            name: filterProp,
+            type: `${loosePascalCase(entityName)}_${FILTER_PROPS_SUFFIX}`
+          });
         }
       }
     };
 
     if (schema.allOf?.length) {
+      if (schema.allOf.length > 2) {
+        logger.errorLn(`Failed to process schema for ${schemaName}: invalid allOf length`);
+        continue;
+      }
+
       for (const item of schema.allOf) {
         if (isReferenceObject(item)) {
-          parentEntityInterfaceName = convertToTypeScriptType(item).toString();
-        } else if (isObjectSchemaObject(item)) {
+          parentEntityName = getRefName(item);
+          parentEntityInterfaceName = createReferenceType(parentEntityName).toString();
+          parentEntityFilterInterfaceName = `${parentEntityInterfaceName}_${FILTER_PROPS_SUFFIX}`;
+        } else if (item.type === 'object') {
           processProperties(item.properties);
-
-          if (isFilterPropertySchemaObject(item)) {
-            processProperties(item['x-weclapp-filterProperties'], true);
-          }
-
-          if (isFilterPathsSchemaObject(item)) {
-            const fPaths: Record<string, string> = item['x-weclapp-filterPaths'];
-            for (const path in fPaths) {
-              if (!path.includes('.')) {
-                filterableInterfaceProperties.push({ name: path, type: fPaths[path] });
-              }
-            }
-          }
+          processExtraFilterProperties((item as ExtendedSchema)['x-weclapp-filterProperties']);
+          processFilterPaths((item as ExtendedSchema)['x-weclapp-filterPaths']);
+        } else {
+          logger.errorLn(`Failed to process schema for ${schemaName}: invalid schema type in allOf`);
         }
       }
+    } else {
+      processProperties(schema.properties);
     }
 
-    processProperties(schema.properties);
-
-    entities.set(schemaName, {
-      name: schemaName,
+    entities.set(entityName, {
+      name: entityName,
+      interfaceName: entityInterfaceName,
       properties,
-      filterableInterfaceProperties: filterableInterfaceProperties.sort((propA, propB) =>
-        propA.name.localeCompare(propB.name)
-      ),
-      parentName: parentEntityInterfaceName ? camelCase(parentEntityInterfaceName) : undefined,
       source: generateStatements(
         generateInterface(entityInterfaceName, entityInterfaceProperties, parentEntityInterfaceName)
-      )
+      ),
+
+      filterInterfaceName: entityFilterInterfaceName,
+      filterSource: generateStatements(
+        generateInterface(entityFilterInterfaceName, entityFilterInterfaceProperties, parentEntityFilterInterfaceName)
+      ),
+
+      parentName: parentEntityName,
+      parentInterfaceName: parentEntityInterfaceName
     });
   }
 
   return entities;
-};
-
-export const generateEntityFilterProps = (
-  entities: Map<string, GeneratedEntity>,
-  enums: Map<string, GeneratedEnum>
-): Map<string, GeneratedEntityFilterProp> => {
-  const entityFilterProps: Map<string, GeneratedEntityFilterProp> = new Map();
-
-  const transformFilterProps = (props: InterfaceProperty[]) => {
-    return props.map((prop) => {
-      if (
-        !prop.type ||
-        enums.has(prop.type) ||
-        prop.type === 'string' ||
-        prop.type === 'number' ||
-        prop.type === 'boolean' ||
-        prop.type === '{}' ||
-        prop.type.endsWith('[]') ||
-        prop.type.includes("'")
-      ) {
-        return prop;
-      }
-
-      return { ...prop, type: `${pascalCase(prop.type)}_${FILTER_PROPS_SUFFIX}` };
-    });
-  };
-
-  entities.forEach((entity, name) => {
-    const entityFilterName = `${pascalCase(name)}_${FILTER_PROPS_SUFFIX}`;
-    const parentName = entity.parentName ? `${pascalCase(entity.parentName)}_${FILTER_PROPS_SUFFIX}` : undefined;
-    const filterableInterfaceProperties = transformFilterProps(entity.filterableInterfaceProperties);
-
-    entityFilterProps.set(entityFilterName, {
-      name: entityFilterName,
-      parentName,
-      source: generateStatements(generateInterface(entityFilterName, filterableInterfaceProperties, parentName))
-    });
-  });
-
-  return entityFilterProps;
 };

@@ -39,10 +39,14 @@
   "scripts": {
     "build": "rollup --config rollup.config.ts --configPlugin typescript={tsconfig:\\'tsconfig.node.json\\'} --configImportAttributesKey with",
     "build:watch": "npm run build -- --watch",
-    "cli:browser": "./bin/cli.js test/openapi.json --target browser",
-    "cli:browser:cache": "./bin/cli.js test/openapi.json --target browser --cache",
-    "cli:browser.rx": "./bin/cli.js test/openapi.json --target browser.rx",
-    "cli:browser.rx:cache": "./bin/cli.js test/openapi.json --target browser.rx --cache",
+    "cli:browser:v1": "./bin/cli.js test/openapi.json --target browser",
+    "cli:browser.rx:v1": "./bin/cli.js test/openapi.json --target browser.rx",
+    "cli:browser:v2": "./bin/cli.js test/openapi_v2.json --target browser",
+    "cli:browser.rx:v2": "./bin/cli.js test/openapi_v2.json --target browser.rx",
+    "cli:browser:v3": "./bin/cli.js test/openapi_v3.json --target browser",
+    "cli:browser:v3:cache": "./bin/cli.js test/openapi_v3.json --target browser --cache",
+    "cli:browser.rx:v3": "./bin/cli.js test/openapi_v3.json --target browser.rx",
+    "cli:browser.rx:v3:cache": "./bin/cli.js test/openapi_v3.json --target browser.rx --cache",
     "cli:node": "./bin/cli.js test/openapi.json --target node",
     "cli:node:cache": "./bin/cli.js test/openapi.json --target node  --cache",
     "cli:node.rx": "./bin/cli.js test/openapi.json --target node.rx",
@@ -51,18 +55,18 @@
     "prettier:fix": "prettier . --write",
     "lint": "eslint ./src --cache",
     "lint:fix": "npm run lint -- --fix",
-    "ci": "npm run prettier && npm run lint && npm run build && npm run cli:browser",
+    "ci": "npm run prettier && npm run lint && npm run build && npm run cli:browser:v1 && npm run cli:browser:v2 && npm run cli:browser:v3",
     "release": "standard-version"
   },
   "devDependencies": {
     "@rollup/pluginutils": "5.1.4",
-    "eslint": "9.20.1",
+    "commit-and-tag-version": "12.7.0",
+    "eslint": "10.0.2",
     "prettier": "3.3.3",
-    "standard-version": "^9.5.0",
-    "typescript-eslint": "8.24.1"
+    "typescript-eslint": "8.56.1"
   },
   "dependencies": {
-    "@rollup/plugin-terser": "0.4.4",
+    "@rollup/plugin-terser": "1.0.0",
     "@rollup/plugin-typescript": "12.1.2",
     "@types/fs-extra": "11.0.1",
     "@types/yargs": "17.0.33",
@@ -72,8 +76,8 @@
     "indent-string": "5.0.0",
     "openapi-types": "12.1.3",
     "pretty-ms": "8.0.0",
-    "rollup": "4.34.8",
-    "typescript": "5.7.3",
+    "rollup": "4.59.0",
+    "typescript": "5.9.3",
     "yargs": "17.7.2"
   },
   "peerDependencies": {
