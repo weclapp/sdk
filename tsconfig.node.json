@@ -11,6 +11,7 @@
     "target": "ESNext",
     "sourceMap": false,
     "allowSyntheticDefaultImports": true,
+    "types": ["vitest/globals"],
     "baseUrl": ".",
     "paths": {
       "@logger": ["src/utils/logger.ts"],
@@ -19,9 +20,8 @@
       "@utils/*": ["src/utils/*"],
       "@ts/*": ["src/ts/*"],
       "@/*": ["./*"],
-      "@sdk/*": ["sdk/*"],
-      "@tests/*": ["tests/*"]
+      "@sdk/*": ["sdk/*"]
     }
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts", "rollup.config.ts"]
+  "include": ["src/**/*.ts", "rollup.config.ts", "vitest.config.ts"]
 }

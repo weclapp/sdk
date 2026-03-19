@@ -12,6 +12,39 @@ In production the root folder will be used.
 
 As of v1.9.0 this repository uses [conventional commit messages](https://conventionalcommits.org).
 
+### Testing
+
+The project uses [Vitest](https://vitest.dev/) as its test framework. Tests are colocated with their source files in the `src/` directory. Each test file is named `<module>.spec.ts` and placed next to the module it tests.
+
+#### Running tests
+
+```sh
+# Run all tests once
+$ npm run test
+
+# Run tests with coverage report
+$ npm run test:coverage
+```
+
+#### Writing tests
+
+Test files should be placed next to the source file they test, within the `src/` directory. Each test file should be named `<module>.spec.ts`.
+
+The path aliases from `tsconfig.node.json` (e.g. `@ts/`, `@utils/`) are available in test files via `vitest.config.ts`.
+
+Example (`src/utils/myModule.spec.ts`):
+
+```ts
+import { describe, expect, it } from 'vitest';
+import { myFunction } from '@utils/myModule';
+
+describe('myFunction', () => {
+  it('should return the expected result', () => {
+    expect(myFunction('input')).toBe('expected output');
+  });
+});
+```
+
 ### Publishing
 
 1. Switch to master branch
