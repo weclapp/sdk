@@ -1,12 +1,25 @@
 import { currentDirname } from '@utils/currentDirname';
-import { resolve } from 'path';
-import { OutputOptions, rollup, RollupOptions } from 'rollup';
-import terser from '@rollup/plugin-terser';
-import ts from '@rollup/plugin-typescript';
+import { dirname, resolve } from 'path';
+import { OutputOptions, rolldown, RolldownOptions } from 'rolldown';
+import { createProgram, parseJsonConfigFileContent, readConfigFile, sys } from 'typescript';
 import { Target } from './target';
 
 const tsconfig = resolve(currentDirname(), './tsconfig.sdk.json');
 const resolveGlobals = (...globals: string[]) => Object.fromEntries(globals.map((v) => [v, '*']));
+
+const emitDeclarations = (tsconfigPath: string, outDir: string) => {
+  const configFile = readConfigFile(tsconfigPath, (path) => sys.readFile(path));
+  const parsed = parseJsonConfigFileContent(configFile.config, sys, dirname(tsconfigPath));
+
+  const program = createProgram(parsed.fileNames, {
+    ...parsed.options,
+    emitDeclarationOnly: true,
+    declarationDir: outDir,
+    noEmit: false
+  });
+
+  program.emit();
+};
 
 const generateOutput = (config: OutputOptions): OutputOptions => ({
   sourcemap: false,
@@ -31,51 +44,55 @@ export const bundle = async (workingDirectory: string, target: Target) => {
     })
   ];
 
-  const bundles: Record<Target, () => RollupOptions> = {
+  const bundles: Record<Target, () => RolldownOptions> = {
     [Target.BROWSER_PROMISES]: () => ({
       input: src('index.ts'),
-      plugins: [ts({ tsconfig, declarationDir: dist(), filterRoot: src() }), terser()],
+      resolve: { tsconfigFilename: tsconfig },
       output: [
         generateOutput({
           file: dist('index.js'),
-          format: 'es'
+          format: 'es',
+          minify: true
         })
       ]
     }),
     [Target.BROWSER_RX]: () => ({
       input: src('index.ts'),
-      plugins: [ts({ tsconfig, declarationDir: dist(), filterRoot: src() }), terser()],
+      resolve: { tsconfigFilename: tsconfig },
       external: ['rxjs'],
       output: [
         generateOutput({
           file: dist('index.js'),
           format: 'es',
+          minify: true,
           globals: resolveGlobals('rxjs')
         })
       ]
     }),
     [Target.NODE_PROMISES]: () => ({
       input: src('index.ts'),
-      plugins: [ts({ tsconfig, declarationDir: dist(), filterRoot: src() }), terser()],
+      resolve: { tsconfigFilename: tsconfig },
       external: ['node-fetch', 'url'],
-      output: generateNodeOutput()
+      output: generateNodeOutput().map((o) => ({ ...o, minify: true }))
     }),
     [Target.NODE_RX]: () => ({
       input: src('index.ts'),
-      plugins: [ts({ tsconfig, declarationDir: dist(), filterRoot: src() }), terser()],
+      resolve: { tsconfigFilename: tsconfig },
       external: ['node-fetch', 'url', 'rxjs'],
-      output: generateNodeOutput()
+      output: generateNodeOutput().map((o) => ({ ...o, minify: true }))
     })
   };
 
   const config = bundles[target]();
-  const bundle = await rollup(config);
+  const result = await rolldown(config);
 
   if (Array.isArray(config.output)) {
-    await Promise.all(config.output.map(bundle.write));
+    await Promise.all(config.output.map((o) => result.write(o)));
   } else if (config.output) {
-    await bundle.write(config.output);
+    await result.write(config.output);
   }
 
-  await bundle.close();
+  await result.close();
+
+  emitDeclarations(tsconfig, dist());
 };

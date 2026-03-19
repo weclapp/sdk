@@ -1,39 +1,42 @@
-import ts from '@rollup/plugin-typescript';
-import pkg from './package.json' with { type: 'json' };
+import { readFileSync } from 'fs';
+import { builtinModules } from 'module';
+
 import { createFilter } from '@rollup/pluginutils';
-import { defineConfig, Plugin } from 'rollup';
+import { defineConfig, Plugin } from 'rolldown';
+import pkg from './package.json' with { type: 'json' };
 
 const txt = (): Plugin => {
   const filter = createFilter('**/*.ts.txt');
   return {
     name: 'txt',
-    transform(code: string, id: string) {
+    load(id: string) {
       if (filter(id)) {
+        const code = readFileSync(id, 'utf-8');
         return {
           code: `export default ${JSON.stringify(code)};`,
-          map: { mappings: '' }
+          moduleType: 'js'
         };
       }
     }
   };
 };
 
+const nodeBuiltins = builtinModules.flatMap((m) => [m, `node:${m}`]);
+
 export default defineConfig({
   input: 'src/index.ts',
-  plugins: [txt(), ts({ tsconfig: 'tsconfig.node.json' })],
+  plugins: [txt()],
   external: [
     ...Object.keys(pkg.dependencies),
+    ...Object.keys(pkg.devDependencies),
     ...Object.keys(pkg.peerDependencies),
-    'path',
-    'crypto',
+    ...nodeBuiltins,
     'yargs/helpers',
-    'fs/promises',
-    'url',
     '../package.json'
   ],
   output: {
-    file: 'dist/cli.js',
-    format: 'es',
-    importAttributesKey: 'with'
+    dir: 'dist',
+    entryFileNames: 'cli.js',
+    format: 'es'
   }
 });

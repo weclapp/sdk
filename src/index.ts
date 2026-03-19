@@ -5,9 +5,9 @@ import { currentDirname } from '@utils/currentDirname';
 import { hash } from '@utils/hash';
 import { cp, mkdir, rm, stat, writeFile } from 'fs/promises';
 import { dirname, resolve } from 'path';
-import { cli } from './cli';
 import prettyMs from 'pretty-ms';
 import pkg from '../package.json' with { type: 'json' };
+import { cli } from './cli';
 
 const workingDir = resolve(currentDirname(), './sdk');
 const cacheDir = resolve(currentDirname(), './.cache');
