@@ -20,7 +20,7 @@ export const generateUpdateEndpoint: ServiceFunctionGenerator = ({
     type: functionTypeName,
     params: [
       'id: string',
-      `data: DeepPartial<${generateRequestBodyType(operationObject, context.requestBodies).toString()}>`,
+      `data: ${generateRequestBodyType(operationObject, context.requestBodies).toString()}`,
       'options?: UpdateQuery',
       'requestOptions?: RequestOptions'
     ],

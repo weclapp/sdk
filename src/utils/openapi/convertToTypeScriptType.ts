@@ -36,9 +36,9 @@ export interface ObjectType extends Type {
 
 export type PropertyPropagationOption = 'ignore' | 'propagate' | 'force';
 
-export const createReferenceType = (value: string): ReferenceType => ({
+export const createReferenceType = (value: string, isDeepPartialType?: boolean): ReferenceType => ({
   type: 'reference',
-  toString: () => loosePascalCase(value)
+  toString: () => (isDeepPartialType ? `DeepPartial<${loosePascalCase(value)}>` : loosePascalCase(value))
 });
 
 export const createRawType = (value: string): RawType => ({
@@ -90,12 +90,13 @@ export const getRefName = (obj: OpenAPIV3.ReferenceObject) => {
 };
 
 export const convertToTypeScriptType = (
-  schema: OpenAPIV3.SchemaObject | OpenAPIV3.ParameterObject[] | OpenAPIV3.ReferenceObject
+  schema: OpenAPIV3.SchemaObject | OpenAPIV3.ParameterObject[] | OpenAPIV3.ReferenceObject,
+  isDeepPartialType?: boolean
 ): AnyType => {
   if (Array.isArray(schema)) {
-    return convertToTypeScriptType(convertParametersToSchemaObject(schema));
+    return convertToTypeScriptType(convertParametersToSchemaObject(schema), isDeepPartialType);
   } else if (isReferenceObject(schema)) {
-    return createReferenceType(getRefName(schema));
+    return createReferenceType(getRefName(schema), isDeepPartialType);
   } else {
     switch (schema.type) {
       case 'integer':
@@ -113,13 +114,16 @@ export const convertToTypeScriptType = (
         const { properties = {}, required = [] } = schema;
         return createObjectType(
           Object.fromEntries(
-            Object.entries(properties).map(([prop, propSchema]) => [prop, convertToTypeScriptType(propSchema)])
+            Object.entries(properties).map(([prop, propSchema]) => [
+              prop,
+              convertToTypeScriptType(propSchema, isDeepPartialType)
+            ])
           ),
           required
         );
       }
       case 'array':
-        return createArrayType(convertToTypeScriptType(schema.items));
+        return createArrayType(convertToTypeScriptType(schema.items, isDeepPartialType));
       default:
         return createRawType('unknown');
     }
