@@ -108,6 +108,8 @@ const resolveReferences = (entity: string, entities: Map<string, GeneratedEntity
   const generatedEntity = entities.get(entity);
   if (generatedEntity) {
     for (const [property, propertyMetaData] of generatedEntity.properties) {
+      if (property === 'customAttributes') continue;
+
       if (propertyMetaData.type === 'array') {
         if (propertyMetaData.entity === 'onlyId') {
           references.push({

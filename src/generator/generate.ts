@@ -34,10 +34,8 @@ export const generate = (doc: OpenAPIV3.Document, options: GeneratorOptions): st
     generateBlockComment('ENUMS', generateStatements(...[...enums.values()].map((v) => v.source))),
     generateBlockComment('ENTITIES', generateStatements(...[...entities.values()].map((v) => v.source))),
     generateBlockComment('FILTERS', generateStatements(...[...entities.values()].map((v) => v.filterSource))),
-    generateBlockComment(
-      'SERVICES',
-      generateStatements(generateReferencedEntities(entities), ...[...services.values()].map((v) => v.source))
-    ),
+    generateBlockComment('REFERENCED ENTITIES', generateReferencedEntities(entities, context.aliases)),
+    generateBlockComment('SERVICES', generateStatements(...[...services.values()].map((v) => v.source))),
     generateBlockComment('MAPS', maps)
   );
 };

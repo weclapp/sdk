@@ -23,13 +23,6 @@ export interface GeneratedEntity {
 
 export const FILTER_PROPS_SUFFIX = 'Filter_Props';
 
-const excludedReferencedEntities = new Set([
-  'abstractParty',
-  'abstractEntity',
-  'abstractEntityWithCustomAttributes',
-  'onlyId'
-]);
-
 export const generateEntities = (context: OpenApiContext): Map<string, GeneratedEntity> => {
   const entities: Map<string, GeneratedEntity> = new Map();
 
@@ -152,13 +145,24 @@ export const generateEntities = (context: OpenApiContext): Map<string, Generated
   return entities;
 };
 
-export const generateReferencedEntities = (entities: Map<string, GeneratedEntity>) => {
-  const referencedEntities = [...entities.values()]
-    .filter((entity) => !excludedReferencedEntities.has(entity.name))
-    .map((entity) => ({
-      name: entity.name,
-      type: `${entity.interfaceName}[]`
-    }));
+export const generateReferencedEntities = (entities: Map<string, GeneratedEntity>, aliases: Map<string, string>) => {
+  const aliasKeys = new Set(aliases.keys());
 
-  return generateInterfaceType('ReferencedEntities', referencedEntities);
+  return generateInterfaceType(
+    'ReferencedEntities',
+    [
+      ...[...entities.values()]
+        .filter((entity) => aliasKeys.has(entity.name))
+        .map((entity) => ({
+          name: entity.name,
+          type: `${entity.interfaceName}[]`
+        })),
+      ...[...aliases.entries()]
+        .filter(([, alias]) => loosePascalCase(alias) === 'CustomValue')
+        .map(([entityName]) => ({
+          name: entityName,
+          type: 'CustomValue[]'
+        }))
+    ].sort((a, b) => a.name.localeCompare(b.name))
+  );
 };
