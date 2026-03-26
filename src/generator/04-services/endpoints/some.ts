@@ -4,9 +4,10 @@ import { generateArrowFunctionType } from '@ts/generateArrowFunctionType';
 import { generateInterfaceFromObject, generateInterfaceType, InterfaceProperty } from '@ts/generateInterface';
 import { generateObject, ObjectProperty } from '@ts/generateObject';
 import { generateString } from '@ts/generateString';
+import { generateTupleArray } from '@ts/generateTupleArray';
 import { generateType } from '@ts/generateType';
-import { convertToTypeScriptType, createObjectType } from '@utils/openapi/convertToTypeScriptType';
-import { isObjectSchemaObject, isParameterObject, isResponseObject } from '@utils/openapi/guards';
+import { convertToTypeScriptType, createObjectType, getRefName } from '@utils/openapi/convertToTypeScriptType';
+import { isObjectSchemaObject, isParameterObject, isReferenceObject, isResponseObject } from '@utils/openapi/guards';
 import { pascalCase } from 'change-case';
 import { OpenAPIV3 } from 'openapi-types';
 import { resolveResponseType } from '../../../target';
@@ -24,8 +25,12 @@ const excludedParameters = [
   'additionalProperties'
 ];
 
-const resolveAdditionalPropertiesSchema = ({ responses }: OpenAPIV3.OperationObject) => {
-  const body = resolveResponsesObject(responses);
+const resolveAdditionalPropertiesSchema = (
+  { responses }: OpenAPIV3.OperationObject,
+  contextResponses: Map<string, OpenAPIV3.ResponseObject>
+) => {
+  const response = resolveResponsesObject(responses);
+  const body = response && isReferenceObject(response) ? contextResponses.get(getRefName(response)) : response;
 
   if (isResponseObject(body)) {
     const schema = body?.content?.['application/json']?.schema;
@@ -170,8 +175,13 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   const referencesTypeName = `${functionTypeName}_References`;
   const referencesTypeSource = generateInterfaceType(referencesTypeName, resolveReferences(endpoint.service, entities));
 
-  const additionalPropertyTypeName = `${functionTypeName}_AdditionalProperty`;
-  const additionalPropertyTypeSource = generateType(additionalPropertyTypeName, 'string');
+  const additionalPropertiesSchema = resolveAdditionalPropertiesSchema(operationObject, context.responses);
+
+  const additionalPropertyTypeName = `${functionTypeName}_AdditionalPropertyNames`;
+  const additionalPropertyTypeSource = generateType(
+    additionalPropertyTypeName,
+    additionalPropertiesSchema ? generateTupleArray(Object.keys(additionalPropertiesSchema?.properties)) : '[]'
+  );
 
   const queryTypeName = `${functionTypeName}_Query`;
   const queryTypeSource = generateType(
@@ -180,7 +190,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   );
 
   const additionalPropertiesTypeName = `${functionTypeName}_AdditionalProperties`;
-  const additionalPropertiesSchema = resolveAdditionalPropertiesSchema(operationObject);
+
   const additionalPropertiesTypeSource = generateType(
     additionalPropertiesTypeName,
     additionalPropertiesSchema ? convertToTypeScriptType(additionalPropertiesSchema).toString() : '{}'
