@@ -69,14 +69,14 @@ export type QueryFilter<T> = SingleFilterExpr<T> & {
 };
 
 export type CountQuery<F> = {
-  where?: QueryFilter<F>;
+  where?: QueryFilter<F> | string;
 };
 
 export type SomeQuery<E, F, I, P> = {
   serializeNulls?: boolean;
   include?: QuerySelect<I>;
   properties?: P;
-  where?: QueryFilter<F>;
+  where?: QueryFilter<F> | string;
   select?: QuerySelect<E>;
   sort?: Sort<E>[];
   pagination?: Pagination;
@@ -210,9 +210,17 @@ const flattenWhere = (
 };
 
 const assembleFilterParam = (
-  obj: QueryFilter<any> = {}
+  filter?: QueryFilter<any> | string
 ): Record<string, string> => {
-  const flattedFilter = flattenWhere(obj, []);
+  if(!filter) {
+    return {};
+  }
+
+  if (typeof filter === 'string') {
+    return { filter };
+  }
+
+  const flattedFilter = flattenWhere(filter, []);
   return flattedFilter.length ? { filter: flattedFilter.join(' and ') } : {};
 };
 

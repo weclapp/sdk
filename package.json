@@ -44,6 +44,7 @@
     "cli:browser:v2": "./bin/cli.js test/openapi_v2.json --target browser",
     "cli:browser.rx:v2": "./bin/cli.js test/openapi_v2.json --target browser.rx",
     "cli:browser:v3": "./bin/cli.js test/openapi_v3.json --target browser",
+    "cli:browser:v3:ql": "./bin/cli.js test/openapi_v3.json --target browser --use-query-language",
     "cli:browser:v3:cache": "./bin/cli.js test/openapi_v3.json --target browser --cache",
     "cli:browser.rx:v3": "./bin/cli.js test/openapi_v3.json --target browser.rx",
     "cli:browser.rx:v3:cache": "./bin/cli.js test/openapi_v3.json --target browser.rx --cache",
@@ -55,9 +56,10 @@
     "prettier:fix": "prettier . --write",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "type-check": "tsc -p tsconfig.node.json --noEmit --skipLibCheck",
     "lint": "eslint ./src --cache",
     "lint:fix": "npm run lint -- --fix",
-    "ci": "npm run prettier && npm run lint && npm run test && npm run build && npm run cli:browser:v1 && npm run cli:browser:v2 && npm run cli:browser:v3",
+    "ci": "npm run prettier && npm run lint && npm run build && npm run cli:browser:v1 && npm run cli:browser:v2 && npm run cli:browser:v3 && npm run cli:browser:v3:ql && npm run type-check && npm run test",
     "release": "standard-version"
   },
   "devDependencies": {
