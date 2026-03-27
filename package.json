@@ -53,17 +53,23 @@
     "cli:node.rx:cache": "./bin/cli.js test/openapi.json --target node.rx  --cache",
     "prettier": "prettier . --check",
     "prettier:fix": "prettier . --write",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint ./src --cache",
     "lint:fix": "npm run lint -- --fix",
-    "ci": "npm run prettier && npm run lint && npm run build && npm run cli:browser:v1 && npm run cli:browser:v2 && npm run cli:browser:v3",
+    "ci": "npm run prettier && npm run lint && npm run test && npm run build && npm run cli:browser:v1 && npm run cli:browser:v2 && npm run cli:browser:v3",
     "release": "standard-version"
   },
   "devDependencies": {
     "@rollup/pluginutils": "5.1.4",
+    "@vitest/coverage-v8": "4.0.15",
+    "@vitest/eslint-plugin": "1.5.2",
     "commit-and-tag-version": "12.7.0",
     "eslint": "10.0.2",
     "prettier": "3.3.3",
-    "typescript-eslint": "8.56.1"
+    "typescript-eslint": "8.56.1",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "4.0.15"
   },
   "dependencies": {
     "@rollup/plugin-terser": "1.0.0",
