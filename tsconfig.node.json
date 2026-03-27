@@ -23,5 +23,5 @@
       "@sdk/*": ["sdk/*"]
     }
   },
-  "include": ["src/**/*.ts", "rollup.config.ts", "vitest.config.ts"]
+  "include": ["src/**/*.ts", "test/**/*.spec.ts", "rollup.config.ts", "vitest.config.ts"]
 }
