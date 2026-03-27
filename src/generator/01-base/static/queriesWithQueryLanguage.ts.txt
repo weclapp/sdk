@@ -363,7 +363,7 @@ const _some = (
       : undefined,
     ...assembleFilterParam(query?.where),
     ...flattenSort(query?.sort),
-    ...assembleOrderBy(query.orderBy),
+    ...assembleOrderBy(query?.orderBy),
     ...query?.params,
     ...query?.pagination
   };
