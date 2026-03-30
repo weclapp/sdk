@@ -37,7 +37,7 @@
     }
   },
   "scripts": {
-    "build": "rollup --config rollup.config.ts --configPlugin typescript={tsconfig:\\'tsconfig.node.json\\'} --configImportAttributesKey with",
+    "build": "rollup --config rollup.config.ts --configPlugin typescript={tsconfig:\\'tsconfig.rollup.json\\'} --configImportAttributesKey with",
     "build:watch": "npm run build -- --watch",
     "cli:browser:v1": "./bin/cli.js test/openapi.json --target browser",
     "cli:browser.rx:v1": "./bin/cli.js test/openapi.json --target browser.rx",
@@ -54,12 +54,16 @@
     "cli:node.rx:cache": "./bin/cli.js test/openapi.json --target node.rx  --cache",
     "prettier": "prettier . --check",
     "prettier:fix": "prettier . --write",
-    "test": "vitest run",
+    "test:generator": "vitest run src/",
+    "test:former-queries": "vitest run test/former-queries/",
+    "test:query-language": "vitest run test/queries/",
     "test:coverage": "vitest run --coverage",
-    "type-check": "tsc -p tsconfig.node.json --noEmit --skipLibCheck",
+    "type-check:former-queries": "tsc -p tsconfig.typecheck-former-queries.json --noEmit --skipLibCheck",
+    "type-check:query-language": "tsc -p tsconfig.typecheck-query-language.json --noEmit --skipLibCheck",
     "lint": "eslint ./src --cache",
     "lint:fix": "npm run lint -- --fix",
-    "ci": "npm run prettier && npm run lint && npm run build && npm run cli:browser:v1 && npm run cli:browser:v2 && npm run cli:browser:v3 && npm run cli:browser:v3:ql && npm run type-check && npm run test",
+    "ci:test": "npm run test:generator && npm run cli:browser:v3 && npm run type-check:former-queries && npm run test:former-queries && npm run cli:browser:v3:ql && npm run type-check:query-language && npm run test:query-language",
+    "ci": "npm run prettier && npm run lint && npm run build && npm run cli:browser:v1 && npm run cli:browser:v2 && npm run cli:browser:v3 && npm run ci:test",
     "release": "standard-version"
   },
   "devDependencies": {
