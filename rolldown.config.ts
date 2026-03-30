@@ -25,7 +25,7 @@ const nodeBuiltins = builtinModules.flatMap((m) => [m, `node:${m}`]);
 
 export default defineConfig({
   input: 'src/index.ts',
-  plugins: [txt()],
+  plugins: [txt(), ts({ tsconfig: 'tsconfig.rollup.json' })],
   external: [
     ...Object.keys(pkg.dependencies),
     ...Object.keys(pkg.devDependencies),

@@ -88,16 +88,30 @@ jobs:
           name: build
           path: dist
 
-      - name: Generate SDK for tests
+      - name: Run generator tests
+        run: npm run test:generator
+
+      - name: Generate SDK for tests with former query syntax
+        run: |
+          chmod +x ./bin/cli.js
+          ./bin/cli.js test/openapi_v3.json --target browser
+
+      - name: Run type-check (former-queries)
+        run: npm run type-check:former-queries
+
+      - name: Run tests (former-queries)
+        run: npm run test:former-queries
+
+      - name: Generate SDK for tests with query language
         run: |
           chmod +x ./bin/cli.js
           ./bin/cli.js test/openapi_v3.json --target browser --use-query-language
 
-      - name: Run type-check
-        run: npm run type-check
+      - name: Run type-check (query-language)
+        run: npm run type-check:query-language
 
-      - name: Run tests
-        run: npm run test
+      - name: Run tests (query-language)
+        run: npm run test:query-language
 
   publish:
     name: Publish release version

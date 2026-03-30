@@ -6,6 +6,12 @@
     },
     {
       "path": "./tsconfig.sdk.json"
+    },
+    {
+      "path": "./tsconfig.typecheck-former-queries.json"
+    },
+    {
+      "path": "./tsconfig.typecheck-query-language.json"
     }
   ]
 }
