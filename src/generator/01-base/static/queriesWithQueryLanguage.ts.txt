@@ -1,3 +1,56 @@
+const flattenOrderBy = (orderBy: OrderBy<any>[] = []): string => {
+
+  const applyModifiers = (property: string, modifier: { TRIM?: boolean; LOWER?: boolean; LENGTH?: boolean }) => {
+    let result = property;
+    if (modifier.TRIM) {
+      result = `trim(${result})`;
+    }
+    if (modifier.LOWER) {
+      result = `lower(${result})`;
+    }
+    if (modifier.LENGTH) {
+      result = `length(${result})`;
+    }
+    return result;
+  };
+
+  const isConditionalOrderBy = (
+    orderByItem: OrderBy<any>
+  ): orderByItem is ConditionalOrderBy<any> =>
+    !!orderByItem && typeof orderByItem === 'object' && 'CASE' in orderByItem;
+
+  const flattenValue = (value: number | FieldOrderBy<any>): string => {
+    if (typeof value === 'number') {
+      return value.toString();
+    }
+    return applyModifiers(value.FIELD, value);
+  };
+
+  const flattenConditional = (item: ConditionalOrderBy<any>): string => {
+    const cases = item.CASE.map((c) => {
+      const whenStr = flattenWhere(c.WHEN as QueryFilter<any>, []).join(' and ');
+      return `(${whenStr}) ? ${flattenValue(c.THEN)}`;
+    });
+
+    return cases.reduceRight((acc, caseStr) => `${caseStr} : ${acc}`, flattenValue(item.ELSE));
+  };
+
+  const flattenSingle = (orderByItem: OrderBy<any>): string => {
+    if (isConditionalOrderBy(orderByItem)) {
+      const expr = flattenConditional(orderByItem);
+      const sort = orderByItem.SORT === 'desc' ? 'desc' : 'asc';
+      return `${expr} ${sort}`;
+    }
+
+    const field = orderByItem as FieldOrderBy<any>;
+    const property = applyModifiers(field.FIELD, field);
+    const sort = field.SORT === 'desc' ? 'desc' : 'asc';
+    return `${property} ${sort}`;
+  };
+
+  return orderBy.map(flattenSingle).join(', ');
+}
+
 export type ComparisonOperator =
   | 'EQ'
   | 'NE'
@@ -68,19 +121,52 @@ export type QueryFilter<T> = SingleFilterExpr<T> & {
   NOT?: QueryFilter<T>;
 };
 
+export type ConditionalOrderByCase<E> = {
+  WHEN: QueryFilter<E>;
+  THEN: number | FieldOrderBy<E>;
+};
+
+export type ConditionalOrderBy<E> = {
+  CASE: ConditionalOrderByCase<E>[];
+  ELSE: number | FieldOrderBy<E>;
+  SORT?: 'asc' | 'desc';
+};
+
+export type FieldPath<T> = {
+  [K in keyof T & string]: NonNullable<T[K]> extends Array<infer U>
+    ? U extends Record<any, any>
+      ? `${K}.${FieldPath<U>}`
+      : never
+    : NonNullable<T[K]> extends Record<any, any>
+      ? K | `${K}.${FieldPath<NonNullable<T[K]>>}`
+      : K;
+}[keyof T & string];
+
+export type FieldOrderBy<E> = {
+  FIELD: FieldPath<E>;
+  SORT?: 'asc' | 'desc';
+  LOWER?: boolean;
+  TRIM?: boolean;
+  LENGTH?: boolean;
+};
+
+export type OrderBy<E> = FieldOrderBy<E> | ConditionalOrderBy<E>;
+
 export type CountQuery<F> = {
   where?: QueryFilter<F>;
 };
 
-export type SomeQuery<E, F, I, P> = {
+type SomeQueryBase<E, F, I, P> = {
   serializeNulls?: boolean;
   include?: QuerySelect<I>;
   properties?: P;
   where?: QueryFilter<F>;
   select?: QuerySelect<E>;
-  sort?: Sort<E>[];
   pagination?: Pagination;
 };
+
+export type SomeQuery<E, F, I, P> = SomeQueryBase<E, F, I, P> &
+  ({ sort?: Sort<E>[]; orderBy?: never } | { sort?: never; orderBy?: OrderBy<E>[] });
 
 const comparisonOperatorList: ComparisonOperator[] = [
   'EQ',
@@ -209,6 +295,14 @@ const flattenWhere = (
   return entries;
 };
 
+const assembleOrderBy = (orderBy: OrderBy<any>[] = []): Record<string, string> => {
+  if(!orderBy.length) {
+    return {}
+  }
+  const flattedOrderBy = flattenOrderBy(orderBy);
+  return flattedOrderBy.length ? { orderBy: flattedOrderBy } : {};
+}
+
 const assembleFilterParam = (
   obj: QueryFilter<any> = {}
 ): Record<string, string> => {
@@ -256,32 +350,31 @@ const _some = (
   endpoint: string,
   query?: SomeQuery<any, any, any, any> & { params?: Record<any, any> },
   requestOptions?: RequestOptions
-) =>
-  {
-    const usePost = cfg?.usePost ?? globalConfig?.usePost
-    const payload = {
-      serializeNulls: query?.serializeNulls,
-      additionalProperties: query?.properties?.join(','),
-      properties: query?.select
-        ? flattenSelect(query.select).join(',')
-        : undefined,
-      includeReferencedEntities: query?.include
-        ? Object.keys(query.include).join(',')
-        : undefined,
-      ...assembleFilterParam(query?.where),
-      ...flattenSort(query?.sort),
-      ...query?.params,
-      ...query?.pagination
-    }
-
-    return wrapResponse(() =>
-      raw(cfg, usePost ? `${endpoint}/query` : endpoint, {
-        method: usePost ? 'POST' : 'GET',
-        ...(usePost ? { body: payload } : { query: payload })
-      }, requestOptions).then((data) => ({
-        entities: data.result,
-        references: data.referencedEntities ?? {},
-        properties: data.additionalProperties ?? {}
-      }))
-    )
+) => {
+  const usePost = cfg?.usePost ?? globalConfig?.usePost;
+  const payload = {
+    serializeNulls: query?.serializeNulls,
+    additionalProperties: query?.properties?.join(','),
+    properties: query?.select
+      ? flattenSelect(query.select).join(',')
+      : undefined,
+    includeReferencedEntities: query?.include
+      ? Object.keys(query.include).join(',')
+      : undefined,
+    ...assembleFilterParam(query?.where),
+    ...flattenSort(query?.sort),
+    ...assembleOrderBy(query?.orderBy),
+    ...query?.params,
+    ...query?.pagination
   };
+  return wrapResponse(() =>
+    raw(cfg, usePost ? `${endpoint}/query` : endpoint, {
+      method: usePost ? 'POST' : 'GET',
+      ...(usePost ? { body: payload } : { query: payload })
+    }, requestOptions).then((data) => ({
+      entities: data.result,
+      references: data.referencedEntities ?? {},
+      properties: data.additionalProperties ?? {}
+    }))
+  );
+};
