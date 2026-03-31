@@ -1,4 +1,4 @@
-const flattenOrderBy = (orderBy: OrderBy<any>[] = []): string => {
+const flattenOrderBy = (orderBy: OrderBy<any>[] = []): string[] => {
 
   const applyModifiers = (property: string, modifier: { TRIM?: boolean; LOWER?: boolean; LENGTH?: boolean }) => {
     let result = property;
@@ -48,7 +48,7 @@ const flattenOrderBy = (orderBy: OrderBy<any>[] = []): string => {
     return `${property} ${sort}`;
   };
 
-  return orderBy.map(flattenSingle).join(', ');
+  return orderBy.map(flattenSingle);
 }
 
 export type ComparisonOperator =
@@ -345,12 +345,22 @@ const evaluateCaseExpression = <FilterProps, PropType>(
         : evaluateCaseExpression((exp.ELSE as CaseNode<FilterProps, PropType>).CASE, setModifiers, nestedPaths)
   })`;
 
-const assembleOrderBy = (orderBy: OrderBy<any>[] = []): Record<string, string> => {
+const assembleOrderBy = (orderBy: OrderBy<any>[] = [], usePost?: boolean): Record<string, string | string[]> => {
   if(!orderBy.length) {
     return {}
   }
-  const flattedOrderBy = flattenOrderBy(orderBy);
-  return flattedOrderBy.length ? { orderBy: flattedOrderBy } : {};
+  const flattedOrderByList = flattenOrderBy(orderBy);
+
+  if(!flattedOrderByList.length) {
+    return {};
+  }
+
+  if(usePost) {
+    return { orderBy: flattedOrderByList };
+  }
+
+  const flattedOrderBy = flattedOrderByList.join(',');
+  return { orderBy: flattedOrderBy };
 }
 
 const assembleFilterParam = (
@@ -417,7 +427,7 @@ const _some = (
         : undefined,
     ...assembleFilterParam(query?.where),
     ...flattenSort(query?.sort, usePost),
-    ...assembleOrderBy(query?.orderBy),
+    ...assembleOrderBy(query?.orderBy, usePost),
     ...query?.params,
     ...query?.pagination
   };
