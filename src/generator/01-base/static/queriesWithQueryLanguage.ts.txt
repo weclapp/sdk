@@ -64,25 +64,9 @@ export type LengthOperator = 'LENGTH';
 
 export type ArrayOperator = 'IN';
 
-export type CaseOperator = 'CASE';
-
-export type CaseNode<Entity, PropType> = {
-  [K in CaseOperator]: CaseExpression<Entity, PropType>;
-};
-
-type InCaseNode<Case> = Case extends CaseNode<infer Entity, infer PropType> ? CaseNode<Entity, PropType[]> : never;
-
-export type CaseExpression<Entity, PropType> = {
-  IF: SingleFilterExpr<Entity>;
-  THEN: PropType | CaseNode<Entity, PropType>;
-  ELSE: PropType | CaseNode<Entity, PropType>;
-};
-
 export type NullOperator = 'NULL';
 
-export type Operator = ComparisonOperator | ArrayOperator | CaseOperator | NullOperator;
-
-export type BinaryOperator = Exclude<Operator, CaseOperator>;
+export type Operator = ComparisonOperator | ArrayOperator | NullOperator;
 
 export type ModifierFunction = 'LOWER' | 'TRIM';
 
@@ -104,37 +88,42 @@ export type LengthExprWithModifier =
   { [K in NullOperator]?: never } &
   { [K in ModifierFunction]?: boolean };
 
-export type FilterExpr<T, Case = never> =
-  { [K in ComparisonOperator]?: T | Case } &
-  { [K in ArrayOperator]?: T[] | InCaseNode<Case> } &
+export type FilterExpr<T> =
+  { [K in ComparisonOperator]?: T } &
+  { [K in ArrayOperator]?: T[] } &
   { [K in keyof LengthExpr]?: never };
 
-export type FilterExprWithoutNull<T, Case = never> =
-  RequireAtLeastOne<FilterExpr<T, Case>> &
+export type FilterExprWithoutNull<T> =
+  RequireAtLeastOne<FilterExpr<T>> &
   { [K in NullOperator]?: never } &
   { [K in ModifierFunction]?: boolean };
 
-export type FilterExprWithNull<T, Case = never> =
-  FilterExpr<T, Case> &
+export type FilterExprWithNull<T> =
+  FilterExpr<T> &
   { [K in NullOperator]?: boolean} &
   { [K in ModifierFunction]?: never };
 
-export type MapOperators<T, Case = never> = LengthExprWithModifier | FilterExprWithoutNull<T, Case> | FilterExprWithNull<T, Case>;
+export type MapOperators<T> = LengthExprWithModifier | FilterExprWithoutNull<T> | FilterExprWithNull<T>;
 
 export type SingleFilterExpr<T> = {
   [P in keyof T]?: T[P] extends Array<infer U> | undefined
     ? U extends Record<any, any>
       ? SingleFilterExpr<U> | { NOT?: SingleFilterExpr<U> }
-      : MapOperators<U, CaseNode<T, T[P]>>
+      : MapOperators<U>
     : T[P] extends Record<any, any> | undefined
       ? SingleFilterExpr<T[P]> | { NOT?: SingleFilterExpr<T[P]> }
-      : MapOperators<T[P], CaseNode<T, T[P]>>;
+      : MapOperators<T[P]>;
 };
 
 export type QueryFilter<T> = SingleFilterExpr<T> & {
   OR?: QueryFilter<T>[];
   AND?: QueryFilter<T>[];
   NOT?: QueryFilter<T>;
+  CASE?: {
+    IF: QueryFilter<T>;
+    THEN: QueryFilter<T>;
+    ELSE: QueryFilter<T>;
+  };
 };
 
 export type ConditionalOrderByCase<E> = {
@@ -194,7 +183,7 @@ const comparisonOperatorList: ComparisonOperator[] = [
   'LIKE'
 ];
 
-const comparisonOperatorMap: Record<BinaryOperator, string> = {
+const comparisonOperatorMap: Record<Operator, string> = {
   EQ: '=',
   NE: '!=',
   LT: '<',
@@ -259,7 +248,7 @@ const flattenWhere = (
         `not ${flattedNot.length > 1 ? '(' : ''}${flattedNot.join(' and ')}${flattedNot.length > 1 ? ')' : ''}`
       );
     } else if (prop === 'CASE') {
-      entries.push(evaluateCaseExpression(propValue as CaseExpression<any, any>, setModifiers, nestedPaths));
+      entries.push(evaluateCaseExpression(propValue as QueryFilter<any>, nestedPaths));
     } else if (propValue) {
       for (const [operator, value] of Object.entries(propValue)) {
         if (value === undefined) continue;
@@ -268,40 +257,27 @@ const flattenWhere = (
             `${setModifiers.reduce(
               (acc, [first]) => `${first.toLowerCase()}(${acc})`,
               nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
-            )} ${comparisonOperatorMap[operator as BinaryOperator]} ${
-              typeof value === 'object'
-                ? flattenWhere(value, nestedPaths)
-                : typeof value === 'string'
-                  ? setModifiers.reduce((acc, [first]) => `${first}(${acc})`, JSON.stringify(value))
-                  : value
+            )} ${comparisonOperatorMap[operator as Operator]} ${
+              typeof value === 'string' ? JSON.stringify(value) : value
             }`
           );
         } else if ((operator as Operator) === 'NULL') {
           entries.push(
-            `${!value ? 'not ' : ''}${nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')} ${comparisonOperatorMap[operator as BinaryOperator]}`
+            `${!value ? 'not ' : ''}${nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')} ${comparisonOperatorMap[operator as Operator]}`
           );
         } else if ((operator as Operator) === 'IN') {
-          if (typeof value === 'object' && !Array.isArray(value) && value.CASE) {
-            entries.push(
-              `${setModifiers.reduce(
-                (acc, [first]) => `${first}(${acc})`,
-                nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
-              )} ${comparisonOperatorMap[operator as BinaryOperator]} ${evaluateCaseExpression(value.CASE as CaseExpression<any, any>, setModifiers, nestedPaths)}`
-            );
-          } else if(value.length === 0) {
+          if(value.length === 0) {
             entries.push('1 = 0')
           } else {
             entries.push(
               `${setModifiers.reduce(
                 (acc, [first]) => `${first.toLowerCase()}(${acc})`,
                 nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
-              )} ${comparisonOperatorMap[operator as BinaryOperator]} [${value.map((v: string | number) =>
+              )} ${comparisonOperatorMap[operator as Operator]} [${value.map((v: string | number) =>
                 typeof v === 'string' ? setModifiers.reduce((acc, [first]) => `${first}(${acc})`, JSON.stringify(v)) : v
               )}]`
             );
           }
-        } else if ((operator as Operator) === 'CASE') {
-          entries.push(evaluateCaseExpression(value as CaseExpression<any, any>, setModifiers, nestedPaths));
         } else if ((operator as LengthOperator) === 'LENGTH') {
           const lengthProp = `length(${setModifiers.reduce(
             (acc, [first]) => `${first.toLowerCase()}(${acc})`,
@@ -326,24 +302,8 @@ const flattenWhere = (
   return entries;
 };
 
-const evaluateCaseExpression = <FilterProps, PropType>(
-  exp: CaseExpression<FilterProps, PropType>,
-  setModifiers: [string, any][],
-  nestedPaths: string[]
-): string =>
-  `(${flattenWhere(exp.IF, nestedPaths)} ? ${
-    typeof exp.THEN === 'string' || Array.isArray(exp.THEN)
-      ? setModifiers.reduce((acc, [first]) => `${first}(${acc})`, JSON.stringify(exp.THEN))
-      : typeof exp.THEN === 'number' || typeof exp.THEN === 'boolean'
-        ? exp.THEN
-        : evaluateCaseExpression((exp.THEN as CaseNode<FilterProps, PropType>).CASE, setModifiers, nestedPaths)
-  } : ${
-    typeof exp.ELSE === 'string' || Array.isArray(exp.ELSE)
-      ? setModifiers.reduce((acc, [first]) => `${first}(${acc})`, JSON.stringify(exp.ELSE))
-      : typeof exp.ELSE === 'number' || typeof exp.ELSE === 'boolean'
-        ? exp.ELSE
-        : evaluateCaseExpression((exp.ELSE as CaseNode<FilterProps, PropType>).CASE, setModifiers, nestedPaths)
-  })`;
+const evaluateCaseExpression = (exp: QueryFilter<any>, nestedPaths: string[]): string =>
+  `(${flattenWhere(exp.IF as QueryFilter<any>, nestedPaths)} ? ${flattenWhere(exp.THEN as QueryFilter<any>, nestedPaths)} : ${flattenWhere(exp.ELSE as QueryFilter<any>, nestedPaths)})`;
 
 const assembleOrderBy = (orderBy: OrderBy<any>[] = []): Record<string, string> => {
   if(!orderBy.length) {
