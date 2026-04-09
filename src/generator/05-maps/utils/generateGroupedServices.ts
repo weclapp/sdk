@@ -8,6 +8,7 @@ import { GeneratedService } from '../../04-services/types';
 
 // Only functions matching this regex are included in the generation.
 const FILTER_REGEX = /^(some|count|create|remove|unique|update)$/;
+const SOME_FILTER_REGEX = /^(some)$/;
 
 /**
  * Generates for each function a map with the entity-name as key and service type as value.
@@ -17,6 +18,7 @@ const FILTER_REGEX = /^(some|count|create|remove|unique|update)$/;
  */
 export const generateGroupedServices = (services: GeneratedService[]) => {
   const entityDescriptors: Map<string, InterfaceProperty[]> = new Map();
+  const someQueryDescriptors: Map<string, InterfaceProperty[]> = new Map();
 
   for (const service of services) {
     for (const fn of service.functions) {
@@ -32,13 +34,25 @@ export const generateGroupedServices = (services: GeneratedService[]) => {
           type: `${pascalCase(service.name)}Service_${pascalCase(fn.name)}`
         }
       ]);
+
+      if (SOME_FILTER_REGEX.test(fn.name)) {
+        someQueryDescriptors.set(fn.name, [
+          ...(someQueryDescriptors.get(fn.name) ?? []),
+          {
+            name: service.name,
+            required: true,
+            type: `${pascalCase(service.name)}Service_${pascalCase(fn.name)}_Query`
+          }
+        ]);
+      }
     }
   }
 
-  const descriptors = [...entityDescriptors.entries()];
+  const entityDescriptorEntries = [...entityDescriptors.entries()];
+  const someQueryDescriptorEntries = [...someQueryDescriptors.entries()];
   const typeGuards: string[] = [];
 
-  for (const [name] of descriptors) {
+  for (const [name] of entityDescriptorEntries) {
     const constant = camelCase(`wServiceWith_${name}_Names`);
     const service = pascalCase(`WServiceWith_${name}`);
     const guard = `(service: string | undefined): service is ${service} =>\n${indent(`${constant}.includes(service as ${service});`)}`;
@@ -46,11 +60,17 @@ export const generateGroupedServices = (services: GeneratedService[]) => {
   }
 
   return generateStatements(
-    ...descriptors.map(([name, props]) => generateInterface(pascalCase(`WServicesWith_${name}`), props)),
-    ...descriptors.map(([name]) =>
+    ...entityDescriptorEntries.map(([name, props]) => generateInterface(pascalCase(`WServicesWith_${name}`), props)),
+    ...entityDescriptorEntries.map(([name]) =>
       generateType(pascalCase(`WServiceWith_${name}`), `keyof ${pascalCase(`WServicesWith_${name}`)}`)
     ),
-    ...descriptors.map(([name, props]) => {
+    ...someQueryDescriptorEntries.map(([name, props]) =>
+      generateInterface(pascalCase(`WServicesWith_${name}_Query`), props)
+    ),
+    ...someQueryDescriptorEntries.map(([name]) =>
+      generateType(pascalCase(`WServiceWith_${name}_Query`), `keyof ${pascalCase(`WServicesWith_${name}_Query`)}`)
+    ),
+    ...entityDescriptorEntries.map(([name, props]) => {
       const constant = camelCase(`wServiceWith_${name}_Names`);
       const type = pascalCase(`WServiceWith_${name}`);
       const value = generateArray(props.map((v) => v.name));
