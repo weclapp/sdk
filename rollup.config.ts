@@ -20,7 +20,7 @@ const txt = (): Plugin => {
 
 export default defineConfig({
   input: 'src/index.ts',
-  plugins: [txt(), ts({ tsconfig: 'tsconfig.node.json' })],
+  plugins: [txt(), ts({ tsconfig: 'tsconfig.rollup.json' })],
   external: [
     ...Object.keys(pkg.dependencies),
     ...Object.keys(pkg.peerDependencies),

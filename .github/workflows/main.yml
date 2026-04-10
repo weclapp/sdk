@@ -34,24 +34,6 @@ jobs:
           name: build
           path: dist
 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.14.0
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm run test
-
   generate:
     name: Generate SDK
     runs-on: ubuntu-latest
@@ -82,6 +64,54 @@ jobs:
           chmod +x ./bin/cli.js
           ./bin/cli.js test/openapi.json --target ${{ matrix.target }}
           ./bin/cli.js test/openapi_v2.json --target ${{ matrix.target }}
+          ./bin/cli.js test/openapi_v3.json --target ${{ matrix.target }}
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download dist files
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: dist
+
+      - name: Run generator tests
+        run: npm run test:generator
+
+      - name: Generate SDK for tests with former query syntax
+        run: |
+          chmod +x ./bin/cli.js
+          ./bin/cli.js test/openapi_v3.json --target browser
+
+      - name: Run type-check (former-queries)
+        run: npm run type-check:former-queries
+
+      - name: Run tests (former-queries)
+        run: npm run test:former-queries
+
+      - name: Generate SDK for tests with query language
+        run: |
+          chmod +x ./bin/cli.js
+          ./bin/cli.js test/openapi_v3.json --target browser --use-query-language
+
+      - name: Run type-check (query-language)
+        run: npm run type-check:query-language
+
+      - name: Run tests (query-language)
+        run: npm run test:query-language
 
   publish:
     name: Publish release version
