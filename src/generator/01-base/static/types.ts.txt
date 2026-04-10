@@ -30,14 +30,6 @@ export type QuerySelect<T> = {
       : boolean;
 };
 
-export type QueryInclude<T> = {
-  [P in keyof T]?: T[P] extends Array<infer U> | undefined
-    ? QueryInclude<U>
-    : T[P] extends Record<any, any> | undefined
-      ? QueryInclude<T[P]>
-      : boolean;
-};
-
 export type Select<T, Q extends QuerySelect<T> | undefined> =
   Q extends QuerySelect<T>
     ? {

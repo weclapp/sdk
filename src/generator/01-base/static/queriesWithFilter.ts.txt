@@ -37,7 +37,7 @@ export type CountQuery<F> = {
 
 export type SomeQuery<E, F, I, P> = {
   serializeNulls?: boolean;
-  include?: QueryInclude<I>;
+  include?: I;
   properties?: P;
   filter?: QueryFilter<F> & CustomAttributeFilter;
   select?: QuerySelect<E>;

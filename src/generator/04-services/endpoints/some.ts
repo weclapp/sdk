@@ -68,7 +68,7 @@ const resolveArrayReferenceProperties = (
     ([property, propertyMetaData]): ObjectProperty[] => {
       if (propertyMetaData.type === 'array') {
         if (propertyMetaData.entity === 'onlyId') {
-          return [{ key: property, value: [{ key: 'id', value: 'string' }] }];
+          return [{ key: property, value: [{ key: 'id', value: 'boolean' }] }];
         }
 
         if (!propertyMetaData.entity) {
@@ -89,7 +89,7 @@ const resolveArrayReferenceProperties = (
       }
 
       if (property.endsWith('Id')) {
-        return [{ key: property, value: 'string' }];
+        return [{ key: property, value: 'boolean' }];
       }
 
       return [];
@@ -114,16 +114,14 @@ const resolveReferences = (entity: string, entities: Map<string, GeneratedEntity
         if (propertyMetaData.entity === 'onlyId') {
           references.push({
             name: property,
-            type: generateObject([{ key: 'id', value: 'string' }]),
-            required: true
+            type: generateObject([{ key: 'id', value: 'boolean' }])
           });
         } else {
           const nestedProperties = resolveArrayReferenceProperties(propertyMetaData.entity || '', entities);
           if (nestedProperties.length) {
             references.push({
               name: property,
-              type: generateObject(nestedProperties),
-              required: true
+              type: generateObject(nestedProperties)
             });
           }
         }
@@ -131,8 +129,7 @@ const resolveReferences = (entity: string, entities: Map<string, GeneratedEntity
         if (propertyMetaData.service) {
           references.push({
             name: property,
-            type: 'string',
-            required: true
+            type: 'boolean'
           });
         }
       }
