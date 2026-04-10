@@ -145,20 +145,25 @@ export const generateEntities = (context: OpenApiContext): Map<string, Generated
   return entities;
 };
 
-export const generateReferencedEntities = (entities: Map<string, GeneratedEntity>, aliases: Map<string, string>) => {
+export const generateReferencedEntities = (
+  entities: Map<string, GeneratedEntity>,
+  aliases: Map<string, string>,
+  services: Map<string, { name: string }>
+) => {
   const aliasKeys = new Set(aliases.keys());
+  const serviceKeys = new Set(services.keys());
 
   return generateInterfaceType(
     'ReferencedEntities',
     [
       ...[...entities.values()]
-        .filter((entity) => aliasKeys.has(entity.name))
+        .filter((entity) => aliasKeys.has(entity.name) && serviceKeys.has(entity.name))
         .map((entity) => ({
           name: entity.name,
           type: `${entity.interfaceName}[]`
         })),
       ...[...aliases.entries()]
-        .filter(([, alias]) => loosePascalCase(alias) === 'CustomValue')
+        .filter(([, alias]) => alias === 'customValue')
         .map(([entityName]) => ({
           name: entityName,
           type: 'CustomValue[]'
