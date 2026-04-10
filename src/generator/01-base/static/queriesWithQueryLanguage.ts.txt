@@ -302,8 +302,12 @@ const flattenWhere = (
   return entries;
 };
 
-const evaluateCaseExpression = (exp: QueryFilter<any>, nestedPaths: string[]): string =>
-  `(${flattenWhere(exp.IF as QueryFilter<any>, nestedPaths)} ? ${flattenWhere(exp.THEN as QueryFilter<any>, nestedPaths)} : ${flattenWhere(exp.ELSE as QueryFilter<any>, nestedPaths)})`;
+const evaluateCaseExpression = (exp: QueryFilter<any>, nestedPaths: string[]): string => {
+  const ifExp = flattenWhere(exp.IF as QueryFilter<any>, nestedPaths).join(' and ');
+  const thenBranch = flattenWhere(exp.THEN as QueryFilter<any>, nestedPaths).join(' and ');
+  const elseBranch = flattenWhere(exp.ELSE as QueryFilter<any>, nestedPaths).join(' and ');
+  return `(${ifExp} ? ${thenBranch} : ${elseBranch})`;
+};
 
 const assembleOrderBy = (orderBy: OrderBy<any>[] = []): Record<string, string> => {
   if(!orderBy.length) {
