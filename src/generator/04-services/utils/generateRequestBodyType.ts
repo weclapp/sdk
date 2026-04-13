@@ -5,9 +5,10 @@ import { isReferenceObject } from '@utils/openapi/guards';
 
 export const generateRequestBodyType = (
   { requestBody }: OpenAPIV3.OperationObject,
-  requestBodies: Map<string, OpenAPIV3.RequestBodyObject>
+  requestBodies: Map<string, OpenAPIV3.RequestBodyObject>,
+  isDeepPartialType?: boolean
 ): AnyType => {
   const requestBodyObject =
     requestBody && isReferenceObject(requestBody) ? requestBodies.get(getRefName(requestBody)) : requestBody;
-  return generateContentType(requestBodyObject);
+  return generateContentType(requestBodyObject, undefined, isDeepPartialType);
 };

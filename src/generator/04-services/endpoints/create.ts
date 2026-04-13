@@ -13,13 +13,14 @@ export const generateCreateEndpoint: ServiceFunctionGenerator = ({
   context,
   options
 }): GeneratedServiceFunction => {
+  const endpointName = pascalCase(endpoint.service);
   const functionName = 'create';
-  const functionTypeName = `${pascalCase(endpoint.service)}Service_${pascalCase(functionName)}`;
+  const functionTypeName = `${endpointName}Service_${pascalCase(functionName)}`;
 
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
     params: [
-      `data: DeepPartial<${generateRequestBodyType(operationObject, context.requestBodies).toString()}>`,
+      `data: ${generateRequestBodyType(operationObject, context.requestBodies).toString()}_Create`,
       'requestOptions?: RequestOptions'
     ],
     returns: `${resolveResponseType(options.target)}<${generateResponseType(operationObject, context.responses).toString()}>`

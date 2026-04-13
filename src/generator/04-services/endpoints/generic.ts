@@ -33,11 +33,11 @@ export const generateGenericEndpoint =
     const params = createObjectType({
       params:
         operationObject.parameters &&
-        convertToTypeScriptType(resolveParameters(operationObject.parameters, context.parameters)),
+        convertToTypeScriptType(resolveParameters(operationObject.parameters, context.parameters), true),
       body:
         method === 'get'
           ? undefined
-          : wrapBody(generateRequestBodyType(operationObject, context.requestBodies), options.target)
+          : wrapBody(generateRequestBodyType(operationObject, context.requestBodies, true), options.target)
     });
 
     const responseBody = generateResponseType(operationObject, context.responses);
