@@ -163,7 +163,7 @@ export type CountQuery<F> = {
 
 type SomeQueryBase<E, F, I, P> = {
   serializeNulls?: boolean;
-  include?: QuerySelect<I>;
+  include?: I;
   properties?: P;
   where?: QueryFilter<F>;
   select?: QuerySelect<E>;
@@ -387,7 +387,7 @@ const _some = (
     includeReferencedEntities: query?.include
       ? usePost
           ? Object.keys(query.include)
-          : Object.keys(query.include).join(',')
+          : flattenIncludedReferences(query.include).join(',')
         : undefined,
     ...assembleFilterParam(query?.where),
     ...flattenSort(query?.sort, usePost),

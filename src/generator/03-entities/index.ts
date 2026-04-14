@@ -1,12 +1,12 @@
 import { extractPropertyMetaData, PropertyMetaData } from '@generator/03-entities/utils/extractPropertyMetaData';
-import { generateInterface, InterfaceProperty } from '@ts/generateInterface';
+import { logger } from '@logger';
+import { generateInterface, generateInterfaceType, InterfaceProperty } from '@ts/generateInterface';
 import { generateStatements } from '@ts/generateStatements';
 import { loosePascalCase } from '@utils/case';
 import { convertToTypeScriptType, createReferenceType, getRefName } from '@utils/openapi/convertToTypeScriptType';
 import { ExtendedSchema, isEnumSchemaObject, isReferenceObject } from '@utils/openapi/guards';
-import { OpenAPIV3 } from 'openapi-types';
-import { logger } from '@logger';
 import { OpenApiContext } from '@utils/weclapp/extractContext';
+import { OpenAPIV3 } from 'openapi-types';
 
 export interface GeneratedEntity {
   name: string;
@@ -143,4 +143,31 @@ export const generateEntities = (context: OpenApiContext): Map<string, Generated
   }
 
   return entities;
+};
+
+export const generateReferencedEntities = (
+  entities: Map<string, GeneratedEntity>,
+  aliases: Map<string, string>,
+  services: Map<string, { name: string }>
+) => {
+  const aliasKeys = new Set(aliases.keys());
+  const serviceKeys = new Set(services.keys());
+
+  return generateInterfaceType(
+    'ReferencedEntities',
+    [
+      ...[...entities.values()]
+        .filter((entity) => aliasKeys.has(entity.name) && serviceKeys.has(entity.name))
+        .map((entity) => ({
+          name: entity.name,
+          type: `${entity.interfaceName}[]`
+        })),
+      ...[...aliases.entries()]
+        .filter(([, alias]) => alias === 'customValue')
+        .map(([entityName]) => ({
+          name: entityName,
+          type: 'CustomValue[]'
+        }))
+    ].sort((a, b) => a.name.localeCompare(b.name))
+  );
 };

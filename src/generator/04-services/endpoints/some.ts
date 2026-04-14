@@ -2,6 +2,7 @@ import { GeneratedServiceFunction, ServiceFunctionGenerator } from '@generator/0
 import { generateArrowFunction } from '@ts/generateArrowFunction';
 import { generateArrowFunctionType } from '@ts/generateArrowFunctionType';
 import { generateInterfaceFromObject, generateInterfaceType, InterfaceProperty } from '@ts/generateInterface';
+import { generateObject, ObjectProperty } from '@ts/generateObject';
 import { generateString } from '@ts/generateString';
 import { generateTupleArray } from '@ts/generateTupleArray';
 import { generateType } from '@ts/generateType';
@@ -46,46 +47,99 @@ const resolveAdditionalPropertiesSchema = (
   return undefined;
 };
 
+const resolveArrayReferenceProperties = (
+  entity: string,
+  entities: Map<string, GeneratedEntity>,
+  visitedEntities = new Set<string>()
+): ObjectProperty[] => {
+  if (!entity || visitedEntities.has(entity)) {
+    return [];
+  }
+
+  const generatedEntity = entities.get(entity);
+  if (!generatedEntity) {
+    return [];
+  }
+
+  const nextVisitedEntities = new Set(visitedEntities);
+  nextVisitedEntities.add(entity);
+
+  const properties: ObjectProperty[] = [...generatedEntity.properties.entries()].flatMap(
+    ([property, propertyMetaData]): ObjectProperty[] => {
+      if (propertyMetaData.type === 'array') {
+        if (propertyMetaData.entity === 'onlyId') {
+          return [{ key: property, value: [{ key: 'id', value: 'boolean' }] }];
+        }
+
+        if (!propertyMetaData.entity) {
+          return [];
+        }
+
+        const nestedProperties = resolveArrayReferenceProperties(
+          propertyMetaData.entity,
+          entities,
+          nextVisitedEntities
+        );
+
+        if (!nestedProperties.length) {
+          return [];
+        }
+
+        return [{ key: property, value: nestedProperties }];
+      }
+
+      if (property.endsWith('Id')) {
+        return [{ key: property, value: 'boolean' }];
+      }
+
+      return [];
+    }
+  );
+
+  if (generatedEntity.parentName) {
+    properties.push(...resolveArrayReferenceProperties(generatedEntity.parentName, entities, nextVisitedEntities));
+  }
+
+  return properties;
+};
+
 const resolveReferences = (entity: string, entities: Map<string, GeneratedEntity>) => {
   const references: InterfaceProperty[] = [];
   const generatedEntity = entities.get(entity);
   if (generatedEntity) {
     for (const [property, propertyMetaData] of generatedEntity.properties) {
-      if (propertyMetaData.service) {
-        references.push({
-          name: property,
-          type: generateString(propertyMetaData.service),
-          required: true
-        });
+      if (property === 'customAttributes') continue;
+
+      if (propertyMetaData.type === 'array') {
+        if (propertyMetaData.entity === 'onlyId') {
+          references.push({
+            name: property,
+            type: generateObject([{ key: 'id', value: 'boolean' }])
+          });
+        } else {
+          const nestedProperties = resolveArrayReferenceProperties(propertyMetaData.entity || '', entities);
+          if (nestedProperties.length) {
+            references.push({
+              name: property,
+              type: generateObject(nestedProperties)
+            });
+          }
+        }
+      } else {
+        if (propertyMetaData.service) {
+          references.push({
+            name: property,
+            type: 'boolean'
+          });
+        }
       }
     }
     if (generatedEntity.parentName) {
       references.push(...resolveReferences(generatedEntity.parentName, entities));
     }
   }
-  return references;
-};
 
-const resolveReferencedEntities = (entity: string, entities: Map<string, GeneratedEntity>) => {
-  const referencedEntities: InterfaceProperty[] = [];
-  const generatedEntity = entities.get(entity);
-  if (generatedEntity) {
-    for (const [, propertyMetaData] of generatedEntity.properties) {
-      if (propertyMetaData.service && propertyMetaData.entity) {
-        const referencedEntity = entities.get(propertyMetaData.entity);
-        if (referencedEntity)
-          referencedEntities.push({
-            name: propertyMetaData.service,
-            type: `${referencedEntity.interfaceName}[]`,
-            required: true
-          });
-      }
-    }
-    if (generatedEntity.parentName) {
-      referencedEntities.push(...resolveReferencedEntities(generatedEntity.parentName, entities));
-    }
-  }
-  return referencedEntities;
+  return references;
 };
 
 export const generateSomeEndpoint: ServiceFunctionGenerator = ({
@@ -134,12 +188,6 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
     `SomeQuery<${relatedEntity.interfaceName}, ${filterTypeName}, ${referencesTypeName}, ${additionalPropertyTypeName}> & ${parametersTypeName}`
   );
 
-  const referencedEntitiesTypeName = `${functionTypeName}_ReferencedEntities`;
-  const referencedEntitiesTypeSource = generateInterfaceType(
-    referencedEntitiesTypeName,
-    resolveReferencedEntities(endpoint.service, entities)
-  );
-
   const additionalPropertiesTypeName = `${functionTypeName}_AdditionalProperties`;
 
   const additionalPropertiesTypeSource = generateType(
@@ -150,7 +198,7 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
   const functionTypeSource = generateArrowFunctionType({
     type: functionTypeName,
     params: [`query${parametersType.isFullyOptional() ? '?' : ''}: ${queryTypeName}, requestOptions?: RequestOptions`],
-    returns: `${resolveResponseType(options.target)}<SomeQueryReturn<${relatedEntity.interfaceName}, ${referencedEntitiesTypeName}, ${additionalPropertiesTypeName}>>`
+    returns: `${resolveResponseType(options.target)}<SomeQueryReturn<${relatedEntity.interfaceName}, ${additionalPropertiesTypeName}>>`
   });
 
   const functionSource = generateArrowFunction({
@@ -170,7 +218,6 @@ export const generateSomeEndpoint: ServiceFunctionGenerator = ({
       { name: referencesTypeName, source: referencesTypeSource },
       { name: additionalPropertyTypeName, source: additionalPropertyTypeSource },
       { name: queryTypeName, source: queryTypeSource },
-      { name: referencedEntitiesTypeName, source: referencedEntitiesTypeSource },
       { name: additionalPropertiesTypeName, source: additionalPropertiesTypeSource }
     ]
   };
