@@ -379,16 +379,16 @@ const _some = (
   const payload = {
     serializeNulls: query?.serializeNulls,
     additionalProperties: usePost ? query?.properties : query?.properties?.join(','),
-      properties: query?.select
-        ? usePost
-          ? flattenSelect(query.select)
-          : flattenSelect(query.select).join(',')
+    properties: query?.select
+      ? usePost
+        ? flattenSelect(query.select)
+        : flattenSelect(query.select).join(',')
       : undefined,
     includeReferencedEntities: query?.include
       ? usePost
-          ? Object.keys(query.include)
-          : flattenIncludedReferences(query.include).join(',')
-        : undefined,
+        ? flattenIncludedReferences(query.include)
+        : flattenIncludedReferences(query.include).join(',')
+      : undefined,
     ...assembleFilterParam(query?.where),
     ...flattenSort(query?.sort, usePost),
     ...assembleOrderBy(query?.orderBy, usePost),

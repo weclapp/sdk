@@ -177,8 +177,8 @@ const _some = (
         : undefined,
       includeReferencedEntities: query?.include
         ? usePost
-          ? Object.keys(query.include)
-          : flattenIncludedReferences(query.include).join(',')
+            ? flattenIncludedReferences(query.include)
+            : flattenIncludedReferences(query.include).join(',')
         : undefined,
       ...flattenOrFilter(query?.or),
       ...flattenFilter(query?.filter),
