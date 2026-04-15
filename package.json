@@ -25,7 +25,7 @@
   ],
   "engines": {
     "node": ">=20",
-    "npm": ">=10"
+    "npm": ">=11"
   },
   "types": "./sdk/dist/index.d.ts",
   "module": "./sdk/dist/index.js",
@@ -86,5 +86,9 @@
   },
   "peerDependencies": {
     "rxjs": "^7.8.0"
+  },
+  "volta": {
+    "node": "24.11.1",
+    "npm": "11.1.0"
   }
 }
