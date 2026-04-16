@@ -126,36 +126,36 @@ export type QueryFilter<T> = SingleFilterExpr<T> & {
   };
 };
 
-export type ConditionalOrderByCase<E> = {
-  WHEN: QueryFilter<E>;
-  THEN: number | FieldOrderBy<E>;
+export type ConditionalOrderByCase<F> = {
+  WHEN: QueryFilter<F>;
+  THEN: number | FieldOrderBy<F>;
 };
 
-export type ConditionalOrderBy<E> = {
-  CASE: ConditionalOrderByCase<E>[];
-  ELSE: number | FieldOrderBy<E>;
+export type ConditionalOrderBy<F> = {
+  CASE: ConditionalOrderByCase<F>[];
+  ELSE: number | FieldOrderBy<F>;
   SORT?: 'asc' | 'desc';
 };
 
-export type FieldPath<T> = {
+export type FieldPath<T, Depth extends 0[] = []> = Depth['length'] extends 3 ? never : {
   [K in keyof T & string]: NonNullable<T[K]> extends Array<infer U>
     ? U extends Record<any, any>
-      ? `${K}.${FieldPath<U>}`
+      ? `${K}.${FieldPath<U, [...Depth, 0]>}`
       : never
     : NonNullable<T[K]> extends Record<any, any>
-      ? K | `${K}.${FieldPath<NonNullable<T[K]>>}`
+      ? K | `${K}.${FieldPath<NonNullable<T[K]>, [...Depth, 0]>}`
       : K;
 }[keyof T & string];
 
-export type FieldOrderBy<E> = {
-  FIELD: FieldPath<E>;
+export type FieldOrderBy<F> = {
+  FIELD: FieldPath<F>;
   SORT?: 'asc' | 'desc';
   LOWER?: boolean;
   TRIM?: boolean;
   LENGTH?: boolean;
 };
 
-export type OrderBy<E> = FieldOrderBy<E> | ConditionalOrderBy<E>;
+export type OrderBy<F> = FieldOrderBy<F> | ConditionalOrderBy<F>;
 
 export type CountQuery<F> = {
   where?: QueryFilter<F>;
@@ -171,7 +171,7 @@ type SomeQueryBase<E, F, I, P> = {
 };
 
 export type SomeQuery<E, F, I, P> = SomeQueryBase<E, F, I, P> &
-  ({ sort?: Sort<E>[]; orderBy?: never } | { sort?: never; orderBy?: OrderBy<E>[] });
+  ({ sort?: Sort<E>[]; orderBy?: never } | { sort?: never; orderBy?: OrderBy<F>[] });
 
 const comparisonOperatorList: ComparisonOperator[] = [
   'EQ',
