@@ -19,11 +19,17 @@ const flattenOrderBy = (orderBy: OrderBy<any>[] = []): string[] => {
   ): orderByItem is ConditionalOrderBy<any> =>
     !!orderByItem && typeof orderByItem === 'object' && 'CASE' in orderByItem;
 
+  /** Converts a OrderableField object to a dot-notation string. OrderableField guarantees exactly one key per level. */
+  const flattenField = (field: OrderableField<any>): string => {
+    const [[key, value]] = Object.entries(field);
+    return typeof value === 'object' && value !== null ? `${key}.${flattenField(value as OrderableField<any>)}` : key;
+  };
+
   const flattenValue = (value: number | FieldOrderBy<any>): string => {
     if (typeof value === 'number') {
       return value.toString();
     }
-    return applyModifiers(value.FIELD, value);
+    return applyModifiers(flattenField(value.FIELD), value);
   };
 
   const flattenConditional = (item: ConditionalOrderBy<any>): string => {
@@ -43,7 +49,7 @@ const flattenOrderBy = (orderBy: OrderBy<any>[] = []): string[] => {
     }
 
     const field = orderByItem as FieldOrderBy<any>;
-    const property = applyModifiers(field.FIELD, field);
+    const property = applyModifiers(flattenField(field.FIELD), field);
     const sort = field.SORT === 'desc' ? 'desc' : 'asc';
     return `${property} ${sort}`;
   };
@@ -137,18 +143,14 @@ export type ConditionalOrderBy<F> = {
   SORT?: 'asc' | 'desc';
 };
 
-export type FieldPath<T, Depth extends 0[] = []> = Depth['length'] extends 3 ? never : {
-  [K in keyof T & string]: NonNullable<T[K]> extends Array<infer U>
-    ? U extends Record<any, any>
-      ? `${K}.${FieldPath<U, [...Depth, 0]>}`
-      : never
-    : NonNullable<T[K]> extends Record<any, any>
-      ? K | `${K}.${FieldPath<NonNullable<T[K]>, [...Depth, 0]>}`
-      : K;
-}[keyof T & string];
+export type OrderableField<F> = {
+  [K in keyof F]-?: NonNullable<F[K]> extends Record<any, any>
+    ? { [P in K]: OrderableField<NonNullable<F[K]>> } & { [P in Exclude<keyof F, K>]?: never }
+    : { [P in K]: boolean } & { [P in Exclude<keyof F, K>]?: never };
+}[keyof F];
 
 export type FieldOrderBy<F> = {
-  FIELD: FieldPath<F>;
+  FIELD: OrderableField<F>;
   SORT?: 'asc' | 'desc';
   LOWER?: boolean;
   TRIM?: boolean;
