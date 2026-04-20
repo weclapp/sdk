@@ -5,12 +5,13 @@ export interface ObjectProperty {
   key: string;
   value: string | number | undefined | null | boolean | ObjectProperty[];
   comment?: string;
+  optional?: boolean;
 }
 
 export const generateObject = (properties: ObjectProperty[]): string => {
   const body = [];
 
-  for (const { key, value, comment } of properties) {
+  for (const { key, value, comment, optional } of properties) {
     if (value === undefined) {
       continue;
     }
@@ -19,10 +20,12 @@ export const generateObject = (properties: ObjectProperty[]): string => {
       const str = generateObject(value);
 
       if (str.length > 2) {
-        body.push(`${comment ? generateInlineComment(comment) + '\n' : ''}${key}: ${str}`);
+        body.push(`${comment ? generateInlineComment(comment) + '\n' : ''}${key}${optional ? '?' : ''}: ${str}`);
       }
     } else {
-      body.push(`${comment ? generateInlineComment(comment) + '\n' : ''}${key}: ${String(value)}`);
+      body.push(
+        `${comment ? generateInlineComment(comment) + '\n' : ''}${key}${optional ? '?' : ''}: ${String(value)}`
+      );
     }
   }
 
