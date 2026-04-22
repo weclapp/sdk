@@ -56,13 +56,13 @@ Files in `src/generator/01-base/static/*.ts.txt` are raw TypeScript strings impo
 
 ## Commands
 
-| Task | Command |
-|------|---------|
-| Build CLI | `npm run build` |
-| Run tests | `npm test` |
-| Lint | `npm run lint` |
-| Format check | `npm run prettier` |
-| Full CI check | `npm run ci` |
+| Task                      | Command                                              |
+| ------------------------- | ---------------------------------------------------- |
+| Build CLI                 | `npm run build`                                      |
+| Run tests                 | `npm test`                                           |
+| Lint                      | `npm run lint`                                       |
+| Format check              | `npm run prettier`                                   |
+| Full CI check             | `npm run ci`                                         |
 | Generate SDK (local file) | `./bin/cli.js test/openapi_v3.json --target browser` |
 
 ## Testing
@@ -84,4 +84,3 @@ Files in `src/generator/01-base/static/*.ts.txt` are raw TypeScript strings impo
 - The `sdk/` directory is **generated output** — never edit files there manually; they are deleted and regenerated on each build.
 - The project uses ESM (`"type": "module"`) throughout with `import ... with { type: 'json' }` for JSON imports.
 - Rollup config uses `tsconfig.node.json`; the generated SDK uses `tsconfig.sdk.json`.
-
