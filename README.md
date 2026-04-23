@@ -423,7 +423,7 @@ With the some function you can order requested data. You can either merely order
  * ?orderBy=createdDate asc
  */
 wServices['article'].some({
-  orderBy: [{ FIELD: 'createdDate', SORT: 'asc' }]
+  orderBy: [{ FIELD: { createdDate: true }, SORT: 'asc' }]
 });
 ```
 
@@ -435,7 +435,7 @@ wServices['article'].some({
  * ?orderBy=createdDate asc, articleNumber desc
  */
 wServices['article'].some({
-  orderBy: [{ FIELD: 'createdDate' }, { FIELD: 'articleNumber', SORT: 'desc' }]
+  orderBy: [{ FIELD: { createdDate: true } }, { FIELD: { articleNumber: true }, SORT: 'desc' }]
 });
 ```
 
@@ -457,7 +457,7 @@ wServices['article'].some({
       ELSE: 3,
       SORT: 'asc'
     },
-    { FIELD: 'articleNumber' }
+    { FIELD: { articleNumber: true } }
   ]
 });
 ```
@@ -474,8 +474,8 @@ The `THEN` and `ELSE` values can also be a `FieldOrderBy` to fall back to a fiel
 wServices['article'].some({
   orderBy: [
     {
-      CASE: [{ WHEN: { internalNote: { NULL: false } }, THEN: { FIELD: 'articleNumber' } }],
-      ELSE: { FIELD: 'createdDate' },
+      CASE: [{ WHEN: { internalNote: { NULL: false } }, THEN: { FIELD: { articleNumber: true } } }],
+      ELSE: { FIELD: { createdDate: true } },
       SORT: 'asc'
     }
   ]
@@ -491,7 +491,7 @@ For properties that are objects or arrays of objects, use dot-notation to refere
  * ?orderBy=articlePrices.price asc
  */
 wServices['article'].some({
-  orderBy: [{ FIELD: 'articlePrices.price', SORT: 'asc' }]
+  orderBy: [{ FIELD: { articlePrices: { price: true } }, SORT: 'asc' }]
 });
 ```
 
@@ -511,7 +511,7 @@ wServices['party'].some({
       TRIM: true,
       SORT: 'desc'
     },
-    { FIELD: 'firstName' }
+    { FIELD: { firstName: true } }
   ]
 });
 ```
