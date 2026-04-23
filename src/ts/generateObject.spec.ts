@@ -62,4 +62,21 @@ describe('generateObject', () => {
     expect(result).toContain('/** A number */');
     expect(result).toContain('x: 1');
   });
+
+  it('renders optional properties with a question mark', () => {
+    const result = generateObject([{ key: 'x', value: 1, optional: true }]);
+    expect(result).toContain('x?: 1');
+  });
+
+  it('does not render question mark when optional is false', () => {
+    const result = generateObject([{ key: 'x', value: 1, optional: false }]);
+    expect(result).toContain('x: 1');
+    expect(result).not.toContain('x?');
+  });
+
+  it('does not render question mark when optional is not set', () => {
+    const result = generateObject([{ key: 'x', value: 1 }]);
+    expect(result).toContain('x: 1');
+    expect(result).not.toContain('x?');
+  });
 });

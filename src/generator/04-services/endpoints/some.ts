@@ -68,7 +68,7 @@ const resolveArrayReferenceProperties = (
     ([property, propertyMetaData]): ObjectProperty[] => {
       if (propertyMetaData.type === 'array') {
         if (propertyMetaData.entity === 'onlyId') {
-          return [{ key: property, value: [{ key: 'id', value: 'boolean' }] }];
+          return [{ key: property, value: [{ key: 'id', value: 'boolean', optional: true }], optional: true }];
         }
 
         if (!propertyMetaData.entity) {
@@ -85,11 +85,11 @@ const resolveArrayReferenceProperties = (
           return [];
         }
 
-        return [{ key: property, value: nestedProperties }];
+        return [{ key: property, value: nestedProperties, optional: true }];
       }
 
       if (property.endsWith('Id')) {
-        return [{ key: property, value: 'boolean' }];
+        return [{ key: property, value: 'boolean', optional: true }];
       }
 
       return [];
@@ -114,7 +114,7 @@ const resolveReferences = (entity: string, entities: Map<string, GeneratedEntity
         if (propertyMetaData.entity === 'onlyId') {
           references.push({
             name: property,
-            type: generateObject([{ key: 'id', value: 'boolean' }])
+            type: generateObject([{ key: 'id', value: 'boolean', optional: true }])
           });
         } else {
           const nestedProperties = resolveArrayReferenceProperties(propertyMetaData.entity || '', entities);
