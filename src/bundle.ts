@@ -24,6 +24,7 @@ const emitDeclarations = (tsconfigPath: string, outDir: string) => {
 const generateOutput = (config: OutputOptions): OutputOptions => ({
   sourcemap: false,
   banner: `/* weclapp sdk */`,
+  exports: 'named',
   ...config
 });
 
