@@ -19,11 +19,17 @@ const flattenOrderBy = (orderBy: OrderBy<any>[] = []): string[] => {
   ): orderByItem is ConditionalOrderBy<any> =>
     !!orderByItem && typeof orderByItem === 'object' && 'CASE' in orderByItem;
 
+  /** Converts a OrderableField object to a dot-notation string. OrderableField guarantees exactly one key per level. */
+  const flattenField = (field: OrderableField<any>): string => {
+    const [[key, value]] = Object.entries(field);
+    return typeof value === 'object' && value !== null ? `${key}.${flattenField(value as OrderableField<any>)}` : key;
+  };
+
   const flattenValue = (value: number | FieldOrderBy<any>): string => {
     if (typeof value === 'number') {
       return value.toString();
     }
-    return applyModifiers(value.FIELD, value);
+    return applyModifiers(flattenField(value.FIELD), value);
   };
 
   const flattenConditional = (item: ConditionalOrderBy<any>): string => {
@@ -43,7 +49,7 @@ const flattenOrderBy = (orderBy: OrderBy<any>[] = []): string[] => {
     }
 
     const field = orderByItem as FieldOrderBy<any>;
-    const property = applyModifiers(field.FIELD, field);
+    const property = applyModifiers(flattenField(field.FIELD), field);
     const sort = field.SORT === 'desc' ? 'desc' : 'asc';
     return `${property} ${sort}`;
   };
@@ -126,36 +132,32 @@ export type QueryFilter<T> = SingleFilterExpr<T> & {
   };
 };
 
-export type ConditionalOrderByCase<E> = {
-  WHEN: QueryFilter<E>;
-  THEN: number | FieldOrderBy<E>;
+export type ConditionalOrderByCase<F> = {
+  WHEN: QueryFilter<F>;
+  THEN: number | FieldOrderBy<F>;
 };
 
-export type ConditionalOrderBy<E> = {
-  CASE: ConditionalOrderByCase<E>[];
-  ELSE: number | FieldOrderBy<E>;
+export type ConditionalOrderBy<F> = {
+  CASE: ConditionalOrderByCase<F>[];
+  ELSE: number | FieldOrderBy<F>;
   SORT?: 'asc' | 'desc';
 };
 
-export type FieldPath<T> = {
-  [K in keyof T & string]: NonNullable<T[K]> extends Array<infer U>
-    ? U extends Record<any, any>
-      ? `${K}.${FieldPath<U>}`
-      : never
-    : NonNullable<T[K]> extends Record<any, any>
-      ? K | `${K}.${FieldPath<NonNullable<T[K]>>}`
-      : K;
-}[keyof T & string];
+export type OrderableField<F> = {
+  [K in keyof F]-?: NonNullable<F[K]> extends Record<any, any>
+    ? { [P in K]: OrderableField<NonNullable<F[K]>> } & { [P in Exclude<keyof F, K>]?: never }
+    : { [P in K]: boolean } & { [P in Exclude<keyof F, K>]?: never };
+}[keyof F];
 
-export type FieldOrderBy<E> = {
-  FIELD: FieldPath<E>;
+export type FieldOrderBy<F> = {
+  FIELD: OrderableField<F>;
   SORT?: 'asc' | 'desc';
   LOWER?: boolean;
   TRIM?: boolean;
   LENGTH?: boolean;
 };
 
-export type OrderBy<E> = FieldOrderBy<E> | ConditionalOrderBy<E>;
+export type OrderBy<F> = FieldOrderBy<F> | ConditionalOrderBy<F>;
 
 export type CountQuery<F> = {
   where?: QueryFilter<F>;
@@ -171,7 +173,7 @@ type SomeQueryBase<E, F, I, P> = {
 };
 
 export type SomeQuery<E, F, I, P> = SomeQueryBase<E, F, I, P> &
-  ({ sort?: Sort<E>[]; orderBy?: never } | { sort?: never; orderBy?: OrderBy<E>[] });
+  ({ sort?: Sort<E>[]; orderBy?: never } | { sort?: never; orderBy?: OrderBy<F>[] });
 
 const comparisonOperatorList: ComparisonOperator[] = [
   'EQ',
