@@ -3,7 +3,7 @@ import tsEslint from 'typescript-eslint';
 export default tsEslint.config(
   {
     name: 'app/files-to-ignore',
-    ignores: ['**/*.d.ts', '**/.*', '**/dist', '**/sdk', '**/node_modules']
+    ignores: ['**/*.d.ts', '**/.*', '**/dist', '**/sdk', '**/node_modules', 'test/**']
   },
   {
     extends: [...tsEslint.configs.recommendedTypeChecked],

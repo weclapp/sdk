@@ -349,11 +349,19 @@ wServices['article'].some({
   where: {
     AND: [
       {
-        OR: [{ name: { LIKE: '%test%', lower: true } }, { articleNumber: { LIKE: '%345%' } }]
+        OR: [{ name: { LIKE: '%test%', LOWER: true } }, { articleNumber: { LIKE: '%345%' } }]
       },
       { batchNumberRequired: { EQ: true } }
     ]
   }
+});
+```
+
+Some API operations like the arithmetic ones are not supported as type, due to their complexity. In this case a raw filter expression can be passed as string to `where`
+
+```ts
+wServices['article'].some({
+  where: '(articleLength * articleWidth * articleHeight) <= 3000'
 });
 ```
 
