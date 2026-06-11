@@ -163,6 +163,10 @@ export type CountQuery<F> = {
   where?: QueryFilter<F>;
 };
 
+type NonArrayProps<T> = {
+  [K in keyof T as T[K] extends any[] ? never : K]: T[K];
+};
+
 type SomeQueryBase<E, F, I, P> = {
   serializeNulls?: boolean;
   include?: I;
@@ -173,7 +177,7 @@ type SomeQueryBase<E, F, I, P> = {
 };
 
 export type SomeQuery<E, F, I, P> = SomeQueryBase<E, F, I, P> &
-  ({ sort?: Sort<E>[]; orderBy?: never } | { sort?: never; orderBy?: OrderBy<F>[] });
+  ({ sort?: Sort<E>[]; orderBy?: never } | { sort?: never; orderBy?: OrderBy<NonArrayProps<F>>[] });
 
 const comparisonOperatorList: ComparisonOperator[] = [
   'EQ',
