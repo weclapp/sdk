@@ -163,8 +163,11 @@ export type CountQuery<F> = {
   where?: QueryFilter<F>;
 };
 
+type ContainsArray<T> =
+  T extends any[] ? true : never;
+
 type NonArrayProps<T> = {
-  [K in keyof T as T[K] extends any[] ? never : K]: T[K];
+  [K in keyof T as [ContainsArray<T[K]>] extends [never] ? K : never]: T[K]
 };
 
 type SomeQueryBase<E, F, I, P> = {
