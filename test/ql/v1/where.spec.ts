@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { articleService, setGlobalConfig } from '@sdk/dist';
 
-describe('where filter', () => {
+describe('where', () => {
   let capturedRequest: Request;
 
   beforeAll(() => {

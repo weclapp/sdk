@@ -66,10 +66,11 @@ jobs:
           ./bin/cli.js test/openapi_v2.json --target ${{ matrix.target }}
           ./bin/cli.js test/openapi_v3.json --target ${{ matrix.target }}
 
-  test:
-    name: Test
+  test_generator:
+    name: Generator test
     runs-on: ubuntu-latest
     needs: build
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -91,27 +92,44 @@ jobs:
       - name: Run generator tests
         run: npm run test:generator
 
-      - name: Generate SDK for tests with former query syntax
-        run: |
-          chmod +x ./bin/cli.js
-          ./bin/cli.js test/openapi_v3.json --target browser
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        option: [filter, ql]
+        version: [v1, v2, v3]
 
-      - name: Run type-check (former-queries)
-        run: npm run type-check:former-queries
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Run tests (former-queries)
-        run: npm run test:former-queries
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.11.1
 
-      - name: Generate SDK for tests with query language
-        run: |
-          chmod +x ./bin/cli.js
-          ./bin/cli.js test/openapi_v3.json --target browser --use-query-language
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Run type-check (query-language)
-        run: npm run type-check:query-language
+      - name: Download dist files
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: dist
 
-      - name: Run tests (query-language)
-        run: npm run test:query-language
+      - name: Make Generate SDK executable
+        run: chmod +x ./bin/cli.js
+
+      - name: Generate SDK
+        run: npm run cli:browser:${{ matrix.option }}:${{ matrix.version }}
+
+      - name: Type-check
+        run: npm run type-check:${{ matrix.option }}:${{ matrix.version }}
+
+      - name: Test
+        run: npm run test:${{ matrix.option }}:${{ matrix.version }}
 
   publish:
     name: Publish release version

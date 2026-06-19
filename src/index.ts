@@ -52,7 +52,7 @@ void (async () => {
     await bundle(workingDir, options.target);
 
     // Remove index.ts (only bundle is required)
-    await rm(await workingDirPath('src'), { recursive: true, force: true });
+    // await rm(await workingDirPath('src'), { recursive: true, force: true });
 
     if (useCache) {
       // Copy SDK to cache

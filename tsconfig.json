@@ -8,10 +8,22 @@
       "path": "./tsconfig.sdk.json"
     },
     {
-      "path": "./tsconfig.typecheck-former-queries.json"
+      "path": "./tsconfig.typecheck-filter-v1.json"
     },
     {
-      "path": "./tsconfig.typecheck-query-language.json"
+      "path": "./tsconfig.typecheck-filter-v2.json"
+    },
+    {
+      "path": "./tsconfig.typecheck-filter-v3.json"
+    },
+    {
+      "path": "./tsconfig.typecheck-ql-v1.json"
+    },
+    {
+      "path": "./tsconfig.typecheck-ql-v2.json"
+    },
+    {
+      "path": "./tsconfig.typecheck-ql-v3.json"
     }
   ]
 }
