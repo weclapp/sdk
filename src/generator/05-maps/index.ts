@@ -72,6 +72,29 @@ export const generateMaps = (
     generateType('WEntity', 'keyof WEntities'),
     entityNames,
 
+    /* Service entities — like WEntities but service relatedEntity overrides same-named schema entity.
+     * E.g. salesOrderItem service returns StandaloneSalesOrderItem, not SalesOrderItem. */
+    generateInterface(
+      'WServiceEntities',
+      [
+        ...[...entities.entries()]
+          .filter(([name]) => !generatedServices.some((s) => s.relatedEntity && s.name === name))
+          .map(([name, entity]) => ({
+            name,
+            type: entity.interfaceName,
+            required: true
+          })),
+        ...generatedServices
+          .filter(({ relatedEntity }) => !!relatedEntity)
+          .map(({ name, relatedEntity }) => ({
+            name,
+            type: relatedEntity!.interfaceName,
+            required: true
+          }))
+      ].sort((a, b) => (a.name > b.name ? 1 : -1))
+    ),
+    generateType('WServiceEntity', 'keyof WServiceEntities'),
+
     /* Services */
     serviceInstances,
     generateType('WServices', 'typeof wServices'),

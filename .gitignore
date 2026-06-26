@@ -1,15 +1,50 @@
-/.idea
-/.env
-/.test
-/.tmp
-/.cache
-/coverage
-/node_modules
-/sdk
+# Hidden files and folders
+/.*
+
+# Compiled output
 /dist
-/raw
-/main
-/rx
-/utils
-/node
+/sdk
+
+# Dependencies
+/node_modules
+
+# Profiling files
+chrome-profiler-events*.json
+speed-measure-plugin*.json
+
+# Editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.iml
+
+# VSCode
+.vscode/*
+.history/*
+
+# Misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+/storybook-static
 .eslintcache
+.stylelintcache
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Generated files
+/src/styles/fonts/icon/index.scss
+/src/styles/fonts/icon/fonts
+/src/styles/fonts/icon/json
+/src/styles/fonts/icon/ts
