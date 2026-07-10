@@ -1,4 +1,0 @@
-{
-  "extends": "./tsconfig.node.json",
-  "include": ["test/ql/v1/**/*.spec.ts"]
-}

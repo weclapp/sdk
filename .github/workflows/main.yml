@@ -98,8 +98,10 @@ jobs:
     needs: build
     strategy:
       matrix:
-        option: [filter, ql]
-        version: [v1, v2, v3]
+        version: [v3]
+        combo:
+          - ''
+          - '--use-query-language'
 
     steps:
       - name: Checkout repository
@@ -122,14 +124,8 @@ jobs:
       - name: Make Generate SDK executable
         run: chmod +x ./bin/cli.js
 
-      - name: Generate SDK
-        run: npm run cli:browser:${{ matrix.option }}:${{ matrix.version }}
-
-      - name: Type-check
-        run: npm run type-check:${{ matrix.option }}:${{ matrix.version }}
-
-      - name: Test
-        run: npm run test:${{ matrix.option }}:${{ matrix.version }}
+      - name: Run tests
+        run: node ./scripts/run-test-configuration.js --version ${{ matrix.version }} ${{ matrix.combo }}
 
   publish:
     name: Publish release version

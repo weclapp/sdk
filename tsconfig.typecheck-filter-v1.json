@@ -1,4 +1,0 @@
-{
-  "extends": "./tsconfig.node.json",
-  "include": ["test/filter/v1/**/*.spec.ts"]
-}
