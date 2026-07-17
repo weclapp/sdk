@@ -28,7 +28,7 @@ describe('where', () => {
     });
   });
 
-  describe('some query', () => {
+  describe('where filter', () => {
     it('should assemble a typed where object into a filter query param', async () => {
       const service = articleService();
 
@@ -76,6 +76,30 @@ describe('where', () => {
       expect(url.searchParams.get('pageSize')).toBe('25');
     });
 
+    it('should assemble a typed where object into the request body when usePost is true', async () => {
+      const service = articleService({ usePost: true });
+
+      await service.some({
+        where: {
+          articleNumber: { EQ: 'ART-001' }
+        }
+      });
+
+      const body = await capturedRequest.json();
+      expect(body.filter).toBe('articleNumber = "ART-001"');
+    });
+
+    it('should pass a raw string where directly into the request body when usePost is true', async () => {
+      const service = articleService({ usePost: true });
+
+      await service.some({
+        where: 'articleNumber = "ART-001"'
+      });
+
+      const body = await capturedRequest.json();
+      expect(body.filter).toBe('articleNumber = "ART-001"');
+    });
+
     it('should combine where, sort and pagination into a single request', async () => {
       const service = articleService();
 
@@ -93,29 +117,77 @@ describe('where', () => {
     });
   });
 
-  describe('count query', () => {
-    it('should assemble a typed where object into a filter query param', async () => {
+  describe('orderBy', () => {
+    it('should assemble a typed orderBy object into an orderBy query param', async () => {
       const service = articleService();
 
-      await service.count({
-        where: {
-          articleNumber: { EQ: 'ART-001' }
-        }
+      await service.some({
+        orderBy: [{ FIELD: { articleNumber: true }, SORT: 'desc' }]
       });
 
       const url = new URL(capturedRequest.url);
-      expect(url.searchParams.get('filter')).toBe('articleNumber = "ART-001"');
+      expect(url.searchParams.get('orderBy')).toBe('articleNumber desc');
     });
 
-    it('should pass a raw string where directly as the filter query param', async () => {
+    it('should pass a raw string orderBy directly as the orderBy query param', async () => {
       const service = articleService();
 
-      await service.count({
-        where: 'articleNumber = "ART-001"'
+      await service.some({
+        orderBy: 'articleNumber desc'
+      });
+
+      const url = new URL(capturedRequest.url);
+      expect(url.searchParams.get('orderBy')).toBe('["articleNumber desc"]');
+    });
+
+    it('should assemble a typed orderBy object into the request body when usePost is true', async () => {
+      const service = articleService({ usePost: true });
+
+      await service.some({
+        orderBy: [{ FIELD: { articleNumber: true }, SORT: 'desc' }]
+      });
+
+      const body = await capturedRequest.json();
+      expect(body.orderBy).toEqual(['articleNumber desc']);
+    });
+
+    it('should pass a raw string orderBy directly into the request body when usePost is true', async () => {
+      const service = articleService({ usePost: true });
+
+      await service.some({
+        orderBy: 'articleNumber desc'
+      });
+
+      const body = await capturedRequest.json();
+      expect(body.orderBy).toEqual(['articleNumber desc']);
+    });
+
+    it('should pass pagination as page and pageSize query params', async () => {
+      const service = articleService();
+
+      await service.some({
+        pagination: { page: 3, pageSize: 25 }
+      });
+
+      const url = new URL(capturedRequest.url);
+      expect(url.searchParams.get('page')).toBe('3');
+      expect(url.searchParams.get('pageSize')).toBe('25');
+    });
+
+    it('should combine where, orderBy and pagination into a single request', async () => {
+      const service = articleService();
+
+      await service.some({
+        where: 'articleNumber = "ART-001"',
+        orderBy: 'articleNumber desc',
+        pagination: { page: 1, pageSize: 10 }
       });
 
       const url = new URL(capturedRequest.url);
       expect(url.searchParams.get('filter')).toBe('articleNumber = "ART-001"');
+      expect(url.searchParams.get('orderBy')).toBe('["articleNumber desc"]');
+      expect(url.searchParams.get('page')).toBe('1');
+      expect(url.searchParams.get('pageSize')).toBe('10');
     });
   });
 

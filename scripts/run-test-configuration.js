@@ -100,7 +100,7 @@ run(`node ./bin/cli.js ${openapiFile} ${cliArgs.join(' ')}`);
 
 // --- Step 2: Generate temporary tsconfig for type-checking ---
 
-const tsconfigIncludes = testFolders.map((folder) => `test/${folder}/${version}/**/*.spec.ts`);
+const tsconfigIncludes = testFolders.map((folder) => `test/${version}/${folder}/**/*.spec.ts`);
 const tsconfigContent = JSON.stringify({ extends: './tsconfig.node.json', include: tsconfigIncludes }, null, 2) + '\n';
 writeFileSync(resolve('tsconfig.typecheck-generated.json'), tsconfigContent);
 console.log(`\nGenerated tsconfig.typecheck-generated.json`);
@@ -112,5 +112,5 @@ run(`npx tsc -p tsconfig.typecheck-generated.json --noEmit --skipLibCheck`);
 
 // --- Step 4: Run vitest for all resolved folders at the given version ---
 
-const testPaths = testFolders.map((folder) => `test/${folder}/${version}`).join(' ');
+const testPaths = testFolders.map((folder) => `test/${version}/${folder}`).join(' ');
 run(`npx vitest run ${testPaths}`);

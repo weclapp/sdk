@@ -173,7 +173,7 @@ type SomeQueryBase<E, F, I, P> = {
 };
 
 export type SomeQuery<E, F, I, P> = SomeQueryBase<E, F, I, P> &
-  ({ sort?: Sort<E>[]; orderBy?: never } | { sort?: never; orderBy?: OrderBy<F>[] });
+  ({ sort?: Sort<E>[]; orderBy?: never } | { sort?: never; orderBy?: OrderBy<F>[] | string });
 
 const comparisonOperatorList: ComparisonOperator[] = [
   'EQ',
@@ -311,10 +311,15 @@ const evaluateCaseExpression = (exp: QueryFilter<any>, nestedPaths: string[]): s
   return `(${ifExp} ? ${thenBranch} : ${elseBranch})`;
 };
 
-const assembleOrderBy = (orderBy: OrderBy<any>[] = [], usePost?: boolean): Record<string, string | string[]> => {
-  if(!orderBy.length) {
-    return {}
+const assembleOrderBy = (orderBy?: OrderBy<any>[] | string, usePost?: boolean): Record<string, string | string[]> => {
+  if (typeof orderBy === 'string') {
+    return { orderBy: [orderBy] };
   }
+
+  if (!orderBy || (Array.isArray(orderBy) && !orderBy.length)) {
+    return {};
+  }
+
   const flattedOrderByList = flattenOrderBy(orderBy);
 
   if(!flattedOrderByList.length) {
