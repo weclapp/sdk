@@ -6,6 +6,9 @@
     },
     {
       "path": "./tsconfig.sdk.json"
+    },
+    {
+      "path": "./tsconfig.typecheck-generated.json"
     }
   ]
 }

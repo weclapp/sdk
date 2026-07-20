@@ -55,11 +55,12 @@
     "cli:node.rx:cache": "./bin/cli.js test/openapi.json --target node.rx  --cache",
     "prettier": "prettier . --check",
     "prettier:fix": "prettier . --write",
-    "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "test:generator": "vitest run src/",
     "lint": "eslint ./src --cache",
     "lint:fix": "npm run lint -- --fix",
-    "ci": "npm run prettier && npm run lint && npm run test && npm run build && npm run cli:browser:v1 && npm run cli:browser:v2 && npm run cli:browser:v3",
+    "ci:test": "./scripts/run-test-configuration.js --version v3",
+    "ci": "npm run prettier && npm run lint && npm run build && npm run ci:test",
     "release": "standard-version"
   },
   "devDependencies": {
@@ -70,7 +71,7 @@
     "eslint": "10.0.2",
     "prettier": "3.3.3",
     "typescript-eslint": "8.56.1",
-    "vite-tsconfig-paths": "^6.1.1",
+    "vite-tsconfig-paths": "6.1.1",
     "vitest": "4.0.15"
   },
   "dependencies": {
@@ -82,7 +83,7 @@
     "indent-string": "5.0.0",
     "openapi-types": "12.1.3",
     "pretty-ms": "8.0.0",
-    "rolldown": "^1.0.0-rc.10",
+    "rolldown": "1.0.0-rc.15",
     "typescript": "5.9.3",
     "yargs": "17.7.2"
   },
