@@ -68,7 +68,7 @@ export type ComparisonOperator =
 
 export type LengthOperator = 'LENGTH';
 
-export type ArrayOperator = 'IN';
+export type ArrayOperator = 'IN' | 'CONTAINS';
 
 export type NullOperator = 'NULL';
 
@@ -96,11 +96,20 @@ export type LengthExprWithModifier =
 
 export type FilterExpr<T> =
   { [K in ComparisonOperator]?: T } &
-  { [K in ArrayOperator]?: T[] } &
+  { IN?: T[] } &
   { [K in keyof LengthExpr]?: never };
+
+export type ArrayFilterExpr<T> =
+  FilterExpr<T> &
+  { CONTAINS?: T | ReadonlyArray<T> };
 
 export type FilterExprWithoutNull<T> =
   RequireAtLeastOne<FilterExpr<T>> &
+  { [K in NullOperator]?: never } &
+  { [K in ModifierFunction]?: boolean };
+
+export type ArrayFilterExprWithoutNull<T> =
+  RequireAtLeastOne<ArrayFilterExpr<T>> &
   { [K in NullOperator]?: never } &
   { [K in ModifierFunction]?: boolean };
 
@@ -109,15 +118,22 @@ export type FilterExprWithNull<T> =
   { [K in NullOperator]?: boolean} &
   { [K in ModifierFunction]?: never };
 
+export type ArrayFilterExprWithNull<T> =
+  ArrayFilterExpr<T> &
+  { [K in NullOperator]?: boolean} &
+  { [K in ModifierFunction]?: never };
+
 export type MapOperators<T> = LengthExprWithModifier | FilterExprWithoutNull<T> | FilterExprWithNull<T>;
 
+export type ArrayMapOperators<T> = LengthExprWithModifier | ArrayFilterExprWithoutNull<T> | ArrayFilterExprWithNull<T>;
+
 export type SingleFilterExpr<T> = {
-  [P in keyof T]?: T[P] extends Array<infer U> | undefined
-    ? U extends Record<any, any>
-      ? SingleFilterExpr<U> | { NOT?: SingleFilterExpr<U> }
-      : MapOperators<U>
-    : T[P] extends Record<any, any> | undefined
-      ? SingleFilterExpr<T[P]> | { NOT?: SingleFilterExpr<T[P]> }
+  [P in keyof T]?: NonNullable<T[P]> extends ReadonlyArray<infer U>
+    ? NonNullable<U> extends Record<any, any>
+      ? SingleFilterExpr<NonNullable<U>> | { NOT?: SingleFilterExpr<NonNullable<U>> }
+      : ArrayMapOperators<NonNullable<U>>
+    : NonNullable<T[P]> extends Record<any, any>
+      ? SingleFilterExpr<NonNullable<T[P]>> | { NOT?: SingleFilterExpr<NonNullable<T[P]>> }
       : MapOperators<T[P]>;
 };
 
@@ -194,6 +210,7 @@ const comparisonOperatorMap: Record<Operator, string> = {
   GE: '>=',
   LIKE: '~',
   IN: 'in',
+  CONTAINS: 'contains',
   NULL: 'null'
 };
 
@@ -278,6 +295,30 @@ const flattenWhere = (
               )} ${comparisonOperatorMap[operator as Operator]} [${value.map((v: string | number) =>
                 typeof v === 'string' ? setModifiers.reduce((acc, [first]) => `${first}(${acc})`, JSON.stringify(v)) : v
               )}]`
+            );
+          }
+        } else if ((operator as Operator) === 'CONTAINS') {
+          const property = setModifiers.reduce(
+            (acc, [first]) => `${first.toLowerCase()}(${acc})`,
+            nestedPaths.some((path) => path === prop) ? nestedPaths.join('.') : [...nestedPaths, prop].join('.')
+          );
+          const containsValues = Array.isArray(value) ? value : [value];
+          const formatContainsValue = (containsValue: string | number) =>
+            typeof containsValue === 'string'
+              ? setModifiers.reduce((acc, [first]) => `${first}(${acc})`, JSON.stringify(containsValue))
+              : containsValue;
+
+          if (containsValues.length === 0) {
+            entries.push('1 = 0');
+          } else if (containsValues.length === 1) {
+            entries.push(
+              `${property} ${comparisonOperatorMap[operator as Operator]} ${formatContainsValue(containsValues[0])}`
+            );
+          } else {
+            entries.push(
+              `(${containsValues
+                .map((containsValue) => `${property} ${comparisonOperatorMap[operator as Operator]} ${formatContainsValue(containsValue)}`)
+                .join(' or ')})`
             );
           }
         } else if ((operator as LengthOperator) === 'LENGTH') {

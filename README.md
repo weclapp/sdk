@@ -367,6 +367,22 @@ wServices['article'].some({
 
 "where" parameters are ANDed with other filter parameters.
 
+Use `CONTAINS` for array properties like `string[]` or enum arrays. You can pass one value or multiple values. Multiple values are combined with `or`.
+
+```ts
+wServices['article'].some({
+  where: {
+    tags: {
+      CONTAINS: ['sale', 'new']
+    }
+  }
+});
+```
+
+This evaluates to:
+
+    tags contains "sale" or tags contains "new"
+
 It is also possible to set an empty list within an IN-query:
 
 ```ts
